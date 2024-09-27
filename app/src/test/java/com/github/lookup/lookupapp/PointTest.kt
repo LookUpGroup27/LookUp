@@ -1,5 +1,6 @@
-package com.android.lookup
+package com.github.lookup.lookupapp
 
+import com.github.lookup.lookupapp.Point
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.android.lookup.ui.theme
+package com.github.lookup.lookupapp.ui.theme
 
 import android.app.Activity
 import android.os.Build

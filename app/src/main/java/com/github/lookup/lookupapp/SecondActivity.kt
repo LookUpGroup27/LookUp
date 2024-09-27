@@ -1,4 +1,4 @@
-package com.android.lookup
+package com.github.lookup.lookupapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import com.android.lookup.resources.C
-import com.android.lookup.ui.theme.SampleAppTheme
+import com.github.lookup.lookupapp.resources.C
+import com.github.lookup.lookupapp.ui.theme.SampleAppTheme
 
 class SecondActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

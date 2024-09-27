@@ -1,4 +1,4 @@
-package com.android.lookup.resources
+package com.github.lookup.lookupapp.resources
 
 // Like R, but C
 object C {
