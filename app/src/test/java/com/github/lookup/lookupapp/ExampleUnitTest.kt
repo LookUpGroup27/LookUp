@@ -1,4 +1,4 @@
-package com.android.lookup
+package com.github.lookup.lookupapp
 
 import org.junit.Assert.*
 import org.junit.Test

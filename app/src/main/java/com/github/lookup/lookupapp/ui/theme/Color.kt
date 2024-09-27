@@ -1,4 +1,4 @@
-package com.android.lookup.ui.theme
+package com.github.lookup.lookupapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

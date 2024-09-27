@@ -1,7 +1,7 @@
-package com.android.lookup.screen
+package com.github.lookup.lookupapp.screen
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
-import com.android.lookup.resources.C
+import com.github.lookup.lookupapp.resources.C
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.github.kakaocup.compose.node.element.KNode
 
