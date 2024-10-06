@@ -15,6 +15,8 @@ object Route {
     const val SKY_TRACKER = "SkyTracker"
     const val QUIZ = "Quiz"
     const val PROFILE = "Profile"
+    const val MENU = "Menu"
+    const val COLLECTION = "Collection"
 }
 
 object Screen {
@@ -23,6 +25,8 @@ object Screen {
     const val SKY_TRACKER = "Sky Tracker Screen"
     const val QUIZ = "Quiz Screen"
     const val PROFILE = "Profile Screen"
+    const val MENU = "Menu Screen"
+    const val COLLECTION = "Collection Screen"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
