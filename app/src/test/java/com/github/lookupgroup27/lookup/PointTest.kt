@@ -1,6 +1,5 @@
-package com.github.lookup.lookupapp
+package com.github.lookupgroup27.lookup
 
-import com.github.lookup.lookupapp.Point
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

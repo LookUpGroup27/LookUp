@@ -1,4 +1,4 @@
-package com.github.lookup.lookupapp
+package com.github.lookupgroup27.lookup
 
 import kotlin.math.sqrt
 
