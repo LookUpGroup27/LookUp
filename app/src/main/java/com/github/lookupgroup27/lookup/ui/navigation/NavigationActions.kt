@@ -1,4 +1,4 @@
-package com.android.lookup.ui.navigation
+package com.github.lookupgroup27.lookup.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
@@ -6,8 +6,8 @@ import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.ui.graphics.vector.ImageVector
-//import androidx.navigation.NavGraph.Companion.findStartDestination
-//import androidx.navigation.NavHostController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 
 object Route {
     const val MAP = "Map"
@@ -41,7 +41,7 @@ val LIST_TOP_LEVEL_DESTINATION = listOf(
     TopLevelDestinations.QUIZ
 )
 
-/*open class NavigationActions(
+open class NavigationActions(
     private val navController: NavHostController,
 ) {
     /**
@@ -88,4 +88,4 @@ val LIST_TOP_LEVEL_DESTINATION = listOf(
     open fun currentRoute(): String {
         return navController.currentDestination?.route ?: ""
     }
-}*/
+}
