@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.android.lookup"
+    namespace = "com.github.lookupgroup27.lookup"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.android.lookup"
+        applicationId = "com.github.lookupgroup27.lookup"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
@@ -148,6 +148,13 @@ dependencies {
 
     // ----------       Robolectric     ------------
     testImplementation(libs.robolectric)
+
+    // ----------       Firebase        ------------
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.auth)
 }
 
 tasks.withType<Test> {
