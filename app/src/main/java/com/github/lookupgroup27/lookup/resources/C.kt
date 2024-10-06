@@ -1,4 +1,4 @@
-package com.github.lookup.lookupapp.resources
+package com.github.lookupgroup27.lookup.resources
 
 // Like R, but C
 object C {

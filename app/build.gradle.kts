@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.android.lookup"
+    namespace = "com.github.lookupgroup27.lookup"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.android.lookup"
+        applicationId = "com.github.lookupgroup27.lookup"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
