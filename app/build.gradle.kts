@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.lookupgroup27.lookup"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -47,21 +47,29 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.2"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
         }
     }
 
@@ -113,48 +121,75 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(platform(libs.compose.bom))
-    testImplementation(libs.junit)
-    globalTestImplementation(libs.androidx.junit)
-    globalTestImplementation(libs.androidx.espresso.core)
 
-    // ------------- Jetpack Compose ------------------
-    val composeBom = platform(libs.compose.bom)
-    implementation(composeBom)
-    globalTestImplementation(composeBom)
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.appcompat)
+        implementation(libs.material)
+        implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.graphics)
-    // Material Design 3
-    implementation(libs.compose.material3)
-    // Integration with activities
-    implementation(libs.compose.activity)
-    // Integration with ViewModels
-    implementation(libs.compose.viewmodel)
-    // Android Studio Preview support
-    implementation(libs.compose.preview)
-    debugImplementation(libs.compose.tooling)
-    // UI Tests
-    globalTestImplementation(libs.compose.test.junit)
-    debugImplementation(libs.compose.test.manifest)
+        // Jetpack Compose BOM
+        val composeBom = platform(libs.compose.bom)
+        implementation(composeBom)
+        androidTestImplementation(composeBom)
 
-    // --------- Kaspresso test framework ----------
-    globalTestImplementation(libs.kaspresso)
-    globalTestImplementation(libs.kaspresso.compose)
+        // Jetpack Compose
+        implementation(libs.compose.ui)
+        implementation(libs.compose.ui.graphics)
+        implementation(libs.compose.material3)
+        implementation(libs.compose.activity)
+        implementation(libs.compose.viewmodel)
+        implementation(libs.compose.preview)
+        debugImplementation(libs.compose.tooling)
+        androidTestImplementation(libs.compose.test.junit)
+        debugImplementation(libs.compose.test.manifest)
 
-    // ----------       Robolectric     ------------
-    testImplementation(libs.robolectric)
+        // Kaspresso test framework
+        androidTestImplementation(libs.kaspresso)
+        androidTestImplementation(libs.kaspresso.compose)
 
-    // ----------       Firebase        ------------
-    implementation(libs.firebase.database.ktx)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.ui.auth)
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.auth)
+        // Robolectric
+        testImplementation(libs.robolectric)
+
+        // Firebase
+        implementation(libs.firebase.database.ktx)
+        implementation(libs.firebase.firestore)
+        implementation(libs.firebase.ui.auth)
+        implementation(libs.firebase.auth.ktx)
+
+        // Navigation
+        implementation(libs.androidx.navigation.compose)
+        implementation(libs.androidx.navigation.fragment.ktx)
+        implementation(libs.androidx.navigation.ui.ktx)
+
+        // Unit Testing
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.mockk)
+        androidTestImplementation(libs.mockk.android)
+        androidTestImplementation(libs.mockk.agent)
+        testImplementation(libs.json)
+
+        // UI Testing
+        androidTestImplementation(libs.androidx.espresso.core)
+        androidTestImplementation(libs.androidx.espresso.intents)
+        androidTestImplementation(libs.androidx.ui.test.junit4)
+        androidTestImplementation(platform(libs.androidx.compose.bom))
+        testImplementation(libs.mockito.core)
+        testImplementation(libs.mockito.inline)
+        testImplementation(libs.mockito.kotlin)
+        androidTestImplementation(libs.mockito.android)
+        androidTestImplementation(libs.mockito.kotlin)
+        testImplementation(libs.robolectric)
+
+        // Kaspresso Allure
+        androidTestImplementation(libs.kaspresso.allure.support)
+        androidTestImplementation(libs.kaspresso.compose.support)
+
+        // Coroutines Testing
+        testImplementation(libs.kotlinx.coroutines.test)
+
+        // Networking with OkHttp
+        implementation(libs.okhttp)
+
 }
 
 tasks.withType<Test> {
