@@ -126,8 +126,11 @@ dependencies {
         implementation(libs.androidx.appcompat)
         implementation(libs.material)
         implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.ui.test.junit4.android)
+    testImplementation(libs.androidx.espresso.intents)
 
-        // Jetpack Compose BOM
+    // Jetpack Compose BOM
         val composeBom = platform(libs.compose.bom)
         implementation(composeBom)
         androidTestImplementation(composeBom)
