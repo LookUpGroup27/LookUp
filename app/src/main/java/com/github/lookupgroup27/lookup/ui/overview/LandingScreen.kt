@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.github.lookupgroup27.lookup.R
 import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.testTag
 import androidx.navigation.compose.rememberNavController
 
 /**
@@ -30,17 +32,22 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun LandingScreen(navController: NavController) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable {
+                navController.navigate("Map")
+            },
         contentAlignment = Alignment.Center
     ) {
+
         // Background Image
         Image(
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
             contentDescription = "Background",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { navController.navigate("Map") },
-            contentScale = ContentScale.Crop
+                .testTag("Background")
         )
 
         Column(
@@ -48,29 +55,39 @@ fun LandingScreen(navController: NavController) {
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+
             // Logo Image
             Image(
                 painter = painterResource(id = R.drawable.look_up_logo),
                 contentDescription = "Look Up Logo",
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier
+                    .size(200.dp)
+                    .testTag("Look Up Logo"),
                 contentScale = ContentScale.Fit
             )
 
+
             // Home Button with Home Icon
             Button(
-                onClick = { navController.navigate("Menu") },
+                onClick = {
+                    navController.navigate("Menu")
+                },
                 modifier = Modifier
                     .padding(16.dp)
-                    .size(64.dp),
+                    .size(64.dp)
+                    .testTag("Home Icon"),
                 shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
             ) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home Icon",
                     tint = Color.Black,
                     modifier = Modifier.size(32.dp)
+
                 )
+                Text(text = "Go to Menu")
             }
         }
     }
