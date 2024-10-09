@@ -3,98 +3,77 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.github.lookupgroup27.lookup.R
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.ui.platform.testTag
 import androidx.navigation.compose.rememberNavController
+import com.github.lookupgroup27.lookup.R
 
 /**
- * LandingScreen displays the main landing page of the app.
- * It includes a background image, logo, and a button with a home icon.
- * The home button navigates to the "Menu" screen and the background is clickable to navigate to the "Map" screen.
+ * LandingScreen displays the main landing page of the app. It includes a background image, logo,
+ * and a button with a home icon. The home button navigates to the "Menu" screen and the background
+ * is clickable to navigate to the "Map" screen.
  *
  * @param navController The NavController to handle navigation between screens.
  */
-
 @Composable
 fun LandingScreen(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clickable {
-                navController.navigate("Map")
-            },
-        contentAlignment = Alignment.Center
-    ) {
+  Box(
+      modifier = Modifier.fillMaxSize().clickable { navController.navigate("Map") },
+      contentAlignment = Alignment.Center) {
 
         // Background Image
         Image(
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag("Background")
-        )
+            modifier = Modifier.fillMaxSize().testTag("Background"))
 
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            horizontalAlignment = Alignment.CenterHorizontally) {
 
+              // Logo Image
+              Image(
+                  painter = painterResource(id = R.drawable.look_up_logo),
+                  contentDescription = "Look Up Logo",
+                  modifier = Modifier.size(200.dp).testTag("Look Up Logo"),
+                  contentScale = ContentScale.Fit)
 
-            // Logo Image
-            Image(
-                painter = painterResource(id = R.drawable.look_up_logo),
-                contentDescription = "Look Up Logo",
-                modifier = Modifier
-                    .size(200.dp)
-                    .testTag("Look Up Logo"),
-                contentScale = ContentScale.Fit
-            )
-
-
-            // Home Button with Home Icon
-            Button(
-                onClick = {
-                    navController.navigate("Menu")
-                },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .size(64.dp)
-                    .testTag("Home Icon"),
-                shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-            ) {
+              // Home Button with Home Icon
+              Button(
+                  onClick = { navController.navigate("Menu") },
+                  modifier = Modifier.padding(16.dp).size(64.dp).testTag("Home Icon"),
+                  shape = MaterialTheme.shapes.small,
+                  colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+              ) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home Icon",
                     tint = Color.Black,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp))
 
-                )
                 Text(text = "Go to Menu")
+              }
             }
-        }
-    }
+      }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewLandingScreen() {
-    LandingScreen(navController = rememberNavController())
+  LandingScreen(navController = rememberNavController())
 }

@@ -13,15 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import com.github.lookupgroup27.lookup.resources.C
-import com.github.lookupgroup27.lookup.ui.theme.SampleAppTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.github.lookupgroup27.lookup.resources.C
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
-
-
+import com.github.lookupgroup27.lookup.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,34 +31,20 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize().semantics { testTag = C.Tag.main_screen_container },
             color = MaterialTheme.colorScheme.background) {
 
-            // Set up the navigation controller
-            val navController = rememberNavController()
+              // Set up the navigation controller
+              val navController = rememberNavController()
 
-            NavHost(
-                navController = navController,
-                startDestination = Route.LANDING
-            ) {
+              NavHost(navController = navController, startDestination = Route.LANDING) {
                 // Define the LandingScreen
-                composable(Route.LANDING) {
-                    LandingScreen(navController = navController)
-                }
+                composable(Route.LANDING) { LandingScreen(navController = navController) }
 
                 // Define the MenuScreen
-                composable(Route.MENU) {
-                    MenuScreen()
-                }
-            }
-
-
+                composable(Route.MENU) { MenuScreen() }
+              }
             }
       }
     }
   }
-
-
-
-
-
 }
 
 @Composable
@@ -73,6 +57,3 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
   SampleAppTheme { Greeting("Android") }
 }
-
-
-

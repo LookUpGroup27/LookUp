@@ -5,9 +5,8 @@ import androidx.compose.runtime.Composable
 
 class MenuScreen {
 
-    @Composable
-    fun MenuScreen() {
-        Text(text = "This is the Menu screen.")
-    }
-
+  @Composable
+  fun MenuScreen() {
+    Text(text = "This is the Menu screen.")
+  }
 }
