@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.intent.Intents
@@ -37,9 +38,13 @@ class LandingScreenTest {
     // Verify that the Look Up logo is displayed
     composeTestRule.onNodeWithContentDescription("Look Up Logo").assertIsDisplayed()
 
+
+
     // Verify that the Home button is displayed and clickable
     composeTestRule.onNodeWithContentDescription("Home Icon").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Home Icon").assertHasClickAction()
+
+
   }
 
   @Test
@@ -47,14 +52,31 @@ class LandingScreenTest {
     // Verify that the background image is displayed and clickable
     composeTestRule.onNodeWithContentDescription("Background").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Background").assertHasClickAction()
+
+
+    // Perform click action on the background image
+    composeTestRule.onNodeWithContentDescription("Background").performClick()
+
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
+
+    //Assert that the Map screen is displayed by checking for specific text or UI elements
+    composeTestRule.onNodeWithText("This is the Map screen.").assertIsDisplayed()
+
+
   }
 
   @Test
   fun homeButtonIsClickable() {
-    // Perform click action on the home button
-    composeTestRule.onNodeWithText("Go to Menu").performClick()
+    // Perform click action on the home button using its testTag
+    composeTestRule.onNodeWithTag("Home Icon").performClick()
 
     // Wait for the UI to settle after the click
     composeTestRule.waitForIdle()
+
+    // Assert that the Menu screen is displayed by checking for specific text
+    composeTestRule.onNodeWithText("This is the Menu screen.").assertIsDisplayed()
   }
+
+
 }
