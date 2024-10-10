@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.resources.C
+import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.theme.SampleAppTheme
@@ -40,6 +41,9 @@ class MainActivity : ComponentActivity() {
 
                 // Define the MenuScreen
                 composable(Route.MENU) { MenuScreen() }
+
+                // Define the MenuScreen
+                composable(Route.MAP) { MapScreen() }
               }
             }
       }
