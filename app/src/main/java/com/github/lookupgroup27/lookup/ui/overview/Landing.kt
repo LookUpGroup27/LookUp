@@ -39,7 +39,7 @@ fun LandingScreen(navController: NavController) {
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize().testTag("Background"))
+            modifier = Modifier.fillMaxSize())
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -50,7 +50,7 @@ fun LandingScreen(navController: NavController) {
               Image(
                   painter = painterResource(id = R.drawable.look_up_logo),
                   contentDescription = "Look Up Logo",
-                  modifier = Modifier.size(200.dp).testTag("Look Up Logo"),
+                  modifier = Modifier.size(200.dp),
                   contentScale = ContentScale.Fit)
 
               // Home Button with Home Icon
@@ -66,7 +66,7 @@ fun LandingScreen(navController: NavController) {
                     tint = Color.Black,
                     modifier = Modifier.size(32.dp))
 
-                Text(text = "Go to Menu")
+
               }
             }
       }
