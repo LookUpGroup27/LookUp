@@ -32,8 +32,8 @@ class NavigationActionsTest {
     navigationActions.navigateTo(TopLevelDestinations.MAP)
     verify(navHostController).navigate(eq(Route.MAP), any<NavOptionsBuilder.() -> Unit>())
 
-    navigationActions.navigateTo(TopLevelDestinations.CALENDAR)
-    verify(navHostController).navigate(eq(Route.CALENDAR), any<NavOptionsBuilder.() -> Unit>())
+    navigationActions.navigateTo(TopLevelDestinations.MENU)
+    verify(navHostController).navigate(eq(Route.MENU), any<NavOptionsBuilder.() -> Unit>())
 
     // Test navigating to specific screens
     navigationActions.navigateTo(Screen.SKY_TRACKER)
