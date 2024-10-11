@@ -1,15 +1,15 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Place
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
 object Route {
+  const val AUTH = "Auth"
+  const val LANDING = "Landing"
   const val MAP = "Map"
   const val CALENDAR = "Calendar"
   const val SKY_TRACKER = "SkyTracker"
@@ -20,6 +20,8 @@ object Route {
 }
 
 object Screen {
+  const val AUTH = "Auth Screen"
+  const val LANDING = "Landing Screen"
   const val MAP = "Map Screen"
   const val CALENDAR = "Calendar Screen"
   const val SKY_TRACKER = "Sky Tracker Screen"
@@ -32,6 +34,17 @@ object Screen {
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
 
 object TopLevelDestinations {
+  val MENU = TopLevelDestination(route = Route.MENU, icon = Icons.Outlined.Menu, textId = "Menu")
+  val MAP = TopLevelDestination(route = Route.MAP, icon = Icons.Outlined.Place, textId = "Map")
+}
+
+val LIST_TOP_LEVEL_DESTINATION =
+    listOf(
+        TopLevelDestinations.MAP,
+        TopLevelDestinations.MENU,
+    )
+
+/*object TopLevelDestinations {
   val MAP = TopLevelDestination(route = Route.MAP, icon = Icons.Outlined.Place, textId = "Map")
   val CALENDAR =
       TopLevelDestination(
@@ -48,7 +61,7 @@ val LIST_TOP_LEVEL_DESTINATION =
         TopLevelDestinations.MAP,
         TopLevelDestinations.CALENDAR,
         TopLevelDestinations.SKY_TRACKER,
-        TopLevelDestinations.QUIZ)
+        TopLevelDestinations.QUIZ)*/
 
 open class NavigationActions(
     private val navController: NavHostController,
