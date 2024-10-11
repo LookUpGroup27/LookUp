@@ -4,40 +4,71 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.tooling.preview.Preview
-import com.github.lookupgroup27.lookup.resources.C
-import com.github.lookupgroup27.lookup.ui.theme.SampleAppTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
+import com.github.lookupgroup27.lookup.ui.authentication.SignIn
+import com.github.lookupgroup27.lookup.ui.map.MapScreen
+import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.overview.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
+import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.overview.QuizScreen
+import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
+import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
+
+  private lateinit var auth: FirebaseAuth
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContent {
-      SampleAppTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier.fillMaxSize().semantics { testTag = C.Tag.main_screen_container },
-            color = MaterialTheme.colorScheme.background) {
-              Greeting("Android")
-            }
-      }
-    }
+
+    auth = FirebaseAuth.getInstance()
+    auth.currentUser?.let { auth.signOut() }
+
+    setContent { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } }
   }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-  Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
-}
+fun LookUpApp() {
+  val navController = rememberNavController()
+  val navigationActions = NavigationActions(navController)
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-  SampleAppTheme { Greeting("Android") }
+  NavHost(navController = navController, startDestination = Route.LANDING) {
+    navigation(
+        startDestination = Screen.AUTH,
+        route = Route.AUTH,
+    ) {
+      composable(Screen.AUTH) { SignIn(navigationActions) }
+    }
+
+    navigation(
+        startDestination = Screen.LANDING,
+        route = Route.LANDING,
+    ) {
+      composable(Screen.LANDING) { LandingScreen(navigationActions) }
+      composable(Screen.MENU) { MenuScreen(navigationActions) }
+      composable(Screen.MAP) { MapScreen(navigationActions) }
+    }
+
+    navigation(
+        startDestination = Screen.MENU,
+        route = Route.MENU,
+    ) {
+      composable(Screen.MENU) { MenuScreen(navigationActions) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.CALENDAR) { CalendarScreen(navigationActions) }
+      composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
+      composable(Screen.QUIZ) { QuizScreen(navigationActions) }
+    }
+  }
 }
