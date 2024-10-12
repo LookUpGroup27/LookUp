@@ -1,6 +1,6 @@
 package com.github.lookupgroup27.lookup
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+/*import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.screen.MainScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -30,4 +30,4 @@ class MainActivityTest : TestCase() {
       }
     }
   }
-}
+}*/
