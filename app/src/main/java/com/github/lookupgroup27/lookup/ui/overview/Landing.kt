@@ -1,13 +1,13 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,49 +28,68 @@ import com.github.lookupgroup27.lookup.R
  *
  * @param navController The NavController to handle navigation between screens.
  */
+
+
 @Composable
 fun LandingScreen(navController: NavController) {
-  Box(
-      modifier = Modifier.fillMaxSize().clickable { navController.navigate("Map") },
-      contentAlignment = Alignment.Center) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable { navController.navigate("Map") },
+        contentAlignment = Alignment.Center
+    ) {
         // Background Image
         Image(
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize())
+            modifier = Modifier.fillMaxSize()
+        )
 
+        // Center logo image
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Logo Image
+            Image(
+                painter = painterResource(id = R.drawable.logo_round),
+                contentDescription = "Look Up Logo",
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
 
-              // Logo Image
-              Image(
-                  painter = painterResource(id = R.drawable.look_up_logo),
-                  contentDescription = "Look Up Logo",
-                  modifier = Modifier.size(200.dp),
-                  contentScale = ContentScale.Fit)
-
-              // Home Button with Home Icon
-              Button(
-                  onClick = { navController.navigate("Menu") },
-                  modifier = Modifier.padding(16.dp).size(64.dp).testTag("Home Icon"),
-                  shape = MaterialTheme.shapes.small,
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-              ) {
+        // Home Button at the Bottom
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 32.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Button(
+                onClick = { navController.navigate("Menu") },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(100.dp)
+                    .testTag("Home Icon"),
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            ) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home Icon",
                     tint = Color.Black,
-                    modifier = Modifier.size(32.dp))
-
-
-              }
+                    modifier = Modifier.size(64.dp)
+                )
             }
-      }
+        }
+    }
 }
+
+
+
 
 @Preview(showBackground = true)
 @Composable
