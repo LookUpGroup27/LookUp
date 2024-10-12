@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.authentication
 
-
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
