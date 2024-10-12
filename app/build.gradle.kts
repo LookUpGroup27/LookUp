@@ -78,6 +78,15 @@ android {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
         }
+
+
+    }
+    tasks.withType<Test> {
+        reports {
+            // Disable reports generation to prevent issues with coverage
+            html.required.set(false)
+            junitXml.required.set(false)
+        }
     }
 
     // Robolectric needs to be run only in debug. But its tests are placed in the shared source set (test)
