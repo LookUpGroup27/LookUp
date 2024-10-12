@@ -193,6 +193,15 @@ dependencies {
         // Networking with OkHttp
         implementation(libs.okhttp)
 
+
+
+
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.test.espresso:espresso-core:3.6.1")
+    }
 }
 
 tasks.withType<Test> {
