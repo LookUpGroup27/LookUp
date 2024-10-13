@@ -70,4 +70,10 @@ class LandingScreenTest {
     // Assert that the Menu screen is displayed by checking for specific text
     composeTestRule.onNodeWithText("This is the Menu screen.").assertIsDisplayed()
   }
+
+  @Test
+  fun testMapViewPromptIsDisplayed() {
+    // Assert that it is displayed
+    composeTestRule.onNodeWithText("Click for full map view").assertIsDisplayed()
+  }
 }
