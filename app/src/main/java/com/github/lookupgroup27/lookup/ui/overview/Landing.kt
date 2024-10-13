@@ -1,3 +1,5 @@
+package com.github.lookupgroup27.lookup.ui.overview
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
