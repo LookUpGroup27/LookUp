@@ -1,6 +1,6 @@
 package com.github.lookupgroup27.lookup
 
-import LandingScreen
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.resources.C
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.theme.SampleAppTheme
 
