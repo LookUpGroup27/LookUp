@@ -126,8 +126,9 @@ dependencies {
         implementation(libs.androidx.appcompat)
         implementation(libs.material)
         implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.navigation.runtime.ktx)
 
-        // Jetpack Compose BOM
+    // Jetpack Compose BOM
         val composeBom = platform(libs.compose.bom)
         implementation(composeBom)
         androidTestImplementation(composeBom)
@@ -190,6 +191,12 @@ dependencies {
         // Networking with OkHttp
         implementation(libs.okhttp)
 
+        // Calendar
+        implementation(libs.ical4j)
+        implementation(libs.compose)
+        implementation("com.prolificinteractive:material-calendarview:1.4.3") {
+            exclude(group = "com.android.support", module = "support-v4")
+        }
 }
 
 tasks.withType<Test> {
