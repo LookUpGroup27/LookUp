@@ -65,6 +65,7 @@ firebaseFirestore = "25.1.0"
 firebaseUiAuth = "8.0.0"
 junitKtx = "1.2.1"
 uiTestJunit4AndroidVersion = "1.7.3"
+foundationAndroid = "1.6.8"
 
 [libraries]
 
@@ -141,6 +142,7 @@ androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-te
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4AndroidVersion" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
