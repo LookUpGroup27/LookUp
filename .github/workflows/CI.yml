@@ -103,9 +103,9 @@ jobs:
           script: ./gradlew connectedCheck --parallel --build-cache
 
       # This step generates the coverage report which will be uploaded to sonar
-      #- name: Generate Coverage Report
-        #run: |
-          #./gradlew jacocoTestReport
+      - name: Generate Coverage Report
+        run: |
+          ./gradlew jacocoTestReport
 
       # Upload the various reports to sonar
       - name: Upload report to SonarCloud
