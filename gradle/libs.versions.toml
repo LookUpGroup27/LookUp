@@ -63,6 +63,11 @@ firebaseAuthKtx = "23.0.0"
 firebaseDatabaseKtx = "21.0.0"
 firebaseFirestore = "25.1.0"
 firebaseUiAuth = "8.0.0"
+navigationRuntimeKtx = "2.8.2"
+
+# Calendar Libraries
+ical4j = "3.0.21"
+compose = "1.5.1"
 
 [libraries]
 
@@ -137,6 +142,11 @@ test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "and
 testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+
+#For Calendar
+ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+compose = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
