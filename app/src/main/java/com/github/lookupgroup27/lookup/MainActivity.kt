@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

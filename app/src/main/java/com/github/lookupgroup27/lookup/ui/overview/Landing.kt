@@ -33,7 +33,10 @@ import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 @Composable
 fun LandingScreen(navController: NavController) {
   Box(
-      modifier = Modifier.fillMaxSize().clickable { navController.navigate(TopLevelDestinations.MAP.route) },
+      modifier =
+          Modifier.fillMaxSize().clickable {
+            navController.navigate(TopLevelDestinations.MAP.route)
+          },
       contentAlignment = Alignment.Center) {
         // Background Image
         Image(
