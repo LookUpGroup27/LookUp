@@ -73,21 +73,20 @@ android {
         }
     }
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-            isReturnDefaultValues = true
+
+        testOptions {
+            unitTests {
+                isIncludeAndroidResources = true
+                isReturnDefaultValues = true
+            }
+
+
         }
 
 
-    }
-    tasks.withType<Test> {
-        reports {
-            // Disable reports generation to prevent issues with coverage
-            html.required.set(false)
-            junitXml.required.set(false)
-        }
-    }
+
+
+
 
     // Robolectric needs to be run only in debug. But its tests are placed in the shared source set (test)
     // The next lines transfers the src/test/* from shared to the testDebug one
@@ -201,6 +200,9 @@ dependencies {
 
         // Networking with OkHttp
         implementation(libs.okhttp)
+
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestUtil("androidx.test:orchestrator:1.4.1") // Use Android Test Orchestrator
 
 
 
