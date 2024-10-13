@@ -1,10 +1,11 @@
 package com.github.lookupgroup27.lookup
 
-/*import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.screen.MainScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,6 +20,7 @@ class MainActivityTest : TestCase() {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+  @Ignore
   @Test
   fun test() = run {
     step("Start Main Activity") {
@@ -30,4 +32,4 @@ class MainActivityTest : TestCase() {
       }
     }
   }
-}*/
+}
