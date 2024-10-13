@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 
 /**
  * LandingScreen displays the main landing page of the app. It includes a background image, logo,
@@ -32,7 +33,7 @@ import com.github.lookupgroup27.lookup.R
 @Composable
 fun LandingScreen(navController: NavController) {
   Box(
-      modifier = Modifier.fillMaxSize().clickable { navController.navigate("Map") },
+      modifier = Modifier.fillMaxSize().clickable { navController.navigate(TopLevelDestinations.MAP.route) },
       contentAlignment = Alignment.Center) {
         // Background Image
         Image(
