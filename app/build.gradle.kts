@@ -136,6 +136,7 @@ dependencies {
         implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.ui.test.junit4.android)
+    implementation(libs.androidx.foundation.android)
     testImplementation(libs.androidx.espresso.intents)
 
     // Jetpack Compose BOM
