@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.overview
+package com.github.lookupgroup27.lookup.overview
 
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
