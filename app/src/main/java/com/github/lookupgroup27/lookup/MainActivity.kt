@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
-import com.github.lookupgroup27.lookup.ui.authentication.SignIn
+import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
@@ -24,6 +24,7 @@ import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.overview.QuizScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
+import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -36,9 +37,16 @@ class MainActivity : ComponentActivity() {
     auth = FirebaseAuth.getInstance()
     auth.currentUser?.let { auth.signOut() }
 
-    setContent { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } }
+    setContent {
+      LookUpTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          LookUpApp()
+        }
+      }
+    }
   }
 }
+
 
 @Composable
 fun LookUpApp() {
@@ -46,12 +54,12 @@ fun LookUpApp() {
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel()
 
-  NavHost(navController = navController, startDestination = Route.LANDING) {
+  NavHost(navController = navController, startDestination = Route.AUTH) {
     navigation(
         startDestination = Screen.AUTH,
         route = Route.AUTH,
     ) {
-      composable(Screen.AUTH) { SignIn(navigationActions) }
+      composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
 
     navigation(
