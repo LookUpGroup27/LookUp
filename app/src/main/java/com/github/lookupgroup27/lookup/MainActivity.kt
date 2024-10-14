@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignIn
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -66,7 +68,12 @@ fun LookUpApp() {
     ) {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
-      composable(Screen.CALENDAR) { CalendarScreen(navigationActions) }
+
+      composable(Screen.CALENDAR) {
+        val calendarViewModel: CalendarViewModel = viewModel()
+        CalendarScreen(calendarViewModel, navigationActions)
+      }
+
       composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(navigationActions) }
     }
