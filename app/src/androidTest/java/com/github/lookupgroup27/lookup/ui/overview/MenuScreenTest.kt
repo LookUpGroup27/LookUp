@@ -13,6 +13,14 @@ class MenuScreenTest {
   private val mockNavigationActions: NavigationActions = mock()
 
   @Test
+  fun menuScreen_displaysBottomNavigationMenu() {
+    composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
+
+    // Check that the bottom navigation menu is displayed
+    composeTestRule.onNodeWithTag("bottomNavigationMenu").assertIsDisplayed()
+  }
+
+  @Test
   fun menuScreen_displaysWelcomeText() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
