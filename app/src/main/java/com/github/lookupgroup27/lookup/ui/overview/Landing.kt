@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -36,8 +35,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
  * @param navController The NavController to handle navigation between screens.
  */
 @Composable
-fun LandingScreen(navController: NavHostController) {
-  val navigationActions = NavigationActions(navController)
+fun LandingScreen(navigationActions: NavigationActions) {
   Box(
       modifier =
           Modifier.fillMaxSize().clickable {
@@ -94,5 +92,5 @@ fun LandingScreen(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewLandingScreen() {
-  LandingScreen(navController = rememberNavController())
+  LandingScreen(NavigationActions(rememberNavController()))
 }
