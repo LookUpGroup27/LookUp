@@ -16,6 +16,7 @@ import com.github.lookupgroup27.lookup.resources.C
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.overview.*
+import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
 import com.github.lookupgroup27.lookup.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
         composable(Screen.MENU) { MenuScreen(navigationActions) }
         composable(Screen.QUIZ) { QuizScreen(navigationActions) }
         composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
+        composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
       }
       navigation(startDestination = Screen.MAP, route = Route.MAP) {
         composable(Screen.MAP) { MapScreen(navigationActions) }
