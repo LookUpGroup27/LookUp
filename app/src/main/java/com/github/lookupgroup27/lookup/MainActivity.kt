@@ -47,7 +47,7 @@ fun LookUpApp() {
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel()
 
-  NavHost(navController = navController, startDestination = Route.AUTH) {
+  NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
         startDestination = Screen.AUTH,
         route = Route.AUTH,

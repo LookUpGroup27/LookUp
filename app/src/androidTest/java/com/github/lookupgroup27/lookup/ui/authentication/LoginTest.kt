@@ -43,7 +43,7 @@ class LoginTest : TestCase() {
   fun titleAndButtonAreCorrectlyDisplayed() {
     // Assert that the title "Welcome" and the Google Sign-In button are displayed correctly
     composeTestRule.onNodeWithTag("loginTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome")
+    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to the Cosmos")
 
     composeTestRule.onNodeWithTag("loginButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").assertHasClickAction()
