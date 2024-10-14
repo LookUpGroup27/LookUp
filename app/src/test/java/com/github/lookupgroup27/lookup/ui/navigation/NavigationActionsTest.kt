@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import org.hamcrest.CoreMatchers.`is`
@@ -11,6 +13,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 
 class NavigationActionsTest {
@@ -24,6 +27,11 @@ class NavigationActionsTest {
     navigationDestination = mock(NavDestination::class.java)
     navHostController = mock(NavHostController::class.java)
     navigationActions = NavigationActions(navHostController)
+
+    // Mock NavGraph and findStartDestination behavior
+    val navGraph = mock(NavGraph::class.java)
+    `when`(navHostController.graph).thenReturn(navGraph)
+    `when`(navGraph.findStartDestination()).thenReturn(navigationDestination)
   }
 
   @Test
@@ -32,8 +40,8 @@ class NavigationActionsTest {
     navigationActions.navigateTo(TopLevelDestinations.MAP)
     verify(navHostController).navigate(eq(Route.MAP), any<NavOptionsBuilder.() -> Unit>())
 
-    navigationActions.navigateTo(TopLevelDestinations.CALENDAR)
-    verify(navHostController).navigate(eq(Route.CALENDAR), any<NavOptionsBuilder.() -> Unit>())
+    navigationActions.navigateTo(TopLevelDestinations.MENU)
+    verify(navHostController).navigate(eq(Route.MENU), any<NavOptionsBuilder.() -> Unit>())
 
     // Test navigating to specific screens
     navigationActions.navigateTo(Screen.SKY_TRACKER)
@@ -57,5 +65,23 @@ class NavigationActionsTest {
     `when`(navigationDestination.route).thenReturn(Route.PROFILE)
 
     assertThat(navigationActions.currentRoute(), `is`(Route.PROFILE))
+  }
+
+  @Test
+  fun topLevelDestinationsListIsCorrect() {
+    val expectedList = listOf(TopLevelDestinations.MAP, TopLevelDestinations.MENU)
+    assertThat(LIST_TOP_LEVEL_DESTINATION, `is`(expectedList))
+  }
+
+  @Test
+  fun navigateToTopLevelDestinationSetsCorrectOptions() {
+    val optionsCaptor = argumentCaptor<NavOptionsBuilder.() -> Unit>()
+
+    navigationActions.navigateTo(TopLevelDestinations.MAP)
+    verify(navHostController).navigate(eq(Route.MAP), optionsCaptor.capture())
+
+    val navOptionsBuilder = NavOptionsBuilder().apply(optionsCaptor.firstValue)
+    assertThat(navOptionsBuilder.launchSingleTop, `is`(true))
+    assertThat(navOptionsBuilder.restoreState, `is`(true))
   }
 }
