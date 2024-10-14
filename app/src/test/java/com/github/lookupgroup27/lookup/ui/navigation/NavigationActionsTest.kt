@@ -13,8 +13,8 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 
 class NavigationActionsTest {
 
@@ -73,7 +73,6 @@ class NavigationActionsTest {
     assertThat(LIST_TOP_LEVEL_DESTINATION, `is`(expectedList))
   }
 
-
   @Test
   fun navigateToTopLevelDestinationSetsCorrectOptions() {
     val optionsCaptor = argumentCaptor<NavOptionsBuilder.() -> Unit>()
@@ -86,5 +85,3 @@ class NavigationActionsTest {
     assertThat(navOptionsBuilder.restoreState, `is`(true))
   }
 }
-
-
