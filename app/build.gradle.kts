@@ -123,74 +123,81 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 
 dependencies {
 
-        implementation(libs.androidx.core.ktx)
-        implementation(libs.androidx.appcompat)
-        implementation(libs.material)
-        implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.navigation.runtime.ktx)
 
-        // Jetpack Compose BOM
-        val composeBom = platform(libs.compose.bom)
-        implementation(composeBom)
-        androidTestImplementation(composeBom)
+    // Jetpack Compose BOM
+    val composeBom = platform(libs.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
-        // Jetpack Compose
-        implementation(libs.compose.ui)
-        implementation(libs.compose.ui.graphics)
-        implementation(libs.compose.material3)
-        implementation(libs.compose.activity)
-        implementation(libs.compose.viewmodel)
-        implementation(libs.compose.preview)
-        debugImplementation(libs.compose.tooling)
-        androidTestImplementation(libs.compose.test.junit)
-        debugImplementation(libs.compose.test.manifest)
+    // Jetpack Compose
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.activity)
+    implementation(libs.compose.viewmodel)
+    implementation(libs.compose.preview)
+    debugImplementation(libs.compose.tooling)
+    androidTestImplementation(libs.compose.test.junit)
+    debugImplementation(libs.compose.test.manifest)
 
-        // Kaspresso test framework
-        androidTestImplementation(libs.kaspresso)
-        androidTestImplementation(libs.kaspresso.compose)
+    // Kaspresso test framework
+    androidTestImplementation(libs.kaspresso)
+    androidTestImplementation(libs.kaspresso.compose)
 
-        // Robolectric
-        testImplementation(libs.robolectric)
+    // Robolectric
+    testImplementation(libs.robolectric)
 
-        // Firebase
-        implementation(libs.firebase.database.ktx)
-        implementation(libs.firebase.firestore)
-        implementation(libs.firebase.ui.auth)
-        implementation(libs.firebase.auth.ktx)
+    // Firebase
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.auth.ktx)
 
-        // Navigation
-        implementation(libs.androidx.navigation.compose)
-        implementation(libs.androidx.navigation.fragment.ktx)
-        implementation(libs.androidx.navigation.ui.ktx)
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
-        // Unit Testing
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.mockk)
-        androidTestImplementation(libs.mockk.android)
-        androidTestImplementation(libs.mockk.agent)
-        testImplementation(libs.json)
+    // Unit Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
+    testImplementation(libs.json)
 
-        // UI Testing
-        androidTestImplementation(libs.androidx.espresso.core)
-        androidTestImplementation(libs.androidx.espresso.intents)
-        androidTestImplementation(libs.androidx.ui.test.junit4)
-        androidTestImplementation(platform(libs.androidx.compose.bom))
-        testImplementation(libs.mockito.core)
-        testImplementation(libs.mockito.inline)
-        testImplementation(libs.mockito.kotlin)
-        androidTestImplementation(libs.mockito.android)
-        androidTestImplementation(libs.mockito.kotlin)
-        testImplementation(libs.robolectric)
+    // UI Testing
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.mockito.kotlin)
+    testImplementation(libs.robolectric)
 
-        // Kaspresso Allure
-        androidTestImplementation(libs.kaspresso.allure.support)
-        androidTestImplementation(libs.kaspresso.compose.support)
+    // Kaspresso Allure
+    androidTestImplementation(libs.kaspresso.allure.support)
+    androidTestImplementation(libs.kaspresso.compose.support)
 
-        // Coroutines Testing
-        testImplementation(libs.kotlinx.coroutines.test)
+    // Coroutines Testing
+    testImplementation(libs.kotlinx.coroutines.test)
 
-        // Networking with OkHttp
-        implementation(libs.okhttp)
+    // Networking with OkHttp
+    implementation(libs.okhttp)
 
+    // Calendar
+    implementation(libs.ical4j)
+    implementation(libs.compose)
+    implementation("com.prolificinteractive:material-calendarview:1.4.3") {
+        exclude(group = "com.android.support", module = "support-v4")
+    }
 }
 
 tasks.withType<Test> {
