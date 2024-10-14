@@ -17,7 +17,6 @@ object Route {
   const val PROFILE = "Profile"
   const val MENU = "Menu"
   const val COLLECTION = "Collection"
-  const val LANDING = "Landing"
 }
 
 object Screen {
@@ -30,7 +29,6 @@ object Screen {
   const val PROFILE = "Profile Screen"
   const val MENU = "Menu Screen"
   const val COLLECTION = "Collection Screen"
-  const val LANDING = "Landing Screen"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
@@ -45,25 +43,6 @@ val LIST_TOP_LEVEL_DESTINATION =
         TopLevelDestinations.MAP,
         TopLevelDestinations.MENU,
     )
-
-/*object TopLevelDestinations {
-  val MAP = TopLevelDestination(route = Route.MAP, icon = Icons.Outlined.Place, textId = "Map")
-  val CALENDAR =
-      TopLevelDestination(
-          route = Route.CALENDAR, icon = Icons.Outlined.DateRange, textId = "Calendar")
-  val SKY_TRACKER =
-      TopLevelDestination(
-          route = Route.SKY_TRACKER, icon = Icons.Outlined.Star, textId = "Sky Tracker")
-  val QUIZ =
-      TopLevelDestination(route = Route.QUIZ, icon = Icons.Outlined.PlayArrow, textId = "Quiz")
-}
-
-val LIST_TOP_LEVEL_DESTINATION =
-    listOf(
-        TopLevelDestinations.MAP,
-        TopLevelDestinations.CALENDAR,
-        TopLevelDestinations.SKY_TRACKER,
-        TopLevelDestinations.QUIZ)*/
 
 open class NavigationActions(
     private val navController: NavHostController,
