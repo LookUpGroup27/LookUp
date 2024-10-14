@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.overview
+package com.github.lookupgroup27.lookup.ui.overview
 
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -56,7 +56,7 @@ class LandingScreenTest {
     composeTestRule.waitForIdle()
 
     // Assert that the Map screen is displayed by checking for specific text or UI elements
-    composeTestRule.onNodeWithText("This is the Map screen.").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("map_screen").assertIsDisplayed()
   }
 
   @Test
@@ -68,7 +68,7 @@ class LandingScreenTest {
     composeTestRule.waitForIdle()
 
     // Assert that the Menu screen is displayed by checking for specific text
-    composeTestRule.onNodeWithText("This is the Menu screen.").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
   }
 
   @Test

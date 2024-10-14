@@ -54,14 +54,15 @@ fun LookUpApp() {
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
-
+    navigation(startDestination = Screen.MAP, route = Route.MAP) {
+      composable(Screen.MAP) { MapScreen(navigationActions) }
+    }
     navigation(
         startDestination = Screen.LANDING,
         route = Route.LANDING,
     ) {
       composable(Screen.LANDING) { LandingScreen(navigationActions) }
       composable(Screen.MENU) { MenuScreen(navigationActions) }
-      composable(Screen.MAP) { MapScreen(navigationActions) }
     }
 
     navigation(
@@ -70,9 +71,7 @@ fun LookUpApp() {
     ) {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
-
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
-
       composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(navigationActions) }
     }

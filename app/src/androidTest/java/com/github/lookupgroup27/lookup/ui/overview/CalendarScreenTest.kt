@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.screen
+package com.github.lookupgroup27.lookup.ui.overview
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -6,7 +6,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.github.lookupgroup27.lookup.ui.overview.CalendarScreen
 import io.mockk.mockk
 import java.text.SimpleDateFormat
 import java.util.*
