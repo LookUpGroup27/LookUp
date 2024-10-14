@@ -75,22 +75,22 @@ fun SignInScreen(navigationActions: NavigationActions) {
 
           Spacer(modifier = Modifier.height(16.dp))
 
-            // Welcome Text
-            Text(
-                modifier = Modifier.testTag("loginTitle"),
-                text = "Welcome to the Cosmos",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontSize = 42.sp,
-                    lineHeight = 50.sp,
-                    letterSpacing = 1.5.sp // Add letter spacing for a futuristic effect
-                ),
-                fontWeight = FontWeight.SemiBold, // Use SemiBold for a smoother look
-                textAlign = TextAlign.Center,
-                color = Color(0xFF8A9BB7) // A softer, muted star-like color
-            )
+          // Welcome Text
+          Text(
+              modifier = Modifier.testTag("loginTitle"),
+              text = "Welcome to the Cosmos",
+              style =
+                  MaterialTheme.typography.headlineMedium.copy(
+                      fontSize = 42.sp,
+                      lineHeight = 50.sp,
+                      letterSpacing = 1.5.sp // Add letter spacing for a futuristic effect
+                      ),
+              fontWeight = FontWeight.SemiBold, // Use SemiBold for a smoother look
+              textAlign = TextAlign.Center,
+              color = Color(0xFF8A9BB7) // A softer, muted star-like color
+              )
 
-
-            Spacer(modifier = Modifier.height(48.dp))
+          Spacer(modifier = Modifier.height(48.dp))
 
           // Authenticate With Google Button
           GoogleSignInButton(

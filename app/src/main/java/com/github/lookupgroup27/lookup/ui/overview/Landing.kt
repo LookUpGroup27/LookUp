@@ -36,10 +36,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
   Box(
-      modifier =
-          Modifier.fillMaxSize().clickable {
-            navigationActions.navigateTo(Screen.MAP)
-          },
+      modifier = Modifier.fillMaxSize().clickable { navigationActions.navigateTo(Screen.MAP) },
       contentAlignment = Alignment.Center) {
 
         // Background Image

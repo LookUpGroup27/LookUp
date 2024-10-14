@@ -37,16 +37,9 @@ class MainActivity : ComponentActivity() {
     auth = FirebaseAuth.getInstance()
     auth.currentUser?.let { auth.signOut() }
 
-    setContent {
-      LookUpTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-          LookUpApp()
-        }
-      }
-    }
+    setContent { LookUpTheme { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } } }
   }
 }
-
 
 @Composable
 fun LookUpApp() {
