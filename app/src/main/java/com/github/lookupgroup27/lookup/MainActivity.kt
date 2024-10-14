@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
 fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
+  val calendarViewModel: CalendarViewModel = viewModel()
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -70,7 +71,6 @@ fun LookUpApp() {
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
 
       composable(Screen.CALENDAR) {
-        val calendarViewModel: CalendarViewModel = viewModel()
         CalendarScreen(calendarViewModel, navigationActions)
       }
 
