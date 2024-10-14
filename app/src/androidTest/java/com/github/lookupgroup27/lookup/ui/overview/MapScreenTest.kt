@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.overview
+package com.github.lookupgroup27.lookup.ui.overview
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule

@@ -1,9 +1,8 @@
-package com.github.lookupgroup27.lookup.overview
+package com.github.lookupgroup27.lookup.ui.overview
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.ui.navigation.*
-import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import org.junit.*
 import org.mockito.kotlin.*
 
@@ -36,10 +35,24 @@ class MenuScreenTest {
   fun menuScreen_displaysAllButtons() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
+    // Check that the background is displayed
+    composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
     // Check that all buttons are displayed
     composeTestRule.onNodeWithText("Quizzes").assertIsDisplayed()
     composeTestRule.onNodeWithText("Calendar").assertIsDisplayed()
     composeTestRule.onNodeWithText("Sky Tracker").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profile_button").assertIsDisplayed()
+  }
+
+  @Test
+  fun menuScreen_clickProfileButton_navigatesToProfile() {
+    composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
+
+    // Click on profile button
+    composeTestRule.onNodeWithTag("profile_button").performClick()
+
+    // Verify navigation to Profile screen is triggered
+    verify(mockNavigationActions).navigateTo(Screen.PROFILE)
   }
 
   @Test
