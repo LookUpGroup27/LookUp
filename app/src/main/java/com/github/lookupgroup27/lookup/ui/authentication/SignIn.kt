@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -49,7 +50,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
           onAuthComplete = { result ->
             Log.d("SignInScreen", "User signed in: ${result.user?.displayName}")
             Toast.makeText(context, "Login successful!", Toast.LENGTH_LONG).show()
-            // TODO: navigate to the next screen
+            navigationActions.navigateTo(Screen.PROFILE)
           },
           onAuthError = {
             Log.e("SignInScreen", "Failed to sign in: ${it.statusCode}")
@@ -59,7 +60,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
 
   Scaffold(
       modifier = Modifier.fillMaxSize(),
-      containerColor = Color.White,
+      containerColor = Color.Black,
       content = { padding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(padding),
@@ -77,14 +78,17 @@ fun SignInScreen(navigationActions: NavigationActions) {
           // Welcome Text
           Text(
               modifier = Modifier.testTag("loginTitle"),
-              text = "Welcome",
+              text = "Welcome to the Cosmos",
               style =
-                  MaterialTheme.typography.headlineLarge.copy(fontSize = 57.sp, lineHeight = 64.sp),
-              fontWeight = FontWeight.Bold,
-              // center the text
-
+                  MaterialTheme.typography.headlineMedium.copy(
+                      fontSize = 42.sp,
+                      lineHeight = 50.sp,
+                      letterSpacing = 1.5.sp // Add letter spacing for a futuristic effect
+                      ),
+              fontWeight = FontWeight.SemiBold, // Use SemiBold for a smoother look
               textAlign = TextAlign.Center,
-              color = Color.White)
+              color = Color(0xFF8A9BB7) // A softer, muted star-like color
+              )
 
           Spacer(modifier = Modifier.height(48.dp))
 
@@ -107,9 +111,9 @@ fun SignInScreen(navigationActions: NavigationActions) {
 fun GoogleSignInButton(onSignInClick: () -> Unit) {
   Button(
       onClick = onSignInClick,
-      colors = ButtonDefaults.buttonColors(containerColor = Color.White), // Button color
+      colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)), // Button color
       shape = RoundedCornerShape(50), // Circular edges for the button
-      border = BorderStroke(1.dp, Color.LightGray),
+      border = BorderStroke(1.dp, Color(0xFF9DACE6)),
       modifier =
           Modifier.padding(8.dp)
               .height(48.dp) // Adjust height as needed
@@ -129,7 +133,7 @@ fun GoogleSignInButton(onSignInClick: () -> Unit) {
               // Text for the button
               Text(
                   text = "Sign in with Google",
-                  color = Color.Gray, // Text color
+                  color = Color.White, // Text color
                   fontSize = 16.sp, // Font size
                   fontWeight = FontWeight.Medium)
             }
