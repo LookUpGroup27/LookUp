@@ -2,6 +2,7 @@ package com.github.lookupgroup27.lookup.ui.overview
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
@@ -74,7 +75,7 @@ class CalendarScreenTest {
 
   @Test
   fun testLookUpEventButtonExists() {
-    composeTestRule.onNodeWithText("Look Up Event").assertIsDisplayed()
+    composeTestRule.onNodeWithContentDescription("Look Up Event").assertIsDisplayed()
   }
 
   // Add more tests when figma is updated with all the components and testTags
