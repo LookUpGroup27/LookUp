@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -40,7 +42,14 @@ fun CalendarScreen(
 
     Spacer(modifier = Modifier.height(16.dp))
 
-    Button(onClick = { showDialog = true }) { Text("Look Up Event") }
+      Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.End
+      ) {
+          IconButton(onClick = { showDialog = true }) {
+              Icon(imageVector = Icons.Default.Search, contentDescription = "Look Up Event")
+          }
+      }
 
     Spacer(modifier = Modifier.height(16.dp))
 
