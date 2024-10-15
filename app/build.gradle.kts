@@ -128,6 +128,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.testing)
 
     // Jetpack Compose BOM
     val composeBom = platform(libs.compose.bom)
