@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
-  val calendarViewModel: CalendarViewModel = viewModel()
+  val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
