@@ -42,14 +42,11 @@ fun CalendarScreen(
 
     Spacer(modifier = Modifier.height(16.dp))
 
-      Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.End
-      ) {
-          IconButton(onClick = { showDialog = true }) {
-              Icon(imageVector = Icons.Default.Search, contentDescription = "Look Up Event")
-          }
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+      IconButton(onClick = { showDialog = true }) {
+        Icon(imageVector = Icons.Default.Search, contentDescription = "Look Up Event")
       }
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
 
