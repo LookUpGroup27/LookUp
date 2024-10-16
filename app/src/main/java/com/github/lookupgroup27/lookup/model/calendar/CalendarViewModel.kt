@@ -77,14 +77,13 @@ class CalendarViewModel(private val icalRepository: IcalRepository) : ViewModel(
         val dtStart = component.getProperty<DtStart>(Property.DTSTART)
         val dtEnd = component.getProperty<DtEnd>(Property.DTEND)
 
-        dtStart?.let { startDate ->
+        dtStart?.also { startDate ->
           val endDate = dtEnd?.date ?: startDate.date
           val rrule = component.getProperty<RRule>(Property.RRULE)
 
           try {
             if (rrule != null) {
-              val recurringEvents =
-                  handleRecurringEvents(component, period, startDate.date, endDate)
+              val recurringEvents = handleRecurringEvents(component, period, startDate.date, endDate)
               allEvents.addAll(recurringEvents)
             } else if (startDate.date.before(end) && endDate.after(start)) {
               val nonRecurringEvents = handleNonRecurringEvents(component, startDate.date, endDate)
@@ -93,12 +92,10 @@ class CalendarViewModel(private val icalRepository: IcalRepository) : ViewModel(
               Log.d("CalendarViewModel", "Event does not meet conditions for handling.")
             }
           } catch (e: IllegalArgumentException) {
-            Log.e(
-                "CalendarViewModel",
-                "Error processing event recurrence rules: ${e.localizedMessage}",
-                e)
+            Log.e("CalendarViewModel", "Error processing event recurrence rules: ${e.localizedMessage}", e)
           }
         }
+
       }
 
       _icalEvents.value = allEvents
