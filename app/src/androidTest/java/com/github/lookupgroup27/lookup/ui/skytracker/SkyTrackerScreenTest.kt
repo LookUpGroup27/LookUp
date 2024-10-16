@@ -36,3 +36,4 @@ class SkyTrackerScreenTest {
     verify(mockNavigationActions).goBack()
   }
 }
+
