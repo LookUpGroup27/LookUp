@@ -74,8 +74,6 @@ class ProfileScreenTest {
     Mockito.verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
   }
 
-
-
   @Test
   fun testBottomNavigationHandlesEmptyRoute() {
     // Mock currentRoute to return an empty string (indicating no screen is selected)
