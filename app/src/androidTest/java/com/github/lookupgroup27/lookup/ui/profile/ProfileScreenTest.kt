@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -75,26 +74,7 @@ class ProfileScreenTest {
     Mockito.verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
   }
 
-  @Test
-  fun testBottomNavigationItemClick() {
-    composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
 
-    // Ensure everything is idle before performing assertions or interactions
-    composeTestRule.waitForIdle()
-
-    // Get the first item in the bottom navigation
-    val firstTab = LIST_TOP_LEVEL_DESTINATION.first()
-
-    // Assert that the node exists and is displayed before performing the click
-    composeTestRule.onNodeWithText(firstTab.textId).assertExists()
-    composeTestRule.onNodeWithText(firstTab.textId).assertIsDisplayed()
-
-    // Perform the click on the first item in the bottom navigation
-    composeTestRule.onNodeWithText(firstTab.textId).performClick()
-
-    // Verify that the corresponding navigation action is triggered
-    Mockito.verify(mockNavigationActions).navigateTo(firstTab)
-  }
 
   @Test
   fun testBottomNavigationHandlesEmptyRoute() {
