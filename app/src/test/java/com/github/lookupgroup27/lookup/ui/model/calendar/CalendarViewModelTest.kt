@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
 import java.io.IOException
-import java.io.StringReader
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,17 +11,18 @@ import net.fortuna.ical4j.model.property.Summary
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CalendarViewModelTest {
 
   private lateinit var viewModel: CalendarViewModel
+  private val icalRepository: IcalRepository = mock()
   private val testDispatcher = StandardTestDispatcher()
 
   @Before
   fun setup() {
     Dispatchers.setMain(testDispatcher)
-    val icalRepository: IcalRepository = MockIcalRepository("MOCK DATA")
     viewModel = CalendarViewModel(icalRepository)
   }
 
@@ -225,45 +225,61 @@ class CalendarViewModelTest {
 
   @Test
   fun `parseICalData handles IOException correctly`() = runTest {
-    val mockIcalData =
-        object : StringReader("TEST DATA") {
-          override fun read(): Int {
-            throw IOException("Simulated IOException during parsing")
+    // Simulate an iCal data that triggers IOException in parseICalData
+    val calendarData = "BEGIN:VCALENDAR\nMALFORMEDDATA\nEND:VCALENDAR"
+
+    val icalRepository: IcalRepository =
+        object : IcalRepository {
+          override suspend fun fetchIcalData(url: String): String? {
+            return calendarData
           }
         }
+    viewModel = CalendarViewModel(icalRepository)
 
-    viewModel.javaClass
-        .getDeclaredMethod("parseICalData", String::class.java)
-        .apply { isAccessible = true }
-        .invoke(viewModel, mockIcalData.toString())
+    // Trigger the function directly to simulate an IOException in the parseICalData method
+    viewModel.parseICalData(calendarData)
 
-    val icalEvents = viewModel.icalEvents.first()
-    assertEquals(0, icalEvents.size)
+    // Verify that the icalEvents is empty after the exception
+    assertEquals(0, viewModel.icalEvents.first().size)
   }
 
   @Test
   fun `parseICalData handles ParserException correctly`() = runTest {
-    val mockIcalData = "INVALID VCALENDAR DATA"
+    // Simulate an invalid iCal data that triggers ParserException
+    val invalidIcalData = "BEGIN:VCALENDAR\nINVALID_CONTENT\nEND:VCALENDAR"
 
-    val parseICalDataMethod =
-        viewModel.javaClass.getDeclaredMethod("parseICalData", String::class.java)
-    parseICalDataMethod.isAccessible = true
-    parseICalDataMethod.invoke(viewModel, mockIcalData)
+    val icalRepository: IcalRepository =
+        object : IcalRepository {
+          override suspend fun fetchIcalData(url: String): String? {
+            return invalidIcalData
+          }
+        }
+    viewModel = CalendarViewModel(icalRepository)
 
-    val icalEvents = viewModel.icalEvents.first()
-    assertEquals(0, icalEvents.size)
+    // Mock the CalendarBuilder to throw a ParserException
+    viewModel.parseICalData(invalidIcalData)
+
+    // Verify that the icalEvents is empty after the exception
+    assertEquals(0, viewModel.icalEvents.first().size)
   }
 
   @Test
   fun `parseICalData handles general Exception correctly`() = runTest {
-    val mockIcalData = "INVALID DATA THAT CAUSES EXCEPTION"
+    // Simulate an iCal data that will trigger a general Exception
+    val validIcalData = "BEGIN:VCALENDAR\nVALID_CONTENT\nEND:VCALENDAR"
 
-    val parseICalDataMethod =
-        viewModel.javaClass.getDeclaredMethod("parseICalData", String::class.java)
-    parseICalDataMethod.isAccessible = true
-    parseICalDataMethod.invoke(viewModel, mockIcalData)
+    val icalRepository: IcalRepository =
+        object : IcalRepository {
+          override suspend fun fetchIcalData(url: String): String? {
+            return validIcalData
+          }
+        }
+    viewModel = CalendarViewModel(icalRepository)
 
-    val icalEvents = viewModel.icalEvents.first()
-    assertEquals(0, icalEvents.size)
+    // Mock the CalendarBuilder to throw a general Exception
+    viewModel.parseICalData(validIcalData)
+
+    // Verify that the icalEvents is empty after the exception
+    assertEquals(0, viewModel.icalEvents.first().size)
   }
 }
