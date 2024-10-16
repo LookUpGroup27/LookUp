@@ -21,14 +21,14 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.google.firebase.auth.FirebaseAuth
 
-//ToDo: use dependency injection to pass the FirebaseAuth instance into the composable
+// ToDo: use dependency injection to pass the FirebaseAuth instance into the composable
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(navigationActions: NavigationActions) {
-    val context = LocalContext.current
-    val auth = remember { FirebaseAuth.getInstance() }
-    val isLoggedIn = auth.currentUser != null
+  val context = LocalContext.current
+  val auth = remember { FirebaseAuth.getInstance() }
+  val isLoggedIn = auth.currentUser != null
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
@@ -54,13 +54,15 @@ fun MenuScreen(navigationActions: NavigationActions) {
                     contentDescription = "Back",
                     tint = Color.White)
               }
-            // Profile button at the top right
+          // Profile button at the top right
           IconButton(
-              onClick = { if (isLoggedIn) {
+              onClick = {
+                if (isLoggedIn) {
                   navigationActions.navigateTo(Screen.PROFILE)
-              } else {
+                } else {
                   navigationActions.navigateTo(Screen.AUTH)
-              } },
+                }
+              },
               modifier =
                   Modifier.padding(16.dp).align(Alignment.TopEnd).testTag("profile_button")) {
                 Icon(
