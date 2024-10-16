@@ -64,7 +64,7 @@ class CalendarViewModel(private val icalRepository: IcalRepository) : ViewModel(
     }
   }
 
-  private fun parseICalData(icalData: String) {
+  fun parseICalData(icalData: String) {
     try {
       val reader = StringReader(icalData)
       val calendar: Calendar = CalendarBuilder().build(reader)
