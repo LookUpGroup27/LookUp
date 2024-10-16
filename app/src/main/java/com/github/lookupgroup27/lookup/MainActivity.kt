@@ -21,8 +21,9 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
-import com.github.lookupgroup27.lookup.ui.overview.QuizScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -74,6 +75,11 @@ fun LookUpApp() {
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
       composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(navigationActions) }
+    }
+
+    navigation(startDestination = Screen.QUIZ, route = Route.QUIZ) {
+      composable(Screen.QUIZ) { QuizScreen(navigationActions) }
+      composable(Screen.QUIZ_PLAY) { QuizPlayScreen(navigationActions) }
     }
   }
 }

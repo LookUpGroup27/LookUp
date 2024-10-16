@@ -1,9 +1,8 @@
-package com.github.lookupgroup27.lookup.ui.overview
+package com.github.lookupgroup27.lookup.ui.quiz
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import org.junit.Rule
@@ -21,8 +20,8 @@ class QuizScreenTest {
   fun quizScreen_displaysQuizText() {
     composeTestRule.setContent { QuizScreen(navigationActions = mockNavigationActions) }
 
-    // Verify that the "Quiz Screen" text is displayed
-    composeTestRule.onNodeWithText("Quiz Screen").assertIsDisplayed()
+    // Verify that the "quiz_screen" text is displayed
+    composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
   }
 
   @Test
