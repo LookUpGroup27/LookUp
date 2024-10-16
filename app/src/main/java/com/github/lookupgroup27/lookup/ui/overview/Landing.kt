@@ -31,7 +31,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
  * and a button with a home icon. The home button navigates to the "Menu" screen and the background
  * is clickable to navigate to the "Map" screen.
  *
- * @param navController The NavController to handle navigation between screens.
+ * @param navigationActions Instance of NavigationActions to handle navigation between screens.
  */
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
