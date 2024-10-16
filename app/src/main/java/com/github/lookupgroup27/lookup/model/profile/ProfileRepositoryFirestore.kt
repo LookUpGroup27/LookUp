@@ -2,16 +2,18 @@ package com.github.lookupgroup27.lookup.model.profile
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 
 data class UserProfile(val username: String = " ", val email: String = " ", val bio: String = " ")
 
-class ProfileRepositoryFirestore(private val db: FirebaseFirestore, private val auth: FirebaseAuth) {
+class ProfileRepositoryFirestore(
+    private val db: FirebaseFirestore,
+    private val auth: FirebaseAuth
+) {
 
-  //private val auth = FirebaseAuth.getInstance()
+  // private val auth = FirebaseAuth.getInstance()
   private val collectionPath = "users"
   private val usersCollection = db.collection(collectionPath)
 

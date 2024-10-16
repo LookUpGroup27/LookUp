@@ -17,8 +17,8 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-import org.robolectric.RobolectricTestRunner
 import org.mockito.kotlin.any
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
@@ -34,26 +34,26 @@ class ProfileRepositoryFirestoreTest {
   private lateinit var profileRepositoryFirestore: ProfileRepositoryFirestore
 
   private val testUserId = "testUserId"
-  //private val userProfile = UserProfile("Test User", "test@example.com", "A short bio")
+  // private val userProfile = UserProfile("Test User", "test@example.com", "A short bio")
 
   @Before
   fun setUp() {
-      MockitoAnnotations.openMocks(this)
+    MockitoAnnotations.openMocks(this)
 
-      // Initialize Firebase if necessary
-      if (FirebaseApp.getApps(ApplicationProvider.getApplicationContext()).isEmpty()) {
-          FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext())
-      }
+    // Initialize Firebase if necessary
+    if (FirebaseApp.getApps(ApplicationProvider.getApplicationContext()).isEmpty()) {
+      FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext())
+    }
 
-      // Mock the Firestore collection path "users" to return a valid CollectionReference
-      `when`(mockFirestore.collection("users")).thenReturn(mockCollectionReference)
-      `when`(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
-      //`when`(mockCollectionReference.document()).thenReturn(mockDocumentReference)
-      `when`(mockAuth.currentUser).thenReturn(mockUser)
-      `when`(mockUser.uid).thenReturn(testUserId)
+    // Mock the Firestore collection path "users" to return a valid CollectionReference
+    `when`(mockFirestore.collection("users")).thenReturn(mockCollectionReference)
+    `when`(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
+    // `when`(mockCollectionReference.document()).thenReturn(mockDocumentReference)
+    `when`(mockAuth.currentUser).thenReturn(mockUser)
+    `when`(mockUser.uid).thenReturn(testUserId)
 
-      // Initialize the repository with the mocked Firestore instance
-      profileRepositoryFirestore = ProfileRepositoryFirestore(mockFirestore, mockAuth)
+    // Initialize the repository with the mocked Firestore instance
+    profileRepositoryFirestore = ProfileRepositoryFirestore(mockFirestore, mockAuth)
   }
 
   @Test
@@ -73,30 +73,29 @@ class ProfileRepositoryFirestoreTest {
         })
   }
 
-    @Test
-    fun updateUserProfile_callsSetOnDocument() = runTest {
-        val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
+  @Test
+  fun updateUserProfile_callsSetOnDocument() = runTest {
+    val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
 
-        `when`(mockDocumentReference.set(userProfile)).thenReturn(Tasks.forResult(null))
+    `when`(mockDocumentReference.set(userProfile)).thenReturn(Tasks.forResult(null))
 
-        profileRepositoryFirestore.updateUserProfile(
-            userProfile,
-            onSuccess = {
-                assert(true) // Ensure update was successful
-            },
-            onFailure = { error ->
-                assert(false) // Test fails if we reach here
-            }
-        )
-    }
+    profileRepositoryFirestore.updateUserProfile(
+        userProfile,
+        onSuccess = {
+          assert(true) // Ensure update was successful
+        },
+        onFailure = { error ->
+          assert(false) // Test fails if we reach here
+        })
+  }
 
-    @Test
-    fun logoutUser_callsSignOut() {
-        profileRepositoryFirestore.logoutUser()
+  @Test
+  fun logoutUser_callsSignOut() {
+    profileRepositoryFirestore.logoutUser()
 
-        // Ensure all async tasks have completed
-        shadowOf(Looper.getMainLooper()).idle()
+    // Ensure all async tasks have completed
+    shadowOf(Looper.getMainLooper()).idle()
 
-        verify(mockAuth).signOut() // Verify signOut was called on auth
-    }
+    verify(mockAuth).signOut() // Verify signOut was called on auth
+  }
 }
