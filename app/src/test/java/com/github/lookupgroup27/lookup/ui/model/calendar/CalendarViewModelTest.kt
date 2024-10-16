@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
 import java.io.IOException
+import java.io.StringReader
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +22,8 @@ class CalendarViewModelTest {
   @Before
   fun setup() {
     Dispatchers.setMain(testDispatcher)
+    val icalRepository: IcalRepository = MockIcalRepository("MOCK DATA")
+    viewModel = CalendarViewModel(icalRepository)
   }
 
   @After
@@ -215,6 +218,50 @@ class CalendarViewModelTest {
 
     viewModel.fetchICalData()
     advanceUntilIdle()
+
+    val icalEvents = viewModel.icalEvents.first()
+    assertEquals(0, icalEvents.size)
+  }
+
+  @Test
+  fun `parseICalData handles IOException correctly`() = runTest {
+    val mockIcalData =
+        object : StringReader("TEST DATA") {
+          override fun read(): Int {
+            throw IOException("Simulated IOException during parsing")
+          }
+        }
+
+    viewModel.javaClass
+        .getDeclaredMethod("parseICalData", String::class.java)
+        .apply { isAccessible = true }
+        .invoke(viewModel, mockIcalData.toString())
+
+    val icalEvents = viewModel.icalEvents.first()
+    assertEquals(0, icalEvents.size)
+  }
+
+  @Test
+  fun `parseICalData handles ParserException correctly`() = runTest {
+    val mockIcalData = "INVALID VCALENDAR DATA"
+
+    val parseICalDataMethod =
+        viewModel.javaClass.getDeclaredMethod("parseICalData", String::class.java)
+    parseICalDataMethod.isAccessible = true
+    parseICalDataMethod.invoke(viewModel, mockIcalData)
+
+    val icalEvents = viewModel.icalEvents.first()
+    assertEquals(0, icalEvents.size)
+  }
+
+  @Test
+  fun `parseICalData handles general Exception correctly`() = runTest {
+    val mockIcalData = "INVALID DATA THAT CAUSES EXCEPTION"
+
+    val parseICalDataMethod =
+        viewModel.javaClass.getDeclaredMethod("parseICalData", String::class.java)
+    parseICalDataMethod.isAccessible = true
+    parseICalDataMethod.invoke(viewModel, mockIcalData)
 
     val icalEvents = viewModel.icalEvents.first()
     assertEquals(0, icalEvents.size)
