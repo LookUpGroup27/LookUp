@@ -50,8 +50,17 @@ class CalendarViewModel(private val icalRepository: IcalRepository) : ViewModel(
 
   fun fetchICalData() {
     viewModelScope.launch {
-      val icalData = icalRepository.fetchIcalData(ICAL_URL)
-      icalData?.let { parseICalData(it) }
+      try {
+        val icalData = icalRepository.fetchIcalData(ICAL_URL)
+        icalData?.let { parseICalData(it) }
+      } catch (e: IOException) {
+        Log.e("CalendarViewModel", "Error reading iCal data: ${e.localizedMessage}", e)
+        _icalEvents.value = emptyList() // Ensure state remains consistent even with failure
+      } catch (e: Exception) {
+        Log.e(
+            "CalendarViewModel", "General error while fetching iCal data: ${e.localizedMessage}", e)
+        _icalEvents.value = emptyList() // Ensure state remains consistent even with failure
+      }
     }
   }
 
