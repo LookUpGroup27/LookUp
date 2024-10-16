@@ -79,6 +79,9 @@ class ProfileScreenTest {
   fun testBottomNavigationItemClick() {
     composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
 
+    // Ensure everything is idle before performing assertions or interactions
+    composeTestRule.waitForIdle()
+
     // Get the first item in the bottom navigation
     val firstTab = LIST_TOP_LEVEL_DESTINATION.first()
 
