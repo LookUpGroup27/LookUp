@@ -24,15 +24,13 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
  * - Two buttons: "Personal Info" and "Your Collection," both centered below the profile icon.
  * - A bottom navigation menu to navigate between different sections (e.g., Map, Menu).
  *
- * The buttons trigger navigation actions
- * when clicked, allowing users to navigate to the Profile or Collection screens.
+ * The buttons trigger navigation actions when clicked, allowing users to navigate to the Profile or
+ * Collection screens.
  *
  * @param navigationActions An instance of [NavigationActions] that defines the navigation behavior.
- *                          It handles navigating between the Profile, Collection, and other
- *                          top-level sections of the app through the bottom navigation menu.
+ *   It handles navigating between the Profile, Collection, and other top-level sections of the app
+ *   through the bottom navigation menu.
  */
-
-
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions) {
   // Column to stack the profile section and bottom navigation
@@ -91,11 +89,10 @@ fun ProfileScreen(navigationActions: NavigationActions) {
 /**
  * A Composable function that previews the Profile screen.
  *
- * This function is used for design-time previews in the Android Studio editor. It renders
- * the ProfileScreen composable without requiring live navigation actions, and provides a
- * quick look at how the Profile screen will appear.
+ * This function is used for design-time previews in the Android Studio editor. It renders the
+ * ProfileScreen composable without requiring live navigation actions, and provides a quick look at
+ * how the Profile screen will appear.
  */
-
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
