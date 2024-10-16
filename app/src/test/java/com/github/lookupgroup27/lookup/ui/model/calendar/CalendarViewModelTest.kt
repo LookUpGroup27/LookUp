@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
+import java.io.IOException
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -151,6 +152,65 @@ class CalendarViewModelTest {
     val mockIcalData = "MALFORMED DATA"
 
     val icalRepository: IcalRepository = MockIcalRepository(mockIcalData)
+    viewModel = CalendarViewModel(icalRepository)
+
+    viewModel.fetchICalData()
+    advanceUntilIdle()
+
+    val icalEvents = viewModel.icalEvents.first()
+    assertEquals(0, icalEvents.size)
+  }
+
+  @Test
+  fun `handle illegal argument exception during recurring event handling`() = runTest {
+    val mockIcalData =
+        """
+            BEGIN:VCALENDAR
+            BEGIN:VEVENT
+            DTSTART:20251001T120000Z
+            DTEND:20251001T130000Z
+            SUMMARY:Invalid Recurrence Event
+            RRULE:FREQ=INVALID;COUNT=3
+            END:VEVENT
+            END:VCALENDAR
+        """
+            .trimIndent()
+
+    val icalRepository: IcalRepository = MockIcalRepository(mockIcalData)
+    viewModel = CalendarViewModel(icalRepository)
+
+    viewModel.fetchICalData()
+    advanceUntilIdle()
+
+    val icalEvents = viewModel.icalEvents.first()
+    assertEquals(0, icalEvents.size)
+  }
+
+  @Test
+  fun `handle io exception during data fetch`() = runTest {
+    val icalRepository: IcalRepository =
+        object : IcalRepository {
+          override suspend fun fetchIcalData(url: String): String? {
+            throw IOException("Failed to fetch iCal data")
+          }
+        }
+    viewModel = CalendarViewModel(icalRepository)
+
+    viewModel.fetchICalData()
+    advanceUntilIdle()
+
+    val icalEvents = viewModel.icalEvents.first()
+    assertEquals(0, icalEvents.size)
+  }
+
+  @Test
+  fun `handle general exception during ical parsing`() = runTest {
+    val icalRepository: IcalRepository =
+        object : IcalRepository {
+          override suspend fun fetchIcalData(url: String): String? {
+            throw Exception("General parsing error")
+          }
+        }
     viewModel = CalendarViewModel(icalRepository)
 
     viewModel.fetchICalData()
