@@ -51,7 +51,7 @@ class CalendarKtTest {
     calendarViewModel = CalendarViewModel(mockIcalRepository)
 
     val event = VEvent(DateTime("20251001T120000Z"), "Test Event 2")
-    event.getProperties().add(Summary("Test Event 2"))
+    event.getProperties().add(Summary("Test Event v2"))
 
     composeTestRule.setContent {
       EventItem(event = event, onClick = {})
@@ -132,7 +132,7 @@ class CalendarKtTest {
 
   @Test
   fun testEventItemDisplaysCorrectly() = runTest {
-    composeTestRule.onNodeWithText("Test Event 2").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Test Event v2").assertIsDisplayed()
     composeTestRule.onNodeWithText("Date: October 1, 2025").assertIsDisplayed()
   }
 
