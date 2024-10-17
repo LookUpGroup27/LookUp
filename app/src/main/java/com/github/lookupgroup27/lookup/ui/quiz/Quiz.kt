@@ -64,28 +64,26 @@ fun QuizScreen(navigationActions: NavigationActions) {
               modifier = Modifier.testTag("quiz_title"))
 
           // Earth Button
-          Button(
+          QuizOptionButton(
+              text = "Earth",
               onClick = { navigationActions.navigateTo(Screen.QUIZ_PLAY) },
-              shape = RoundedCornerShape(16.dp),
-              modifier = Modifier.fillMaxWidth().height(56.dp).testTag("earth_button")) {
-                Text(
-                    text = "Earth",
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold)
-              }
+              "earth_button")
 
           // Solar System Button
-          Button(
+          QuizOptionButton(
+              text = "Solar System",
               onClick = { navigationActions.navigateTo(Screen.QUIZ_PLAY) },
-              shape = RoundedCornerShape(16.dp),
-              modifier = Modifier.fillMaxWidth().height(56.dp).testTag("solar_system_button")) {
-                Text(
-                    text = "Solar System",
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold)
-              }
+              "solar_system_button")
         }
   }
+}
+
+@Composable
+fun QuizOptionButton(text: String, onClick: () -> Unit, testTag: String) {
+  Button(
+      onClick = onClick,
+      shape = RoundedCornerShape(16.dp),
+      modifier = Modifier.fillMaxWidth().height(56.dp).testTag(testTag)) {
+        Text(text = text, fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+      }
 }
