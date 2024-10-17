@@ -1,13 +1,12 @@
-package com.github.lookupgroup27.lookup.ui.overview
+package com.github.lookupgroup27.lookup.ui.map
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import org.junit.*
 import org.mockito.kotlin.*
 
-class MapScreenTest {
+class MapKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 

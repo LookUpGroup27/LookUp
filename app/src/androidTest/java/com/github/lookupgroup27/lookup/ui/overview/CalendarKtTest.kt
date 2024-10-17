@@ -13,7 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class CalendarScreenTest {
+class CalendarKtTest {
 
   private lateinit var calendarViewModel: CalendarViewModel
   private lateinit var navigationActions: NavigationActions

@@ -6,7 +6,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.*
 import org.junit.*
 import org.mockito.kotlin.*
 
-class MenuScreenTest {
+class MenuKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
