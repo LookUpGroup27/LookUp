@@ -50,7 +50,7 @@ class CalendarKtTest {
     val mockIcalRepository = MockIcalRepository(mockIcalData)
     calendarViewModel = CalendarViewModel(mockIcalRepository)
 
-    val event = VEvent(DateTime("20251001T120000Z"), "Test Event 2")
+    val event = VEvent(DateTime("20251001T120000Z"), "Test Event v2")
     event.getProperties().add(Summary("Test Event v2"))
 
     composeTestRule.setContent {
