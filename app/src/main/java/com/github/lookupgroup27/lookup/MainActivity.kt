@@ -14,16 +14,17 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
+import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
-import com.github.lookupgroup27.lookup.ui.overview.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
-import com.github.lookupgroup27.lookup.ui.overview.QuizScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
 fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
-  val calendarViewModel: CalendarViewModel = viewModel()
+  val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -76,12 +77,15 @@ fun LookUpApp() {
       composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(navigationActions) }
     }
-    navigation(
-        startDestination = Screen.PROFILE,
-        route = Route.PROFILE,
-    ) {
-      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+
+    navigation(startDestination = Screen.QUIZ, route = Route.QUIZ) {
+      composable(Screen.QUIZ) { QuizScreen(navigationActions) }
+      composable(Screen.QUIZ_PLAY) { QuizPlayScreen(navigationActions) }
+    }
+
+    navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
       composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
     }
   }
 }

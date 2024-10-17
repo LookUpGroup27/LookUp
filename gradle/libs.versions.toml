@@ -68,6 +68,7 @@ navigationRuntimeKtx = "2.8.2"
 # Calendar Libraries
 ical4j = "3.0.21"
 compose = "1.5.1"
+navigationTesting = "2.8.2"
 
 [libraries]
 
@@ -147,6 +148,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 #For Calendar
 ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
 compose = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigationTesting" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
