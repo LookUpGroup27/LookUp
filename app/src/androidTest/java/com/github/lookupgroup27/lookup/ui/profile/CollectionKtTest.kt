@@ -11,7 +11,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import org.junit.Rule
 import org.junit.Test
 
-class CollectionScreenTest {
+class CollectionKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 

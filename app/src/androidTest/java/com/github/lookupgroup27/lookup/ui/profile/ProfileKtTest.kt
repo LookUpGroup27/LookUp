@@ -16,7 +16,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.mock
 
 @RunWith(AndroidJUnit4::class)
-class ProfileScreenTest {
+class ProfileKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
