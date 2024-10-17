@@ -2,7 +2,6 @@ package com.github.lookupgroup27.lookup.model.profile
 
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -29,225 +28,211 @@ import org.robolectric.Shadows.shadowOf
 @RunWith(RobolectricTestRunner::class)
 class ProfileRepositoryFirestoreTest {
 
-    @Mock
-    private lateinit var mockFirestore: FirebaseFirestore
-    @Mock
-    private lateinit var mockAuth: FirebaseAuth
-    @Mock
-    private lateinit var mockUser: FirebaseUser
-    @Mock
-    private lateinit var mockCollectionReference: CollectionReference
-    @Mock
-    private lateinit var mockDocumentReference: DocumentReference
-    @Mock
-    private lateinit var mockDocumentSnapshot: DocumentSnapshot
+  @Mock private lateinit var mockFirestore: FirebaseFirestore
+  @Mock private lateinit var mockAuth: FirebaseAuth
+  @Mock private lateinit var mockUser: FirebaseUser
+  @Mock private lateinit var mockCollectionReference: CollectionReference
+  @Mock private lateinit var mockDocumentReference: DocumentReference
+  @Mock private lateinit var mockDocumentSnapshot: DocumentSnapshot
 
-    private lateinit var profileRepositoryFirestore: ProfileRepositoryFirestore
+  private lateinit var profileRepositoryFirestore: ProfileRepositoryFirestore
 
-    private val testUserId = "testUserId"
-    private val userProfile = UserProfile("Test User", "test@example.com", "A short bio")
+  private val testUserId = "testUserId"
+  private val userProfile = UserProfile("Test User", "test@example.com", "A short bio")
 
-    @Before
-    fun setUp() {
-        MockitoAnnotations.openMocks(this)
+  @Before
+  fun setUp() {
+    MockitoAnnotations.openMocks(this)
 
-        // Initialize Firebase if necessary
-        if (FirebaseApp.getApps(ApplicationProvider.getApplicationContext()).isEmpty()) {
-            FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext())
-        }
-
-        // Mock the Firestore collection path "users" to return a valid CollectionReference
-        `when`(mockFirestore.collection("users")).thenReturn(mockCollectionReference)
-        `when`(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
-        // `when`(mockCollectionReference.document()).thenReturn(mockDocumentReference)
-        `when`(mockAuth.currentUser).thenReturn(mockUser)
-        `when`(mockUser.uid).thenReturn(testUserId)
-
-        // Initialize the repository with the mocked Firestore instance
-        profileRepositoryFirestore = ProfileRepositoryFirestore(mockFirestore, mockAuth)
+    // Initialize Firebase if necessary
+    if (FirebaseApp.getApps(ApplicationProvider.getApplicationContext()).isEmpty()) {
+      FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext())
     }
 
-    @Test
-    fun getUserProfile_callsGetOnDocument() = runTest {
-        `when`(mockFirestore.collection("users").document(anyString()).get())
-            .thenReturn(Tasks.forResult(mockDocumentSnapshot))
-        `when`(mockDocumentSnapshot.toObject(UserProfile::class.java))
-            .thenReturn(UserProfile("testUser", "test@example.com", "Sample bio"))
+    // Mock the Firestore collection path "users" to return a valid CollectionReference
+    `when`(mockFirestore.collection("users")).thenReturn(mockCollectionReference)
+    `when`(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
+    // `when`(mockCollectionReference.document()).thenReturn(mockDocumentReference)
+    `when`(mockAuth.currentUser).thenReturn(mockUser)
+    `when`(mockUser.uid).thenReturn(testUserId)
 
-        profileRepositoryFirestore.getUserProfile(
-            onSuccess = { profile ->
-                assert(profile != null)
-                assert(profile?.username == "testUser")
-            },
-            onFailure = { error ->
-                assert(false) // Test fails if we reach here
-            })
-    }
+    // Initialize the repository with the mocked Firestore instance
+    profileRepositoryFirestore = ProfileRepositoryFirestore(mockFirestore, mockAuth)
+  }
 
-    @Test
-    fun updateUserProfile_callsSetOnDocument() = runTest {
-        val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
+  @Test
+  fun getUserProfile_callsGetOnDocument() = runTest {
+    `when`(mockFirestore.collection("users").document(anyString()).get())
+        .thenReturn(Tasks.forResult(mockDocumentSnapshot))
+    `when`(mockDocumentSnapshot.toObject(UserProfile::class.java))
+        .thenReturn(UserProfile("testUser", "test@example.com", "Sample bio"))
 
-        `when`(mockDocumentReference.set(userProfile)).thenReturn(Tasks.forResult(null))
+    profileRepositoryFirestore.getUserProfile(
+        onSuccess = { profile ->
+          assert(profile != null)
+          assert(profile?.username == "testUser")
+        },
+        onFailure = { error ->
+          assert(false) // Test fails if we reach here
+        })
+  }
 
-        profileRepositoryFirestore.updateUserProfile(
-            userProfile,
-            onSuccess = {
-                assert(true) // Ensure update was successful
-            },
-            onFailure = { error ->
-                assert(false) // Test fails if we reach here
-            })
-    }
+  @Test
+  fun updateUserProfile_callsSetOnDocument() = runTest {
+    val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
 
-    @Test
-    fun logoutUser_callsSignOut() {
-        profileRepositoryFirestore.logoutUser()
+    `when`(mockDocumentReference.set(userProfile)).thenReturn(Tasks.forResult(null))
 
-        // Ensure all async tasks have completed
-        shadowOf(Looper.getMainLooper()).idle()
+    profileRepositoryFirestore.updateUserProfile(
+        userProfile,
+        onSuccess = {
+          assert(true) // Ensure update was successful
+        },
+        onFailure = { error ->
+          assert(false) // Test fails if we reach here
+        })
+  }
 
-        verify(mockAuth).signOut() // Verify signOut was called on auth
-    }
+  @Test
+  fun logoutUser_callsSignOut() {
+    profileRepositoryFirestore.logoutUser()
 
+    // Ensure all async tasks have completed
+    shadowOf(Looper.getMainLooper()).idle()
 
-    @Test
-    fun `init triggers onSuccess when user is logged in`() {
-        // Arrange: Set up a logged-in user
-        `when`(mockAuth.currentUser).thenReturn(mockUser)
+    verify(mockAuth).signOut() // Verify signOut was called on auth
+  }
 
-        // Mock the success callback
-        val onSuccess = mock<() -> Unit>()
+  @Test
+  fun `init triggers onSuccess when user is logged in`() {
+    // Arrange: Set up a logged-in user
+    `when`(mockAuth.currentUser).thenReturn(mockUser)
 
-        // Act: Call the `init` function
-        profileRepositoryFirestore.init(onSuccess)
+    // Mock the success callback
+    val onSuccess = mock<() -> Unit>()
 
-        // Simulate triggering the AuthStateListener to mimic a user login event
-        val listenerCaptor = argumentCaptor<FirebaseAuth.AuthStateListener>()
-        verify(mockAuth).addAuthStateListener(listenerCaptor.capture())
-        listenerCaptor.firstValue.onAuthStateChanged(mockAuth)
+    // Act: Call the `init` function
+    profileRepositoryFirestore.init(onSuccess)
 
-        // Assert: Verify that onSuccess is invoked
-        verify(onSuccess).invoke()
-    }
+    // Simulate triggering the AuthStateListener to mimic a user login event
+    val listenerCaptor = argumentCaptor<FirebaseAuth.AuthStateListener>()
+    verify(mockAuth).addAuthStateListener(listenerCaptor.capture())
+    listenerCaptor.firstValue.onAuthStateChanged(mockAuth)
 
+    // Assert: Verify that onSuccess is invoked
+    verify(onSuccess).invoke()
+  }
 
-    @Test
-    fun `init does not trigger onSuccess when user is not logged in`() {
-        // Simulate no logged-in user
-        `when`(mockAuth.currentUser).thenReturn(null)
+  @Test
+  fun `init does not trigger onSuccess when user is not logged in`() {
+    // Simulate no logged-in user
+    `when`(mockAuth.currentUser).thenReturn(null)
 
-        // Mock the success callback
-        val onSuccess = mock<() -> Unit>()
+    // Mock the success callback
+    val onSuccess = mock<() -> Unit>()
 
-        profileRepositoryFirestore.init(onSuccess)
+    profileRepositoryFirestore.init(onSuccess)
 
-        // Verify that onSuccess is never called
-        verify(onSuccess, never()).invoke()
-    }
+    // Verify that onSuccess is never called
+    verify(onSuccess, never()).invoke()
+  }
 
-    @Test
-    fun `getUserProfile calls onSuccess with UserProfile on successful task`() {
-        // Arrange
-        val expectedProfile = UserProfile("TestUser", "test@example.com", "Sample bio")
-        val mockDocumentSnapshot = mock(DocumentSnapshot::class.java)
-        `when`(mockDocumentSnapshot.toObject(UserProfile::class.java)).thenReturn(expectedProfile)
+  @Test
+  fun `getUserProfile calls onSuccess with UserProfile on successful task`() {
+    // Arrange
+    val expectedProfile = UserProfile("TestUser", "test@example.com", "Sample bio")
+    val mockDocumentSnapshot = mock(DocumentSnapshot::class.java)
+    `when`(mockDocumentSnapshot.toObject(UserProfile::class.java)).thenReturn(expectedProfile)
 
-        val task = Tasks.forResult(mockDocumentSnapshot)
-        `when`(mockDocumentReference.get()).thenReturn(task)
+    val task = Tasks.forResult(mockDocumentSnapshot)
+    `when`(mockDocumentReference.get()).thenReturn(task)
 
-        // Act
-        profileRepositoryFirestore.getUserProfile(
-            onSuccess = { profile ->
-                // Assert
-                assertNotNull(profile)
-                assertEquals(expectedProfile, profile)
-            },
-            onFailure = { fail("Expected onSuccess to be called") }
-        )
-    }
+    // Act
+    profileRepositoryFirestore.getUserProfile(
+        onSuccess = { profile ->
+          // Assert
+          assertNotNull(profile)
+          assertEquals(expectedProfile, profile)
+        },
+        onFailure = { fail("Expected onSuccess to be called") })
+  }
 
-    @Test
-    fun `getUserProfile calls onFailure on failed task`() {
-        // Set up a failing task with an exception
-        val exception = Exception("Firestore error")
-        `when`(mockDocumentReference.get()).thenReturn(Tasks.forException(exception))
+  @Test
+  fun `getUserProfile calls onFailure on failed task`() {
+    // Set up a failing task with an exception
+    val exception = Exception("Firestore error")
+    `when`(mockDocumentReference.get()).thenReturn(Tasks.forException(exception))
 
-        // Mock callbacks
-        val onSuccess = mock<(UserProfile?) -> Unit>()
-        val onFailure = mock<(Exception) -> Unit>()
+    // Mock callbacks
+    val onSuccess = mock<(UserProfile?) -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
 
-        profileRepositoryFirestore.getUserProfile(onSuccess, onFailure)
+    profileRepositoryFirestore.getUserProfile(onSuccess, onFailure)
 
-        // Ensure all runnables on the main looper are completed
-        shadowOf(Looper.getMainLooper()).idle()
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
 
-        // Verify that onFailure is called with the correct exception
-        verify(onFailure).invoke(exception)
-        verify(onSuccess, never()).invoke(any())
-    }
+    // Verify that onFailure is called with the correct exception
+    verify(onFailure).invoke(exception)
+    verify(onSuccess, never()).invoke(any())
+  }
 
-    @Test
-    fun `getUserProfile calls onSuccess with null when user is not logged in`() {
-        // Simulate no logged-in user
-        `when`(mockAuth.currentUser).thenReturn(null)
+  @Test
+  fun `getUserProfile calls onSuccess with null when user is not logged in`() {
+    // Simulate no logged-in user
+    `when`(mockAuth.currentUser).thenReturn(null)
 
-        // Mock callbacks
-        val onSuccess = mock<(UserProfile?) -> Unit>()
-        val onFailure = mock<(Exception) -> Unit>()
+    // Mock callbacks
+    val onSuccess = mock<(UserProfile?) -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
 
-        profileRepositoryFirestore.getUserProfile(onSuccess, onFailure)
+    profileRepositoryFirestore.getUserProfile(onSuccess, onFailure)
 
-        // Ensure all runnables on the main looper are completed
-        shadowOf(Looper.getMainLooper()).idle()
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
 
-        // Verify that onSuccess is called with null
-        verify(onSuccess).invoke(null)
-        verify(onFailure, never()).invoke(any())
-    }
+    // Verify that onSuccess is called with null
+    verify(onSuccess).invoke(null)
+    verify(onFailure, never()).invoke(any())
+  }
 
+  @Test
+  fun `updateUserProfile calls onSuccess on successful Firestore operation`() = runTest {
+    // Arrange: Set up a successful Task completion
+    val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
 
+    `when`(mockDocumentReference.set(userProfile)).thenReturn(Tasks.forResult(null))
 
-    @Test
-    fun `updateUserProfile calls onSuccess on successful Firestore operation`() = runTest {
-        // Arrange: Set up a successful Task completion
-        val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
-        val onSuccess = mock<() -> Unit>()
-        val onFailure = mock<(Exception) -> Unit>()
+    // Act: Call updateUserProfile
+    profileRepositoryFirestore.updateUserProfile(userProfile, onSuccess, onFailure)
 
-        `when`(mockDocumentReference.set(userProfile)).thenReturn(Tasks.forResult(null))
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
 
-        // Act: Call updateUserProfile
-        profileRepositoryFirestore.updateUserProfile(userProfile, onSuccess, onFailure)
+    // Assert: Verify onSuccess was called and onFailure was not
+    verify(onSuccess).invoke()
+    verify(onFailure, never()).invoke(any())
+  }
 
-        // Ensure all runnables on the main looper are completed
-        shadowOf(Looper.getMainLooper()).idle()
+  @Test
+  fun `updateUserProfile calls onFailure on failed Firestore operation`() {
+    // Simulate a failed Firestore operation with an exception
+    val exception = Exception("Update error")
+    `when`(mockDocumentReference.set(any())).thenReturn(Tasks.forException(exception))
 
-        // Assert: Verify onSuccess was called and onFailure was not
-        verify(onSuccess).invoke()
-        verify(onFailure, never()).invoke(any())
-    }
+    // Mock callbacks
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
 
-    @Test
-    fun `updateUserProfile calls onFailure on failed Firestore operation`() {
-        // Simulate a failed Firestore operation with an exception
-        val exception = Exception("Update error")
-        `when`(mockDocumentReference.set(any())).thenReturn(Tasks.forException(exception))
+    profileRepositoryFirestore.updateUserProfile(userProfile, onSuccess, onFailure)
 
-        // Mock callbacks
-        val onSuccess = mock<() -> Unit>()
-        val onFailure = mock<(Exception) -> Unit>()
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
 
-        profileRepositoryFirestore.updateUserProfile(userProfile, onSuccess, onFailure)
-
-        // Ensure all runnables on the main looper are completed
-        shadowOf(Looper.getMainLooper()).idle()
-
-        // Verify that onFailure is called with the correct exception
-        verify(onFailure).invoke(exception)
-        verify(onSuccess, never()).invoke()
-    }
-
-
+    // Verify that onFailure is called with the correct exception
+    verify(onFailure).invoke(exception)
+    verify(onSuccess, never()).invoke()
+  }
 }
-
