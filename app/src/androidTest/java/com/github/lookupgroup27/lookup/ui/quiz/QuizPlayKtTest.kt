@@ -11,7 +11,7 @@ import org.mockito.kotlin.mock
 
 class QuizPlayKtTest {
   val mockNavigationActions: NavigationActions = mock()
-  @get:Rule val TcomposeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
   private lateinit var quizViewModel: QuizViewModel
 
