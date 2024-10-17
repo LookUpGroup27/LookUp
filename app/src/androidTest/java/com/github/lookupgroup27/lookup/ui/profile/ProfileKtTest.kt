@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestination
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,12 +25,13 @@ class ProfileKtTest {
 
   @Before
   fun setup() {
-    // Initialize the mock object
-    mockNavigationActions = mock(NavigationActions::class.java)
-
-    // Complete the stubbing correctly by using `thenReturn`
-    Mockito.`when`(mockNavigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
+    mockNavigationActions = Mockito.mock(NavigationActions::class.java)
+    Mockito.reset(mockNavigationActions)
+    Mockito.`when`(mockNavigationActions.currentRoute()).thenReturn(Screen.PROFILE)
   }
+
+
+
 
   @Test
   fun testProfileScreenRendersCorrectly() {
@@ -93,6 +95,7 @@ class ProfileKtTest {
     // Verify that no further interactions (including `navigateTo()`) occurred
     Mockito.verifyNoMoreInteractions(mockNavigationActions)
   }
+
 
   @Test
   fun testProfileScreenPreviewRendersCorrectly() {
