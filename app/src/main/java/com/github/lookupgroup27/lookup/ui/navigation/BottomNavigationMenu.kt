@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
@@ -22,7 +23,7 @@ fun BottomNavigationMenu(
 ) {
   NavigationBar(
       modifier = Modifier.fillMaxWidth().height(60.dp).testTag("bottomNavigationMenu"),
-      containerColor = MaterialTheme.colorScheme.surface,
+      containerColor = Color(0xFF0D1023),
       content = {
         tabList.forEach { tab ->
           NavigationBarItem(

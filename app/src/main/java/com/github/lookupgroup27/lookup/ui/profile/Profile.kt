@@ -75,7 +75,7 @@ fun ProfileScreen(navigationActions: NavigationActions) {
                 // Personal Info Button
                 ProfileButton(
                     text = "Personal Info     >",
-                    onClick = { navigationActions.navigateTo(Screen.PROFILE) })
+                    onClick = { navigationActions.navigateTo(Screen.PROFILE_INFORMATION) })
 
                 // Collection Button
                 ProfileButton(
