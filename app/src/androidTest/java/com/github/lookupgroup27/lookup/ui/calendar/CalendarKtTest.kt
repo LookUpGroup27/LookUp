@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.overview
+package com.github.lookupgroup27.lookup.ui.calendar
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
