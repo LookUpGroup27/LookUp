@@ -1,0 +1,36 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - M1
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+
+      - name: Build APK
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
