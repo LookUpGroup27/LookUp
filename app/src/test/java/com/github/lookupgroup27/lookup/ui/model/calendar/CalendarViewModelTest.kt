@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
 import java.io.IOException
-import java.io.StringReader
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,11 +11,7 @@ import net.fortuna.ical4j.model.property.Summary
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito
-import org.mockito.Mockito.doThrow
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.spy
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CalendarViewModelTest {
