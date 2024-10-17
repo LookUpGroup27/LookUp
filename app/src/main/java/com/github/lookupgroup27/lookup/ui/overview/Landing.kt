@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -31,7 +29,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
  * and a button with a home icon. The home button navigates to the "Menu" screen and the background
  * is clickable to navigate to the "Map" screen.
  *
- * @param navController The NavController to handle navigation between screens.
+ * @param navigationActions Instance of NavigationActions to handle navigation between screens.
  */
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
@@ -55,7 +53,7 @@ fun LandingScreen(navigationActions: NavigationActions) {
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "Look Up Logo",
-                  modifier = Modifier.size(300.dp),
+                  modifier = Modifier.size(250.dp),
                   contentScale = ContentScale.Fit)
             }
 
@@ -65,14 +63,21 @@ fun LandingScreen(navigationActions: NavigationActions) {
             contentAlignment = Alignment.BottomCenter) {
               Button(
                   onClick = { navigationActions.navigateTo(Screen.MENU) },
-                  modifier = Modifier.padding(16.dp).size(100.dp).testTag("Home Icon"),
-                  shape = CircleShape,
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
+                  modifier =
+                      Modifier.padding(16.dp) // Padding around the button
+                          .size(150.dp) // Total button size
+                          .testTag("Home Icon"),
+                  shape = CircleShape, // Button is circular
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = Color.Transparent) // Make the background transparent
+                  ) {
                     Icon(
-                        imageVector = Icons.Default.Home,
+                        painter = painterResource(id = R.drawable.home_button),
                         contentDescription = "Home Icon",
-                        tint = Color.Black,
-                        modifier = Modifier.size(64.dp))
+                        tint = Color.Unspecified, // Keep the original icon colors
+                        modifier = Modifier.fillMaxSize() // Icon fills the button completely
+                        )
                   }
             }
         // Click for full map view prompt

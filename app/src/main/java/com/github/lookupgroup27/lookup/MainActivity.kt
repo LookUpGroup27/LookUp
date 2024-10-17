@@ -21,6 +21,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
@@ -80,6 +81,11 @@ fun LookUpApp() {
     navigation(startDestination = Screen.QUIZ, route = Route.QUIZ) {
       composable(Screen.QUIZ) { QuizScreen(navigationActions) }
       composable(Screen.QUIZ_PLAY) { QuizPlayScreen(navigationActions) }
+    }
+
+    navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
+      composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
     }
   }
 }
