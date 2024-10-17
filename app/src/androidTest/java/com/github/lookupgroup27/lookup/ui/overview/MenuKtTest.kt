@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.overview
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.ui.navigation.*
+import com.google.firebase.auth.FirebaseAuth
 import org.junit.*
 import org.mockito.kotlin.*
 
@@ -11,6 +12,7 @@ class MenuKtTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val mockNavigationActions: NavigationActions = mock()
+  private lateinit var mockAuth: FirebaseAuth
 
   @Test
   fun menuScreen_displaysBottomNavigationMenu() {
@@ -55,17 +57,6 @@ class MenuKtTest {
   }
 
   @Test
-  fun menuScreen_backButton_navigatesBack() {
-    composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
-
-    // Perform click on the back button
-    composeTestRule.onNodeWithTag("back_button").performClick()
-
-    // Verify navigation back action is triggered
-    verify(mockNavigationActions).goBack()
-  }
-
-  @Test
   fun menuScreen_displaysAllButtons() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
@@ -77,17 +68,25 @@ class MenuKtTest {
     composeTestRule.onNodeWithText("Sky Tracker").assertIsDisplayed()
     composeTestRule.onNodeWithTag("profile_button").assertIsDisplayed()
   }
-  // ToDo: implement the profile or auth screen test
-  /*@Test
-  fun menuScreen_clickProfileButton_navigatesToProfile() {
+
+  @Test
+  fun menuScreen_clickProfileButton_navigatesToCorrectPlace() {
+    // Mock the FirebaseAuth instance
+    mockAuth = mock()
+    whenever(mockAuth.currentUser).thenReturn(null) // Change this to test different scenarios
+
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
     // Click on profile button
     composeTestRule.onNodeWithTag("profile_button").performClick()
 
     // Verify navigation to Profile screen is triggered
-    verify(mockNavigationActions).navigateTo(Screen.PROFILE)
-  }*/
+    if (mockAuth.currentUser != null) {
+      verify(mockNavigationActions).navigateTo(Screen.PROFILE)
+    } else {
+      verify(mockNavigationActions).navigateTo(Screen.AUTH)
+    }
+  }
 
   @Test
   fun menuScreen_clickQuizzes_navigatesToQuizScreen() {

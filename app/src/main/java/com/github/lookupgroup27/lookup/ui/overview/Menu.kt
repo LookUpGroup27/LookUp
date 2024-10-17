@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -20,8 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.google.firebase.auth.FirebaseAuth
-
-// ToDo: use dependency injection to pass the FirebaseAuth instance into the composable
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -46,14 +43,6 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp),
               contentScale = ContentScale.Crop)
 
-          IconButton(
-              onClick = { navigationActions.goBack() },
-              modifier = Modifier.padding(16.dp).align(Alignment.TopStart).testTag("back_button")) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White)
-              }
           // Profile button at the top right
           IconButton(
               onClick = {
