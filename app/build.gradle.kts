@@ -183,6 +183,7 @@ dependencies {
     androidTestImplementation(libs.mockito.android)
     androidTestImplementation(libs.mockito.kotlin)
     testImplementation(libs.robolectric)
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
 
     // Kaspresso Allure
     androidTestImplementation(libs.kaspresso.allure.support)
