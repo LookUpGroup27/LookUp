@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
+import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
@@ -22,6 +23,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
+import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
@@ -48,6 +50,7 @@ fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
+  val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -86,6 +89,9 @@ fun LookUpApp() {
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
       composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.PROFILE_INFORMATION) {
+        ProfileInformationScreen(profileViewModel, navigationActions)
+      }
     }
   }
 }
