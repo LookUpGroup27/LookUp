@@ -28,6 +28,7 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 
 @Composable
 fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
@@ -119,7 +120,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
 
               question.answers.forEachIndexed { index, answer ->
                 val backgroundColor =
-                    if (selectedAnswer == answer) Color(0xffff731f) else Color.Unspecified
+                    if (selectedAnswer == answer) Color(0xffff731f) else DarkPurple
                 Button(
                     onClick = { viewModel.onAnswerSelected(answer) },
                     colors =

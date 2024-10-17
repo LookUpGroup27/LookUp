@@ -36,6 +36,7 @@ class QuizPlayKtTest {
 
   @Test
   fun testQuizPlayScreenDisplaysQuestionAndAnswers() {
+    setup()
     // Launch the QuizPlayScreen
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
@@ -72,6 +73,7 @@ class QuizPlayKtTest {
   @Test
   fun testAnswerSelectionEnablesNextButton() {
     // Launch the QuizPlayScreen
+    setup()
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
     }
