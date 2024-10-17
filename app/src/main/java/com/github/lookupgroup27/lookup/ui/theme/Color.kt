@@ -10,3 +10,5 @@ val CosmicPink = Color(0xFFB4004E) // Accent pink
 
 val StarWhite = Color(0xFFFFFFFF) // Light color for text on dark backgrounds
 val MeteorGrey = Color(0xFF333333) // Subtle grey for background contrast
+
+val DarkPurple = Color(0xFF30315B)
