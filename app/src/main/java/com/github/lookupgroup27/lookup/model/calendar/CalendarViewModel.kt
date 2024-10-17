@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.data.CalendarBuilder
-import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Date
 import net.fortuna.ical4j.model.DateTime
@@ -65,61 +64,44 @@ class CalendarViewModel(private val icalRepository: IcalRepository) : ViewModel(
   }
 
   fun parseICalData(icalData: String) {
-    try {
-      val reader = StringReader(icalData)
-      val calendar: Calendar = CalendarBuilder().build(reader)
-      val start = DateTime(System.currentTimeMillis())
-      val end =
-          DateTime(
-              System.currentTimeMillis() +
-                  365L *
-                      24 *
-                      60 *
-                      60 *
-                      1000) // This is a year from now, change as needed. (365 to 730 for 2
-      // years...)
-      val period = Period(start, end)
+    val reader = StringReader(icalData)
+    val calendar: Calendar = CalendarBuilder().build(reader)
+    val start = DateTime(System.currentTimeMillis())
+    val end =
+        DateTime(
+            System.currentTimeMillis() +
+                365L *
+                    24 *
+                    60 *
+                    60 *
+                    1000) // This is a year from now, change as needed. (365 to 730 for 2 years...)
+    val period = Period(start, end)
 
-      val allEvents = mutableListOf<VEvent>()
+    val allEvents = mutableListOf<VEvent>()
 
-      for (component in calendar.getComponents<VEvent>(VEvent.VEVENT)) {
-        val dtStart = component.getProperty<DtStart>(Property.DTSTART)
-        val dtEnd = component.getProperty<DtEnd>(Property.DTEND)
+    for (component in calendar.getComponents<VEvent>(VEvent.VEVENT)) {
+      val dtStart = component.getProperty<DtStart>(Property.DTSTART)
+      val dtEnd = component.getProperty<DtEnd>(Property.DTEND)
 
-        dtStart?.also { startDate ->
-          val endDate = dtEnd?.date ?: startDate.date
-          val rrule = component.getProperty<RRule>(Property.RRULE)
+      dtStart?.also { startDate ->
+        val endDate = dtEnd?.date ?: startDate.date
+        val rrule = component.getProperty<RRule>(Property.RRULE)
 
-          try {
-            if (rrule != null) {
-              val recurringEvents =
-                  handleRecurringEvents(component, period, startDate.date, endDate)
-              allEvents.addAll(recurringEvents)
-            } else if (startDate.date.before(end) && endDate.after(start)) {
-              val nonRecurringEvents = handleNonRecurringEvents(component, startDate.date, endDate)
-              allEvents.addAll(nonRecurringEvents)
-            } else {
-              Log.d("CalendarViewModel", "Event does not meet conditions for handling.")
-            }
-          } catch (e: IllegalArgumentException) {
-            Log.e(
-                "CalendarViewModel",
-                "Error processing event recurrence rules: ${e.localizedMessage}",
-                e)
-          }
+        if (rrule != null) {
+          val recurringEvents = handleRecurringEvents(component, period, startDate.date, endDate)
+          allEvents.addAll(recurringEvents)
+        } else if (startDate.date.before(end) && endDate.after(start)) {
+          val nonRecurringEvents = handleNonRecurringEvents(component, startDate.date, endDate)
+          allEvents.addAll(nonRecurringEvents)
+        } else {
+          Log.d("CalendarViewModel", "Event does not meet conditions for handling.")
         }
       }
-
-      _icalEvents.value = allEvents
-
-      Log.d("CalendarViewModel", "Total events parsed: ${_icalEvents.value.size}")
-    } catch (e: IOException) {
-      Log.e("CalendarViewModel", "Error reading iCal data: ${e.localizedMessage}", e)
-    } catch (e: ParserException) {
-      Log.e("CalendarViewModel", "Error parsing iCal data: ${e.localizedMessage}", e)
-    } catch (e: Exception) {
-      Log.e("CalendarViewModel", "General error while parsing iCal data: ${e.localizedMessage}", e)
     }
+
+    _icalEvents.value = allEvents
+
+    Log.d("CalendarViewModel", "Total events parsed: ${_icalEvents.value.size}")
   }
 
   /**
