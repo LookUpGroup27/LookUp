@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.overview
+package com.github.lookupgroup27.lookup.ui.skytracker
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,26 +11,26 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class QuizScreenTest {
+class SkyTrackerKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
   private val mockNavigationActions: NavigationActions = mock()
 
   @Test
-  fun quizScreen_displaysQuizText() {
-    composeTestRule.setContent { QuizScreen(navigationActions = mockNavigationActions) }
+  fun skyTrackerScreen_displaysSkyTrackerText() {
+    composeTestRule.setContent { SkyTrackerScreen(navigationActions = mockNavigationActions) }
 
-    // Verify that the "Quiz Screen" text is displayed
-    composeTestRule.onNodeWithText("Quiz Screen").assertIsDisplayed()
+    // Verify that the "Sky Tracker Screen" text is displayed
+    composeTestRule.onNodeWithText("Sky Tracker Screen").assertIsDisplayed()
   }
 
   @Test
-  fun quizScreen_clickBackButton_navigatesBack() {
-    composeTestRule.setContent { QuizScreen(navigationActions = mockNavigationActions) }
+  fun skyTrackerScreen_clickBackButton_navigatesBack() {
+    composeTestRule.setContent { SkyTrackerScreen(navigationActions = mockNavigationActions) }
 
     // Perform click on the back button
-    composeTestRule.onNodeWithTag("go_back_button_quiz").performClick()
+    composeTestRule.onNodeWithTag("go_back_button_skyTracker").performClick()
 
     // Verify navigation back action is triggered
     verify(mockNavigationActions).goBack()
