@@ -51,7 +51,6 @@ class ProfileKtTest {
     }
   }
 
-
   @Test
   fun testPersonalInfoButtonClickNavigatesToProfileInformation() {
     composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
