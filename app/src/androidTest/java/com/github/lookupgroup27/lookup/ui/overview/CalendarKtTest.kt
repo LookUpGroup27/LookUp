@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class CalendarScreenTest {
+class CalendarKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 

@@ -11,7 +11,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class ProfileScreenTest {
+class ProfileKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
