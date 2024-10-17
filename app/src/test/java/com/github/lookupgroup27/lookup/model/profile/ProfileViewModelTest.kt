@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import org.junit.*
@@ -81,5 +83,38 @@ class ProfileViewModelTest {
   fun `logoutUser calls logoutUser in repository`() {
     viewModel.logoutUser()
     verify(repository).logoutUser()
+  }
+
+  @Test
+  fun `fetchUserProfile sets error on failure`() = runTest {
+    // Mock an error scenario in the repository
+    val exception = Exception("Network error")
+    `when`(repository.getUserProfile(any(), any())).thenAnswer {
+      val onFailure = it.getArgument<(Exception) -> Unit>(1)
+      onFailure(exception)
+    }
+
+    // Call the method
+    viewModel.fetchUserProfile()
+
+    // Assert that _error was updated correctly
+    assertEquals("Failed to load profile: Network error", viewModel.error.value)
+  }
+
+  @Test
+  fun `updateUserProfile sets profileUpdateStatus to false and error on failure`() = runTest {
+    // Mock an error scenario in the repository
+    val exception = Exception("Update failed")
+    `when`(repository.updateUserProfile(any(), any(), any())).thenAnswer {
+      val onFailure = it.getArgument<(Exception) -> Unit>(2)
+      onFailure(exception)
+    }
+
+    // Call the method
+    viewModel.updateUserProfile(testProfile)
+
+    // Assert that _profileUpdateStatus is false and _error is set
+    assertFalse(viewModel.profileUpdateStatus.value!!)
+    assertEquals("Failed to update profile: Update failed", viewModel.error.value)
   }
 }
