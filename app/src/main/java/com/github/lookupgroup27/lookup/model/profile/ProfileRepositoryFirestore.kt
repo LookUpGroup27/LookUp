@@ -11,7 +11,7 @@ data class UserProfile(val username: String = " ", val email: String = " ", val 
 class ProfileRepositoryFirestore(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth
-) : ProfileRepository{
+) : ProfileRepository {
 
   // private val auth = FirebaseAuth.getInstance()
   private val collectionPath = "users"

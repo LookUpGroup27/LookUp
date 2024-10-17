@@ -23,104 +23,103 @@ import org.mockito.Mockito.`when`
 
 class ProfileInformationScreenTest {
 
-    private lateinit var profileRepository: ProfileRepository
-    private lateinit var profileViewModel: ProfileViewModel
-    private lateinit var navigationActions: NavigationActions
-    private lateinit var firebaseAuth: FirebaseAuth
+  private lateinit var profileRepository: ProfileRepository
+  private lateinit var profileViewModel: ProfileViewModel
+  private lateinit var navigationActions: NavigationActions
+  private lateinit var firebaseAuth: FirebaseAuth
 
-    @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    private val mockUserProfile =
-        UserProfile(username = "JohnDoe", bio = "This is a bio", email = "john.doe@example.com")
+  private val mockUserProfile =
+      UserProfile(username = "JohnDoe", bio = "This is a bio", email = "john.doe@example.com")
 
-    @Before
-    fun setUp() {
+  @Before
+  fun setUp() {
 
-        profileRepository = mock(ProfileRepository::class.java)
-        profileViewModel = ProfileViewModel(profileRepository)
-        navigationActions = mock(NavigationActions::class.java)
-        firebaseAuth = mock(FirebaseAuth::class.java)
+    profileRepository = mock(ProfileRepository::class.java)
+    profileViewModel = ProfileViewModel(profileRepository)
+    navigationActions = mock(NavigationActions::class.java)
+    firebaseAuth = mock(FirebaseAuth::class.java)
 
-        // Define navigation action behavior
-        `when`(navigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
-    }
+    // Define navigation action behavior
+    `when`(navigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
+  }
 
-    @Test
-    fun displayAllComponents() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+  @Test
+  fun displayAllComponents() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Check that the main components are displayed
-        composeTestRule.onNodeWithTag("editProfileScreen").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("editProfileTitle").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("editProfileUsername").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("editProfileEmail").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("editProfileBio").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("profileSave").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("profileLogout").assertIsDisplayed()
+    // Check that the main components are displayed
+    composeTestRule.onNodeWithTag("editProfileScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileUsername").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileEmail").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileBio").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileSave").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileLogout").assertIsDisplayed()
 
-        // Check button texts
-        composeTestRule.onNodeWithTag("profileSave").assertTextEquals("Save")
-        composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
-    }
+    // Check button texts
+    composeTestRule.onNodeWithTag("profileSave").assertTextEquals("Save")
+    composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
+  }
 
-    @Test
-    fun saveButtonDisabledWhenFieldsAreEmpty() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+  @Test
+  fun saveButtonDisabledWhenFieldsAreEmpty() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Initially, all fields are empty, so the save button should be disabled
-        composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    // Initially, all fields are empty, so the save button should be disabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
 
-        // Fill in username, bio, and email
-        composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-        composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-        composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+    // Fill in username, bio, and email
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
 
-        // Now all fields are filled, so the save button should be enabled
-        composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
-    }
+    // Now all fields are filled, so the save button should be enabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
+  }
 
-    @Test
-    fun saveButtonDisabledWhenAnyFieldIsEmpty() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+  @Test
+  fun saveButtonDisabledWhenAnyFieldIsEmpty() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Initially, all fields are empty, so the save button should be disabled
-        composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    // Initially, all fields are empty, so the save button should be disabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
 
-        // Fill only the username, leave other fields empty
-        composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-        composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    // Fill only the username, leave other fields empty
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
 
-        // Fill in the email and leave the bio empty
-        composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-        composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    // Fill in the email and leave the bio empty
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
 
-        // Now fill the bio
-        composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+    // Now fill the bio
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
 
-        // Now all fields are filled, the save button should be enabled
-        composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
-    }
+    // Now all fields are filled, the save button should be enabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
+  }
 
-    @Test
-    fun saveButtonWorks() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+  @Test
+  fun saveButtonWorks() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Perform click on the save button
-        composeTestRule.onNodeWithTag("profileSave").performClick()
+    // Perform click on the save button
+    composeTestRule.onNodeWithTag("profileSave").performClick()
 
-        // Mock behavior can be asserted in ViewModel (not shown here, as it's logic dependent)
-    }
+    // Mock behavior can be asserted in ViewModel (not shown here, as it's logic dependent)
+  }
 
-    @Test
-    fun logoutButtonWorks() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+  @Test
+  fun logoutButtonWorks() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Perform click on the sign-out button
-        composeTestRule.onNodeWithTag("profileLogout").performClick()
+    // Perform click on the sign-out button
+    composeTestRule.onNodeWithTag("profileLogout").performClick()
 
-        // Verify that the navigation action to the landing screen was triggered
-        Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
-    }
-
+    // Verify that the navigation action to the landing screen was triggered
+    Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
+  }
 }

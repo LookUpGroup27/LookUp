@@ -89,7 +89,9 @@ fun LookUpApp() {
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
       composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
-      composable(Screen.PROFILE_INFORMATION) { ProfileInformationScreen(profileViewModel, navigationActions) }
+      composable(Screen.PROFILE_INFORMATION) {
+        ProfileInformationScreen(profileViewModel, navigationActions)
+      }
     }
   }
 }
