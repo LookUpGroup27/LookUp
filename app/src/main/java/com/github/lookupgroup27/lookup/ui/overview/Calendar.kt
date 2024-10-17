@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
@@ -18,7 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
+import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
+import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.util.DateUtils.isSameDay
 import com.github.lookupgroup27.lookup.util.DateUtils.updateMonth
 import java.text.SimpleDateFormat
@@ -41,17 +43,11 @@ fun CalendarScreen(
   val icalEvents by calendarViewModel.icalEvents.collectAsState()
 
   Scaffold(
-      topBar = {
-        TopAppBar(
-            title = { Text("") },
-            navigationIcon = {
-              IconButton(onClick = { navigationActions.goBack() }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go Back",
-                    tint = MaterialTheme.colorScheme.onSurface)
-              }
-            })
+      bottomBar = {
+        BottomNavigationMenu(
+            onTabSelect = { destination -> navigationActions.navigateTo(destination) },
+            tabList = LIST_TOP_LEVEL_DESTINATION,
+            selectedItem = Route.CALENDAR)
       },
       content = { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
