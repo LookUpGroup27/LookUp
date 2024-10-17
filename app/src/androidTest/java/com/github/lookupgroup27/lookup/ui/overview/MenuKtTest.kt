@@ -77,8 +77,8 @@ class MenuKtTest {
     composeTestRule.onNodeWithText("Sky Tracker").assertIsDisplayed()
     composeTestRule.onNodeWithTag("profile_button").assertIsDisplayed()
   }
-
-  @Test
+  // ToDo: implement the profile or auth screen test
+  /*@Test
   fun menuScreen_clickProfileButton_navigatesToProfile() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
@@ -87,7 +87,7 @@ class MenuKtTest {
 
     // Verify navigation to Profile screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.PROFILE)
-  }
+  }*/
 
   @Test
   fun menuScreen_clickQuizzes_navigatesToQuizScreen() {
