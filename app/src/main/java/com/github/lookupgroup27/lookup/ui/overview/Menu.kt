@@ -21,8 +21,6 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.google.firebase.auth.FirebaseAuth
 
-// ToDo: use dependency injection to pass the FirebaseAuth instance into the composable
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(navigationActions: NavigationActions) {
@@ -46,14 +44,6 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp),
               contentScale = ContentScale.Crop)
 
-          IconButton(
-              onClick = { navigationActions.goBack() },
-              modifier = Modifier.padding(16.dp).align(Alignment.TopStart).testTag("back_button")) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White)
-              }
           // Profile button at the top right
           IconButton(
               onClick = {
