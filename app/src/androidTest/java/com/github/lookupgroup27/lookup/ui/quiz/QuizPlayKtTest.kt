@@ -11,7 +11,7 @@ import org.mockito.kotlin.mock
 
 class QuizPlayKtTest {
   val mockNavigationActions: NavigationActions = mock()
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val TcomposeTestRule = createComposeRule()
 
   private lateinit var quizViewModel: QuizViewModel
 
@@ -36,7 +36,6 @@ class QuizPlayKtTest {
 
   @Test
   fun testQuizPlayScreenDisplaysQuestionAndAnswers() {
-    setup()
     // Launch the QuizPlayScreen
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
@@ -73,20 +72,33 @@ class QuizPlayKtTest {
   @Test
   fun testAnswerSelectionEnablesNextButton() {
     // Launch the QuizPlayScreen
-    setup()
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
     }
-    // Verify that the "Next" button is not enabled initially
+
+    // Verify that the "Next" button is not displayed initially
     composeTestRule.onNodeWithTag("next_button").assertDoesNotExist()
 
     // Select an answer
     composeTestRule.onNodeWithTag("answer_button_0").performClick()
 
-    // Verify that the "Next" button is now enabled
+    // Verify that the "Next" button is now displayed and enabled
     composeTestRule.onNodeWithTag("next_button").assertIsDisplayed().assertIsEnabled()
+  }
 
+  @Test
+  fun testNextButtonClickDisplaysScoreAndReturnButton() {
+    // Launch the QuizPlayScreen
+    composeTestRule.setContent {
+      QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
+    }
+
+    // Select an answer to enable the "Next" button
+    composeTestRule.onNodeWithTag("answer_button_0").performClick()
+
+    // Perform click on "Next" button
     composeTestRule.onNodeWithTag("next_button").performClick()
+
     // Assert that the score text is displayed
     composeTestRule
         .onNodeWithTag("score_text")
@@ -97,6 +109,6 @@ class QuizPlayKtTest {
     composeTestRule
         .onNodeWithTag("return_to_quiz_selection_button")
         .assertIsDisplayed()
-        .assertTextEquals("Return to Quiz Selection") // Verify the button text
+        .assertTextEquals("Return to Quiz Selection")
   }
 }
