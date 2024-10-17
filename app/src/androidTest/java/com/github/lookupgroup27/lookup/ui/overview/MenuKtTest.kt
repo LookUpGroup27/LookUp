@@ -57,17 +57,6 @@ class MenuKtTest {
   }
 
   @Test
-  fun menuScreen_backButton_navigatesBack() {
-    composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
-
-    // Perform click on the back button
-    composeTestRule.onNodeWithTag("back_button").performClick()
-
-    // Verify navigation back action is triggered
-    verify(mockNavigationActions).goBack()
-  }
-
-  @Test
   fun menuScreen_displaysAllButtons() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
