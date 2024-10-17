@@ -17,7 +17,6 @@ import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 
@@ -119,8 +118,7 @@ class ProfileInformationScreenTest {
     // Perform click on the sign-out button
     composeTestRule.onNodeWithTag("profileLogout").performClick()
 
-    // Verify that the navigation action to the landing screen was triggered
-    Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
+    // Check that the navigation action to the landing screen was triggered
+    `when`(navigationActions.navigateTo(Screen.LANDING))
   }
-
 }

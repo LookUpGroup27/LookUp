@@ -106,7 +106,7 @@ jobs:
           ./gradlew check --parallel --build-cache
 
       # Run connected tests on the emulator
-      - name: Run android tests
+      - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
