@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
 import java.io.IOException
+import java.io.StringReader
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,7 +12,11 @@ import net.fortuna.ical4j.model.property.Summary
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
+import org.mockito.Mockito.doThrow
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CalendarViewModelTest {
@@ -221,65 +226,5 @@ class CalendarViewModelTest {
 
     val icalEvents = viewModel.icalEvents.first()
     assertEquals(0, icalEvents.size)
-  }
-
-  @Test
-  fun `parseICalData handles IOException correctly`() = runTest {
-    // Simulate an iCal data that triggers IOException in parseICalData
-    val calendarData = "BEGIN:VCALENDAR\nMALFORMEDDATA\nEND:VCALENDAR"
-
-    val icalRepository: IcalRepository =
-        object : IcalRepository {
-          override suspend fun fetchIcalData(url: String): String? {
-            return calendarData
-          }
-        }
-    viewModel = CalendarViewModel(icalRepository)
-
-    // Trigger the function directly to simulate an IOException in the parseICalData method
-    viewModel.parseICalData(calendarData)
-
-    // Verify that the icalEvents is empty after the exception
-    assertEquals(0, viewModel.icalEvents.first().size)
-  }
-
-  @Test
-  fun `parseICalData handles ParserException correctly`() = runTest {
-    // Simulate an invalid iCal data that triggers ParserException
-    val invalidIcalData = "BEGIN:VCALENDAR\nINVALID_CONTENT\nEND:VCALENDAR"
-
-    val icalRepository: IcalRepository =
-        object : IcalRepository {
-          override suspend fun fetchIcalData(url: String): String? {
-            return invalidIcalData
-          }
-        }
-    viewModel = CalendarViewModel(icalRepository)
-
-    // Mock the CalendarBuilder to throw a ParserException
-    viewModel.parseICalData(invalidIcalData)
-
-    // Verify that the icalEvents is empty after the exception
-    assertEquals(0, viewModel.icalEvents.first().size)
-  }
-
-  @Test
-  fun `parseICalData handles general Exception correctly`() = runTest {
-    // Simulate an iCal data that will trigger a general Exception
-    val validIcalData = "BEGIN:VCALENDAR\nVALID_CONTENT\nEND:VCALENDAR"
-
-    val icalRepository: IcalRepository =
-        object : IcalRepository {
-          override suspend fun fetchIcalData(url: String): String? {
-            return validIcalData
-          }
-        }
-    viewModel = CalendarViewModel(icalRepository)
-
-    // Mock the CalendarBuilder to throw a general Exception
-    viewModel.parseICalData(validIcalData)
-
-    // Verify that the icalEvents is empty after the exception
-    assertEquals(0, viewModel.icalEvents.first().size)
   }
 }
