@@ -41,10 +41,10 @@ class ProfileScreenTest {
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
 
     // Verify if the Personal Info button is displayed
-    composeTestRule.onNodeWithText("Personal Info").assertExists()
+    composeTestRule.onNodeWithText("Personal Info     >").assertExists()
 
     // Verify if the Your Collection button is displayed
-    composeTestRule.onNodeWithText("Your Collection").assertExists()
+    composeTestRule.onNodeWithText("Your Collection   >").assertExists()
 
     // Verify if the Bottom Navigation is displayed with proper tabs
     LIST_TOP_LEVEL_DESTINATION.forEach { destination ->
@@ -57,7 +57,7 @@ class ProfileScreenTest {
     composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
 
     // Click the "Personal Info" button
-    composeTestRule.onNodeWithText("Personal Info").performClick()
+    composeTestRule.onNodeWithText("Personal Info     >").performClick()
 
     // Verify that the navigation to the Profile screen happens
     Mockito.verify(mockNavigationActions).navigateTo(Screen.PROFILE)
@@ -68,7 +68,7 @@ class ProfileScreenTest {
     composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
 
     // Click the "Your Collection" button
-    composeTestRule.onNodeWithText("Your Collection").performClick()
+    composeTestRule.onNodeWithText("Your Collection   >").performClick()
 
     // Verify that the navigation to the Collection screen happens
     Mockito.verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
@@ -100,10 +100,10 @@ class ProfileScreenTest {
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
 
     // Verify if the Personal Info button is displayed in the preview
-    composeTestRule.onNodeWithText("Personal Info").assertExists()
+    composeTestRule.onNodeWithText("Personal Info     >").assertExists()
 
     // Verify if the Your Collection button is displayed in the preview
-    composeTestRule.onNodeWithText("Your Collection").assertExists()
+    composeTestRule.onNodeWithText("Your Collection   >").assertExists()
 
     // Verify if the Bottom Navigation tabs are displayed in the preview
     composeTestRule.onNodeWithText("Map").assertExists()
