@@ -95,9 +95,11 @@ class QuizPlayKtTest {
 
     // Select an answer to enable the "Next" button
     composeTestRule.onNodeWithTag("answer_button_0").performClick()
+    composeTestRule.waitForIdle()
 
     // Perform click on "Next" button
     composeTestRule.onNodeWithTag("next_button").performClick()
+    composeTestRule.waitForIdle()
 
     // Assert that the score text is displayed
     composeTestRule

@@ -63,17 +63,17 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
         text = "$quizTitle Quiz",
         color = Color.White,
         fontWeight = FontWeight.Bold,
-        fontSize = 40.sp,
+        fontSize = 30.sp,
         modifier =
             Modifier.align(Alignment.TopCenter)
                 .padding(horizontal = 16.dp)
-                .padding(top = 130.dp)
+                .padding(top = 100.dp)
                 .testTag("quiz_title"),
         maxLines = 1,
         softWrap = true)
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = 220.dp),
+        modifier = Modifier.fillMaxSize().padding(top = 130.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
           if (showScore) {
             Spacer(modifier = Modifier.height(50.dp))
@@ -83,10 +83,10 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                   color = Color.White,
                   style =
                       MaterialTheme.typography.bodyLarge.copy(
-                          fontWeight = FontWeight.Bold, fontSize = 40.sp),
+                          fontWeight = FontWeight.Bold, fontSize = 30.sp),
                   modifier = Modifier.align(Alignment.CenterHorizontally).testTag("score_text"))
 
-              Spacer(modifier = Modifier.height(70.dp))
+              Spacer(modifier = Modifier.height(30.dp))
 
               Button(
                   onClick = {
@@ -112,7 +112,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               Text(
                   text = question.question,
                   color = Color.White,
-                  fontSize = 25.sp,
+                  fontSize = 20.sp,
                   fontWeight = FontWeight.Bold,
                   modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("quiz_question"))
 
@@ -129,7 +129,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                     modifier =
                         Modifier.fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 10.dp)
-                            .height(56.dp)
+                            .height(35.dp)
                             .testTag("answer_button_$index")) {
                       Text(
                           text = answer,
@@ -140,6 +140,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               }
 
               Spacer(modifier = Modifier.height(20.dp))
+
               AnimatedVisibility(
                   visible = selectedAnswer != null,
                   enter = fadeIn(animationSpec = tween(durationMillis = 400)),
@@ -156,9 +157,9 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                         modifier =
                             Modifier.fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 16.dp)
-                                .height(56.dp)
+                                .height(35.dp)
                                 .testTag("next_button")) {
-                          Text(text = "Next Question", fontSize = 20.sp)
+                          Text(text = "Next Question", fontSize = 18.sp)
                         }
                   }
             }
