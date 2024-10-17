@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.overview
+package com.github.lookupgroup27.lookup.ui.quiz
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -6,33 +6,32 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class QuizKtTest {
+class QuizPlayKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
   private val mockNavigationActions: NavigationActions = mock()
 
-  @Test
-  fun quizScreen_displaysQuizText() {
-    composeTestRule.setContent { QuizScreen(navigationActions = mockNavigationActions) }
-
-    // Verify that the "Quiz Screen" text is displayed
-    composeTestRule.onNodeWithText("Quiz Screen").assertIsDisplayed()
+  @Before
+  fun setUp() {
+    composeTestRule.setContent { QuizPlayScreen(navigationActions = mockNavigationActions) }
   }
 
   @Test
-  fun quizScreen_clickBackButton_navigatesBack() {
-    composeTestRule.setContent { QuizScreen(navigationActions = mockNavigationActions) }
+  fun quizPlayScreen_displaysCorrectly() {
+    composeTestRule.onNodeWithText("Quiz Play Screen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("go_back_button_quiz").assertIsDisplayed()
+  }
 
-    // Perform click on the back button
+  @Test
+  fun quizPlayScreen_clickBackButton_navigatesBack() {
     composeTestRule.onNodeWithTag("go_back_button_quiz").performClick()
-
-    // Verify navigation back action is triggered
     verify(mockNavigationActions).goBack()
   }
 }
