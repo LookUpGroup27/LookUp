@@ -22,6 +22,7 @@ import com.github.lookupgroup27.lookup.ui.overview.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.overview.QuizScreen
+import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
@@ -74,6 +75,13 @@ fun LookUpApp() {
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
       composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(navigationActions) }
+    }
+    navigation(
+        startDestination = Screen.PROFILE,
+        route = Route.PROFILE,
+    ) {
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
     }
   }
 }
