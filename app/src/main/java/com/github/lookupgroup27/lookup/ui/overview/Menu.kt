@@ -69,14 +69,15 @@ fun MenuScreen(navigationActions: NavigationActions) {
                     text = "Welcome !",
                     color = Color.White,
                     style = MaterialTheme.typography.displaySmall)
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = { navigationActions.navigateTo(Screen.QUIZ) }) {
-                  Text(text = "Quizzes")
+                  Text(text = "Quizzes", style = MaterialTheme.typography.headlineSmall)
                 }
                 Button(onClick = { navigationActions.navigateTo(Screen.CALENDAR) }) {
-                  Text(text = "Calendar")
+                  Text(text = "Calendar", style = MaterialTheme.typography.headlineSmall)
                 }
                 Button(onClick = { navigationActions.navigateTo(Screen.SKY_TRACKER) }) {
-                  Text(text = "Sky Tracker")
+                  Text(text = "Sky Tracker", style = MaterialTheme.typography.headlineSmall)
                 }
               }
         }
