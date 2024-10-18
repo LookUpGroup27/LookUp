@@ -133,10 +133,13 @@ class ProfileInformationScreenTest {
   fun logoutButtonWorks() {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-    // Perform click on the sign-out button
-    composeTestRule.onNodeWithTag("profileLogout").performClick()
+    // Scroll to the sign-out button if it's off-screen, then click it
+    composeTestRule.onNodeWithTag("profileLogout")
+      .performScrollTo()
+      .performClick()
 
     // Verify that the navigation action to the landing screen was triggered
     Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
   }
+
 }
