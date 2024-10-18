@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches:
+      - main
       - M1
   workflow_dispatch:
 
