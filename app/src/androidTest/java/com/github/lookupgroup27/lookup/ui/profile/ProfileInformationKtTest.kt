@@ -55,31 +55,20 @@ class ProfileInformationScreenTest {
     composeTestRule.onNodeWithTag("editProfileTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("editProfileUsername")
-      .performScrollTo()
-      .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileUsername").performScrollTo().assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("editProfileEmail")
-      .performScrollTo()
-      .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileEmail").performScrollTo().assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("editProfileBio")
-      .performScrollTo()
-      .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileBio").performScrollTo().assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("profileSave")
-      .performScrollTo()
-      .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileSave").performScrollTo().assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("profileLogout")
-      .performScrollTo()
-      .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileLogout").performScrollTo().assertIsDisplayed()
 
     // Check button texts after scrolling
     composeTestRule.onNodeWithTag("profileSave").assertTextEquals("Save")
     composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
   }
-
 
   @Test
   fun saveButtonDisabledWhenFieldsAreEmpty() {
@@ -134,12 +123,9 @@ class ProfileInformationScreenTest {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
     // Scroll to the sign-out button if it's off-screen, then click it
-    composeTestRule.onNodeWithTag("profileLogout")
-      .performScrollTo()
-      .performClick()
+    composeTestRule.onNodeWithTag("profileLogout").performScrollTo().performClick()
 
     // Verify that the navigation action to the landing screen was triggered
     Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
   }
-
 }
