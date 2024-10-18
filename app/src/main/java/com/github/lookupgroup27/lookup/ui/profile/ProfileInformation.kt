@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -43,6 +45,8 @@ fun ProfileInformationScreen(
     navigationActions: NavigationActions
 ) {
 
+  val scrollState = rememberScrollState()
+
   profileViewModel.fetchUserProfile()
   val profile = profileViewModel.userProfile.value
   val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
@@ -55,7 +59,12 @@ fun ProfileInformationScreen(
   Column(
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.Start,
-      modifier = Modifier.padding(8.dp).width(412.dp).height(892.dp).testTag("editProfileScreen")) {
+      modifier =
+          Modifier.padding(8.dp)
+              .width(412.dp)
+              .height(892.dp)
+              .verticalScroll(scrollState)
+              .testTag("editProfileScreen")) {
         Spacer(modifier = Modifier.height(16.dp))
         Icon(
             imageVector = Icons.Default.ArrowBack,
