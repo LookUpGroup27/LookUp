@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import org.junit.Rule
@@ -18,9 +19,12 @@ class QuizKtTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val mockNavigationActions: NavigationActions = mock()
+  private val quizViewModel = QuizViewModel()
 
   fun setUp() {
-    composeTestRule.setContent { QuizScreen(navigationActions = mockNavigationActions) }
+    composeTestRule.setContent {
+      QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
+    }
   }
 
   @Test
@@ -48,7 +52,7 @@ class QuizKtTest {
     composeTestRule.onNodeWithTag("go_back_button_quiz").performClick()
 
     // Verify navigation back action is triggered
-    verify(mockNavigationActions).goBack()
+    verify(mockNavigationActions).navigateTo(Screen.MENU)
   }
 
   @Test

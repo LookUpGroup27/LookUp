@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
+import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
@@ -48,6 +49,7 @@ fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
+  val quizViewModel: QuizViewModel = viewModel()
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -75,12 +77,12 @@ fun LookUpApp() {
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
       composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
-      composable(Screen.QUIZ) { QuizScreen(navigationActions) }
+      composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }
 
     navigation(startDestination = Screen.QUIZ, route = Route.QUIZ) {
-      composable(Screen.QUIZ) { QuizScreen(navigationActions) }
-      composable(Screen.QUIZ_PLAY) { QuizPlayScreen(navigationActions) }
+      composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
+      composable(Screen.QUIZ_PLAY) { QuizPlayScreen(quizViewModel, navigationActions) }
     }
 
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
