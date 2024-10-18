@@ -128,4 +128,35 @@ class ProfileInformationScreenTest {
     // Verify that the navigation action to the landing screen was triggered
     Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
   }
+
+  @Test
+  fun saveButtonDisabledWhenFieldsAreIncomplete() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Assert: Save button is initially disabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+
+    // Act: Fill in only the username
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    // Assert: Save button is still disabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+
+    // Act: Fill in email
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    // Assert: Save button is still disabled because bio is empty
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+
+    // Act: Fill in the bio
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+    // Assert: Save button should now be enabled
+    composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
+  }
+
+  @Test
+  fun saveButtonDisabledWhenAllFieldsAreEmpty() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Assert: Save button is disabled because no fields have been populated
+    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+  }
 }
