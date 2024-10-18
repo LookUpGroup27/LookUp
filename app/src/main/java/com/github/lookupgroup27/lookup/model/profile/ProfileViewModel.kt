@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ProfileViewModel(private val repository: ProfileRepositoryFirestore) : ViewModel() {
+class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() {
 
   private val _userProfile = MutableStateFlow<UserProfile?>(null)
   val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()

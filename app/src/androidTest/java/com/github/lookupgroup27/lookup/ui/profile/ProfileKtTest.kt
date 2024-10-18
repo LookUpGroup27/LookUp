@@ -13,7 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.mockito.kotlin.mock
+import org.mockito.Mockito.mock
 
 @RunWith(AndroidJUnit4::class)
 class ProfileKtTest {
@@ -24,12 +24,11 @@ class ProfileKtTest {
 
   @Before
   fun setup() {
-    // Mock the NavigationActions
-    mockNavigationActions = mock()
+    // Initialize the mock object
+    mockNavigationActions = mock(NavigationActions::class.java)
 
-    // Mock currentRoute to return a valid route, to avoid passing a null value
-    Mockito.`when`(mockNavigationActions.currentRoute())
-        .thenReturn(Screen.PROFILE) // Provide a valid route
+    // Complete the stubbing correctly by using `thenReturn`
+    Mockito.`when`(mockNavigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
   }
 
   @Test
@@ -53,14 +52,17 @@ class ProfileKtTest {
   }
 
   @Test
-  fun testPersonalInfoButtonClickNavigatesToProfile() {
+  fun testPersonalInfoButtonClickNavigatesToProfileInformation() {
     composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
+
+    // Ensure UI is fully rendered
+    composeTestRule.waitForIdle()
 
     // Click the "Personal Info" button
     composeTestRule.onNodeWithText("Personal Info     >").performClick()
 
     // Verify that the navigation to the Profile screen happens
-    Mockito.verify(mockNavigationActions).navigateTo(Screen.PROFILE)
+    Mockito.verify(mockNavigationActions).navigateTo(Screen.PROFILE_INFORMATION)
   }
 
   @Test

@@ -11,13 +11,13 @@ data class UserProfile(val username: String = " ", val email: String = " ", val 
 class ProfileRepositoryFirestore(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth
-) {
+) : ProfileRepository {
 
   // private val auth = FirebaseAuth.getInstance()
   private val collectionPath = "users"
   private val usersCollection = db.collection(collectionPath)
 
-  fun init(onSuccess: () -> Unit) {
+  override fun init(onSuccess: () -> Unit) {
     auth.addAuthStateListener {
       if (it.currentUser != null) {
         onSuccess()
@@ -25,7 +25,7 @@ class ProfileRepositoryFirestore(
     }
   }
 
-  fun getUserProfile(onSuccess: (UserProfile?) -> Unit, onFailure: (Exception) -> Unit) {
+  override fun getUserProfile(onSuccess: (UserProfile?) -> Unit, onFailure: (Exception) -> Unit) {
     val userId = auth.currentUser?.uid
     if (userId != null) {
       usersCollection.document(userId).get().addOnCompleteListener { task ->
@@ -44,7 +44,7 @@ class ProfileRepositoryFirestore(
     }
   }
 
-  fun updateUserProfile(
+  override fun updateUserProfile(
       profile: UserProfile,
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
@@ -57,7 +57,7 @@ class ProfileRepositoryFirestore(
     }
   }
 
-  fun logoutUser() {
+  override fun logoutUser() {
     auth.signOut()
   }
 
