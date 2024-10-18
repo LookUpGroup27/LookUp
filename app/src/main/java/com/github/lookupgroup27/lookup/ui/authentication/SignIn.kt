@@ -67,7 +67,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
   val token = stringResource(R.string.default_web_client_id)
 
   Scaffold(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxSize().testTag("auth_screen"),
       containerColor = Color.Black,
       topBar = {
         TopAppBar(
