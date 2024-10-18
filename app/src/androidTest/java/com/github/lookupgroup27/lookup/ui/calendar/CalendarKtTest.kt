@@ -4,6 +4,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -84,6 +85,7 @@ class CalendarKtTest {
 
     composeTestRule.onNodeWithContentDescription("Previous Month").performClick()
     composeTestRule.onNodeWithText(formattedPreviousMonth).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Previous_month").assertIsDisplayed()
   }
 
   @Test
@@ -100,11 +102,13 @@ class CalendarKtTest {
 
     composeTestRule.onNodeWithContentDescription("Next Month").performClick()
     composeTestRule.onNodeWithText(formattedNextMonth).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Next_month").assertIsDisplayed()
   }
 
   @Test
   fun testLookUpEventButtonExists() = runTest {
     composeTestRule.onNodeWithContentDescription("Look Up Event").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("look_up_event").assertIsDisplayed()
   }
 
   @Test
@@ -144,5 +148,20 @@ class CalendarKtTest {
     composeTestRule.onNodeWithText(dayToSelect.toString()).performClick()
 
     composeTestRule.onNodeWithText(dayToSelect.toString()).assertIsDisplayed()
+  }
+
+  @Test
+  fun testEventListDiplays() = runTest {
+    composeTestRule.onNodeWithTag("list_event").assertIsDisplayed()
+  }
+
+  @Test
+  fun calendarGridIsDiplays() = runTest {
+    composeTestRule.onNodeWithTag("calendar_grid").assertIsDisplayed()
+  }
+
+  @Test
+  fun calendarHeaderIsDiplays() = runTest {
+    composeTestRule.onNodeWithTag("calendar_header").assertIsDisplayed()
   }
 }

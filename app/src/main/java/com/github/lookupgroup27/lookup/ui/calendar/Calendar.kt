@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,9 +60,10 @@ fun CalendarScreen(
           Spacer(modifier = Modifier.height(16.dp))
 
           Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            IconButton(onClick = { showDialog = true }) {
-              Icon(imageVector = Icons.Default.Search, contentDescription = "Look Up Event")
-            }
+            IconButton(
+                modifier = Modifier.testTag("look_up_event"), onClick = { showDialog = true }) {
+                  Icon(imageVector = Icons.Default.Search, contentDescription = "Look Up Event")
+                }
           }
 
           Spacer(modifier = Modifier.height(16.dp))
@@ -150,7 +152,7 @@ fun CalendarHeader(selectedDate: Date, onPreviousMonth: () -> Unit, onNextMonth:
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = onPreviousMonth) {
+        IconButton(modifier = Modifier.testTag("Previous_month"), onClick = onPreviousMonth) {
           Icon(
               imageVector = Icons.Default.KeyboardArrowLeft,
               contentDescription = "Previous Month",
@@ -158,12 +160,12 @@ fun CalendarHeader(selectedDate: Date, onPreviousMonth: () -> Unit, onNextMonth:
         }
 
         Text(
+            modifier = Modifier.weight(1f).testTag("calendar_header"),
             text = monthFormat.format(selectedDate),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.weight(1f))
+            style = MaterialTheme.typography.headlineLarge)
 
-        IconButton(onClick = onNextMonth) {
+        IconButton(modifier = Modifier.testTag("Next_month"), onClick = onNextMonth) {
           Icon(
               imageVector = Icons.Default.KeyboardArrowRight,
               contentDescription = "Next Month",
@@ -181,7 +183,7 @@ fun CalendarGrid(selectedDate: Date, icalEvents: List<VEvent>, onDateSelected: (
   LazyVerticalGrid(
       columns = GridCells.Fixed(7),
       contentPadding = PaddingValues(4.dp),
-      modifier = Modifier.fillMaxWidth()) {
+      modifier = Modifier.fillMaxWidth().testTag("calendar_grid")) {
         items(daysInMonth) { day ->
           val date =
               Calendar.getInstance()
@@ -244,7 +246,7 @@ fun DayCell(
 
 @Composable
 fun EventList(title: String, events: List<VEvent>, onEventClick: (Date) -> Unit) {
-  Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("list_event")) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
