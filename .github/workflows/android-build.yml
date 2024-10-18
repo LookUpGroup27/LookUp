@@ -30,6 +30,12 @@ jobs:
         run: |
             chmod +x ./gradlew
 
+      - name: Decode secrets
+        env:
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
+        run: |
+          echo "$GOOGLE_SERVICES" | base64 --decode > ./app/google-services.json
+
       - name: Build APK
         run: ./gradlew assembleRelease
 
