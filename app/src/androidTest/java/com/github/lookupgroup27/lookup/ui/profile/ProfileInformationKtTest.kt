@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
@@ -49,20 +50,36 @@ class ProfileInformationScreenTest {
   fun displayAllComponents() {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-    // Check that the main components are displayed
+    // Scroll to and check that the main components are displayed
     composeTestRule.onNodeWithTag("editProfileScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editProfileTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editProfileUsername").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editProfileEmail").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editProfileBio").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("profileSave").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("profileLogout").assertIsDisplayed()
 
-    // Check button texts
+    composeTestRule.onNodeWithTag("editProfileUsername")
+      .performScrollTo()
+      .assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("editProfileEmail")
+      .performScrollTo()
+      .assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("editProfileBio")
+      .performScrollTo()
+      .assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("profileSave")
+      .performScrollTo()
+      .assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("profileLogout")
+      .performScrollTo()
+      .assertIsDisplayed()
+
+    // Check button texts after scrolling
     composeTestRule.onNodeWithTag("profileSave").assertTextEquals("Save")
     composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
   }
+
 
   @Test
   fun saveButtonDisabledWhenFieldsAreEmpty() {
