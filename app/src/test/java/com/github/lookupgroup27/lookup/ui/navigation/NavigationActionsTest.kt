@@ -69,7 +69,7 @@ class NavigationActionsTest {
 
   @Test
   fun topLevelDestinationsListIsCorrect() {
-    val expectedList = listOf(TopLevelDestinations.MAP, TopLevelDestinations.MENU)
+    val expectedList = listOf(TopLevelDestinations.MENU, TopLevelDestinations.MAP)
     assertThat(LIST_TOP_LEVEL_DESTINATION, `is`(expectedList))
   }
 
