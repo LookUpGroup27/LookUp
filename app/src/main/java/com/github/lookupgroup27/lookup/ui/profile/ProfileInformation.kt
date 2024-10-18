@@ -137,7 +137,7 @@ fun ProfileInformationScreen(
                   },
                   enabled = username.isNotEmpty() && bio.isNotEmpty() && email.isNotEmpty(),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF30315B)),
-                  modifier = Modifier.width(131.dp).height(40.dp).testTag("profileSave")) {
+                  modifier = Modifier.width(131.dp).height(40.dp).testTag("profileSaveButton")) {
                     Text(text = "Save", color = Color.White)
                   }
 

@@ -61,12 +61,12 @@ class ProfileInformationScreenTest {
 
     composeTestRule.onNodeWithTag("editProfileBio").performScrollTo().assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("profileSave").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileSaveButton").performScrollTo().assertIsDisplayed()
 
     composeTestRule.onNodeWithTag("profileLogout").performScrollTo().assertIsDisplayed()
 
     // Check button texts after scrolling
-    composeTestRule.onNodeWithTag("profileSave").assertTextEquals("Save")
+    composeTestRule.onNodeWithTag("profileSaveButton").assertTextEquals("Save")
     composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
   }
 
@@ -75,7 +75,7 @@ class ProfileInformationScreenTest {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
     // Initially, all fields are empty, so the save button should be disabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Fill in username, bio, and email
     composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
@@ -83,7 +83,7 @@ class ProfileInformationScreenTest {
     composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
 
     // Now all fields are filled, so the save button should be enabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsEnabled()
   }
 
   @Test
@@ -91,21 +91,21 @@ class ProfileInformationScreenTest {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
     // Initially, all fields are empty, so the save button should be disabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Fill only the username, leave other fields empty
     composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Fill in the email and leave the bio empty
     composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Now fill the bio
     composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
 
     // Now all fields are filled, the save button should be enabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsEnabled()
   }
 
   @Test
@@ -113,7 +113,7 @@ class ProfileInformationScreenTest {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
     // Perform click on the save button
-    composeTestRule.onNodeWithTag("profileSave").performClick()
+    composeTestRule.onNodeWithTag("profileSaveButton").performClick()
 
     // Mock behavior can be asserted in ViewModel (not shown here, as it's logic dependent)
   }
@@ -134,22 +134,22 @@ class ProfileInformationScreenTest {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
     // Assert: Save button is initially disabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Act: Fill in only the username
     composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
     // Assert: Save button is still disabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Act: Fill in email
     composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
     // Assert: Save button is still disabled because bio is empty
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
     // Act: Fill in the bio
     composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
     // Assert: Save button should now be enabled
-    composeTestRule.onNodeWithTag("profileSave").assertIsEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsEnabled()
   }
 
   @Test
@@ -157,6 +157,6 @@ class ProfileInformationScreenTest {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
     // Assert: Save button is disabled because no fields have been populated
-    composeTestRule.onNodeWithTag("profileSave").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
   }
 }
