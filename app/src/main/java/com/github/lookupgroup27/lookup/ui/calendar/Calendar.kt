@@ -44,6 +44,7 @@ fun CalendarScreen(
   val icalEvents by calendarViewModel.icalEvents.collectAsState()
 
   Scaffold(
+      modifier = Modifier.testTag("calendar_screen"),
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
