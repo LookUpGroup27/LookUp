@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.map
+package com.github.lookupgroup27.lookup.opengl
 
 import android.opengl.GLSurfaceView
 import androidx.compose.runtime.Composable
