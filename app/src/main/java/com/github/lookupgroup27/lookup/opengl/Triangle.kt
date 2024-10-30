@@ -6,30 +6,27 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
 class Triangle : Shape() {
-  // number of coordinates per vertex in this array
+  // Coordinates of each vertex in counterclockwise order of the triangle
   var triangleCoords =
       floatArrayOf( // in counterclockwise order:
-          0.0f,
-          0.622008459f,
-          0.0f, // top
-          -0.5f,
-          -0.311004243f,
-          0.0f, // bottom left
-          0.5f,
-          -0.311004243f,
-          0.0f // bottom right
-          )
+          0.0f, 0.622008459f, 0.0f, // top
+          -0.5f, -0.311004243f, 0.0f, // bottom left
+          0.5f, -0.311004243f, 0.0f // bottom right
+      )
 
   // Set color with red, green, blue and alpha (opacity) values
   override val color = floatArrayOf(0.63671875f, 0.76953125f, 0.22265625f, 1.0f)
 
+
+  // This buffer is used to pass the vertex data to OpenGL ES for rendering
+  // The FloatBuffer will be usd in the draw method to pass the triangleCoords to OpenGL ES
   private var vertexBuffer: FloatBuffer =
-      // (number of coordinate values * 4 bytes per float)
+      // Allocates a direct bytre buffer
       ByteBuffer.allocateDirect(triangleCoords.size * 4).run {
         // use the device hardware's native byte order
         order(ByteOrder.nativeOrder())
 
-        // create a floating point buffer from the ByteBuffer
+        // convert the ByteBuffer to a FloatBuffer so that we can use it to pass the vertex data to OpenGL ES
         asFloatBuffer().apply {
           // add the coordinates to the FloatBuffer
           put(triangleCoords)
@@ -41,6 +38,7 @@ class Triangle : Shape() {
   private var mProgram: Int
 
   init {
+    // Load the vertex/fragment shaders
     val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
     val fragmentShader: Int = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
 

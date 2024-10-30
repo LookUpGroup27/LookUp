@@ -21,7 +21,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
     // Initialize a triangle and a square
-    mShape = Triangle()
+    mShape = Triangles3()
   }
 
   override fun onDrawFrame(unused: GL10) {
@@ -44,9 +44,12 @@ class MyGLRenderer : GLSurfaceView.Renderer {
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
+    // Specify the size of the rendering window
     GLES20.glViewport(0, 0, width, height)
 
     val ratio: Float = width.toFloat() / height.toFloat()
+    // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip planes
+    // It helps projects in correct aspect ratio the objects in the scene
     Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
   }
 }

@@ -5,6 +5,8 @@ const val COORDS_PER_VERTEX = 3
 abstract class Shape {
   abstract val color: FloatArray
 
+
+  // Vertex shader source code
   protected val vertexShaderCode =
       // This matrix member variable provides a hook to manipulate
       // the coordinates of the objects that use this vertex shader
@@ -20,6 +22,7 @@ abstract class Shape {
   // Use to access and set the view transformation
   protected var vPMatrixHandle: Int = 0
 
+  // Fragment shader source code
   protected val fragmentShaderCode =
       "precision mediump float;" +
           "uniform vec4 vColor;" +
