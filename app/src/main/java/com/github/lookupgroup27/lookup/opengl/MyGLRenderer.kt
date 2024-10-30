@@ -21,7 +21,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
     // Initialize a triangle and a square
-    mShape = Triangles3()
+    mShape = Square()
   }
 
   override fun onDrawFrame(unused: GL10) {
@@ -62,5 +62,13 @@ fun loadShader(type: Int, shaderCode: String): Int {
     // add the source code to the shader and compile it
     GLES20.glShaderSource(shader, shaderCode)
     GLES20.glCompileShader(shader)
+    val compileStatus = IntArray(1)
+    GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
+    if (compileStatus[0] == 0) {
+      GLES20.glGetShaderInfoLog(shader)?.let { log ->
+        android.util.Log.e("ShaderError", "Error compiling shader: $log")
+      }
+      GLES20.glDeleteShader(shader)
+    }
   }
 }
