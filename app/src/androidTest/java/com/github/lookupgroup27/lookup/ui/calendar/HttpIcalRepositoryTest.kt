@@ -10,6 +10,7 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -19,27 +20,34 @@ class HttpIcalRepositoryTest {
   private lateinit var client: OkHttpClient
   private lateinit var repository: HttpIcalRepository
 
+  companion object {
+    private const val TEST_URL = "https://example.com/ical"
+    private const val MOCK_DATA = "mock iCal data"
+    private const val INVALID_URL = "htp://invalid-url"
+    private const val EMPTY_URL = ""
+  }
+
   @Before
   fun setup() {
-
     client = OkHttpClient.Builder().addInterceptor(CustomResponseInterceptor).build()
     repository = HttpIcalRepository(client)
   }
 
   @Test
   fun fetchIcalDataReturnsDataOnSuccessfulResponse() = runTest {
-    CustomResponseInterceptor.setResponse("mock iCal data", success = true)
+    CustomResponseInterceptor.setResponse(MOCK_DATA, success = true)
 
-    val result = repository.fetchIcalData("https://example.com/ical")
+    val result = repository.fetchIcalData(TEST_URL)
 
-    assertEquals("mock iCal data", result)
+    assertNotNull(result)
+    assertEquals(MOCK_DATA, result)
   }
 
   @Test
   fun fetchIcalDataReturnsNullOnErrorResponse() = runTest {
     CustomResponseInterceptor.setResponse(success = false)
 
-    val result = repository.fetchIcalData("https://example.com/ical")
+    val result = repository.fetchIcalData(TEST_URL)
 
     assertNull(result)
   }
@@ -48,7 +56,7 @@ class HttpIcalRepositoryTest {
   fun fetchIcalDataReturnsNullWhenBodyIsEmpty() = runTest {
     CustomResponseInterceptor.setResponse(data = null, success = true)
 
-    val result = repository.fetchIcalData("https://example.com/ical")
+    val result = repository.fetchIcalData(TEST_URL)
 
     assertNull(result)
   }
@@ -57,7 +65,27 @@ class HttpIcalRepositoryTest {
   fun fetchIcalDataThrowsIOExceptionOnNetworkFailure() = runTest {
     CustomResponseInterceptor.throwNetworkError()
 
-    repository.fetchIcalData("https://example.com/ical")
+    repository.fetchIcalData(TEST_URL)
+  }
+
+  @Test
+  fun fetchIcalDataReturnsNullOnInvalidUrlFormat() = runTest {
+    // Simulate an invalid URL format, which should result in an error response
+    CustomResponseInterceptor.setResponse(success = false)
+
+    val result = repository.fetchIcalData(INVALID_URL)
+
+    assertNull(result)
+  }
+
+  @Test
+  fun fetchIcalDataReturnsNullOnEmptyUrl() = runTest {
+    // Simulate an empty URL, which should result in an error response
+    CustomResponseInterceptor.setResponse(success = false)
+
+    val result = repository.fetchIcalData(EMPTY_URL)
+
+    assertNull(result)
   }
 }
 
