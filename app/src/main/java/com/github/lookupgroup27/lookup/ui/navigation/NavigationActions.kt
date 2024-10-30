@@ -44,8 +44,8 @@ object TopLevelDestinations {
 
 val LIST_TOP_LEVEL_DESTINATION =
     listOf(
-        TopLevelDestinations.MAP,
         TopLevelDestinations.MENU,
+        TopLevelDestinations.MAP,
     )
 
 open class NavigationActions(
