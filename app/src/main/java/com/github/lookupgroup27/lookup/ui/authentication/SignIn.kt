@@ -11,7 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -83,23 +85,32 @@ fun SignInScreen(navigationActions: NavigationActions) {
       topBar = {
         TopAppBar(
             title = { Text("") },
-            navigationIcon = {
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black))
+      },
+      content = { padding ->
+        Column(
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState()), // Enable vertical scrolling
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top // Top arrangement to align elements correctly
+            ) {
+              // Move the Go Back button inside the scrollable container
               IconButton(
                   onClick = { navigationActions.goBack() },
-                  modifier = Modifier.padding(16.dp).testTag("go_back_button_signin")) {
+                  modifier =
+                      Modifier.padding(16.dp)
+                          .align(Alignment.Start)
+                          .testTag("go_back_button_signin")) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Go Back",
                         tint = Color.White)
                   }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black))
-      },
-      content = { padding ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
+
+              Spacer(modifier = Modifier.height(verticalSpacing))
+
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
