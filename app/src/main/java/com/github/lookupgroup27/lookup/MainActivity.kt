@@ -17,6 +17,7 @@ import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
@@ -28,7 +29,6 @@ import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
-import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -79,7 +79,7 @@ fun LookUpApp() {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
-      composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
+      composable(Screen.SKY_TRACKER) { GoogleMapScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }
 
