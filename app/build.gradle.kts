@@ -21,7 +21,7 @@ android {
         localProperties.load(FileInputStream(localPropertiesFile))
     }
 
-    //val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
+    val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
 
     defaultConfig {
         applicationId = "com.github.lookupgroup27.lookup"
@@ -34,6 +34,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+
     }
 
     signingConfigs {
@@ -187,6 +189,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+    // Google Service and Maps
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
+    implementation(libs.play.services.auth)
+    implementation(libs.play.services.location)
+
 
     // Unit Testing
     testImplementation(libs.junit)
