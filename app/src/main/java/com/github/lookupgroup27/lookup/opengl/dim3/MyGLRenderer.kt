@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.opengl
+package com.github.lookupgroup27.lookup.opengl.dim3
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
@@ -8,39 +8,34 @@ import javax.microedition.khronos.opengles.GL10
 
 class MyGLRenderer : GLSurfaceView.Renderer {
 
-  @Volatile var angle: Float = 0f
+  private lateinit var mShape: Pyramid
 
-  private lateinit var mShape: Shape
 
-  private val vPMatrix = FloatArray(16)
-  private val projectionMatrix = FloatArray(16)
+  private val modelMatrix = FloatArray(16)
   private val viewMatrix = FloatArray(16)
-  private val rotationMatrix = FloatArray(16)
+  private val projMatrix = FloatArray(16)
 
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+
+    GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+    // Initialize matrix to identity
+    Matrix.setIdentityM(modelMatrix, 0)
+    Matrix.setIdentityM(viewMatrix, 0)
+    Matrix.setIdentityM(projMatrix, 0)
+    Matrix.translateM(viewMatrix, 0, 0f, -0.5f, -2.0f)
     // Initialize a triangle and a square
-    mShape = Square()
+    mShape = Pyramid()
   }
 
   override fun onDrawFrame(unused: GL10) {
-    val scratch = FloatArray(16)
-
-    Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1f, 0f)
-
-    Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-
-    // Create a rotation transformation for the triangle
-    //    val time = System.currentTimeMillis() % 4000L
-    //    val angle = 0.090f * time.toInt()
-    Matrix.setRotateM(rotationMatrix, 0, angle, 0f, 0f, -1.0f)
-
-    Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0)
-
     // Redraw background color
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-    mShape.draw(scratch)
+    GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
+    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
+    mShape.draw(modelMatrix, viewMatrix, projMatrix)
+
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -50,7 +45,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     val ratio: Float = width.toFloat() / height.toFloat()
     // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip planes
     // It helps projects in correct aspect ratio the objects in the scene
-    Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
+    Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
   }
 }
 

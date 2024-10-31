@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.opengl
+package com.github.lookupgroup27.lookup.opengl.dim2
 
 const val COORDS_PER_VERTEX = 3
 

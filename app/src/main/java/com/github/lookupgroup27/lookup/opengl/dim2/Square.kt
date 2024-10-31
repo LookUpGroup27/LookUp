@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.opengl
+package com.github.lookupgroup27.lookup.opengl.dim2
 
 import android.opengl.GLES20
 import java.nio.ByteBuffer
