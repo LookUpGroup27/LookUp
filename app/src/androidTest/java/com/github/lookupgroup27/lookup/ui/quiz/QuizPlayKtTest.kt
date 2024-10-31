@@ -1,5 +1,7 @@
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -112,5 +114,37 @@ class QuizPlayKtTest {
         .onNodeWithTag("return_to_quiz_selection_button")
         .assertIsDisplayed()
         .assertTextEquals("Return to Quiz Selection")
+  }
+
+  @Test
+  fun testQuizPlayScreenDisplaysCorrectlyInLandscapeMode() {
+    // Set the device orientation to landscape
+    setLandscapeOrientation()
+
+    // Launch the QuizPlayScreen in landscape mode
+    composeTestRule.setContent {
+      QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
+    }
+
+    // Assert that the title, question, and answers are displayed in landscape
+    composeTestRule.onNodeWithTag("quiz_title").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("quiz_question").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("answer_button_0").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("answer_button_1").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("answer_button_2").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("answer_button_3").assertIsDisplayed()
+
+    // Reset orientation back to portrait after the test
+    resetOrientation()
+  }
+
+  private fun setLandscapeOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationLeft()
+  }
+
+  private fun resetOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationNatural()
   }
 }

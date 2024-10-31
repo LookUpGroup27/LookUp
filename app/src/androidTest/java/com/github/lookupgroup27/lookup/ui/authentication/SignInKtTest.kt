@@ -10,6 +10,8 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.After
@@ -78,5 +80,36 @@ class SignInKtTest : TestCase() {
 
     // Assert that the user is navigated back to the previous screen
     verify(mockNavigationActions).goBack()
+  }
+
+  @Test
+  fun testSignInScreenIsFullyVisibleInLandscape() {
+    // Set device orientation to landscape
+    setLandscapeOrientation()
+
+    // Launch the SignInScreen in landscape mode
+    composeTestRule.setContent { SignInScreen(mockNavigationActions) }
+
+    // Verify that main UI elements are visible and accessible in landscape mode
+    composeTestRule.onNodeWithTag("loginTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to the Cosmos")
+    composeTestRule.onNodeWithTag("loginButton").assertIsDisplayed().assertHasClickAction()
+    composeTestRule
+        .onNodeWithTag("go_back_button_signin")
+        .assertIsDisplayed()
+        .assertHasClickAction()
+
+    // Reset orientation to portrait after the test
+    resetOrientation()
+  }
+
+  private fun setLandscapeOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationLeft()
+  }
+
+  private fun resetOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationNatural()
   }
 }

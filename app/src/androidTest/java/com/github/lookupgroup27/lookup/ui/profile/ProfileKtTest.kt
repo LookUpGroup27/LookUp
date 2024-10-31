@@ -4,7 +4,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
@@ -92,6 +95,33 @@ class ProfileKtTest {
 
     // Verify that no further interactions (including `navigateTo()`) occurred
     Mockito.verifyNoMoreInteractions(mockNavigationActions)
+  }
+
+  @Test
+  fun testProfileScreenIsScrollableAndFullyVisibleInLandscape() {
+    // Set the device to landscape orientation
+    setLandscapeOrientation()
+
+    // Launch the ProfileScreen in landscape mode
+    composeTestRule.setContent { ProfileScreen(navigationActions = mockNavigationActions) }
+
+    // Check that main elements are displayed after scrolling in landscape mode
+    composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
+    composeTestRule.onNodeWithText("Personal Info     >").performScrollTo().assertExists()
+    composeTestRule.onNodeWithText("Your Collection   >").performScrollTo().assertExists()
+
+    // Reset orientation to portrait after the test
+    resetOrientation()
+  }
+
+  private fun setLandscapeOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationLeft()
+  }
+
+  private fun resetOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationNatural()
   }
 
   @Test
