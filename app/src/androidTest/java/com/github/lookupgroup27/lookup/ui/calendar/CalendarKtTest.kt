@@ -143,7 +143,7 @@ class CalendarKtTest {
   @Test
   fun testSelectingDayUpdatesSelectedDate() = runTest {
     val calendar = Calendar.getInstance()
-    val dayToSelect = calendar.get(Calendar.DAY_OF_MONTH) + 1
+    val dayToSelect = calendar.get(Calendar.DAY_OF_MONTH)
 
     composeTestRule.onNodeWithText(dayToSelect.toString()).performClick()
 

@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,8 @@ fun ProfileInformationScreen(
   var bio by remember { mutableStateOf(profile?.bio ?: "") }
   var email by remember { mutableStateOf(userEmail) }
   val context = LocalContext.current
+  val tag = "ProfileInformationScreen"
+  var emailChanged = false
 
   Column(
       verticalArrangement = Arrangement.Top,
@@ -99,10 +102,9 @@ fun ProfileInformationScreen(
               Spacer(modifier = Modifier.height(30.dp))
               OutlinedTextField(
                   value = email,
-                  onValueChange = {
-                    if (userEmail.isEmpty()) {
-                      email = it
-                    }
+                  onValueChange = { new_email ->
+                    email = new_email
+                    emailChanged = true
                   },
                   label = { Text("E-mail") },
                   placeholder = { Text("Enter your e-mail") },
@@ -128,8 +130,22 @@ fun ProfileInformationScreen(
                   onClick = {
                     var newProfile: UserProfile
                     if (profile != null) {
+                      if (emailChanged) {
+                        user!!.updateEmail(email).addOnCompleteListener { task ->
+                          if (task.isSuccessful) {
+                            Log.d(tag, "User email address updated.")
+                          }
+                        }
+                      }
                       newProfile = profile.copy(username = username, bio = bio, email = email)
                     } else {
+                      if (emailChanged) {
+                        user!!.updateEmail(email).addOnCompleteListener { task ->
+                          if (task.isSuccessful) {
+                            Log.d(tag, "User email address updated.")
+                          }
+                        }
+                      }
                       newProfile = UserProfile(username = username, bio = bio, email = email)
                     }
 

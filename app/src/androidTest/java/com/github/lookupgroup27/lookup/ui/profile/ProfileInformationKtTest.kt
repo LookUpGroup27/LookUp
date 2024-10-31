@@ -15,11 +15,13 @@ import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 
 class ProfileInformationScreenTest {
@@ -28,6 +30,7 @@ class ProfileInformationScreenTest {
   private lateinit var profileViewModel: ProfileViewModel
   private lateinit var navigationActions: NavigationActions
   private lateinit var firebaseAuth: FirebaseAuth
+  private lateinit var firebaseUser: FirebaseUser
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -41,6 +44,7 @@ class ProfileInformationScreenTest {
     profileViewModel = ProfileViewModel(profileRepository)
     navigationActions = mock(NavigationActions::class.java)
     firebaseAuth = mock(FirebaseAuth::class.java)
+    firebaseUser = mock(FirebaseUser::class.java)
 
     // Define navigation action behavior
     `when`(navigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
@@ -126,7 +130,7 @@ class ProfileInformationScreenTest {
     composeTestRule.onNodeWithTag("profileLogout").performScrollTo().performClick()
 
     // Verify that the navigation action to the landing screen was triggered
-    Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
+    verify(navigationActions).navigateTo(Screen.LANDING)
   }
 
   @Test
@@ -158,5 +162,29 @@ class ProfileInformationScreenTest {
 
     // Assert: Save button is disabled because no fields have been populated
     composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+  }
+
+  @Test
+  fun testEmailUpdateFailure() {
+    // Arrange
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Simulate email update failure
+    `when`(firebaseAuth.currentUser?.updateEmail(any())).thenAnswer {
+      throw Exception("Update failed")
+    }
+
+    // Act
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("invalid.email@example.com")
+    composeTestRule.onNodeWithTag("profileSaveButton").performClick()
+  }
+
+  @Test
+  fun testEmailChangeTriggersUpdate() {
+    // Arrange
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Act
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("changed.email@example.com")
   }
 }
