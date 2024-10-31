@@ -1,5 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,19 +26,19 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 
-/**
- * LandingScreen displays the main landing page of the app. It includes a background image, logo,
- * and a button with a home icon. The home button navigates to the "Menu" screen and the background
- * is clickable to navigate to the "Map" screen.
- *
- * @param navigationActions Instance of NavigationActions to handle navigation between screens.
- */
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
-  Box(
-      modifier = Modifier.fillMaxSize().clickable { navigationActions.navigateTo(Screen.MAP) },
-      contentAlignment = Alignment.Center) {
+  val configuration = LocalConfiguration.current
+  val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+  // Background container with clickable modifier to navigate to Map screen
+  BoxWithConstraints(
+      modifier =
+          Modifier.fillMaxSize().clickable {
+            navigationActions.navigateTo(Screen.MAP)
+          } // Add clickable modifier here
+      ) {
         // Background Image
         Image(
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
@@ -44,49 +46,41 @@ fun LandingScreen(navigationActions: NavigationActions) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize())
 
-        // Center logo image
+        // Content Layout based on Orientation
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally) {
-              // Logo Image
+              // Top Prompt Text
+              Text(
+                  text = "Click for full map view",
+                  fontSize = 18.sp,
+                  fontWeight = FontWeight.Bold,
+                  color = Color.White,
+                  modifier = Modifier.padding(top = if (isLandscape) 16.dp else 32.dp))
+
+              // Centered Logo Image
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "Look Up Logo",
-                  modifier = Modifier.size(250.dp),
+                  modifier =
+                      Modifier.size(if (isLandscape) 180.dp else 250.dp)
+                          .align(Alignment.CenterHorizontally),
                   contentScale = ContentScale.Fit)
-            }
 
-        // Home Button at the Bottom
-        Box(
-            modifier = Modifier.fillMaxSize().padding(bottom = 32.dp),
-            contentAlignment = Alignment.BottomCenter) {
+              // Bottom Home Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.MENU) },
-                  modifier =
-                      Modifier.padding(16.dp) // Padding around the button
-                          .size(150.dp) // Total button size
-                          .testTag("Home Icon"),
-                  shape = CircleShape, // Button is circular
-                  colors =
-                      ButtonDefaults.buttonColors(
-                          containerColor = Color.Transparent) // Make the background transparent
-                  ) {
+                  modifier = Modifier.padding(16.dp).size(if (isLandscape) 130.dp else 160.dp),
+                  shape = CircleShape,
+                  colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Icon(
                         painter = painterResource(id = R.drawable.home_button),
                         contentDescription = "Home Icon",
-                        tint = Color.Unspecified, // Keep the original icon colors
-                        modifier = Modifier.fillMaxSize() // Icon fills the button completely
-                        )
+                        tint = Color.Unspecified,
+                        modifier = Modifier.fillMaxSize())
                   }
             }
-        // Click for full map view prompt
-        Text(
-            text = "Click for full map view",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 48.dp))
       }
 }
 
