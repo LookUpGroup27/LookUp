@@ -19,6 +19,8 @@ object Route {
   const val MENU = "Menu"
   const val COLLECTION = "Collection"
   const val PROFILE_INFORMATION = "ProfileInformation"
+  const val TAKE_IMAGE = "TakeImage"
+  const val IMAGE_REVIEW = "ImageReview"
 }
 
 object Screen {
@@ -33,6 +35,8 @@ object Screen {
   const val MENU = "Menu Screen"
   const val COLLECTION = "Collection Screen"
   const val PROFILE_INFORMATION = "Profile Information Screen"
+  const val TAKE_IMAGE = "Take Image"
+  const val IMAGE_REVIEW = "Image Review Screen"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
@@ -94,5 +98,14 @@ open class NavigationActions(
    */
   open fun currentRoute(): String {
     return navController.currentDestination?.route ?: ""
+  }
+
+  /**
+   * Navigate to the ImageReview screen with a specific imageUri.
+   *
+   * @param imageUri The URI of the captured image to review.
+   */
+  open fun navigateToImageReview(encodeImageUri: String) {
+    navController.navigate("${Route.IMAGE_REVIEW}/$encodeImageUri")
   }
 }
