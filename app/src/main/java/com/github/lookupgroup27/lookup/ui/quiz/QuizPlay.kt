@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,9 +35,6 @@ import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
-  val configuration = LocalConfiguration.current
-  val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
   // Observing ViewModel data
   val quizQuestions by viewModel.quizQuestions.observeAsState(emptyList())
   val currentQuestionIndex by viewModel.currentQuestionIndex.observeAsState(0)
@@ -56,12 +51,13 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize().blur(8.dp).testTag("quiz_background"))
 
-    // Quiz Content
+    // Quiz Content with Vertical Scrolling
     Column(
         modifier =
             Modifier.fillMaxSize()
-                .padding(horizontal = if (isLandscape) 32.dp else 24.dp, vertical = 16.dp)
-                .verticalScroll(rememberScrollState()), // Enable vertical scroll for flexibility
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .verticalScroll(
+                    rememberScrollState()), // Enable vertical scroll in all orientations
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween) {
           // Leave Quiz Button
@@ -75,10 +71,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                   androidx.compose.material3.ButtonDefaults.buttonColors(
                       containerColor = Color.Red, contentColor = Color.White),
               shape = RoundedCornerShape(8.dp)) {
-                Text(
-                    text = "Leave Quiz",
-                    textAlign = TextAlign.Center,
-                    fontSize = if (isLandscape) 12.sp else 16.sp)
+                Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
               }
 
           // Quiz Title
@@ -86,7 +79,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               text = "$quizTitle Quiz",
               color = Color.White,
               fontWeight = FontWeight.Bold,
-              fontSize = if (isLandscape) 24.sp else 30.sp,
+              fontSize = 30.sp,
               modifier = Modifier.padding(vertical = 8.dp).testTag("quiz_title"),
               textAlign = TextAlign.Center)
 
@@ -95,7 +88,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
             Text(
                 text = "Your score: $score/${quizQuestions.size}",
                 color = Color.White,
-                fontSize = if (isLandscape) 20.sp else 28.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.testTag("score_text"))
             Button(
@@ -106,11 +99,11 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                 modifier =
                     Modifier.fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .height(if (isLandscape) 40.dp else 56.dp)
+                        .height(56.dp)
                         .testTag("return_to_quiz_selection_button")) {
                   Text(
                       text = "Return to Quiz Selection",
-                      fontSize = if (isLandscape) 14.sp else 18.sp,
+                      fontSize = 18.sp,
                       textAlign = TextAlign.Center)
                 }
           } else {
@@ -119,7 +112,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               Text(
                   text = question.question,
                   color = Color.White,
-                  fontSize = if (isLandscape) 16.sp else 20.sp,
+                  fontSize = 20.sp,
                   fontWeight = FontWeight.Bold,
                   modifier =
                       Modifier.fillMaxWidth().padding(vertical = 8.dp).testTag("quiz_question"),
@@ -139,12 +132,9 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                                   containerColor = backgroundColor),
                           modifier =
                               Modifier.fillMaxWidth()
-                                  .height(if (isLandscape) 32.dp else 40.dp)
+                                  .height(40.dp)
                                   .testTag("answer_button_$index")) {
-                            Text(
-                                text = answer,
-                                fontSize = if (isLandscape) 14.sp else 16.sp,
-                                textAlign = TextAlign.Center)
+                            Text(text = answer, fontSize = 16.sp, textAlign = TextAlign.Center)
                           }
                     }
                   }
@@ -166,9 +156,9 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                         modifier =
                             Modifier.fillMaxWidth()
                                 .padding(vertical = 8.dp)
-                                .height(if (isLandscape) 32.dp else 40.dp)
+                                .height(40.dp)
                                 .testTag("next_button")) {
-                          Text(text = "Next Question", fontSize = if (isLandscape) 14.sp else 18.sp)
+                          Text(text = "Next Question", fontSize = 18.sp)
                         }
                   }
             }

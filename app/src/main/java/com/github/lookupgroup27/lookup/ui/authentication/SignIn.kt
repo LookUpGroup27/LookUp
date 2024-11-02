@@ -56,15 +56,6 @@ import kotlinx.coroutines.tasks.await
 @Composable
 fun SignInScreen(navigationActions: NavigationActions) {
   val context = LocalContext.current
-  val configuration = LocalConfiguration.current
-
-  // Check for orientation
-  val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-  // Adaptive spacing and sizes for landscape
-  val logoSize = if (isLandscape) 150.dp else 250.dp
-  val verticalSpacing = if (isLandscape) 8.dp else 16.dp
-  val buttonSpacing = if (isLandscape) 24.dp else 48.dp
 
   val launcher =
       rememberFirebaseAuthLauncher(
@@ -92,11 +83,10 @@ fun SignInScreen(navigationActions: NavigationActions) {
             modifier =
                 Modifier.fillMaxSize()
                     .padding(padding)
-                    .verticalScroll(rememberScrollState()), // Enable vertical scrolling
+                    .verticalScroll(
+                        rememberScrollState()), // Enable vertical scrolling in all orientations
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top // Top arrangement to align elements correctly
-            ) {
-              // Move the Go Back button inside the scrollable container
+            verticalArrangement = Arrangement.Center) {
               IconButton(
                   onClick = { navigationActions.goBack() },
                   modifier =
@@ -109,14 +99,14 @@ fun SignInScreen(navigationActions: NavigationActions) {
                         tint = Color.White)
                   }
 
-              Spacer(modifier = Modifier.height(verticalSpacing))
+              Spacer(modifier = Modifier.height(16.dp))
 
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
-                  modifier = Modifier.size(logoSize))
+                  modifier = Modifier.size(250.dp))
 
-              Spacer(modifier = Modifier.height(verticalSpacing))
+              Spacer(modifier = Modifier.height(16.dp))
 
               Text(
                   modifier = Modifier.testTag("loginTitle"),
@@ -128,7 +118,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
                   textAlign = TextAlign.Center,
                   color = Color(0xFF8A9BB7))
 
-              Spacer(modifier = Modifier.height(buttonSpacing))
+              Spacer(modifier = Modifier.height(48.dp))
 
               GoogleSignInButton(
                   onSignInClick = {

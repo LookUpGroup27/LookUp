@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -36,8 +34,6 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
   val context = LocalContext.current
-  val configuration = LocalConfiguration.current
-  val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize().testTag("quiz_screen")) {
     // Background Image
@@ -58,12 +54,13 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
               tint = Color.White)
         }
 
-    // Quiz Content
+    // Quiz Content with Vertical Scrolling
     Column(
         modifier =
             Modifier.align(Alignment.Center)
-                .padding(horizontal = if (isLandscape) 64.dp else 32.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(horizontal = 32.dp) // General padding for both orientations
+                .verticalScroll(
+                    rememberScrollState()), // Enable vertical scrolling in all orientations
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp)) {
           // Title
@@ -72,7 +69,7 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
               color = Color.White,
               style =
                   MaterialTheme.typography.displaySmall.copy(
-                      fontWeight = FontWeight.Bold, fontSize = if (isLandscape) 28.sp else 32.sp),
+                      fontWeight = FontWeight.Bold, fontSize = 32.sp),
               modifier = Modifier.testTag("quiz_title"))
 
           // Quiz Options

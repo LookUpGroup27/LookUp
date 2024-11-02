@@ -1,11 +1,12 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -15,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,16 +30,9 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
-  val configuration = LocalConfiguration.current
-  val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
   // Background container with clickable modifier to navigate to Map screen
   BoxWithConstraints(
-      modifier =
-          Modifier.fillMaxSize().clickable {
-            navigationActions.navigateTo(Screen.MAP)
-          } // Add clickable modifier here
-      ) {
+      modifier = Modifier.fillMaxSize().clickable { navigationActions.navigateTo(Screen.MAP) }) {
         // Background Image
         Image(
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
@@ -46,9 +40,13 @@ fun LandingScreen(navigationActions: NavigationActions) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize())
 
-        // Content Layout based on Orientation
+        // Content Layout with Vertical Scrolling
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier =
+                Modifier.fillMaxSize()
+                    .verticalScroll(
+                        rememberScrollState()) // Enable vertical scrolling in both modes
+                    .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally) {
               // Top Prompt Text
@@ -57,21 +55,19 @@ fun LandingScreen(navigationActions: NavigationActions) {
                   fontSize = 18.sp,
                   fontWeight = FontWeight.Bold,
                   color = Color.White,
-                  modifier = Modifier.padding(top = if (isLandscape) 16.dp else 32.dp))
+                  modifier = Modifier.padding(top = 32.dp))
 
               // Centered Logo Image
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "Look Up Logo",
-                  modifier =
-                      Modifier.size(if (isLandscape) 180.dp else 250.dp)
-                          .align(Alignment.CenterHorizontally),
+                  modifier = Modifier.size(250.dp).align(Alignment.CenterHorizontally),
                   contentScale = ContentScale.Fit)
 
               // Bottom Home Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.MENU) },
-                  modifier = Modifier.padding(16.dp).size(if (isLandscape) 130.dp else 160.dp),
+                  modifier = Modifier.padding(16.dp).size(160.dp).testTag("Home Icon"),
                   shape = CircleShape,
                   colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
                     Icon(
