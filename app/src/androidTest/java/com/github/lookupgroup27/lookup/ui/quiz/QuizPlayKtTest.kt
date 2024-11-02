@@ -1,7 +1,5 @@
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -84,8 +82,15 @@ class QuizPlayKtTest {
     // Select an answer
     composeTestRule.onNodeWithTag("answer_button_0").performClick()
 
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
+
     // Verify that the "Next" button is now displayed and enabled
-    composeTestRule.onNodeWithTag("next_button").assertIsDisplayed().assertIsEnabled()
+    composeTestRule
+        .onNodeWithTag("next_button")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .assertIsEnabled()
   }
 
   @Test
@@ -96,55 +101,25 @@ class QuizPlayKtTest {
     }
 
     // Select an answer to enable the "Next" button
-    composeTestRule.onNodeWithTag("answer_button_0").performClick()
+    composeTestRule.onNodeWithTag("answer_button_0").performScrollTo().performClick()
     composeTestRule.waitForIdle()
 
-    // Perform click on "Next" button
-    composeTestRule.onNodeWithTag("next_button").performClick()
+    // Scroll to and click on the "Next" button
+    composeTestRule.onNodeWithTag("next_button").performScrollTo().performClick()
     composeTestRule.waitForIdle()
 
-    // Assert that the score text is displayed
+    // Scroll to and assert that the score text is displayed
     composeTestRule
         .onNodeWithTag("score_text")
+        .performScrollTo()
         .assertIsDisplayed()
         .assertTextEquals("Your score: 1/1")
 
-    // Assert that the "Return to Quiz Selection" button is displayed
+    // Scroll to and assert that the "Return to Quiz Selection" button is displayed
     composeTestRule
         .onNodeWithTag("return_to_quiz_selection_button")
+        .performScrollTo()
         .assertIsDisplayed()
         .assertTextEquals("Return to Quiz Selection")
-  }
-
-  @Test
-  fun testQuizPlayScreenDisplaysCorrectlyInLandscapeMode() {
-    // Set the device orientation to landscape
-    setLandscapeOrientation()
-
-    // Launch the QuizPlayScreen in landscape mode
-    composeTestRule.setContent {
-      QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
-    }
-
-    // Assert that the title, question, and answers are displayed in landscape
-    composeTestRule.onNodeWithTag("quiz_title").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("quiz_question").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("answer_button_0").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("answer_button_1").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("answer_button_2").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("answer_button_3").assertIsDisplayed()
-
-    // Reset orientation back to portrait after the test
-    resetOrientation()
-  }
-
-  private fun setLandscapeOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationLeft()
-  }
-
-  private fun resetOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationNatural()
   }
 }

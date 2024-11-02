@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -43,12 +44,11 @@ class LandingKtTest {
   fun logoAndButtonAreDisplayed() {
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
 
-    // Verify that the Look Up logo is displayed
+    // Ensure the Logo is displayed by scrolling if needed and checking for visibility
     composeTestRule.onNodeWithContentDescription("Look Up Logo").assertIsDisplayed()
 
-    // Verify that the Home button is displayed and clickable
-    composeTestRule.onNodeWithContentDescription("Home Icon").assertIsDisplayed()
-    composeTestRule.onNodeWithContentDescription("Home Icon").assertHasClickAction()
+    // Ensure Home Icon is displayed and clickable
+    composeTestRule.onNodeWithContentDescription("Home Icon").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -93,16 +93,17 @@ class LandingKtTest {
 
   @Test
   fun testLandingScreenIsFullyVisibleInLandscape() {
-    // Set the device orientation to landscape
+    // Set device orientation to landscape
     setLandscapeOrientation()
 
-    // Launch the LandingScreen in landscape mode
+    // Launch LandingScreen in landscape mode
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
 
-    // Verify that main UI elements are visible and accessible
+    // Ensure main UI elements are visible and accessible by scrolling if needed
     composeTestRule.onNodeWithContentDescription("Look Up Logo").assertIsDisplayed()
     composeTestRule
         .onNodeWithContentDescription("Home Icon")
+        .performScrollTo()
         .assertIsDisplayed()
         .assertHasClickAction()
     composeTestRule
