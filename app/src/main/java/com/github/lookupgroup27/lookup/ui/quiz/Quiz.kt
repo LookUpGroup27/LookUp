@@ -1,8 +1,11 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -27,21 +30,20 @@ import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
-
   val context = LocalContext.current
 
-  Box(
-      modifier = Modifier.fillMaxSize().testTag("quiz_screen"),
-      contentAlignment = Alignment.Center,
-  ) {
+  BoxWithConstraints(modifier = Modifier.fillMaxSize().testTag("quiz_screen")) {
+    // Background Image
     Image(
         painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
         contentDescription = "Background",
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize().blur(10.dp).testTag("quiz_background"))
 
+    // Back Button
     IconButton(
         onClick = { navigationActions.navigateTo(Screen.MENU) },
         modifier =
@@ -52,10 +54,16 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
               tint = Color.White)
         }
 
+    // Quiz Content with Vertical Scrolling
     Column(
-        modifier = Modifier.align(Alignment.Center).padding(horizontal = 32.dp),
+        modifier =
+            Modifier.align(Alignment.Center)
+                .padding(horizontal = 32.dp) // General padding for both orientations
+                .verticalScroll(
+                    rememberScrollState()), // Enable vertical scrolling in all orientations
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp)) {
+          // Title
           Text(
               text = "Take a Quiz",
               color = Color.White,
@@ -64,13 +72,14 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
                       fontWeight = FontWeight.Bold, fontSize = 32.sp),
               modifier = Modifier.testTag("quiz_title"))
 
+          // Quiz Options
           QuizOptionButton(
               text = "Earth",
               onClick = {
                 viewModel.loadQuizDataForTheme("Earth", context)
                 navigationActions.navigateTo(Screen.QUIZ_PLAY)
               },
-              "earth_button")
+              testTag = "earth_button")
 
           QuizOptionButton(
               text = "Solar System",
@@ -78,7 +87,7 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
                 viewModel.loadQuizDataForTheme("Solar System", context)
                 navigationActions.navigateTo(Screen.QUIZ_PLAY)
               },
-              "solar_system_button")
+              testTag = "solar_system_button")
         }
   }
 }

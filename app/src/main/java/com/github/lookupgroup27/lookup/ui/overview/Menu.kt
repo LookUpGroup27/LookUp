@@ -3,6 +3,8 @@ package com.github.lookupgroup27.lookup.ui.overview
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
@@ -37,8 +39,7 @@ fun MenuScreen(navigationActions: NavigationActions) {
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
           // Blurred map screen as the background
           Image(
-              painter =
-                  painterResource(id = R.drawable.landing_screen_bckgrnd), // Import your image
+              painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
               contentDescription = "Background",
               modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp),
               contentScale = ContentScale.Crop)
@@ -60,9 +61,14 @@ fun MenuScreen(navigationActions: NavigationActions) {
                     contentDescription = "Profile",
                     tint = Color.White)
               }
-          // Buttons in the foreground
+
+          // Main content with scrollable column
           Column(
-              modifier = Modifier.align(Alignment.Center).padding(horizontal = 32.dp),
+              modifier =
+                  Modifier.align(Alignment.Center)
+                      .padding(horizontal = 32.dp)
+                      .verticalScroll(rememberScrollState()) // Ensuring scroll semantics
+                      .testTag("scrollable_menu_content"), // Add unique tag for testing if needed
               horizontalAlignment = Alignment.CenterHorizontally,
               verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(

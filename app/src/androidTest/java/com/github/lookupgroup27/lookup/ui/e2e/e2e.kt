@@ -52,7 +52,7 @@ class AstronomyAppE2ETest {
     }
 
     // Assert that we're on the Landing screen and the "Home Icon" button is displayed
-    composeTestRule.onNodeWithTag("Home Icon").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Home Icon").performScrollTo().assertIsDisplayed()
 
     // Step 2: Click the Home button to navigate to MenuScreen
     composeTestRule.onNodeWithTag("Home Icon").performClick()
