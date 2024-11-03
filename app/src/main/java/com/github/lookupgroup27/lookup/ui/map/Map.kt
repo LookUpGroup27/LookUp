@@ -21,7 +21,7 @@ fun MapScreen(navigationActions: NavigationActions) {
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
-            selectedItem = Route.MENU)
+            selectedItem = Route.MAP)
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen")) {
           Image(

@@ -65,6 +65,13 @@ firebaseFirestore = "25.1.0"
 firebaseUiAuth = "8.0.0"
 navigationRuntimeKtx = "2.8.2"
 
+# Google Service and Maps
+playServicesAuth = "21.2.0"
+playServicesMaps = "19.0.0"
+playServicesLocation = "21.3.0"
+mapsCompose = "4.3.3"
+mapsComposeUtils = "4.3.0"
+
 # Calendar Libraries
 ical4j = "3.0.21"
 compose = "1.5.1"
@@ -149,6 +156,14 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
 compose = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigationTesting" }
+
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "mapsComposeUtils" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
