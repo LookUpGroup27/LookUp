@@ -235,4 +235,73 @@ class ProfileRepositoryFirestoreTest {
     verify(onFailure).invoke(exception)
     verify(onSuccess, never()).invoke()
   }
+
+  @Test
+  fun `deleteUserProfile calls onSuccess on successful Firestore operation`() = runTest {
+    // Arrange
+    val userId = "testUserId"
+    val userProfile = UserProfile("testUser", "test@example.com", "Sample bio")
+
+    // Mock the current user and Firestore delete operation
+    `when`(mockAuth.currentUser).thenReturn(mockUser)
+    `when`(mockUser.uid).thenReturn(userId)
+    `when`(mockDocumentReference.delete()).thenReturn(Tasks.forResult(null))
+
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    // Act
+    profileRepositoryFirestore.deleteUserProfile(userProfile, onSuccess, onFailure)
+
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
+
+    // Assert
+    verify(onSuccess).invoke() // Ensure onSuccess was called
+    verify(onFailure, never()).invoke(any()) // Ensure onFailure was not called
+  }
+
+  @Test
+  fun `deleteUserProfile calls onFailure on failed Firestore operation`() = runTest {
+    // Arrange
+    val userId = "testUserId"
+    val exception = Exception("Delete error")
+
+    // Mock the current user and Firestore delete operation
+    `when`(mockAuth.currentUser).thenReturn(mockUser)
+    `when`(mockUser.uid).thenReturn(userId)
+    `when`(mockDocumentReference.delete()).thenReturn(Tasks.forException(exception))
+
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    // Act
+    profileRepositoryFirestore.deleteUserProfile(UserProfile(), onSuccess, onFailure)
+
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
+
+    // Assert
+    verify(onFailure).invoke(exception) // Ensure onFailure was called with the correct exception
+    verify(onSuccess, never()).invoke() // Ensure onSuccess was not called
+  }
+
+  @Test
+  fun `deleteUserProfile calls onFailure when user is not logged in`() = runTest {
+    // Arrange: Simulate no logged-in user
+    `when`(mockAuth.currentUser).thenReturn(null)
+
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    // Act
+    profileRepositoryFirestore.deleteUserProfile(UserProfile(), onSuccess, onFailure)
+
+    // Ensure all runnables on the main looper are completed
+    shadowOf(Looper.getMainLooper()).idle()
+
+    // Assert
+    verify(onFailure).invoke(any()) // Ensure onFailure is called
+    verify(onSuccess, never()).invoke() // Ensure onSuccess was not called
+  }
 }

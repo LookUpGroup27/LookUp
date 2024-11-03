@@ -7,5 +7,7 @@ interface ProfileRepository {
 
   fun updateUserProfile(profile: UserProfile, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
+  fun deleteUserProfile(profile: UserProfile, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+
   fun logoutUser()
 }
