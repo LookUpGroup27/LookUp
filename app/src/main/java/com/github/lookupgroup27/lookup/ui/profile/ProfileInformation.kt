@@ -107,6 +107,7 @@ fun ProfileInformationScreen(
                         profile?.copy(username = username, bio = bio, email = email)
                             ?: UserProfile(username = username, bio = bio, email = email)
                     profileViewModel.updateUserProfile(newProfile)
+                    navigationActions.navigateTo(Screen.PROFILE)
                   },
                   enabled = username.isNotEmpty() && bio.isNotEmpty() && email.isNotEmpty(),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF30315B)),
@@ -128,7 +129,10 @@ fun ProfileInformationScreen(
               Spacer(modifier = Modifier.height(30.dp))
               Button(
                   onClick = {
-                    profileViewModel.deleteUserProfile(profile!!)
+                    profile?.let {
+                      profileViewModel.deleteUserProfile(it)
+                      profileViewModel.logoutUser()
+                    }
                     navigationActions.navigateTo(Screen.MENU)
                   },
                   enabled = username.isNotEmpty() && bio.isNotEmpty() && email.isNotEmpty(),
