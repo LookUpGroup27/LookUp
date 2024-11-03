@@ -44,8 +44,8 @@ class NavigationActionsTest {
     verify(navHostController).navigate(eq(Route.MENU), any<NavOptionsBuilder.() -> Unit>())
 
     // Test navigating to specific screens
-    navigationActions.navigateTo(Screen.SKY_TRACKER)
-    verify(navHostController).navigate(Screen.SKY_TRACKER)
+    navigationActions.navigateTo(Screen.GOOGLE_MAP)
+    verify(navHostController).navigate(Screen.GOOGLE_MAP)
 
     navigationActions.navigateTo(Screen.QUIZ)
     verify(navHostController).navigate(Screen.QUIZ)

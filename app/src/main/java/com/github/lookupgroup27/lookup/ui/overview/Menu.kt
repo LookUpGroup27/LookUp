@@ -82,8 +82,8 @@ fun MenuScreen(navigationActions: NavigationActions) {
                 Button(onClick = { navigationActions.navigateTo(Screen.CALENDAR) }) {
                   Text(text = "Calendar", style = MaterialTheme.typography.headlineSmall)
                 }
-                Button(onClick = { navigationActions.navigateTo(Screen.SKY_TRACKER) }) {
-                  Text(text = "Sky Tracker", style = MaterialTheme.typography.headlineSmall)
+                Button(onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) }) {
+                  Text(text = "Google Map", style = MaterialTheme.typography.headlineSmall)
                 }
               }
         }

@@ -79,7 +79,7 @@ fun LookUpApp() {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
-      composable(Screen.SKY_TRACKER) { GoogleMapScreen(navigationActions) }
+      composable(Screen.GOOGLE_MAP) { GoogleMapScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }
 

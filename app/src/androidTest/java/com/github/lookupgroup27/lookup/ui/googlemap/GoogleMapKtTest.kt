@@ -29,7 +29,7 @@ class GoogleMapScreenTest {
     // Mock NavigationActions
     navigationActions = mock(NavigationActions::class.java)
     // Setup to return the map route as current
-    `when`(navigationActions.currentRoute()).thenReturn(Screen.SKY_TRACKER)
+    `when`(navigationActions.currentRoute()).thenReturn(Screen.GOOGLE_MAP)
 
     // Set the Compose content to GoogleMapScreen
     composeTestRule.setContent { GoogleMapScreen(navigationActions) }
