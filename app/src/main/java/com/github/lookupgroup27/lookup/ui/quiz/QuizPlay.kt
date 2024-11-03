@@ -6,11 +6,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -27,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
@@ -61,18 +69,20 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween) {
           // Leave Quiz Button
-          Button(
-              onClick = {
-                viewModel.resetQuiz()
-                navigationActions.navigateTo(Route.QUIZ)
-              },
-              modifier = Modifier.align(Alignment.Start).padding(top = 8.dp),
-              colors =
-                  androidx.compose.material3.ButtonDefaults.buttonColors(
-                      containerColor = Color.Red, contentColor = Color.White),
-              shape = RoundedCornerShape(8.dp)) {
-                Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
-              }
+          if (!showScore) {
+            Button(
+                onClick = {
+                  viewModel.resetQuiz()
+                  navigationActions.navigateTo(Route.QUIZ)
+                },
+                modifier = Modifier.align(Alignment.Start).padding(top = 8.dp),
+                colors =
+                    androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color.Red, contentColor = Color.White),
+                shape = RoundedCornerShape(8.dp)) {
+                  Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
+                }
+          }
 
           // Quiz Title
           Text(
@@ -91,6 +101,34 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.testTag("score_text"))
+            Box(
+                modifier =
+                    Modifier.height(450.dp) // Limit height of scrollable area
+                        .fillMaxWidth()) {
+                  QuizRecap(viewModel.getQuestions(), viewModel.getUserAnswers())
+
+                  // Gradient overlay at the bottom
+                  Box(
+                      modifier =
+                          Modifier.align(Alignment.BottomCenter)
+                              .fillMaxWidth()
+                              .height(20.dp)
+                              .background(
+                                  brush =
+                                      Brush.verticalGradient(
+                                          colors =
+                                              listOf(
+                                                  Color.Transparent,
+                                                  Color.Black.copy(alpha = 0.6f)))))
+                }
+
+            // Add a scroll prompt above the scrollable area
+            Text(
+                text = "Scroll to see more",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 8.dp))
+
             Button(
                 onClick = {
                   viewModel.resetQuiz()
@@ -165,4 +203,39 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
           }
         }
   }
+}
+
+@Composable
+fun QuizRecap(questions: List<QuizQuestion>, userAnswers: List<String>) {
+  LazyColumn(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(questions.size) { index ->
+          val question = questions[index]
+          val isCorrect = question.correctAnswer == userAnswers[index]
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                Icon(
+                    imageVector = if (isCorrect) Icons.Filled.Check else Icons.Filled.Close,
+                    contentDescription = if (isCorrect) "Correct" else "Incorrect",
+                    tint = if (isCorrect) Color(0xFF4CAF50) else Color(0xFFF44336),
+                    modifier = Modifier.size(24.dp))
+
+                Column {
+                  Text(
+                      text = "Q${index + 1}: ${question.question}",
+                      fontWeight = FontWeight.Bold,
+                      fontSize = 16.sp,
+                      color = Color.White)
+
+                  Text(
+                      text = "Your answer: ${userAnswers[index]}",
+                      fontSize = 14.sp,
+                      color = if (isCorrect) Color(0xFF4CAF50) else Color(0xFFF44336))
+                }
+              }
+        }
+      }
 }

@@ -1,25 +1,65 @@
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
+import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.mock
 
 class QuizPlayKtTest {
   val mockNavigationActions: NavigationActions = mock()
+  val mockContext: Context = mock()
   @get:Rule val composeTestRule = createComposeRule()
-
   private lateinit var quizViewModel: QuizViewModel
+  private lateinit var testRepository: QuizRepository
+
+  private val mockSharedPreferences: SharedPreferences = mock()
+  private val mockEditor: SharedPreferences.Editor = mock()
 
   @Before
   fun setup() {
-    // Initialize the ViewModel with test data
+    // Set up the mock for SharedPreferences
+    `when`(mockContext.getSharedPreferences(anyString(), anyInt()))
+        .thenReturn(mockSharedPreferences)
+    `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
+    `when`(mockEditor.putInt(anyString(), anyInt())).thenReturn(mockEditor)
+    `when`(mockEditor.apply()).then {}
+
+    // Set up default return for getInt on SharedPreferences
+    `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenAnswer { invocation ->
+      invocation.getArgument(1) // Return the default value provided
+    }
+
+    testRepository =
+        QuizRepository(mockContext).apply {
+          quizQuestions =
+              listOf(
+                  QuizQuestion(
+                      question = "In which galaxy is the solar system located?",
+                      answers =
+                          listOf(
+                              "The Milky Way",
+                              "The Great Spiral",
+                              "The Magellanic Cloud",
+                              "Andromeda"),
+                      correctAnswer = "The Milky Way"))
+          quizTitle = "Astronomy"
+          currentQuestionIndex = 0
+          score = 0
+          showScore = false
+          selectedAnswer = null
+        }
     quizViewModel =
-        QuizViewModel().apply {
+        QuizViewModel(testRepository).apply {
           _quizQuestions.postValue(
               listOf(
                   QuizQuestion(

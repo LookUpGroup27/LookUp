@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -51,7 +52,8 @@ fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
-  val quizViewModel: QuizViewModel = viewModel()
+  val quizViewModel: QuizViewModel =
+      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
