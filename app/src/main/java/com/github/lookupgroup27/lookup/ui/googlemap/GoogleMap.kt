@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Location
+import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -53,6 +54,9 @@ fun GoogleMapScreen(navigationActions: NavigationActions) {
           context as Activity,
           arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
           LOCATION_PERMISSION_REQUEST_CODE)
+      Toast.makeText(
+              context, "Location permission is required to access the map.", Toast.LENGTH_LONG)
+          .show()
     }
   }
 
