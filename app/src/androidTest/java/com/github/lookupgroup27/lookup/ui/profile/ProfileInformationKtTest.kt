@@ -1,26 +1,12 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performTextInput
-import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
-import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
-import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.model.profile.*
+import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.google.firebase.auth.FirebaseAuth
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.junit.*
+import org.mockito.Mockito.*
 
 class ProfileInformationScreenTest {
 
@@ -30,9 +16,6 @@ class ProfileInformationScreenTest {
   private lateinit var firebaseAuth: FirebaseAuth
 
   @get:Rule val composeTestRule = createComposeRule()
-
-  private val mockUserProfile =
-      UserProfile(username = "JohnDoe", bio = "This is a bio", email = "john.doe@example.com")
 
   @Before
   fun setUp() {
@@ -126,7 +109,7 @@ class ProfileInformationScreenTest {
     composeTestRule.onNodeWithTag("profileLogout").performScrollTo().performClick()
 
     // Verify that the navigation action to the landing screen was triggered
-    Mockito.verify(navigationActions).navigateTo(Screen.LANDING)
+    verify(navigationActions).navigateTo(Screen.LANDING)
   }
 
   @Test
@@ -158,5 +141,21 @@ class ProfileInformationScreenTest {
 
     // Assert: Save button is disabled because no fields have been populated
     composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+  }
+
+  @Test
+  fun deleteButtonDisabledWhenProfileIsNull() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Assert: Delete button is disabled because the profile is null
+    composeTestRule.onNodeWithTag("profileDelete").assertIsNotEnabled()
+  }
+
+  @Test
+  fun deleteButtonWorks() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Scroll to the delete button if it's off-screen, then click it
+    composeTestRule.onNodeWithTag("profileDelete").performScrollTo().performClick()
   }
 }

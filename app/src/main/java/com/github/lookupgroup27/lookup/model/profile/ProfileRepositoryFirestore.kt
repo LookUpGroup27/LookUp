@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.model.profile
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 
 data class UserProfile(val username: String = " ", val email: String = " ", val bio: String = " ")
@@ -52,6 +51,19 @@ class ProfileRepositoryFirestore(
     val userId = auth.currentUser?.uid
     if (userId != null) {
       performFirestoreOperation(usersCollection.document(userId).set(profile), onSuccess, onFailure)
+    } else {
+      onFailure(Exception("User not logged in"))
+    }
+  }
+
+  override fun deleteUserProfile(
+      profile: UserProfile,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val userId = auth.currentUser?.uid
+    if (userId != null) {
+      performFirestoreOperation(usersCollection.document(userId).delete(), onSuccess, onFailure)
     } else {
       onFailure(Exception("User not logged in"))
     }

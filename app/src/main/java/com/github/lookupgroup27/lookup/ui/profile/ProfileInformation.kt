@@ -1,41 +1,19 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
-import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.model.profile.*
+import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -54,7 +32,6 @@ fun ProfileInformationScreen(
   var username by remember { mutableStateOf(profile?.username ?: "") }
   var bio by remember { mutableStateOf(profile?.bio ?: "") }
   var email by remember { mutableStateOf(userEmail) }
-  val context = LocalContext.current
 
   Column(
       verticalArrangement = Arrangement.Top,
@@ -126,13 +103,9 @@ fun ProfileInformationScreen(
 
               Button(
                   onClick = {
-                    var newProfile: UserProfile
-                    if (profile != null) {
-                      newProfile = profile.copy(username = username, bio = bio, email = email)
-                    } else {
-                      newProfile = UserProfile(username = username, bio = bio, email = email)
-                    }
-
+                    val newProfile: UserProfile =
+                        profile?.copy(username = username, bio = bio, email = email)
+                            ?: UserProfile(username = username, bio = bio, email = email)
                     profileViewModel.updateUserProfile(newProfile)
                   },
                   enabled = username.isNotEmpty() && bio.isNotEmpty() && email.isNotEmpty(),
@@ -151,6 +124,17 @@ fun ProfileInformationScreen(
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF410002)),
                   modifier = Modifier.width(131.dp).height(40.dp).testTag("profileLogout")) {
                     Text(text = "Sign out", color = Color.White)
+                  }
+              Spacer(modifier = Modifier.height(30.dp))
+              Button(
+                  onClick = {
+                    profileViewModel.deleteUserProfile(profile!!)
+                    navigationActions.navigateTo(Screen.MENU)
+                  },
+                  enabled = username.isNotEmpty() && bio.isNotEmpty() && email.isNotEmpty(),
+                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF410002)),
+                  modifier = Modifier.width(131.dp).height(40.dp).testTag("profileDelete")) {
+                    Text(text = "Delete", color = Color.White)
                   }
             }
       }
