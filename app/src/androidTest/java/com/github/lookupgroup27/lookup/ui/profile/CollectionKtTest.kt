@@ -2,6 +2,7 @@ package com.github.lookupgroup27.lookup.ui.profile
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -10,47 +11,108 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import org.junit.Rule
 import org.junit.Test
+import io.mockk.mockk
+import io.mockk.verify
 
 class CollectionKtTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
-  @Test
-  fun collectionScreen_displaysCorrectly() {
-    // Set up the CollectionScreen in the test
-    composeTestRule.setContent {
-      val mockNavigationActions =
-          NavigationActions(
-              navController = NavHostController(ApplicationProvider.getApplicationContext()))
-      CollectionScreen(navigationActions = mockNavigationActions)
-    }
-
-    // Check if the text "Collection Screen" is displayed
-    composeTestRule.onNodeWithText("Collection Screen").assertIsDisplayed()
-
-    // Check if the back button with the tag "go_back_button_collection" is displayed
-    composeTestRule.onNodeWithTag("go_back_button_collection").assertIsDisplayed()
-  }
-
-  @Test
-  fun collectionScreen_backButton_callsGoBack() {
-    // Mock the goBack action
-    var backButtonClicked = false
-    val mockNavigationActions =
-        object :
-            NavigationActions(
-                navController = NavHostController(ApplicationProvider.getApplicationContext())) {
-          override fun goBack() {
-            backButtonClicked = true
-          }
+    @Test
+    fun collectionScreen_displaysCorrectly() {
+        composeTestRule.setContent {
+            val mockNavigationActions =
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())
+                )
+            CollectionScreen(navigationActions = mockNavigationActions)
         }
 
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions) }
+        composeTestRule.onNodeWithText("Your Astronomy Collection").assertIsDisplayed()
+    }
 
-    // Perform click on the back button with the tag "go_back_button_collection"
-    composeTestRule.onNodeWithTag("go_back_button_collection").performClick()
+    @Test
+    fun collectionScreen_displaysNoImagesMessage_whenNoImagesAvailable() {
+        composeTestRule.setContent {
+            val mockNavigationActions =
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())
+                )
+            CollectionScreen(navigationActions = mockNavigationActions)
+        }
 
-    // Verify that the navigation action was triggered
-    assert(backButtonClicked)
-  }
+        composeTestRule.onNodeWithText("No images in your collection yet.").assertIsDisplayed()
+    }
+
+    @Test
+    fun collectionScreen_backButton_callsGoBack() {
+        var backButtonClicked = false
+        val mockNavigationActions =
+            object :
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())) {
+                override fun goBack() {
+                    backButtonClicked = true
+                }
+            }
+
+        composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions) }
+
+        composeTestRule.onNodeWithTag("go_back_button_collection").performClick()
+
+        assert(backButtonClicked)
+    }
+
+    @Test
+    fun backgroundBox_isDisplayed() {
+        composeTestRule.setContent {
+            val mockNavigationActions =
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())
+                )
+            CollectionScreen(navigationActions = mockNavigationActions)
+        }
+
+        composeTestRule.onNodeWithTag("background_box").assertIsDisplayed()
+    }
+
+    @Test
+    fun backgroundImage_isDisplayed() {
+        composeTestRule.setContent {
+            val mockNavigationActions =
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())
+                )
+            CollectionScreen(navigationActions = mockNavigationActions)
+        }
+
+        composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
+    }
+
+    @Test
+    fun titleText_isDisplayed() {
+        composeTestRule.setContent {
+            val mockNavigationActions =
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())
+                )
+            CollectionScreen(navigationActions = mockNavigationActions)
+        }
+
+        composeTestRule.onNodeWithTag("title_text").assertIsDisplayed()
+    }
+
+    @Test
+    fun noImagesText_isDisplayed_whenImageUrlsAreEmpty() {
+        composeTestRule.setContent {
+            val mockNavigationActions =
+                NavigationActions(
+                    navController = NavHostController(ApplicationProvider.getApplicationContext())
+                )
+            CollectionScreen(navigationActions = mockNavigationActions)
+        }
+
+        composeTestRule.onNodeWithTag("no_images_text").assertIsDisplayed()
+    }
 }
