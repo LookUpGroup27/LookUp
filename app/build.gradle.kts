@@ -9,7 +9,11 @@ plugins {
     alias(libs.plugins.gms)
     id("jacoco")
 }
-
+configurations {
+    androidTestImplementation {
+        exclude(group = "com.google.protobuf", module = "protobuf-lite")
+    }
+}
 android {
     namespace = "com.github.lookupgroup27.lookup"
     compileSdk = 34
