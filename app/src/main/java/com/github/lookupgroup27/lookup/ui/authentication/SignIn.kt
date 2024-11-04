@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.authentication
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -10,7 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -22,11 +25,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -71,100 +75,100 @@ fun SignInScreen(navigationActions: NavigationActions) {
       containerColor = Color.Black,
       topBar = {
         TopAppBar(
-            colors =
-                TopAppBarColors(
-                    containerColor = Color.Black,
-                    scrolledContainerColor = Color.Black,
-                    navigationIconContentColor = Color.Black,
-                    titleContentColor = Color.Black,
-                    actionIconContentColor = Color.Black,
-                ),
             title = { Text("") },
-            navigationIcon = {
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black))
+      },
+      content = { padding ->
+        Column(
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(
+                        rememberScrollState()), // Enable vertical scrolling in all orientations
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
               IconButton(
                   onClick = { navigationActions.goBack() },
-                  modifier = Modifier.padding(16.dp).testTag("go_back_button_signin")) {
+                  modifier =
+                      Modifier.padding(16.dp)
+                          .align(Alignment.Start)
+                          .testTag("go_back_button_signin")) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Go Back",
                         tint = Color.White)
                   }
-            })
-      },
-      content = { padding ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-          // App Logo Image
-          Image(
-              painter = painterResource(id = R.drawable.app_logo),
-              contentDescription = "App Logo",
-              modifier = Modifier.size(250.dp))
 
-          Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(16.dp))
 
-          // Welcome Text
-          Text(
-              modifier = Modifier.testTag("loginTitle"),
-              text = "Welcome to the Cosmos",
-              style =
-                  MaterialTheme.typography.headlineMedium.copy(
-                      fontSize = 42.sp,
-                      lineHeight = 50.sp,
-                      letterSpacing = 1.5.sp // Add letter spacing for a futuristic effect
-                      ),
-              fontWeight = FontWeight.SemiBold, // Use SemiBold for a smoother look
-              textAlign = TextAlign.Center,
-              color = Color(0xFF8A9BB7) // A softer, muted star-like color
-              )
+              Image(
+                  painter = painterResource(id = R.drawable.app_logo),
+                  contentDescription = "App Logo",
+                  modifier = Modifier.size(250.dp))
 
-          Spacer(modifier = Modifier.height(48.dp))
+              Spacer(modifier = Modifier.height(16.dp))
 
-          // Authenticate With Google Button
-          GoogleSignInButton(
-              onSignInClick = {
-                val gso =
-                    GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(token)
-                        .requestEmail()
-                        .build()
-                val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                launcher.launch(googleSignInClient.signInIntent)
-              })
-        }
+              Text(
+                  modifier = Modifier.testTag("loginTitle"),
+                  text = "Welcome to the Cosmos",
+                  style =
+                      MaterialTheme.typography.headlineMedium.copy(
+                          fontSize = 42.sp, lineHeight = 50.sp, letterSpacing = 1.5.sp),
+                  fontWeight = FontWeight.SemiBold,
+                  textAlign = TextAlign.Center,
+                  color = Color(0xFF8A9BB7))
+
+              Spacer(modifier = Modifier.height(48.dp))
+
+              GoogleSignInButton(
+                  onSignInClick = {
+                    val gso =
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(token)
+                            .requestEmail()
+                            .build()
+                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                    launcher.launch(googleSignInClient.signInIntent)
+                  })
+            }
       })
 }
 
 @Composable
 fun GoogleSignInButton(onSignInClick: () -> Unit) {
+  val configuration = LocalConfiguration.current
+  val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+  // Set dimensions based on orientation
+  val buttonHeight = if (isLandscape) 40.dp else 48.dp
+  val buttonWidthModifier =
+      if (isLandscape) Modifier.fillMaxWidth(0.7f) else Modifier.fillMaxWidth()
+
   Button(
       onClick = onSignInClick,
-      colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)), // Button color
-      shape = RoundedCornerShape(50), // Circular edges for the button
+      colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)),
+      shape = RoundedCornerShape(50),
       border = BorderStroke(1.dp, Color(0xFF9DACE6)),
       modifier =
           Modifier.padding(8.dp)
-              .height(48.dp) // Adjust height as needed
+              .height(buttonHeight)
+              .then(buttonWidthModifier)
               .testTag("loginButton")) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()) {
-              // Load the Google logo from resources
               Image(
                   painter = painterResource(id = R.drawable.google_logo),
                   contentDescription = "Google Logo",
                   modifier =
-                      Modifier.size(30.dp) // Size of the Google logo
+                      Modifier.size(24.dp) // Smaller logo for better alignment in landscape
                           .padding(end = 8.dp))
 
-              // Text for the button
               Text(
                   text = "Sign in with Google",
-                  color = Color.White, // Text color
-                  fontSize = 16.sp, // Font size
+                  color = Color.White,
+                  fontSize = 14.sp, // Slightly smaller font in landscape
                   fontWeight = FontWeight.Medium)
             }
       }

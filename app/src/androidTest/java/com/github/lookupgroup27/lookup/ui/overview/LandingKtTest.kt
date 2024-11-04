@@ -4,11 +4,13 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import org.junit.After
@@ -42,12 +44,11 @@ class LandingKtTest {
   fun logoAndButtonAreDisplayed() {
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
 
-    // Verify that the Look Up logo is displayed
+    // Ensure the Logo is displayed by scrolling if needed and checking for visibility
     composeTestRule.onNodeWithContentDescription("Look Up Logo").assertIsDisplayed()
 
-    // Verify that the Home button is displayed and clickable
-    composeTestRule.onNodeWithContentDescription("Home Icon").assertIsDisplayed()
-    composeTestRule.onNodeWithContentDescription("Home Icon").assertHasClickAction()
+    // Ensure Home Icon is displayed and clickable
+    composeTestRule.onNodeWithContentDescription("Home Icon").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -73,7 +74,7 @@ class LandingKtTest {
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
 
     // Perform click action on the home button using its testTag
-    composeTestRule.onNodeWithTag("Home Icon").performClick()
+    composeTestRule.onNodeWithContentDescription("Home Icon").performClick()
 
     // Wait for the UI to settle after the click
     composeTestRule.waitForIdle()
@@ -88,5 +89,40 @@ class LandingKtTest {
 
     // Assert that it is displayed
     composeTestRule.onNodeWithText("Click for full map view").assertIsDisplayed()
+  }
+
+  @Test
+  fun testLandingScreenIsFullyVisibleInLandscape() {
+    // Set device orientation to landscape
+    setLandscapeOrientation()
+
+    // Launch LandingScreen in landscape mode
+    composeTestRule.setContent { LandingScreen(mockNavigationActions) }
+
+    // Ensure main UI elements are visible and accessible by scrolling if needed
+    composeTestRule.onNodeWithContentDescription("Look Up Logo").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithContentDescription("Home Icon")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .assertHasClickAction()
+    composeTestRule
+        .onNodeWithContentDescription("Background")
+        .assertIsDisplayed()
+        .assertHasClickAction()
+    composeTestRule.onNodeWithText("Click for full map view").assertIsDisplayed()
+
+    // Reset orientation to portrait after the test
+    resetOrientation()
+  }
+
+  private fun setLandscapeOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationLeft()
+  }
+
+  private fun resetOrientation() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.setOrientationNatural()
   }
 }

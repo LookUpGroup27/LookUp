@@ -1,14 +1,10 @@
 package com.github.lookupgroup27.lookup.model.profile
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() {
@@ -44,6 +40,18 @@ class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() 
           onFailure = { exception ->
             _profileUpdateStatus.value = false
             _error.value = "Failed to update profile: ${exception.message}"
+          })
+    }
+  }
+
+  fun deleteUserProfile(profile: UserProfile) {
+    viewModelScope.launch {
+      repository.deleteUserProfile(
+          profile,
+          onSuccess = { _profileUpdateStatus.value = true },
+          onFailure = { exception ->
+            _profileUpdateStatus.value = false
+            _error.value = "Failed to delete profile: ${exception.message}"
           })
     }
   }
