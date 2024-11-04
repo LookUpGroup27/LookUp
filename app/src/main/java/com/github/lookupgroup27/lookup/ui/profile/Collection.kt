@@ -43,44 +43,49 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 
 @Composable
-fun CollectionScreen(navigationActions: NavigationActions) {
+fun CollectionScreen(
+    navigationActions: NavigationActions,
+    testImageUrls: List<String> = emptyList()
+) {
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
-  val imageUrls = remember { mutableStateListOf<String>() }
+  val imageUrls = remember { mutableStateListOf<String>().apply { addAll(testImageUrls) } }
 
-  val folderPath = "images/"
+  if (testImageUrls.isEmpty()) {
+    // Only perform Firebase fetch if `testImageUrls` is not provided
+    LaunchedEffect(Unit) {
+      scope.launch {
+        val storage = FirebaseStorage.getInstance()
+        val imagesRef = storage.getReference().child("images/")
 
-  LaunchedEffect(Unit) {
-    scope.launch {
-      val storage = FirebaseStorage.getInstance()
-      val imagesRef = storage.getReference().child(folderPath)
-
-      imagesRef
-          .listAll()
-          .addOnSuccessListener { result ->
-            if (result.items.isEmpty()) {
-              Log.d("FirebaseImageDebug", "No items found in the '$folderPath' folder")
-            } else {
-              val sortedItems = result.items.sortedBy { it.name }
-              sortedItems.forEach { item ->
-                item.downloadUrl
-                    .addOnSuccessListener { uri -> imageUrls.add(uri.toString()) }
-                    .addOnFailureListener { exception ->
-                      Log.e(
-                          "FirebaseImageError",
-                          "Failed to get download URL for ${item.name}: ${exception.message}")
+        imagesRef
+            .listAll()
+            .addOnSuccessListener { result ->
+              if (result.items.isEmpty()) {
+                Log.d("FirebaseImageDebug", "No items found in the 'images/' folder")
+              } else {
+                result.items
+                    .sortedBy { it.name }
+                    .forEach { item ->
+                      item.downloadUrl
+                          .addOnSuccessListener { uri -> imageUrls.add(uri.toString()) }
+                          .addOnFailureListener { exception ->
+                            Log.e(
+                                "FirebaseImageError",
+                                "Failed to get download URL for ${item.name}: ${exception.message}")
+                          }
                     }
               }
             }
-          }
-          .addOnFailureListener { exception ->
-            Log.e(
-                "FirebaseImageError",
-                "Failed to list images in Firebase Storage: ${exception.message}")
-            Toast.makeText(
-                    context, "Failed to load images: ${exception.message}", Toast.LENGTH_SHORT)
-                .show()
-          }
+            .addOnFailureListener { exception ->
+              Log.e(
+                  "FirebaseImageError",
+                  "Failed to list images in Firebase Storage: ${exception.message}")
+              Toast.makeText(
+                      context, "Failed to load images: ${exception.message}", Toast.LENGTH_SHORT)
+                  .show()
+            }
+      }
     }
   }
 
@@ -135,7 +140,7 @@ fun CollectionScreen(navigationActions: NavigationActions) {
                   imageUrls.chunked(2).forEachIndexed { rowIndex, rowImages ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxWidth()) {
+                        modifier = Modifier.fillMaxWidth().testTag("image_row_$rowIndex")) {
                           rowImages.forEachIndexed { colIndex, imageUrl ->
                             Box(
                                 modifier =
