@@ -184,6 +184,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.google.firebase.storage)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
@@ -234,6 +235,7 @@ dependencies {
     implementation("com.prolificinteractive:material-calendarview:1.4.3") {
         exclude(group = "com.android.support", module = "support-v4")
     }
+    implementation("io.coil-kt:coil-compose:2.1.0")
 }
 
 tasks.withType<Test> {
