@@ -4,13 +4,23 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 
-class LocationProvider(private val context: Context) {
+open class LocationProvider(
+    private val context: Context,
+    var currentLocation: MutableState<Location?> = mutableStateOf(null)
+) {
   private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-  var currentLocation = mutableStateOf<Location?>(null)
+
+  private val locationCallback =
+      object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+          locationResult.lastLocation?.let { location -> currentLocation.value = location }
+        }
+      }
 
   fun requestLocationUpdates() {
     if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -18,8 +28,13 @@ class LocationProvider(private val context: Context) {
       // Handle permission request
       return
     }
-    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-      currentLocation.value = location
-    }
+
+    val locationRequest =
+        LocationRequest.create().apply {
+          interval = 10000 // 10 seconds
+          fastestInterval = 5000 // 5 seconds
+          priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
   }
 }
