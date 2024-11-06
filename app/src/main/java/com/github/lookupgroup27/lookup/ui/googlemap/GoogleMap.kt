@@ -24,7 +24,7 @@ import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -72,7 +72,7 @@ fun GoogleMapScreen(navigationActions: NavigationActions) {
         MapView(
             padding,
             hasLocationPermission,
-            locationProvider.currentLocation.value) // Pass current location to MapView
+            locationProvider.currentLocation.value) // Observe current location
       })
 }
 
@@ -82,10 +82,12 @@ fun MapView(padding: PaddingValues, hasLocationPermission: Boolean, location: Lo
   var mapUiSettings by remember { mutableStateOf(MapUiSettings(zoomControlsEnabled = false)) }
   val cameraPositionState = rememberCameraPositionState()
 
+  // Update the camera position whenever location changes
   LaunchedEffect(location) {
     if (hasLocationPermission && location != null) {
       val latLng = LatLng(location.latitude, location.longitude)
-      cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, 5f)
+      val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
+      cameraPositionState.animate(cameraUpdate)
     }
   }
 
