@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -48,36 +47,18 @@ fun CollectionScreen(
           val storage = FirebaseStorage.getInstance()
           val imagesRef = storage.getReference().child(folderPath)
 
-          imagesRef
-              .listAll()
-              .addOnSuccessListener { result ->
-                if (result.items.isEmpty()) {
-                  Log.d("FirebaseImageDebug", "No items found in the '$folderPath' folder")
-                } else {
-                  result.items
-                      .sortedBy { it.name }
-                      .forEach { item ->
-                        item.downloadUrl
-                            .addOnSuccessListener { uri -> imageUrls.add(uri.toString()) }
-                            .addOnFailureListener { exception ->
-                              Log.e(
-                                  "FirebaseImageError",
-                                  "Failed to get download URL for ${item.name}: ${exception.message}")
-                            }
-                      }
-                }
-              }
-              .addOnFailureListener { exception ->
-                Log.e(
-                    "FirebaseImageError",
-                    "Failed to list images in Firebase Storage: ${exception.message}")
-                Toast.makeText(
-                        context, "Failed to load images: ${exception.message}", Toast.LENGTH_SHORT)
-                    .show()
-              }
+          imagesRef.listAll().addOnSuccessListener { result ->
+            if (result.items.isEmpty()) {
+              Log.d("FirebaseImageDebug", "No items found in the '$folderPath' folder")
+            } else {
+              result.items
+                  .sortedBy { it.name }
+                  .forEach { item ->
+                    item.downloadUrl.addOnSuccessListener { uri -> imageUrls.add(uri.toString()) }
+                  }
+            }
+          }
         }
-      } else {
-        Log.e("CollectionScreen", "User email not found, cannot load user-specific images.")
       }
     }
   }
