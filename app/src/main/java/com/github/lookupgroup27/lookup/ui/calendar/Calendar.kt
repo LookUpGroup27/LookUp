@@ -6,8 +6,8 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -155,7 +155,7 @@ fun CalendarHeader(selectedDate: Date, onPreviousMonth: () -> Unit, onNextMonth:
       verticalAlignment = Alignment.CenterVertically) {
         IconButton(modifier = Modifier.testTag("Previous_month"), onClick = onPreviousMonth) {
           Icon(
-              imageVector = Icons.Default.KeyboardArrowLeft,
+              imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
               contentDescription = "Previous Month",
               tint = MaterialTheme.colorScheme.onSurface)
         }
@@ -168,7 +168,7 @@ fun CalendarHeader(selectedDate: Date, onPreviousMonth: () -> Unit, onNextMonth:
 
         IconButton(modifier = Modifier.testTag("Next_month"), onClick = onNextMonth) {
           Icon(
-              imageVector = Icons.Default.KeyboardArrowRight,
+              imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
               contentDescription = "Next Month",
               tint = MaterialTheme.colorScheme.onSurface)
         }
