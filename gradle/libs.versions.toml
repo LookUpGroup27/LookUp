@@ -61,7 +61,6 @@ testng = "6.9.6"
 uiTestJunit4Android = "1.7.2"
 runtimeLivedata = "1.7.2"
 
-
 # Firebase Libraries
 firebaseAuth = "23.0.0"
 firebaseAuthKtx = "23.0.0"

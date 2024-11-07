@@ -213,6 +213,7 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
     testImplementation(libs.json)
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
 
     // UI Testing
     androidTestImplementation(libs.androidx.espresso.core)
@@ -243,6 +244,7 @@ dependencies {
     implementation("com.prolificinteractive:material-calendarview:1.4.3") {
         exclude(group = "com.android.support", module = "support-v4")
     }
+
 }
 
 tasks.withType<Test> {
