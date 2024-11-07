@@ -54,7 +54,9 @@ fun CollectionScreen(
               result.items
                   .sortedBy { it.name }
                   .forEach { item ->
-                    item.downloadUrl.addOnSuccessListener { uri -> imageUrls.add(uri.toString()) }
+                    item.downloadUrl.addOnSuccessListener { uri ->
+                      uri?.let { imageUrls.add(it.toString()) }
+                    }
                   }
             }
           }
@@ -116,22 +118,24 @@ fun CollectionScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth().testTag("image_row_$rowIndex")) {
                           rowImages.forEachIndexed { colIndex, imageUrl ->
-                            Box(
-                                modifier =
-                                    Modifier.weight(1f)
-                                        .aspectRatio(1f)
-                                        .testTag("image_box_${rowIndex}_$colIndex"),
-                                contentAlignment = Alignment.Center) {
-                                  Image(
-                                      painter = rememberAsyncImagePainter(imageUrl),
-                                      contentDescription = "Collection Image",
-                                      contentScale = ContentScale.Crop,
-                                      modifier =
-                                          Modifier.fillMaxSize()
-                                              .background(
-                                                  MaterialTheme.colorScheme.surface.copy(
-                                                      alpha = 0.3f)))
-                                }
+                            imageUrl?.let {
+                              Box(
+                                  modifier =
+                                      Modifier.weight(1f)
+                                          .aspectRatio(1f)
+                                          .testTag("image_box_${rowIndex}_$colIndex"),
+                                  contentAlignment = Alignment.Center) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(it),
+                                        contentDescription = "Collection Image",
+                                        contentScale = ContentScale.Crop,
+                                        modifier =
+                                            Modifier.fillMaxSize()
+                                                .background(
+                                                    MaterialTheme.colorScheme.surface.copy(
+                                                        alpha = 0.3f)))
+                                  }
+                            }
                           }
                         }
                   }
