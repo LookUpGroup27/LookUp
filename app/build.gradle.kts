@@ -245,7 +245,7 @@ dependencies {
     implementation("com.prolificinteractive:material-calendarview:1.4.3") {
         exclude(group = "com.android.support", module = "support-v4")
     }
-    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation(libs.coil.compose.v210)
 }
 
 tasks.withType<Test> {
