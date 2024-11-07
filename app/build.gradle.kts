@@ -193,6 +193,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
+    implementation (libs.firebase.storage.ktx)
+
 
     // Navigation
     implementation(libs.androidx.navigation.compose)

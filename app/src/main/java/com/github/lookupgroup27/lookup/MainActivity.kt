@@ -36,6 +36,7 @@ import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
+import java.io.File
 
 class MainActivity : ComponentActivity() {
 
@@ -109,7 +110,7 @@ fun LookUpApp() {
         route = "${Route.IMAGE_REVIEW}/{imageUri}",
         arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
           ->
-          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
+          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { File(it) }
           ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
         }
   }
