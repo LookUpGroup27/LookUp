@@ -30,11 +30,10 @@ open class LocationProvider(
     }
 
     val locationRequest =
-        LocationRequest.create().apply {
-          interval = 10000 // 10 seconds
-          fastestInterval = 5000 // 5 seconds
-          priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+            .apply { setMinUpdateIntervalMillis(5000) }
+            .build()
+
     fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
   }
 }
