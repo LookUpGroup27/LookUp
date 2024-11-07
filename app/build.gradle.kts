@@ -166,6 +166,15 @@ dependencies {
     implementation(libs.androidx.navigation.testing)
     implementation(libs.test.core.ktx)
 
+    //Camera
+    implementation (libs.androidx.camera.camera2)
+    implementation (libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+    implementation (libs.androidx.camera.extensions)
+    implementation (libs.guava)
+    implementation(libs.coil.compose)
+
+
     // Jetpack Compose BOM
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
@@ -214,6 +223,7 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
     testImplementation(libs.json)
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
 
     // UI Testing
     androidTestImplementation(libs.androidx.espresso.core)
@@ -245,6 +255,7 @@ dependencies {
     implementation("com.prolificinteractive:material-calendarview:1.4.3") {
         exclude(group = "com.android.support", module = "support-v4")
     }
+
 }
 
 tasks.withType<Test> {
