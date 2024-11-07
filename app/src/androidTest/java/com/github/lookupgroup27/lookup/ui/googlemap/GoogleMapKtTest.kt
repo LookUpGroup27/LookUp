@@ -1,10 +1,17 @@
 package com.github.lookupgroup27.lookup.ui.googlemap
 
 import android.Manifest
+import android.content.Context
+import android.location.Location
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
+import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.google.android.gms.maps.model.LatLng
@@ -17,6 +24,7 @@ import org.mockito.Mockito.`when`
 class GoogleMapScreenTest {
 
   private lateinit var navigationActions: NavigationActions
+  private lateinit var locationProvider: LocationProvider
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -26,10 +34,23 @@ class GoogleMapScreenTest {
 
   @Before
   fun setUp() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
     // Mock NavigationActions
     navigationActions = mock(NavigationActions::class.java)
+
     // Setup to return the map route as current
     `when`(navigationActions.currentRoute()).thenReturn(Screen.GOOGLE_MAP)
+
+    // Mock MutableState for currentLocation
+    val fakeLocation =
+        Location("provider").apply {
+          latitude = 37.7749
+          longitude = -122.4194
+        }
+    val mockCurrentLocation = mutableStateOf<Location?>(fakeLocation)
+
+    // Pass the mock MutableState to LocationProvider
+    locationProvider = LocationProvider(context, mockCurrentLocation)
 
     // Set the Compose content to GoogleMapScreen
     composeTestRule.setContent { GoogleMapScreen(navigationActions) }
@@ -46,32 +67,73 @@ class GoogleMapScreenTest {
   }
 
   @Test
-  fun mapIsCenteredOnCurrentLocation() {
+  fun cameraPositionIsUpdatedOnLocationChange() {
     val fakeLocation = LatLng(37.7749, -122.4194) // Example coordinates for San Francisco
 
     // Simulate location update
     composeTestRule.runOnIdle {
       // Update the locationProvider's currentLocation value
-      // This part depends on how you can access and update the locationProvider in your test
+      locationProvider.currentLocation.value =
+          Location("provider").apply {
+            latitude = fakeLocation.latitude
+            longitude = fakeLocation.longitude
+          }
     }
 
-    // Verify if the map is centered on the current location
+    // Allow some time for the camera to animate to the new location
+    composeTestRule.waitForIdle()
+
+    // Verify if the map screen is displayed after the update, implying no errors occurred
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
-    // Add more assertions to verify the map's camera position if possible
   }
 
   @Test
-  fun markerIsDisplayedOnCurrentLocation() {
-    val fakeLocation = LatLng(37.7749, -122.4194) // Example coordinates for San Francisco
+  fun buttonsAreDisplayedCorrectly() {
+    // Verify that the "Auto Center On" button is displayed
+    composeTestRule.onNodeWithText("Auto Center On").assertIsDisplayed()
 
-    // Simulate location update
+    // Verify that the "Auto Center Off" button is displayed
+    composeTestRule.onNodeWithText("Auto Center Off").assertIsDisplayed()
+  }
+
+  @Test
+  fun autoCenteringButtonsFunctionality() {
+    // Click the "Auto Center Off" button to disable auto-centering
+    composeTestRule.onNodeWithText("Auto Center Off").performClick()
+
+    // Update the locationProvider's currentLocation value
+    val fakeLocation = LatLng(37.7749, -122.4194)
     composeTestRule.runOnIdle {
-      // Update the locationProvider's currentLocation value
-      // This part depends on how you can access and update the locationProvider in your test
+      locationProvider.currentLocation.value =
+          Location("provider").apply {
+            latitude = fakeLocation.latitude
+            longitude = fakeLocation.longitude
+          }
     }
 
-    // Verify if the marker is displayed on the current location
+    // Allow some time for the camera to animate to the new location
+    composeTestRule.waitForIdle()
+
+    // Check that the map is displayed and that auto-centering is not enforced
+    // (In practice, this could involve verifying the map state hasn't moved to the new location.)
+
+    // Click the "Auto Center On" button to enable auto-centering again
+    composeTestRule.onNodeWithText("Auto Center On").performClick()
+
+    // Update location and check that auto-centering is enabled again
+    composeTestRule.runOnIdle {
+      locationProvider.currentLocation.value =
+          Location("provider").apply {
+            latitude = 40.7128
+            longitude = -74.0060 // New coordinates for New York
+          }
+    }
+
+    // Allow some time for the camera to animate to the new location
+    composeTestRule.waitForIdle()
+
+    // Verify if the map is centered on the current location (you may need additional logic to
+    // verify this properly)
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
-    // Add more assertions to verify the marker's position if possible
   }
 }

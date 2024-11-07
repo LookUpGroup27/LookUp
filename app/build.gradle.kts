@@ -156,6 +156,15 @@ dependencies {
     implementation(libs.androidx.navigation.testing)
     implementation(libs.test.core.ktx)
 
+    //Camera
+    implementation (libs.androidx.camera.camera2)
+    implementation (libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+    implementation (libs.androidx.camera.extensions)
+    implementation (libs.guava)
+    implementation(libs.coil.compose)
+
+
     // Jetpack Compose BOM
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
