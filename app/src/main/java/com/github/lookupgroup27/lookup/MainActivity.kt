@@ -20,9 +20,9 @@ import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
-import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
