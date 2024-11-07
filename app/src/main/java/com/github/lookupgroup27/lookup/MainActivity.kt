@@ -102,8 +102,20 @@ fun LookUpApp() {
       }
     }
 
+    navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
+      composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
+    }
+
+    composable(
+        route = "${Route.IMAGE_REVIEW}/{imageUri}",
+        arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
+          ->
+          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
+          ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
+        }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(navigationActions) }
     }
-} }
+  }
+}
