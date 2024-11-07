@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,16 +9,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
+import com.github.lookupgroup27.lookup.ui.image.CameraCapture
+import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
@@ -95,5 +100,17 @@ fun LookUpApp() {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
     }
+
+    navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
+      composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
+    }
+
+    composable(
+        route = "${Route.IMAGE_REVIEW}/{imageUri}",
+        arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
+          ->
+          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
+          ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
+        }
   }
 }
