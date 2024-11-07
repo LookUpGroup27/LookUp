@@ -32,11 +32,10 @@ class QuizRepository(private val context: Context) {
     return preferences.getInt(theme, 0)
   }
 
-  // Updates the best score if the new score is higher
-  fun setBestScore(theme: String, score: Int) {
+  private fun setBestScore(theme: String, score: Int) {
     val currentBestScore = getBestScore(theme)
     if (score > currentBestScore) {
-      preferences.edit().putInt(theme, score).apply() // Save the new best score
+      preferences.edit().putInt(theme, score).apply()
     }
   }
 

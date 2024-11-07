@@ -8,7 +8,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
-import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -144,10 +144,10 @@ object CustomResponseInterceptor : Interceptor {
         .body(
             if (isSuccess && responseData != null) {
               // Create a ResponseBody with the mock data if the response is successful
-              ResponseBody.create("text/plain".toMediaTypeOrNull(), responseData!!)
+              responseData!!.toResponseBody("text/plain".toMediaTypeOrNull())
             } else {
               // Empty ResponseBody for unsuccessful responses
-              ResponseBody.create("text/plain".toMediaTypeOrNull(), ByteArray(0))
+              ByteArray(0).toResponseBody("text/plain".toMediaTypeOrNull())
             })
         .build()
   }

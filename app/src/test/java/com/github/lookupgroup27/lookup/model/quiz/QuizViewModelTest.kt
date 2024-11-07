@@ -60,13 +60,13 @@ class QuizViewModelTest {
     // Assert the correct quiz data is loaded
     val quizQuestions = quizViewModel.quizQuestions.value
     assertNotNull(quizQuestions)
-    assertEquals(1, quizQuestions?.size)
-    assertEquals("What is the largest planet?", quizQuestions?.get(0)?.question)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("Jupiter") == true)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("Saturn") == true)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("Mars") == true)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("Venus") == true)
-    assertEquals("Jupiter", quizQuestions?.get(0)?.correctAnswer)
+    assertEquals(1, quizQuestions.size)
+    assertEquals("What is the largest planet?", quizQuestions.get(0)?.question)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("Jupiter") == true)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("Saturn") == true)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("Mars") == true)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("Venus") == true)
+    assertEquals("Jupiter", quizQuestions.get(0)?.correctAnswer)
   }
 
   @Test
@@ -82,13 +82,13 @@ class QuizViewModelTest {
     // Assert that the correct question was loaded
     val quizQuestions = quizViewModel.quizQuestions.value
     assertNotNull(quizQuestions)
-    assertEquals(1, quizQuestions?.size)
-    assertEquals("In which galaxy is the solar system located?", quizQuestions?.get(0)?.question)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("The Milky Way") == true)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("Andromeda") == true)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("The Great Spiral") == true)
-    assertTrue(quizQuestions?.get(0)?.answers?.contains("The Magellanic Cloud") == true)
-    assertEquals("The Milky Way", quizQuestions?.get(0)?.correctAnswer)
+    assertEquals(1, quizQuestions.size)
+    assertEquals("In which galaxy is the solar system located?", quizQuestions.get(0)?.question)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("The Milky Way") == true)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("Andromeda") == true)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("The Great Spiral") == true)
+    assertTrue(quizQuestions.get(0)?.answers?.contains("The Magellanic Cloud") == true)
+    assertEquals("The Milky Way", quizQuestions.get(0)?.correctAnswer)
   }
 
   // Test onAnswerSelected
@@ -154,9 +154,9 @@ class QuizViewModelTest {
     quizViewModel.resetQuiz()
     assertEquals(0, quizViewModel.currentQuestionIndex.value)
     assertEquals(0, quizViewModel.score.value)
-    assertFalse(quizViewModel.showScore.value ?: true)
+    assertFalse(quizViewModel.showScore.value)
     assertNull(quizViewModel.selectedAnswer.value)
-    assertTrue(quizViewModel.quizQuestions.value?.isEmpty() == true)
+    assertTrue(quizViewModel.quizQuestions.value.isEmpty() == true)
   }
 
   // Helper method to mock the asset file reading

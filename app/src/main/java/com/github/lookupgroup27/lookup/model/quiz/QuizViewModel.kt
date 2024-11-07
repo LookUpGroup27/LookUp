@@ -2,55 +2,43 @@ package com.github.lookupgroup27.lookup.model.quiz
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  val _quizQuestions = MutableLiveData<List<QuizQuestion>>()
-  val quizQuestions: LiveData<List<QuizQuestion>> = _quizQuestions
+  private val _quizQuestions = MutableStateFlow<List<QuizQuestion>>(emptyList())
+  val quizQuestions: StateFlow<List<QuizQuestion>> = _quizQuestions.asStateFlow()
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  val _currentQuestionIndex = MutableLiveData(0)
-  val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
+  private val _currentQuestionIndex = MutableStateFlow(0)
+  val currentQuestionIndex: StateFlow<Int> = _currentQuestionIndex.asStateFlow()
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) val _score = MutableLiveData(0)
-  val score: LiveData<Int> = _score
+  private val _score = MutableStateFlow(0)
+  val score: StateFlow<Int> = _score.asStateFlow()
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) val _showScore = MutableLiveData(false)
-  val showScore: LiveData<Boolean> = _showScore
+  private val _showScore = MutableStateFlow(false)
+  val showScore: StateFlow<Boolean> = _showScore.asStateFlow()
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  val _selectedAnswer = MutableLiveData<String?>()
-  val selectedAnswer: LiveData<String?> = _selectedAnswer
+  private val _selectedAnswer = MutableStateFlow<String?>(null)
+  val selectedAnswer: StateFlow<String?> = _selectedAnswer.asStateFlow()
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  val _quizTitle = MutableLiveData<String>()
-  val quizTitle: LiveData<String> = _quizTitle
+  val quizTitle: String // Immutable, set once and not modified
+    get() = repository.quizTitle
 
   fun loadQuizDataForTheme(theme: String, context: Context) {
     repository.loadQuizDataForTheme(theme, context)
-    updateLiveDataFromRepository()
+    updateStateFlowFromRepository()
   }
 
-  fun getQuestions(): List<QuizQuestion> {
-    return repository.quizQuestions
-  }
+  fun getQuestions(): List<QuizQuestion> = repository.quizQuestions
 
-  fun getUserAnswers(): List<String> {
-    return repository.userAnswers.toList()
-  }
+  fun getUserAnswers(): List<String> = repository.userAnswers.toList()
 
-  fun getBestScore(theme: String): Int {
-    return repository.getBestScore(theme)
-  }
-
-  fun getAllBestScores(): Map<String, Int> {
-    return repository.getAllBestScores()
-  }
+  fun getAllBestScores(): Map<String, Int> = repository.getAllBestScores()
 
   fun onAnswerSelected(answer: String) {
     repository.onAnswerSelected(answer)
@@ -59,21 +47,21 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
 
   fun goToNextQuestion() {
     repository.goToNextQuestion()
-    updateLiveDataFromRepository()
+    updateStateFlowFromRepository()
   }
 
   fun resetQuiz() {
     repository.resetQuiz()
-    updateLiveDataFromRepository()
+    updateStateFlowFromRepository()
   }
 
-  private fun updateLiveDataFromRepository() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  fun updateStateFlowFromRepository() {
     _quizQuestions.value = repository.quizQuestions
     _currentQuestionIndex.value = repository.currentQuestionIndex
     _score.value = repository.score
     _showScore.value = repository.showScore
     _selectedAnswer.value = repository.selectedAnswer
-    _quizTitle.value = repository.quizTitle
   }
 
   companion object {
