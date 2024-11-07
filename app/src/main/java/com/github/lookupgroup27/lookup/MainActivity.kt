@@ -19,6 +19,7 @@ import androidx.navigation.navArgument
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
+import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
@@ -114,5 +115,9 @@ fun LookUpApp() {
           val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
           ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
         }
+
+    navigation(startDestination = Screen.FEED, route = Route.FEED) {
+      composable(Screen.FEED) { FeedScreen(navigationActions) }
+    }
   }
 }
