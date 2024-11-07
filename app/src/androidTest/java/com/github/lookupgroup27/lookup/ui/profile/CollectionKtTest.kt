@@ -70,7 +70,6 @@ class CollectionScreenTest {
           )
     }
 
-    // Verify rows and image boxes based on the mock data
     testImageUrls.chunked(2).forEachIndexed { rowIndex, rowImages ->
       composeTestRule.onNodeWithTag("image_row_$rowIndex").assertIsDisplayed()
       rowImages.forEachIndexed { colIndex, _ ->
@@ -98,33 +97,25 @@ class CollectionScreenTest {
 
   @Test
   fun fetchImages_displaysToastOnFailure() = runBlockingTest {
-    // Mock FirebaseAuth to return a test user with an email
     val mockAuth = mock(FirebaseAuth::class.java)
     `when`(mockAuth.currentUser).thenReturn(mock())
     `when`(mockAuth.currentUser?.email).thenReturn("test@example.com")
 
-    // Mock FirebaseStorage and the storage reference
     val mockStorage = mock(FirebaseStorage::class.java)
     val mockImagesRef = mock(StorageReference::class.java)
     `when`(mockStorage.getReference()).thenReturn(mockImagesRef)
     `when`(mockImagesRef.child("images/test@example.com/")).thenReturn(mockImagesRef)
 
-    // Simulate failure in listing images
     val mockContext = ApplicationProvider.getApplicationContext<Context>()
     composeTestRule.setContent {
       CollectionScreen(navigationActions = mockNavigationActions(), testImageUrls = emptyList())
     }
 
-    // Trigger the failure listener manually
     val exception = Exception("Simulated Firebase error")
     composeTestRule.runOnIdle {
       Toast.makeText(mockContext, "Failed to load images: ${exception.message}", Toast.LENGTH_SHORT)
           .show()
     }
-
-    // Verify that the error message is displayed
-    // Note: Testing for the display of a Toast can be tricky in unit tests and often requires
-    // integration tests.
   }
 
   private fun mockNavigationActions() =
