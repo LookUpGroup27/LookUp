@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
+import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
@@ -94,6 +95,10 @@ fun LookUpApp() {
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
+    }
+
+    navigation(startDestination = Screen.FEED, route = Route.FEED) {
+      composable(Screen.FEED) { FeedScreen(navigationActions) }
     }
   }
 }
