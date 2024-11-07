@@ -6,6 +6,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +22,7 @@ class End2EndTest {
 
   @Test
   fun testEndToEndNavigationFlow() {
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     // Step 1: Verify initial Landing Screen
     composeTestRule.onNodeWithTag("LandingScreen").assertIsDisplayed()
@@ -33,7 +38,7 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("calendar_screen").assertIsDisplayed()
 
     // Step 4: Navigate back and check MenuScreen is displayed
-    composeTestRule.onNodeWithTag(TopLevelDestinations.MENU.textId).performClick()
+    composeTestRule.onNodeWithText("Menu").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
@@ -41,5 +46,44 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("profile_button").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("auth_screen").assertIsDisplayed()
+
+    // Step 6: Navigate back and check MenuScreen is displayed
+    composeTestRule.onNodeWithTag("go_back_button_signin").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
+
+    // Step 7: Navigate to MapScreen from MenuScreen
+    composeTestRule.onNodeWithText("Map").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("map_screen").assertIsDisplayed()
+
+    // Step 8: Navigate back and check MenuScreen is displayed
+    composeTestRule.onNodeWithTag(TopLevelDestinations.MENU.textId).performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
+
+    // Step 9: Navigate to Quizzes screen from MenuScreen
+    composeTestRule.onNodeWithText("Quizzes").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
+
+    // Step 10: Navigate back and check MenuScreen is displayed
+    composeTestRule.onNodeWithTag("go_back_button_quiz").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
+
+    // Step 11: Navigate to Google Map from MenuScreen
+    composeTestRule.onNodeWithText("Google Map").performClick()
+    composeTestRule.waitForIdle()
+
+    val allowButton: UiObject2? = device.findObject(By.text("While using the app"))
+    allowButton?.click()
+
+    composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
+
+    // Step 12: Navigate back and check MenuScreen is displayed
+    composeTestRule.onNodeWithText("Menu").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
   }
 }

@@ -11,6 +11,7 @@ sonar = "4.4.1.3373"
 # UI Compose
 mockitoAndroid = "5.13.0"
 ui = "1.6.8"
+uiautomator = "2.3.0"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
 uiTooling = "1.6.8"
@@ -80,6 +81,7 @@ navigationTesting = "2.8.2"
 [libraries]
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
