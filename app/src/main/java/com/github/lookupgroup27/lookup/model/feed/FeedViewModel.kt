@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
-  private val tag = "FeedViewModel"
   val post = mutableStateOf<Post?>(null)
 
   // LiveData to hold the list of all posts
@@ -30,7 +29,7 @@ class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
         if (user != null) {
           getPosts()
         } else {
-          Log.d(tag, "User is not logged in")
+          Log.d("FeedViewModel", "User is not logged in")
         }
       }
 
