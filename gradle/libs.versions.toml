@@ -5,6 +5,7 @@ agp = "8.4.2"
 cameraCamera2 = "1.1.0"
 cameraExtensions = "1.0.0-alpha31"
 coilCompose = "2.2.2"
+coreTesting = "2.1.0"
 firebaseStorage = "20.0.1"
 guava = "31.1-android"
 json = "20240303"
@@ -16,6 +17,7 @@ sonar = "4.4.1.3373"
 # UI Compose
 mockitoAndroid = "5.13.0"
 ui = "1.6.8"
+uiautomator = "2.3.0"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
 uiTooling = "1.6.8"
@@ -88,6 +90,8 @@ androidx-camera-extensions = { module = "androidx.camera:camera-extensions", ver
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraExtensions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
