@@ -90,11 +90,22 @@ class FeedViewModelTest {
   }
 
   @Test
-  fun `test generateNewUid fetches new ID from repository`() {
-    `when`(feedRepository.generateNewUid()).thenReturn("123")
+  fun `test generateNewUid returns new UID from repository`() {
+    `when`(feedRepository.generateNewUid()).thenReturn("new-uid")
     val newUid = feedViewModel.generateNewUid()
-
-    assertThat(newUid, `is`("123"))
+    assertThat(newUid, `is`("new-uid"))
     verify(feedRepository).generateNewUid()
+  }
+
+  @Test
+  fun `test getPosts with empty list updates state`() = runBlocking {
+    val emptyPostList = emptyList<Post>()
+    `when`(feedRepository.getPosts(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenAnswer {
+      it.getArgument<(List<Post>) -> Unit>(0)(emptyPostList)
+    }
+
+    feedViewModel.getPosts()
+
+    assertThat(feedViewModel.allPosts.first(), `is`(emptyPostList))
   }
 }

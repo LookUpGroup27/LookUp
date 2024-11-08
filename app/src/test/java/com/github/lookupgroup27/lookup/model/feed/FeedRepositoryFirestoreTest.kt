@@ -12,6 +12,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.fail
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -168,5 +170,49 @@ class FeedRepositoryFirestoreTest {
 
     // Verify that the 'documents' field was accessed
     org.mockito.kotlin.verify(org.mockito.kotlin.timeout(100)) { (mockToDoQuerySnapshot).documents }
+  }
+
+  @Test
+  fun getPosts_shouldReturnEmptyList_whenFirestoreHasNoData() {
+    val querySnapshot = mock(QuerySnapshot::class.java)
+    `when`(querySnapshot.documents).thenReturn(emptyList())
+
+    doAnswer { invocation ->
+          val listener =
+              invocation.arguments[0] as com.google.firebase.firestore.EventListener<QuerySnapshot>
+          listener.onEvent(querySnapshot, null)
+          null
+        }
+        .`when`(mockCollectionReference)
+        .addSnapshotListener(any())
+
+    var fetchedPosts: List<Post>? = null
+    feedRepositoryFirestore.getPosts(
+        onSuccess = { posts -> fetchedPosts = posts },
+        onFailure = { fail("Failure callback should not be called") })
+
+    assert(fetchedPosts?.isEmpty() == true)
+  }
+
+  @Test
+  fun getPosts_shouldCallOnFailure_whenNetworkErrorOccurs() {
+    val exception =
+        FirebaseFirestoreException("Network error", FirebaseFirestoreException.Code.UNAVAILABLE)
+
+    doAnswer { invocation ->
+          val listener =
+              invocation.arguments[0] as com.google.firebase.firestore.EventListener<QuerySnapshot>
+          listener.onEvent(null, exception)
+          null
+        }
+        .`when`(mockCollectionReference)
+        .addSnapshotListener(any())
+
+    var errorMessage: String? = null
+    feedRepositoryFirestore.getPosts(
+        onSuccess = { fail("Success callback should not be called") },
+        onFailure = { errorMessage = it.message })
+
+    assertThat(errorMessage, `is`("Network error"))
   }
 }
