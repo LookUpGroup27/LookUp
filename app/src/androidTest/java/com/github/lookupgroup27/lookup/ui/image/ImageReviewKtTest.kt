@@ -13,26 +13,27 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class ImageReviewTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  val fakeUri: Uri = Uri.parse("content://com.example.app/fake_image.jpg")
+  val fakeFile: File = File.createTempFile("temp", null)
 
   private val mockNavigationActions: NavigationActions = mock()
 
   @Test
   fun testImageReviewIsDisplayed() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeUri) }
+    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile) }
 
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
   }
 
   @Test
   fun testConfirmButtonIsDisplayedAndClickable() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeUri) }
+    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile) }
 
     composeTestRule.onNodeWithTag("confirm_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirm_button").performClick()
@@ -40,7 +41,7 @@ class ImageReviewTest {
 
   @Test
   fun testCancelButtonIsDisplayedAndClickable() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeUri) }
+    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile) }
 
     composeTestRule.onNodeWithTag("cancel_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancel_button").performClick()
