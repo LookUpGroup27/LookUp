@@ -10,6 +10,16 @@ plugins {
     id("jacoco")
 }
 
+/**
+ * Exclude the protobuf-lite dependency from the androidTestImplementation configuration
+ * to avoid conflicts between firebase and espresso.
+ */
+configurations {
+    androidTestImplementation {
+        exclude(group = "com.google.protobuf", module = "protobuf-lite")
+    }
+}
+
 android {
     namespace = "com.github.lookupgroup27.lookup"
     compileSdk = 34
@@ -193,6 +203,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.google.firebase.storage)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
@@ -213,7 +224,7 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
     testImplementation(libs.json)
-    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+    testImplementation (libs.androidx.core.testing)
 
     // UI Testing
     androidTestImplementation(libs.androidx.espresso.core)
@@ -226,7 +237,8 @@ dependencies {
     androidTestImplementation(libs.mockito.android)
     androidTestImplementation(libs.mockito.kotlin)
     testImplementation(libs.robolectric)
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.androidx.uiautomator)
 
     // Kaspresso Allure
     androidTestImplementation(libs.kaspresso.allure.support)
@@ -244,7 +256,7 @@ dependencies {
     implementation("com.prolificinteractive:material-calendarview:1.4.3") {
         exclude(group = "com.android.support", module = "support-v4")
     }
-
+    implementation(libs.coil.compose.v210)
 }
 
 tasks.withType<Test> {
