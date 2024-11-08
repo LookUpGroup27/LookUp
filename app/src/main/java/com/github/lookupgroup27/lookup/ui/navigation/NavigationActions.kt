@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,6 +22,7 @@ object Route {
   const val PROFILE_INFORMATION = "ProfileInformation"
   const val TAKE_IMAGE = "TakeImage"
   const val IMAGE_REVIEW = "ImageReview"
+  const val FEED = "Feed"
 }
 
 object Screen {
@@ -37,6 +39,7 @@ object Screen {
   const val PROFILE_INFORMATION = "Profile Information Screen"
   const val TAKE_IMAGE = "Take Image"
   const val IMAGE_REVIEW = "Image Review Screen"
+  const val FEED = "Feed Screen"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
@@ -44,13 +47,11 @@ data class TopLevelDestination(val route: String, val icon: ImageVector, val tex
 object TopLevelDestinations {
   val MENU = TopLevelDestination(route = Route.MENU, icon = Icons.Outlined.Menu, textId = "Menu")
   val MAP = TopLevelDestination(route = Route.MAP, icon = Icons.Outlined.Place, textId = "Map")
+  val FEED = TopLevelDestination(route = Route.FEED, icon = Icons.Outlined.List, textId = "Feed")
 }
 
 val LIST_TOP_LEVEL_DESTINATION =
-    listOf(
-        TopLevelDestinations.MENU,
-        TopLevelDestinations.MAP,
-    )
+    listOf(TopLevelDestinations.MENU, TopLevelDestinations.MAP, TopLevelDestinations.FEED)
 
 open class NavigationActions(
     private val navController: NavHostController,
