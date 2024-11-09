@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.opengl.dim3
+package com.github.lookupgroup27.lookup.opengl
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
@@ -9,7 +9,6 @@ import javax.microedition.khronos.opengles.GL10
 class MyGLRenderer : GLSurfaceView.Renderer {
 
   private lateinit var mShape: Pyramid
-
 
   private val modelMatrix = FloatArray(16)
   private val viewMatrix = FloatArray(16)
@@ -35,7 +34,6 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
     mShape.draw(modelMatrix, viewMatrix, projMatrix)
-
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -43,7 +41,8 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height)
 
     val ratio: Float = width.toFloat() / height.toFloat()
-    // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip planes
+    // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip
+    // planes
     // It helps projects in correct aspect ratio the objects in the scene
     Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
   }

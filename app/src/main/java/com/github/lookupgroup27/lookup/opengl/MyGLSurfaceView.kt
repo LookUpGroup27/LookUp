@@ -1,8 +1,7 @@
-package com.github.lookupgroup27.lookup.opengl.dim3
+package com.github.lookupgroup27.lookup.opengl
 
 import android.content.Context
 import android.opengl.GLSurfaceView
-import android.view.MotionEvent
 
 private const val TOUCH_SCALE_FACTOR: Float = 80.0f / 320f
 
@@ -16,11 +15,9 @@ class MyGLSurfaceView(context: Context) : GLSurfaceView(context) {
 
     renderer = MyGLRenderer()
 
-
-
     // Set the Renderer for drawing on the GLSurfaceView
     setRenderer(renderer)
 
-//    renderMode = RENDERMODE_WHEN_DIRTY
+    //    renderMode = RENDERMODE_WHEN_DIRTY
   }
 }
