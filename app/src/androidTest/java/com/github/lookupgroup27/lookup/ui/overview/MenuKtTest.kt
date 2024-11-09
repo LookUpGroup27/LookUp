@@ -65,7 +65,7 @@ class MenuKtTest {
     // Check that all buttons are displayed
     composeTestRule.onNodeWithText("Quizzes").assertIsDisplayed()
     composeTestRule.onNodeWithText("Calendar").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Sky Tracker").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Google Map").assertIsDisplayed()
     composeTestRule.onNodeWithTag("profile_button").assertIsDisplayed()
   }
 
@@ -115,9 +115,9 @@ class MenuKtTest {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
     // Perform click on "Sky Tracker" button
-    composeTestRule.onNodeWithText("Sky Tracker").performClick()
+    composeTestRule.onNodeWithText("Google Map").performClick()
 
     // Verify navigation to Sky Tracker screen is triggered
-    verify(mockNavigationActions).navigateTo(Screen.SKY_TRACKER)
+    verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
   }
 }

@@ -1,8 +1,11 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -19,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,21 +31,21 @@ import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
-
   val context = LocalContext.current
+  val bestScores = viewModel.getAllBestScores()
 
-  Box(
-      modifier = Modifier.fillMaxSize().testTag("quiz_screen"),
-      contentAlignment = Alignment.Center,
-  ) {
+  BoxWithConstraints(modifier = Modifier.fillMaxSize().testTag("quiz_screen")) {
+    // Background Image
     Image(
         painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
         contentDescription = "Background",
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize().blur(10.dp).testTag("quiz_background"))
 
+    // Back Button
     IconButton(
         onClick = { navigationActions.navigateTo(Screen.MENU) },
         modifier =
@@ -52,10 +56,16 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
               tint = Color.White)
         }
 
+    // Quiz Content with Vertical Scrolling
     Column(
-        modifier = Modifier.align(Alignment.Center).padding(horizontal = 32.dp),
+        modifier =
+            Modifier.align(Alignment.Center)
+                .padding(horizontal = 32.dp) // General padding for both orientations
+                .verticalScroll(
+                    rememberScrollState()), // Enable vertical scrolling in all orientations
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp)) {
+          // Title
           Text(
               text = "Take a Quiz",
               color = Color.White,
@@ -64,31 +74,47 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
                       fontWeight = FontWeight.Bold, fontSize = 32.sp),
               modifier = Modifier.testTag("quiz_title"))
 
-          QuizOptionButton(
-              text = "Earth",
-              onClick = {
-                viewModel.loadQuizDataForTheme("Earth", context)
-                navigationActions.navigateTo(Screen.QUIZ_PLAY)
-              },
-              "earth_button")
-
-          QuizOptionButton(
-              text = "Solar System",
-              onClick = {
-                viewModel.loadQuizDataForTheme("Solar System", context)
-                navigationActions.navigateTo(Screen.QUIZ_PLAY)
-              },
-              "solar_system_button")
+          // Quiz Options
+          bestScores.forEach { (theme, score) ->
+            QuizOptionButton(
+                theme = theme,
+                bestScore = "$score",
+                onClick = {
+                  viewModel.loadQuizDataForTheme(theme, context)
+                  navigationActions.navigateTo(Screen.QUIZ_PLAY)
+                },
+                testTag = "${theme.lowercase()}_button")
+          }
         }
   }
 }
 
 @Composable
-fun QuizOptionButton(text: String, onClick: () -> Unit, testTag: String) {
+fun QuizOptionButton(theme: String, bestScore: String, onClick: () -> Unit, testTag: String) {
   Button(
       onClick = onClick,
       shape = RoundedCornerShape(16.dp),
-      modifier = Modifier.fillMaxWidth().height(56.dp).testTag(testTag)) {
-        Text(text = text, fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+      modifier = Modifier.fillMaxWidth().height(56.dp).testTag(testTag),
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(
+              containerColor = Color(0xFF4E5DAB))) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              Text(
+                  text = theme,
+                  fontSize = 20.sp,
+                  fontWeight = FontWeight.Bold,
+                  color = Color.White,
+                  modifier = Modifier.padding(start = 8.dp))
+              Text(
+                  text = "Best Score: $bestScore/15",
+                  fontSize = 16.sp,
+                  fontStyle = FontStyle.Italic,
+                  fontWeight = FontWeight.Normal,
+                  color = Color(0xFFDADADA),
+                  modifier = Modifier.padding(end = 8.dp))
+            }
       }
 }

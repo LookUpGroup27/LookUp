@@ -117,4 +117,36 @@ class ProfileViewModelTest {
     assertFalse(viewModel.profileUpdateStatus.value!!)
     assertEquals("Failed to update profile: Update failed", viewModel.error.value)
   }
+
+  @Test
+  fun `deleteUserProfile calls deleteUserProfile in repository on success`() = runTest {
+    // Simulate successful deletion behavior
+    `when`(repository.deleteUserProfile(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess()
+    }
+
+    viewModel.deleteUserProfile(testProfile)
+
+    // Verifying that the method is indeed called
+    verify(repository).deleteUserProfile(eq(testProfile), any(), any())
+    assertEquals(true, viewModel.profileUpdateStatus.value) // Check if status is set to true
+  }
+
+  @Test
+  fun `deleteUserProfile sets profileUpdateStatus to false and error on failure`() = runTest {
+    // Mock an error scenario in the repository
+    val exception = Exception("Delete failed")
+    `when`(repository.deleteUserProfile(any(), any(), any())).thenAnswer {
+      val onFailure = it.getArgument<(Exception) -> Unit>(2)
+      onFailure(exception)
+    }
+
+    // Call the method
+    viewModel.deleteUserProfile(testProfile)
+
+    // Assert that _profileUpdateStatus is false and _error is set
+    assertFalse(viewModel.profileUpdateStatus.value!!)
+    assertEquals("Failed to delete profile: Delete failed", viewModel.error.value)
+  }
 }

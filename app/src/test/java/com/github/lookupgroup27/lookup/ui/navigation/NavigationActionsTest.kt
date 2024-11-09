@@ -44,8 +44,8 @@ class NavigationActionsTest {
     verify(navHostController).navigate(eq(Route.MENU), any<NavOptionsBuilder.() -> Unit>())
 
     // Test navigating to specific screens
-    navigationActions.navigateTo(Screen.SKY_TRACKER)
-    verify(navHostController).navigate(Screen.SKY_TRACKER)
+    navigationActions.navigateTo(Screen.GOOGLE_MAP)
+    verify(navHostController).navigate(Screen.GOOGLE_MAP)
 
     navigationActions.navigateTo(Screen.QUIZ)
     verify(navHostController).navigate(Screen.QUIZ)
@@ -69,7 +69,8 @@ class NavigationActionsTest {
 
   @Test
   fun topLevelDestinationsListIsCorrect() {
-    val expectedList = listOf(TopLevelDestinations.MENU, TopLevelDestinations.MAP)
+    val expectedList =
+        listOf(TopLevelDestinations.MENU, TopLevelDestinations.MAP, TopLevelDestinations.FEED)
     assertThat(LIST_TOP_LEVEL_DESTINATION, `is`(expectedList))
   }
 

@@ -10,6 +10,16 @@ plugins {
     id("jacoco")
 }
 
+/**
+ * Exclude the protobuf-lite dependency from the androidTestImplementation configuration
+ * to avoid conflicts between firebase and espresso.
+ */
+configurations {
+    androidTestImplementation {
+        exclude(group = "com.google.protobuf", module = "protobuf-lite")
+    }
+}
+
 android {
     namespace = "com.github.lookupgroup27.lookup"
     compileSdk = 34
@@ -21,7 +31,7 @@ android {
         localProperties.load(FileInputStream(localPropertiesFile))
     }
 
-    //val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
+    val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
 
     defaultConfig {
         applicationId = "com.github.lookupgroup27.lookup"
@@ -34,6 +44,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+
     }
 
     signingConfigs {
@@ -154,6 +166,15 @@ dependencies {
     implementation(libs.androidx.navigation.testing)
     implementation(libs.test.core.ktx)
 
+    //Camera
+    implementation (libs.androidx.camera.camera2)
+    implementation (libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+    implementation (libs.androidx.camera.extensions)
+    implementation (libs.guava)
+    implementation(libs.coil.compose)
+
+
     // Jetpack Compose BOM
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
@@ -182,11 +203,20 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.google.firebase.storage)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+    // Google Service and Maps
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
+    implementation(libs.play.services.auth)
+    implementation(libs.play.services.location)
+
 
     // Unit Testing
     testImplementation(libs.junit)
@@ -194,6 +224,7 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
     testImplementation(libs.json)
+    testImplementation (libs.androidx.core.testing)
 
     // UI Testing
     androidTestImplementation(libs.androidx.espresso.core)
@@ -206,7 +237,8 @@ dependencies {
     androidTestImplementation(libs.mockito.android)
     androidTestImplementation(libs.mockito.kotlin)
     testImplementation(libs.robolectric)
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.androidx.uiautomator)
 
     // Kaspresso Allure
     androidTestImplementation(libs.kaspresso.allure.support)
@@ -224,6 +256,7 @@ dependencies {
     implementation("com.prolificinteractive:material-calendarview:1.4.3") {
         exclude(group = "com.android.support", module = "support-v4")
     }
+    implementation(libs.coil.compose.v210)
 }
 
 tasks.withType<Test> {

@@ -1,26 +1,46 @@
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
+import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.mock
 
 class QuizPlayKtTest {
-  val mockNavigationActions: NavigationActions = mock()
-  @get:Rule val composeTestRule = createComposeRule()
 
+  val mockNavigationActions: NavigationActions = mock()
+  val mockContext: Context = mock()
+  @get:Rule val composeTestRule = createComposeRule()
   private lateinit var quizViewModel: QuizViewModel
+  private lateinit var testRepository: QuizRepository
+
+  private val mockSharedPreferences: SharedPreferences = mock()
+  private val mockEditor: SharedPreferences.Editor = mock()
 
   @Before
   fun setup() {
-    // Initialize the ViewModel with test data
-    quizViewModel =
-        QuizViewModel().apply {
-          _quizQuestions.postValue(
+    `when`(mockContext.getSharedPreferences(anyString(), anyInt()))
+        .thenReturn(mockSharedPreferences)
+    `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
+    `when`(mockEditor.putInt(anyString(), anyInt())).thenReturn(mockEditor)
+    `when`(mockEditor.apply()).then {}
+
+    `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenAnswer { invocation ->
+      invocation.getArgument(1)
+    }
+
+    testRepository =
+        QuizRepository(mockContext).apply {
+          quizQuestions =
               listOf(
                   QuizQuestion(
                       question = "In which galaxy is the solar system located?",
@@ -30,27 +50,34 @@ class QuizPlayKtTest {
                               "The Great Spiral",
                               "The Magellanic Cloud",
                               "Andromeda"),
-                      correctAnswer = "The Milky Way")))
+                      correctAnswer = "The Milky Way"))
+          quizTitle = "Astronomy"
+          currentQuestionIndex = 0
+          score = 0
+          showScore = false
+          selectedAnswer = null
         }
+    quizViewModel = QuizViewModel(testRepository)
+    quizViewModel.updateStateFlowFromRepository()
   }
 
   @Test
   fun testQuizPlayScreenDisplaysQuestionAndAnswers() {
-    // Launch the QuizPlayScreen
+
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
     }
+    composeTestRule.waitForIdle()
 
-    // Assert that the title is displayed
-    composeTestRule.onNodeWithTag("quiz_title").assertTextEquals(" Quiz").assertIsDisplayed()
-
-    // Assert that the question is displayed
+    composeTestRule
+        .onNodeWithTag("quiz_title")
+        .assertTextEquals("Astronomy Quiz")
+        .assertIsDisplayed()
     composeTestRule
         .onNodeWithTag("quiz_question")
         .assertTextEquals("In which galaxy is the solar system located?")
         .assertIsDisplayed()
 
-    // Assert that all answer buttons are displayed
     composeTestRule
         .onNodeWithTag("answer_button_0")
         .assertTextEquals("The Milky Way")
@@ -71,43 +98,36 @@ class QuizPlayKtTest {
 
   @Test
   fun testAnswerSelectionEnablesNextButton() {
-    // Launch the QuizPlayScreen
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
     }
 
-    // Verify that the "Next" button is not displayed initially
-    composeTestRule.onNodeWithTag("next_button").assertDoesNotExist()
+    composeTestRule.waitForIdle()
 
-    // Select an answer
+    composeTestRule.onNodeWithTag("next_button").assertIsNotEnabled()
     composeTestRule.onNodeWithTag("answer_button_0").performClick()
-
-    // Verify that the "Next" button is now displayed and enabled
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("next_button").assertIsDisplayed().assertIsEnabled()
   }
 
   @Test
   fun testNextButtonClickDisplaysScoreAndReturnButton() {
-    // Launch the QuizPlayScreen
+
     composeTestRule.setContent {
       QuizPlayScreen(viewModel = quizViewModel, navigationActions = mockNavigationActions)
     }
+    composeTestRule.waitForIdle()
 
-    // Select an answer to enable the "Next" button
     composeTestRule.onNodeWithTag("answer_button_0").performClick()
     composeTestRule.waitForIdle()
 
-    // Perform click on "Next" button
     composeTestRule.onNodeWithTag("next_button").performClick()
-    composeTestRule.waitForIdle()
 
-    // Assert that the score text is displayed
+    composeTestRule.waitForIdle()
     composeTestRule
         .onNodeWithTag("score_text")
         .assertIsDisplayed()
         .assertTextEquals("Your score: 1/1")
-
-    // Assert that the "Return to Quiz Selection" button is displayed
     composeTestRule
         .onNodeWithTag("return_to_quiz_selection_button")
         .assertIsDisplayed()

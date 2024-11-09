@@ -2,104 +2,75 @@ package com.github.lookupgroup27.lookup.model.quiz
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.io.InputStreamReader
+import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-open class QuizViewModel : ViewModel() {
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  val _quizQuestions = MutableLiveData<List<QuizQuestion>>()
-  val quizQuestions: LiveData<List<QuizQuestion>> = _quizQuestions
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  var _currentQuestionIndex = MutableLiveData(0)
-  val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) var _score = MutableLiveData(0)
-  val score: LiveData<Int> = _score
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) var _showScore = MutableLiveData(false)
-  val showScore: LiveData<Boolean> = _showScore
+class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  var _selectedAnswer = MutableLiveData<String?>()
-  val selectedAnswer: LiveData<String?> = _selectedAnswer
+  private val _quizQuestions = MutableStateFlow<List<QuizQuestion>>(emptyList())
+  val quizQuestions: StateFlow<List<QuizQuestion>> = _quizQuestions.asStateFlow()
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  val _quizTitle = MutableLiveData<String>()
-  val quizTitle: LiveData<String> = _quizTitle
+  private val _currentQuestionIndex = MutableStateFlow(0)
+  val currentQuestionIndex: StateFlow<Int> = _currentQuestionIndex.asStateFlow()
 
-  private val quizFolder = "quizzes/"
+  private val _score = MutableStateFlow(0)
+  val score: StateFlow<Int> = _score.asStateFlow()
+
+  private val _showScore = MutableStateFlow(false)
+  val showScore: StateFlow<Boolean> = _showScore.asStateFlow()
+
+  private val _selectedAnswer = MutableStateFlow<String?>(null)
+  val selectedAnswer: StateFlow<String?> = _selectedAnswer.asStateFlow()
+
+  val quizTitle: String // Immutable, set once and not modified
+    get() = repository.quizTitle
 
   fun loadQuizDataForTheme(theme: String, context: Context) {
-    val filePath = getFilePathForTheme(theme)
-    val questions = loadCsvData(filePath, context)
-    _quizQuestions.value = questions
-    _currentQuestionIndex.value = 0
-    _score.value = 0
-    _showScore.value = false
-    _quizTitle.value = theme
+    repository.loadQuizDataForTheme(theme, context)
+    updateStateFlowFromRepository()
   }
 
-  private fun getFilePathForTheme(theme: String): String {
-    return when (theme) {
-      "Solar System" -> "${quizFolder}solar_system_quiz.csv"
-      "Earth" -> "${quizFolder}earth_quiz.csv"
-      else -> "${quizFolder}default_quiz.csv"
-    }
-  }
+  fun getQuestions(): List<QuizQuestion> = repository.quizQuestions
 
-  private fun loadCsvData(filePath: String, context: Context): List<QuizQuestion> {
-    val questions = mutableListOf<QuizQuestion>()
+  fun getUserAnswers(): List<String> = repository.userAnswers.toList()
 
-    try {
-      val inputStream = context.assets.open(filePath)
-      val reader = InputStreamReader(inputStream)
-
-      reader.useLines { lines ->
-        lines.forEach { line ->
-          val tokens = line.split(";")
-          if (tokens.size == 5) {
-            val questionText = tokens[0]
-            val correctAnswer = tokens[1]
-            val wrongAnswers = listOf(tokens[2], tokens[3], tokens[4])
-            val shuffledAnswers = (wrongAnswers + correctAnswer).shuffled()
-            questions.add(QuizQuestion(questionText, shuffledAnswers, correctAnswer))
-          }
-        }
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-
-    return questions
-  }
+  fun getAllBestScores(): Map<String, Int> = repository.getAllBestScores()
 
   fun onAnswerSelected(answer: String) {
-    _selectedAnswer.value = answer
+    repository.onAnswerSelected(answer)
+    _selectedAnswer.value = repository.selectedAnswer
   }
 
   fun goToNextQuestion() {
-    if (_selectedAnswer.value ==
-        _quizQuestions.value?.get(_currentQuestionIndex.value ?: 0)?.correctAnswer) {
-      _score.value = _score.value?.plus(1)
-    }
-
-    if ((_currentQuestionIndex.value ?: 0) == (_quizQuestions.value?.size ?: 0) - 1) {
-      _showScore.value = true
-    } else {
-      _currentQuestionIndex.value = (_currentQuestionIndex.value ?: 0) + 1
-      _selectedAnswer.value = null
-    }
+    repository.goToNextQuestion()
+    updateStateFlowFromRepository()
   }
 
   fun resetQuiz() {
-    _currentQuestionIndex.value = 0
-    _score.value = 0
-    _showScore.value = false
-    _selectedAnswer.value = null
-    _quizQuestions.value = emptyList()
+    repository.resetQuiz()
+    updateStateFlowFromRepository()
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  fun updateStateFlowFromRepository() {
+    _quizQuestions.value = repository.quizQuestions
+    _currentQuestionIndex.value = repository.currentQuestionIndex
+    _score.value = repository.score
+    _showScore.value = repository.showScore
+    _selectedAnswer.value = repository.selectedAnswer
+  }
+
+  companion object {
+    fun provideFactory(context: Context): ViewModelProvider.Factory =
+        object : ViewModelProvider.Factory {
+          @Suppress("UNCHECKED_CAST")
+          override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return QuizViewModel(QuizRepository(context)) as T
+          }
+        }
   }
 }

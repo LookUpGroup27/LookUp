@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,16 +8,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
+import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
+import com.github.lookupgroup27.lookup.ui.image.CameraCapture
+import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
@@ -28,7 +36,6 @@ import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
-import com.github.lookupgroup27.lookup.ui.skytracker.SkyTrackerScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -51,7 +58,8 @@ fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
-  val quizViewModel: QuizViewModel = viewModel()
+  val quizViewModel: QuizViewModel =
+      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
@@ -79,7 +87,7 @@ fun LookUpApp() {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
-      composable(Screen.SKY_TRACKER) { SkyTrackerScreen(navigationActions) }
+      composable(Screen.GOOGLE_MAP) { GoogleMapScreen(navigationActions) }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }
 
@@ -94,6 +102,22 @@ fun LookUpApp() {
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
+    }
+
+    navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
+      composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
+    }
+
+    composable(
+        route = "${Route.IMAGE_REVIEW}/{imageUri}",
+        arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
+          ->
+          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
+          ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
+        }
+
+    navigation(startDestination = Screen.FEED, route = Route.FEED) {
+      composable(Screen.FEED) { FeedScreen(navigationActions) }
     }
   }
 }

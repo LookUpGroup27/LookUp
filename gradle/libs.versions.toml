@@ -2,6 +2,13 @@
 
 # Plugins
 agp = "8.4.2"
+cameraCamera2 = "1.1.0"
+cameraExtensions = "1.0.0-alpha31"
+coilCompose = "2.2.2"
+coilComposeVersion = "2.1.0"
+coreTesting = "2.1.0"
+firebaseStorage = "20.0.1"
+guava = "31.1-android"
 json = "20240303"
 kotlin = "1.9.0"
 gms = "4.4.2"
@@ -11,6 +18,7 @@ sonar = "4.4.1.3373"
 # UI Compose
 mockitoAndroid = "5.13.0"
 ui = "1.6.8"
+uiautomator = "2.3.0"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
 uiTooling = "1.6.8"
@@ -56,7 +64,6 @@ testng = "6.9.6"
 uiTestJunit4Android = "1.7.2"
 runtimeLivedata = "1.7.2"
 
-
 # Firebase Libraries
 firebaseAuth = "23.0.0"
 firebaseAuthKtx = "23.0.0"
@@ -64,6 +71,14 @@ firebaseDatabaseKtx = "21.0.0"
 firebaseFirestore = "25.1.0"
 firebaseUiAuth = "8.0.0"
 navigationRuntimeKtx = "2.8.2"
+firebaseStorageVersion = "21.0.1"
+
+# Google Service and Maps
+playServicesAuth = "21.2.0"
+playServicesMaps = "19.0.0"
+playServicesLocation = "21.3.0"
+mapsCompose = "4.3.3"
+mapsComposeUtils = "4.3.0"
 
 # Calendar Libraries
 ical4j = "3.0.21"
@@ -72,7 +87,17 @@ navigationTesting = "2.8.2"
 
 [libraries]
 
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraExtensions" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraExtensions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-compose-v210 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
+firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -102,6 +127,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
+google-firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorageVersion" }
 
 # Navigation Libraries
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -149,6 +175,14 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
 compose = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigationTesting" }
+
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "mapsComposeUtils" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
