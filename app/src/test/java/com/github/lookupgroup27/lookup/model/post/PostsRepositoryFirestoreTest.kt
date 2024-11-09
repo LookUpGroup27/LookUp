@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.model.feed
+package com.github.lookupgroup27.lookup.model.post
 
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
@@ -24,16 +24,17 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
-class FeedRepositoryFirestoreTest {
+class PostsRepositoryFirestoreTest {
 
   @Mock private lateinit var mockFirestore: FirebaseFirestore
   @Mock private lateinit var mockDocumentReference: DocumentReference
   @Mock private lateinit var mockCollectionReference: CollectionReference
   @Mock private lateinit var mockToDoQuerySnapshot: QuerySnapshot
 
-  private lateinit var feedRepositoryFirestore: FeedRepositoryFirestore
+  private lateinit var postsRepositoryFirestore: PostsRepositoryFirestore
 
-  private val post = Post(uid = "1", uri = "uri", username = "user", likes = 10)
+  private val post =
+      Post(uid = "1", uri = "uri", username = "user", likes = 10, latitude = 0.0, longitude = 0.0)
 
   @Before
   fun setUp() {
@@ -49,17 +50,18 @@ class FeedRepositoryFirestoreTest {
         .thenReturn(mockDocumentReference)
     `when`(mockCollectionReference.document()).thenReturn(mockDocumentReference)
 
-    feedRepositoryFirestore = FeedRepositoryFirestore(mockFirestore)
+    postsRepositoryFirestore = PostsRepositoryFirestore(mockFirestore)
   }
 
   @Test
-  fun addPost_shouldCallOnFailure_whenFirestoreFails() {
+  fun `test addPost should call onFailure when firestore fails`() {
     val exception = Exception("Firestore error")
     `when`(mockDocumentReference.set(org.mockito.kotlin.any()))
         .thenReturn(Tasks.forException(exception)) // Simulate failure
 
     var errorMessage: String? = null
-    feedRepositoryFirestore.addPost(post, onSuccess = {}, onFailure = { errorMessage = it.message })
+    postsRepositoryFirestore.addPost(
+        post, onSuccess = {}, onFailure = { errorMessage = it.message })
 
     shadowOf(Looper.getMainLooper()).idle()
 
@@ -71,12 +73,12 @@ class FeedRepositoryFirestoreTest {
   }
 
   @Test
-  fun addPost_shouldCallOnSuccess_whenFirestoreSucceeds() {
+  fun `test addPost should call onSuccess when firestore succeeds`() {
     `when`(mockDocumentReference.set(org.mockito.kotlin.any()))
         .thenReturn(Tasks.forResult(null)) // Simulate success
 
     var successCalled = false
-    feedRepositoryFirestore.addPost(post, onSuccess = { successCalled = true }, onFailure = {})
+    postsRepositoryFirestore.addPost(post, onSuccess = { successCalled = true }, onFailure = {})
 
     shadowOf(Looper.getMainLooper()).idle()
 
@@ -88,10 +90,17 @@ class FeedRepositoryFirestoreTest {
   }
 
   @Test
-  fun getPosts_shouldReturnPosts_whenFirestoreSucceeds() {
+  fun `test getPosts should return posts when firestore succeeds`() {
     val querySnapshot = mock(QuerySnapshot::class.java)
     val documentSnapshot = mock(DocumentSnapshot::class.java)
-    val postMap = mapOf("uid" to "1", "uri" to "uri", "username" to "user", "likes" to 10)
+    val postMap =
+        mapOf(
+            "uid" to "1",
+            "uri" to "uri",
+            "username" to "user",
+            "likes" to 10,
+            "latitude" to 0.0,
+            "longitude" to 0.0)
 
     // Mock Firestore document snapshot data and behavior
     `when`(documentSnapshot.data).thenReturn(postMap)
@@ -108,7 +117,7 @@ class FeedRepositoryFirestoreTest {
         .addSnapshotListener(any())
 
     var fetchedPosts: List<Post>? = null
-    feedRepositoryFirestore.getPosts(
+    postsRepositoryFirestore.getPosts(
         onSuccess = { posts -> fetchedPosts = posts },
         onFailure = { fail("onFailure should not be called") })
 
@@ -119,10 +128,12 @@ class FeedRepositoryFirestoreTest {
     assertEquals("uri", fetchedPosts?.get(0)?.uri)
     assertEquals("user", fetchedPosts?.get(0)?.username)
     assertEquals(10, fetchedPosts?.get(0)?.likes)
+    assertEquals(0.0, fetchedPosts?.get(0)?.latitude)
+    assertEquals(0.0, fetchedPosts?.get(0)?.longitude)
   }
 
   @Test
-  fun getPosts_shouldCallOnFailure_whenFirestoreFails() {
+  fun `test getPosts should call onFailure when firestore fails`() {
     val exception =
         FirebaseFirestoreException("Firestore error", FirebaseFirestoreException.Code.UNKNOWN)
 
@@ -137,7 +148,7 @@ class FeedRepositoryFirestoreTest {
         .addSnapshotListener(any())
 
     var errorMessage: String? = null
-    feedRepositoryFirestore.getPosts(
+    postsRepositoryFirestore.getPosts(
         onSuccess = { fail("onSuccess should not be called") },
         onFailure = { errorMessage = it.message })
 
@@ -146,14 +157,14 @@ class FeedRepositoryFirestoreTest {
   }
 
   @Test
-  fun getNewUid() {
+  fun `test generateNewUid returns a new UID`() {
     `when`(mockDocumentReference.id).thenReturn("1")
-    val uid = feedRepositoryFirestore.generateNewUid()
+    val uid = postsRepositoryFirestore.generateNewUid()
     assert(uid == "1")
   }
 
   @Test
-  fun getProfiles_callsDocuments() {
+  fun `test getPosts calls documents`() {
     // Ensure that mockToDoQuerySnapshot is properly initialized and mocked
     `when`(mockCollectionReference.get()).thenReturn(Tasks.forResult(mockToDoQuerySnapshot))
 
@@ -161,7 +172,7 @@ class FeedRepositoryFirestoreTest {
     `when`(mockToDoQuerySnapshot.documents).thenReturn(listOf())
 
     // Call the method under test
-    feedRepositoryFirestore.getPosts(
+    postsRepositoryFirestore.getPosts(
         onSuccess = {
 
           // Do nothing; we just want to verify that the 'documents' field was accessed
@@ -173,7 +184,7 @@ class FeedRepositoryFirestoreTest {
   }
 
   @Test
-  fun getPosts_shouldReturnEmptyList_whenFirestoreHasNoData() {
+  fun `test getPosts should return EmptyList when firestore has no data`() {
     val querySnapshot = mock(QuerySnapshot::class.java)
     `when`(querySnapshot.documents).thenReturn(emptyList())
 
@@ -187,7 +198,7 @@ class FeedRepositoryFirestoreTest {
         .addSnapshotListener(any())
 
     var fetchedPosts: List<Post>? = null
-    feedRepositoryFirestore.getPosts(
+    postsRepositoryFirestore.getPosts(
         onSuccess = { posts -> fetchedPosts = posts },
         onFailure = { fail("Failure callback should not be called") })
 
@@ -195,7 +206,7 @@ class FeedRepositoryFirestoreTest {
   }
 
   @Test
-  fun getPosts_shouldCallOnFailure_whenNetworkErrorOccurs() {
+  fun `test getPosts should call onFailure when network error occurs`() {
     val exception =
         FirebaseFirestoreException("Network error", FirebaseFirestoreException.Code.UNAVAILABLE)
 
@@ -209,7 +220,7 @@ class FeedRepositoryFirestoreTest {
         .addSnapshotListener(any())
 
     var errorMessage: String? = null
-    feedRepositoryFirestore.getPosts(
+    postsRepositoryFirestore.getPosts(
         onSuccess = { fail("Success callback should not be called") },
         onFailure = { errorMessage = it.message })
 

@@ -1,10 +1,10 @@
-package com.github.lookupgroup27.lookup.model.feed
+package com.github.lookupgroup27.lookup.model.post
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class FeedRepositoryFirestore(private val db: FirebaseFirestore) : FeedRepository {
+class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsRepository {
 
   private val auth = FirebaseAuth.getInstance()
   private val collection = db.collection("posts")
@@ -40,6 +40,8 @@ class FeedRepositoryFirestore(private val db: FirebaseFirestore) : FeedRepositor
                       data["uri"] as String,
                       data["username"] as String,
                       data["likes"] as Int,
+                      data["latitude"] as Double,
+                      data["longitude"] as Double,
                   )
                 }
                 .filterNotNull()

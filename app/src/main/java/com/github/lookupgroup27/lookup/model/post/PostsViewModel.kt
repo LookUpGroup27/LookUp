@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.model.feed
+package com.github.lookupgroup27.lookup.model.post
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
+class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   val post = mutableStateOf<Post?>(null)
 
   // LiveData to hold the list of all posts

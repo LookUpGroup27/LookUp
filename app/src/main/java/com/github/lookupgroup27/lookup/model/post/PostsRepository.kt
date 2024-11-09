@@ -1,6 +1,6 @@
-package com.github.lookupgroup27.lookup.model.feed
+package com.github.lookupgroup27.lookup.model.post
 
-interface FeedRepository {
+interface PostsRepository {
   fun init(onSuccess: () -> Unit)
 
   fun generateNewUid(): String
