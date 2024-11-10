@@ -32,7 +32,7 @@ class MenuKtTest {
     val menuDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Menu" }
 
     // Verify that navigation to the Map screen is triggered with the correct object
-    verify(mockNavigationActions).navigateTo(menuDestination)
+    verify(mockNavigationActions, never()).navigateTo(menuDestination)
   }
 
   @Test

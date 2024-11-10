@@ -104,7 +104,7 @@ open class NavigationActions(
   /**
    * Navigate to the ImageReview screen with a specific imageUri.
    *
-   * @param imageUri The URI of the captured image to review.
+   * @param encodeImageUri The URI of the captured image to review.
    */
   open fun navigateToImageReview(encodeImageUri: String) {
     navController.navigate("${Route.IMAGE_REVIEW}/$encodeImageUri")
