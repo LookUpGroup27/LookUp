@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
+import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel
 import java.io.IOException
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers

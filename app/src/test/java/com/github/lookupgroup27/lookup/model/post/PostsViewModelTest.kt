@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.model.post
 
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.first

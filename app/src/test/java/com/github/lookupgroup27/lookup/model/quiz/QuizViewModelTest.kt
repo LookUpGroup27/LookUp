@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import org.junit.Assert.*
