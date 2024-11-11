@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,47 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.collection.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.launch
 
 @Composable
 fun CollectionScreen(
     navigationActions: NavigationActions,
-    testImageUrls: List<String> = emptyList()
+    viewModel: CollectionViewModel =
+        androidx.lifecycle.viewmodel.compose.viewModel(factory = CollectionViewModel.Factory)
 ) {
-  val context = LocalContext.current
-  val scope = rememberCoroutineScope()
-  val imageUrls = remember { mutableStateListOf<String>().apply { addAll(testImageUrls) } }
-
-  if (testImageUrls.isEmpty()) {
-    LaunchedEffect(Unit) {
-      val user = FirebaseAuth.getInstance().currentUser
-      val userEmail = user?.email ?: ""
-      if (userEmail.isNotEmpty()) {
-        val folderPath = "images/$userEmail/"
-        scope.launch {
-          val storage = FirebaseStorage.getInstance()
-          val imagesRef = storage.getReference().child(folderPath)
-
-          imagesRef.listAll().addOnSuccessListener { result ->
-            if (result.items.isEmpty()) {
-              Log.d("FirebaseImageDebug", "No items found in the '$folderPath' folder")
-            } else {
-              result.items
-                  .sortedBy { it.name }
-                  .forEach { item ->
-                    item.downloadUrl.addOnSuccessListener { uri ->
-                      uri?.let { imageUrls.add(it.toString()) }
-                    }
-                  }
-            }
-          }
-        }
-      }
-    }
-  }
+  val imageUrls by viewModel.imageUrls.collectAsState()
 
   Box(
       modifier = Modifier.fillMaxSize().testTag("background_box"),
