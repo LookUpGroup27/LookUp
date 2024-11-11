@@ -29,7 +29,7 @@ fun BottomNavigationMenu(
               icon = { Icon(tab.icon, contentDescription = null, tint = Color.White) },
               label = { Text(text = tab.textId, color = Color.White) },
               selected = tab.route == selectedItem,
-              onClick = { onTabSelect(tab) },
+              onClick = { if (selectedItem != tab.route) onTabSelect(tab) },
               modifier = Modifier.clip(shape = RoundedCornerShape(50.dp)).testTag(tab.textId))
         }
       },

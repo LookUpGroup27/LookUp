@@ -32,7 +32,10 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 fun LandingScreen(navigationActions: NavigationActions) {
   // Background container with clickable modifier to navigate to Map screen
   BoxWithConstraints(
-      modifier = Modifier.fillMaxSize().clickable { navigationActions.navigateTo(Screen.MAP) }) {
+      modifier =
+          Modifier.fillMaxSize().testTag("LandingScreen").clickable {
+            navigationActions.navigateTo(Screen.MAP)
+          }) {
         // Background Image
         Image(
             painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
