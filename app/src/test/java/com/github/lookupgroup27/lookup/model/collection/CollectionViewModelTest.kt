@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -41,14 +42,23 @@ class CollectionViewModelTest {
   }
 
   @Test
-  fun `test fetchImages updates imageUrls with correct values`() = runBlocking {
+  fun `test fetchImages updates imageUrls with correct values`() = runTest {
     val mockRepository: CollectionRepository = mock()
     val mockImageUrls = listOf("mock_url_1", "mock_url_2")
+
+    // Mock repository to return the mock image URLs
     whenever(mockRepository.getUserImageUrls()).thenReturn(mockImageUrls)
+    whenever(mockRepository.init(any())).thenAnswer { invocation ->
+      (invocation.arguments[0] as () -> Unit).invoke()
+    }
 
+    // Initialize the ViewModel with the mock repository
     viewModel = CollectionViewModel(mockRepository)
-    testDispatcher.scheduler.advanceUntilIdle()
 
+    // Advance coroutine execution until completion
+    advanceUntilIdle()
+
+    // Check that imageUrls state contains the mock URLs
     val imageUrls = viewModel.imageUrls.first()
     assertEquals(mockImageUrls, imageUrls)
   }
