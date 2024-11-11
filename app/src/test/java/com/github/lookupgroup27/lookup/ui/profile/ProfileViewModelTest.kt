@@ -1,6 +1,7 @@
-package com.github.lookupgroup27.lookup.model.profile
+package com.github.lookupgroup27.lookup.ui.profile
 
-import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepositoryFirestore
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
