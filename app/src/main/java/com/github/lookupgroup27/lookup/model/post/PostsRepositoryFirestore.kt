@@ -39,9 +39,9 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
                       data["uid"] as String,
                       data["uri"] as String,
                       data["username"] as String,
-                      data["likes"] as Int,
-                      data["latitude"] as Double,
-                      data["longitude"] as Double,
+                      (data["likes"] as? Long)?.toInt() ?: 0,
+                      (data["latitude"] as? Long)?.toDouble() ?: 0.0,
+                      (data["longitude"] as? Long)?.toDouble() ?: 0.0,
                   )
                 }
                 .filterNotNull()
