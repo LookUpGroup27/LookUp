@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.never
 
 @RunWith(AndroidJUnit4::class)
 class FeedScreenTest {
@@ -75,7 +76,7 @@ class FeedScreenTest {
     composeTestRule.onNodeWithText("Feed").performClick()
 
     val feedDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Feed" }
-    Mockito.verify(mockNavigationActions).navigateTo(feedDestination)
+    Mockito.verify(mockNavigationActions, never()).navigateTo(feedDestination)
   }
 
   @Test
