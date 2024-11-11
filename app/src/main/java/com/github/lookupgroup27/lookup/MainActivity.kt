@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -46,7 +45,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     auth = FirebaseAuth.getInstance()
-    auth.currentUser?.let { auth.signOut() }
+    // auth.currentUser?.let { auth.signOut() }
 
     setContent { LookUpTheme { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } } }
   }
