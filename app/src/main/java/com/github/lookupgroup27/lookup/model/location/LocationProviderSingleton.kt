@@ -8,7 +8,6 @@ import android.content.Context
  */
 object LocationProviderSingleton {
 
-  // Holds the single instance of LocationProvider, initially null
   private var instance: LocationProvider? = null
 
   /**
@@ -19,9 +18,11 @@ object LocationProviderSingleton {
    * @return The singleton instance of LocationProvider.
    */
   fun getInstance(context: Context): LocationProvider {
-    // Initialize instance if it's null, otherwise return the existing instance
     if (instance == null) {
-      instance = LocationProvider(context.applicationContext)
+      instance =
+          LocationProvider(context.applicationContext).apply {
+            requestLocationUpdates() // Start requesting updates immediately
+          }
     }
     return instance!!
   }
