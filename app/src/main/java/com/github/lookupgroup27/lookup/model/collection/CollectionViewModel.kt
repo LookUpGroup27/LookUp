@@ -14,14 +14,23 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
   private val _imageUrls = MutableStateFlow<List<String>>(emptyList())
   val imageUrls: StateFlow<List<String>> = _imageUrls
 
+  private val _error = MutableStateFlow<String?>(null)
+  val error: StateFlow<String?> = _error
+
   init {
-    // Automatically fetch images when the ViewModel is created
-    viewModelScope.launch { fetchImages() }
+    repository.init { fetchImages() }
   }
 
-  private suspend fun fetchImages() {
-    val images = repository.getUserImageUrls()
-    _imageUrls.value = images
+  private fun fetchImages() {
+    viewModelScope.launch {
+      try {
+        val images = repository.getUserImageUrls()
+        _imageUrls.value = images
+        _error.value = null // Clear any previous error state if successful
+      } catch (e: Exception) {
+        _error.value = "Failed to load images: ${e.localizedMessage}"
+      }
+    }
   }
 
   companion object {
