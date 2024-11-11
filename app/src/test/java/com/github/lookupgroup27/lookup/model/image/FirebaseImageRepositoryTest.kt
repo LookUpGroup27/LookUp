@@ -40,12 +40,6 @@ class FirebaseImageRepositoryTest {
       FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext())
     }
 
-    /*firebaseAuth = mock(FirebaseAuth::class.java)
-    firebaseStorage = mock(FirebaseStorage::class.java)
-    storageReference = mock(StorageReference::class.java)
-    fileReference = mock(StorageReference::class.java)
-    mockUser = mock(FirebaseUser::class.java)*/
-
     // Set up mock behavior for FirebaseAuth and FirebaseStorage
     `when`(firebaseAuth.currentUser).thenReturn(mockUser)
     `when`(mockUser.email).thenReturn("testuser@example.com")
@@ -66,7 +60,7 @@ class FirebaseImageRepositoryTest {
     val result = repository.uploadImage(mockFile)
 
     assertTrue(result.isFailure)
-    assertEquals("Please sign in to upload images.", result.exceptionOrNull()?.message)
+    assertEquals("Failed to upload image: User not signed in.", result.exceptionOrNull()?.message)
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -109,6 +103,6 @@ class FirebaseImageRepositoryTest {
     val result = repository.uploadImage(tempFile)
 
     assertTrue(result.isFailure)
-    assertEquals("Upload failed", result.exceptionOrNull()?.message)
+    assertEquals("Failed to upload image: Upload failed", result.exceptionOrNull()?.message)
   }
 }
