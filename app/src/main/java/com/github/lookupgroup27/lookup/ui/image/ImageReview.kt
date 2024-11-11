@@ -18,6 +18,8 @@ import com.github.lookupgroup27.lookup.model.image.FirebaseImageRepository
 import com.github.lookupgroup27.lookup.model.image.ImageViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
 @Composable
@@ -25,7 +27,7 @@ fun ImageReviewScreen(navigationActions: NavigationActions, imageUri: File?) {
   val context = LocalContext.current
 
   // Instantiate the repository
-  val repository = FirebaseImageRepository()
+  val repository = FirebaseImageRepository(FirebaseStorage.getInstance(), FirebaseAuth.getInstance())
 
   // Use the companion object factory to create the ViewModel
   val imageViewModel: ImageViewModel =
