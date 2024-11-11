@@ -17,6 +17,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
+import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
+import com.github.lookupgroup27.lookup.model.post.PostsViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.FeedScreen
@@ -38,6 +40,7 @@ import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
 
@@ -55,12 +58,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LookUpApp() {
+  val context = LocalContext.current
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
-  val quizViewModel: QuizViewModel =
-      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
+  val quizViewModel: QuizViewModel = viewModel(factory = QuizViewModel.provideFactory(context))
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
+  val postsRepository = PostsRepositoryFirestore(FirebaseFirestore.getInstance())
+  val postsViewModel = PostsViewModel(postsRepository)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -117,7 +122,7 @@ fun LookUpApp() {
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
-      composable(Screen.FEED) { FeedScreen(navigationActions) }
+      composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions) }
     }
   }
 }
