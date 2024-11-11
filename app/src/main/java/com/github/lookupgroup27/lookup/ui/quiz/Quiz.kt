@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +35,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
   val context = LocalContext.current
+  val bestScores = viewModel.getAllBestScores()
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize().testTag("quiz_screen")) {
     // Background Image
@@ -73,31 +75,46 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
               modifier = Modifier.testTag("quiz_title"))
 
           // Quiz Options
-          QuizOptionButton(
-              text = "Earth",
-              onClick = {
-                viewModel.loadQuizDataForTheme("Earth", context)
-                navigationActions.navigateTo(Screen.QUIZ_PLAY)
-              },
-              testTag = "earth_button")
-
-          QuizOptionButton(
-              text = "Solar System",
-              onClick = {
-                viewModel.loadQuizDataForTheme("Solar System", context)
-                navigationActions.navigateTo(Screen.QUIZ_PLAY)
-              },
-              testTag = "solar_system_button")
+          bestScores.forEach { (theme, score) ->
+            QuizOptionButton(
+                theme = theme,
+                bestScore = "$score",
+                onClick = {
+                  viewModel.loadQuizDataForTheme(theme, context)
+                  navigationActions.navigateTo(Screen.QUIZ_PLAY)
+                },
+                testTag = "${theme.lowercase()}_button")
+          }
         }
   }
 }
 
 @Composable
-fun QuizOptionButton(text: String, onClick: () -> Unit, testTag: String) {
+fun QuizOptionButton(theme: String, bestScore: String, onClick: () -> Unit, testTag: String) {
   Button(
       onClick = onClick,
       shape = RoundedCornerShape(16.dp),
-      modifier = Modifier.fillMaxWidth().height(56.dp).testTag(testTag)) {
-        Text(text = text, fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+      modifier = Modifier.fillMaxWidth().height(56.dp).testTag(testTag),
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(
+              containerColor = Color(0xFF4E5DAB))) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              Text(
+                  text = theme,
+                  fontSize = 20.sp,
+                  fontWeight = FontWeight.Bold,
+                  color = Color.White,
+                  modifier = Modifier.padding(start = 8.dp))
+              Text(
+                  text = "Best Score: $bestScore/15",
+                  fontSize = 16.sp,
+                  fontStyle = FontStyle.Italic,
+                  fontWeight = FontWeight.Normal,
+                  color = Color(0xFFDADADA),
+                  modifier = Modifier.padding(end = 8.dp))
+            }
       }
 }

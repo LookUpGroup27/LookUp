@@ -43,7 +43,7 @@ class MapKtTest {
   }
 
   @Test
-  fun menuScreen_bottomNavigation_clickMapTab_navigatesToMap() {
+  fun mapScreen_bottomNavigation_clickMapTab_doesNotNavigateToMap() {
     composeTestRule.setContent { MapScreen(navigationActions = mockNavigationActions) }
 
     // Click on the Map tab
@@ -51,7 +51,7 @@ class MapKtTest {
 
     val mapDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Map" }
 
-    // Verify that navigation to the Map screen is triggered with the correct object
-    verify(mockNavigationActions).navigateTo(mapDestination)
+    // Verify that navigation to the Map screen is not triggered
+    verify(mockNavigationActions, never()).navigateTo(mapDestination)
   }
 }

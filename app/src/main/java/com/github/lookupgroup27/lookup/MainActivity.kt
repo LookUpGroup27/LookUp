@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,7 @@ import androidx.navigation.navArgument
 import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
+import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
@@ -57,7 +59,8 @@ fun LookUpApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
-  val quizViewModel: QuizViewModel = viewModel()
+  val quizViewModel: QuizViewModel =
+      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
@@ -113,5 +116,9 @@ fun LookUpApp() {
           val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { File(it) }
           ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
         }
+
+    navigation(startDestination = Screen.FEED, route = Route.FEED) {
+      composable(Screen.FEED) { FeedScreen(navigationActions) }
+    }
   }
 }

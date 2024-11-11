@@ -5,7 +5,10 @@ agp = "8.4.2"
 cameraCamera2 = "1.1.0"
 cameraExtensions = "1.0.0-alpha31"
 coilCompose = "2.2.2"
+
 firebaseStorage = "20.2.0"
+coilComposeVersion = "2.1.0"
+coreTesting = "2.1.0"
 guava = "31.1-android"
 json = "20240303"
 kotlin = "1.9.0"
@@ -17,6 +20,7 @@ sonar = "4.4.1.3373"
 # UI Compose
 mockitoAndroid = "5.13.0"
 ui = "1.6.8"
+uiautomator = "2.3.0"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
 uiTooling = "1.6.8"
@@ -62,7 +66,6 @@ testng = "6.9.6"
 uiTestJunit4Android = "1.7.2"
 runtimeLivedata = "1.7.2"
 
-
 # Firebase Libraries
 firebaseAuth = "23.0.0"
 firebaseAuthKtx = "23.0.0"
@@ -70,6 +73,7 @@ firebaseDatabaseKtx = "21.0.0"
 firebaseFirestore = "25.1.0"
 firebaseUiAuth = "8.0.0"
 navigationRuntimeKtx = "2.8.2"
+firebaseStorageVersion = "21.0.1"
 
 # Google Service and Maps
 playServicesAuth = "21.2.0"
@@ -90,7 +94,10 @@ androidx-camera-extensions = { module = "androidx.camera:camera-extensions", ver
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraExtensions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-compose-v210 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx", version.ref = "firebaseStorage" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -124,6 +131,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
+google-firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorageVersion" }
 
 # Navigation Libraries
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
