@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.github.lookupgroup27.lookup.model.location.LocationProvider
+import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -50,7 +50,7 @@ private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 fun GoogleMapScreen(navigationActions: NavigationActions) {
   val context = LocalContext.current
   var hasLocationPermission by remember { mutableStateOf(false) }
-  val locationProvider = remember { LocationProvider(context) }
+  val locationProvider = LocationProviderSingleton.getInstance(context)
   var autoCenteringEnabled by remember { mutableStateOf(true) } // New state for auto-centering
 
   LaunchedEffect(Unit) {
