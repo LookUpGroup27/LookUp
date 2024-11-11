@@ -194,6 +194,7 @@ dependencies {
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
     implementation (libs.firebase.storage.ktx)
+    implementation (libs.play.services.tasks)
 
 
     // Navigation
