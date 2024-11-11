@@ -1,4 +1,7 @@
 package com.github.lookupgroup27.lookup.model.collection
 
-class CollectionRepository {
+interface CollectionRepository {
+  fun init(onSuccess: () -> Unit)
+
+  suspend fun getUserImageUrls(): List<String>
 }
