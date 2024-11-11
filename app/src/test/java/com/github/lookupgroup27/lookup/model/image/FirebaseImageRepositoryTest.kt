@@ -7,13 +7,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.File
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import okhttp3.internal.concurrent.Task
 import org.junit.Before
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -22,7 +20,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
-import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class FirebaseImageRepositoryTest {
@@ -56,7 +53,7 @@ class FirebaseImageRepositoryTest {
     `when`(storageReference.child(anyString())).thenReturn(fileReference)
 
     // Initialize the repository
-    repository = FirebaseImageRepository(firebaseStorage,firebaseAuth)
+    repository = FirebaseImageRepository(firebaseStorage, firebaseAuth)
   }
 
   @Test
@@ -105,7 +102,6 @@ class FirebaseImageRepositoryTest {
 
     `when`(firebaseAuth.currentUser).thenReturn(mockUser)
     `when`(mockUser.email).thenReturn("testuser@example.com")
-    
 
     // Simulate an exception during upload
     `when`(fileReference.putBytes(any())).thenThrow(RuntimeException("Upload failed"))

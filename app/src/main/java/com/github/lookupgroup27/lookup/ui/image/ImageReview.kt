@@ -27,7 +27,8 @@ fun ImageReviewScreen(navigationActions: NavigationActions, imageUri: File?) {
   val context = LocalContext.current
 
   // Instantiate the repository
-  val repository = FirebaseImageRepository(FirebaseStorage.getInstance(), FirebaseAuth.getInstance())
+  val repository =
+      FirebaseImageRepository(FirebaseStorage.getInstance(), FirebaseAuth.getInstance())
 
   // Use the companion object factory to create the ViewModel
   val imageViewModel: ImageViewModel =
