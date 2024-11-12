@@ -1,10 +1,10 @@
 package com.github.lookupgroup27.lookup.ui
 
+import ProximityPostFetcher
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,19 +18,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import coil.compose.rememberAsyncImagePainter
-import com.github.lookupgroup27.lookup.model.feed.ProximityPostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -48,21 +44,26 @@ private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
+    initialNearbyPosts: List<Post>? = null, // Optional parameter for testing
+    initialLoadingState: Boolean? = null, // Optional parameter for testing
 ) {
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
   val proximityPostFetcher = remember { ProximityPostFetcher(postsViewModel, context) }
-  var hasLocationPermission by remember { mutableStateOf(false) }
-  var isLoading by remember { mutableStateOf(true) }
-  val nearbyPosts by proximityPostFetcher.nearbyPosts.collectAsState()
+
+  var locationPermissionGranted by remember { mutableStateOf(false) }
+  var isLoading by remember { mutableStateOf(initialLoadingState ?: true) }
+  val nearbyPosts by
+      (initialNearbyPosts?.let { mutableStateOf(it) }
+          ?: proximityPostFetcher.nearbyPosts.collectAsState())
 
   // Trigger location updates and post fetch only when location is available
   LaunchedEffect(Unit) {
-    hasLocationPermission =
+    locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
 
-    if (!hasLocationPermission) {
+    if (!locationPermissionGranted) {
       ActivityCompat.requestPermissions(
           context as Activity,
           arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -81,16 +82,20 @@ fun FeedScreen(
   }
 
   if (isLoading) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      CircularProgressIndicator()
-    }
+    Box(
+        modifier = Modifier.fillMaxSize().testTag("LoadingIndicator"),
+        contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
   } else {
     Scaffold(
         bottomBar = {
-          BottomNavigationMenu(
-              onTabSelect = { destination -> navigationActions.navigateTo(destination) },
-              tabList = LIST_TOP_LEVEL_DESTINATION,
-              selectedItem = Route.FEED)
+          Box(Modifier.testTag("BottomNavigationMenu")) {
+            BottomNavigationMenu(
+                onTabSelect = { destination -> navigationActions.navigateTo(destination) },
+                tabList = LIST_TOP_LEVEL_DESTINATION,
+                selectedItem = Route.FEED)
+          }
         }) { innerPadding ->
           LazyColumn(
               contentPadding = innerPadding,
@@ -100,41 +105,4 @@ fun FeedScreen(
               }
         }
   }
-}
-
-/**
- * Composable that displays an individual post, showing the user's image and username. The image is
- * loaded asynchronously using the post's URI.
- *
- * @param post The post data, including image URI and username
- */
-@Composable
-fun PostItem(post: Post) {
-  Column(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(8.dp)
-              .testTag("PostItem_${post.uid}") // Unique tag per post item
-      ) {
-        // Display the username at the top of each post item
-        Text(
-            text = post.username,
-            style =
-                MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold, color = Color.Black),
-            modifier =
-                Modifier.padding(start = 4.dp)
-                    .testTag("UsernameTag_${post.username}") // Tagging username for testing
-            )
-
-        // Display image using the dynamically fetched URI
-        Image(
-            painter = rememberAsyncImagePainter(post.uri), // Coil loads image from URI
-            contentDescription = "Post Image for ${post.username}",
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(300.dp)
-                    .testTag("ImageTag_${post.uid}"), // Tagging image for testing
-            contentScale = ContentScale.Crop)
-      }
 }
