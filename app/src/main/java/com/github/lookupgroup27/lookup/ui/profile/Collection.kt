@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.model.collection.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 
 @Composable
