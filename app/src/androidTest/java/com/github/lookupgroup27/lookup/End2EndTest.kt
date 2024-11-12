@@ -39,43 +39,35 @@ class End2EndTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("calendar_screen").assertIsDisplayed()
-
-    // Step 4: Navigate back and check MenuScreen is displayed
     composeTestRule.onNodeWithText("Menu").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
-    // Step 5: Navigate to ProfileScreen, then SignInScreen if not authenticated
+    // Step 4: Navigate to ProfileScreen, then SignInScreen if not authenticated
     composeTestRule.onNodeWithTag("profile_button").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("auth_screen").assertIsDisplayed()
-
-    // Step 6: Navigate back and check MenuScreen is displayed
     composeTestRule.onNodeWithTag("go_back_button_signin").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
-    // Step 7: Navigate to MapScreen from MenuScreen
+    // Step 5: Navigate to MapScreen from MenuScreen
     composeTestRule.onNodeWithText("Map").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("map_screen").assertIsDisplayed()
-
-    // Step 8: Navigate back and check MenuScreen is displayed
     composeTestRule.onNodeWithTag(TopLevelDestinations.MENU.textId).performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
-    // Step 9: Navigate to Quizzes screen from MenuScreen
+    // Step 6: Navigate to Quizzes screen from MenuScreen
     composeTestRule.onNodeWithText("Quizzes").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
-
-    // Step 10: Navigate back and check MenuScreen is displayed
     composeTestRule.onNodeWithTag("go_back_button_quiz").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
-    // Step 11: Navigate to Google Map from MenuScreen
+    // Step 7: Navigate to Google Map from MenuScreen
     composeTestRule.onNodeWithText("Google Map").performClick()
     composeTestRule.waitForIdle()
 
@@ -88,8 +80,14 @@ class End2EndTest {
     }
 
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Menu").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
-    // Step 12: Navigate back and check MenuScreen is displayed
+    // Step 8: Navigate to FeedScreen from MenuScreen
+    composeTestRule.onNodeWithText("Feed").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("feed_screen").assertIsDisplayed()
     composeTestRule.onNodeWithText("Menu").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()

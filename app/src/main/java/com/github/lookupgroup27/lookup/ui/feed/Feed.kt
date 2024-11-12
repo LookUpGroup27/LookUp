@@ -37,7 +37,8 @@ fun FeedScreen(navigationActions: NavigationActions) {
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
             selectedItem = Route.FEED)
-      }) { innerPadding ->
+      },
+      modifier = Modifier.fillMaxWidth().testTag("feed_screen")) { innerPadding ->
         LazyColumn(
             contentPadding = innerPadding,
             modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
