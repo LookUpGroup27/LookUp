@@ -25,12 +25,12 @@ import androidx.core.content.ContextCompat
 import com.github.lookupgroup27.lookup.model.feed.ProximityPostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
-import com.github.lookupgroup27.lookup.model.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 /**

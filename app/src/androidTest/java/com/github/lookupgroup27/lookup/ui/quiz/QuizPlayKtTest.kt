@@ -4,9 +4,9 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
 import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
-import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

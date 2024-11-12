@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,14 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
-import com.github.lookupgroup27.lookup.model.post.PostsViewModel
-import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
-import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
@@ -33,14 +29,18 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
+import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.File
 
 class MainActivity : ComponentActivity() {
 
@@ -58,11 +58,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LookUpApp() {
-  val context = LocalContext.current
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
-  val quizViewModel: QuizViewModel = viewModel(factory = QuizViewModel.provideFactory(context))
+  val quizViewModel: QuizViewModel =
+      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val postsRepository = PostsRepositoryFirestore(FirebaseFirestore.getInstance())
   val postsViewModel = PostsViewModel(postsRepository)
@@ -114,11 +114,11 @@ fun LookUpApp() {
     }
 
     composable(
-        route = "${Route.IMAGE_REVIEW}/{imageUri}",
-        arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
+        route = "${Route.IMAGE_REVIEW}/{imageFile}",
+        arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) { backStackEntry
           ->
-          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
-          ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
+          val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+          ImageReviewScreen(navigationActions = navigationActions, imageFile = imageFile)
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {

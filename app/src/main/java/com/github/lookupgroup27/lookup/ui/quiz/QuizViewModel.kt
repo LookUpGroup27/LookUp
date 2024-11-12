@@ -1,9 +1,11 @@
-package com.github.lookupgroup27.lookup.model.quiz
+package com.github.lookupgroup27.lookup.ui.quiz
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
+import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
