@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CollectionViewModel(private val repository: CollectionRepository) : ViewModel() {
+class CollectionViewModel2(private val repository: CollectionRepository) : ViewModel() {
 
   private val _imageUrls = MutableStateFlow<List<String>>(emptyList())
   val imageUrls: StateFlow<List<String>> = _imageUrls
@@ -38,7 +38,7 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
         object : ViewModelProvider.Factory {
           @Suppress("UNCHECKED_CAST")
           override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return CollectionViewModel(
+            return CollectionViewModel2(
                 CollectionRepositoryFirestore(
                     FirebaseStorage.getInstance(), FirebaseAuth.getInstance()))
                 as T
