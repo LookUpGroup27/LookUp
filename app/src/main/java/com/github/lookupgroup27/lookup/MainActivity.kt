@@ -109,11 +109,11 @@ fun LookUpApp() {
     }
 
     composable(
-        route = "${Route.IMAGE_REVIEW}/{imageUri}",
-        arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
+        route = "${Route.IMAGE_REVIEW}/{imageFile}",
+        arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) { backStackEntry
           ->
-          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { File(it) }
-          ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
+          val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+          ImageReviewScreen(navigationActions = navigationActions, imageFile = imageFile)
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {

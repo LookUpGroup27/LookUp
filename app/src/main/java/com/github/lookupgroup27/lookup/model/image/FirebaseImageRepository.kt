@@ -45,7 +45,7 @@ class FirebaseImageRepository(
         val fileRef = storageRef.child("/images/$userMail/${imageFile.name}")
 
         // Upload the byte array to Firebase Storage
-        fileRef.putBytes(bytes)
+        fileRef.putBytes(bytes).await()
 
         // Retrieve the download URL of the uploaded image
         val downloadUrl = fileRef.downloadUrl.await()

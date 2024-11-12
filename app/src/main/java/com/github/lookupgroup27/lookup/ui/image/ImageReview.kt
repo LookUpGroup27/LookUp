@@ -23,7 +23,7 @@ import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
 @Composable
-fun ImageReviewScreen(navigationActions: NavigationActions, imageUri: File?) {
+fun ImageReviewScreen(navigationActions: NavigationActions, imageFile: File?) {
   val context = LocalContext.current
 
   // Instantiate the repository
@@ -41,9 +41,9 @@ fun ImageReviewScreen(navigationActions: NavigationActions, imageUri: File?) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center) {
         // Display the image if available
-        if (imageUri != null) {
+        if (imageFile != null) {
           Image(
-              painter = rememberAsyncImagePainter(imageUri),
+              painter = rememberAsyncImagePainter(imageFile),
               contentDescription = "Captured Image",
               modifier = Modifier.fillMaxWidth().aspectRatio(1f),
               contentScale = ContentScale.Crop)
@@ -55,7 +55,7 @@ fun ImageReviewScreen(navigationActions: NavigationActions, imageUri: File?) {
 
         // Save Image Button
         Button(
-            onClick = { imageUri?.let { imageViewModel.uploadImage(it) } },
+            onClick = { imageFile?.let { imageViewModel.uploadImage(it) } },
             modifier = Modifier.fillMaxWidth().testTag("confirm_button")) {
               Text(text = "Save Image")
             }

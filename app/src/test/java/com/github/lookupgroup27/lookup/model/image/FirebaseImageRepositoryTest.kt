@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import java.io.File
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -76,7 +77,15 @@ class FirebaseImageRepositoryTest {
     `when`(mockUser.email).thenReturn("testuser@example.com")
 
     // Mock Firebase Storage behavior
+    val mockUploadTask = mock(UploadTask::class.java)
     val fakeUri = android.net.Uri.parse("https://fakeurl.com/testImage.jpg")
+
+    `when`(fileReference.putBytes(any())).thenReturn(mockUploadTask)
+
+    // Simulate a successful upload to avoid timeout
+    `when`(mockUploadTask.isSuccessful()).thenReturn(true)
+    `when`(mockUploadTask.isComplete()).thenReturn(true)
+
     `when`(fileReference.downloadUrl).thenReturn(Tasks.forResult(fakeUri))
 
     val result = repository.uploadImage(tempFile)
