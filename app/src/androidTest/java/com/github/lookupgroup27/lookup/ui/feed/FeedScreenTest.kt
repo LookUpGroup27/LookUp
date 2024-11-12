@@ -1,3 +1,5 @@
+package com.github.lookupgroup27.lookup.ui.feed
+
 import android.Manifest
 import android.content.Context
 import android.location.Location

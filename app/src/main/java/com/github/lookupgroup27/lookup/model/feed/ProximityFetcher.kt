@@ -1,3 +1,5 @@
+package com.github.lookupgroup27.lookup.model.feed
+
 import android.content.Context
 import android.util.Log
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton

@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui
 
-import ProximityPostFetcher
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
@@ -23,6 +22,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.github.lookupgroup27.lookup.model.feed.ProximityPostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsViewModel
