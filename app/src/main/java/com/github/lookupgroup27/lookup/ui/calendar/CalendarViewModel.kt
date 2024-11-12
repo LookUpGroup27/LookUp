@@ -1,9 +1,11 @@
-package com.github.lookupgroup27.lookup.model.calendar
+package com.github.lookupgroup27.lookup.ui.calendar
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.lookupgroup27.lookup.model.calendar.HttpIcalRepository
+import com.github.lookupgroup27.lookup.model.calendar.IcalRepository
 import java.io.IOException
 import java.io.StringReader
 import java.util.Calendar as JavaCalendar

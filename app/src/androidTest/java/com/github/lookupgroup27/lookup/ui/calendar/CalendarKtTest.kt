@@ -10,7 +10,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.model.calendar.MockIcalRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import java.text.SimpleDateFormat

@@ -1,6 +1,9 @@
-package com.github.lookupgroup27.lookup.model.profile
+package com.github.lookupgroup27.lookup.ui.profile
 
 import androidx.lifecycle.*
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepositoryFirestore
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore

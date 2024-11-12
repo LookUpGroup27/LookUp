@@ -1,5 +1,7 @@
-package com.github.lookupgroup27.lookup.model.calendar
+package com.github.lookupgroup27.lookup.ui.calendar
 
+import com.github.lookupgroup27.lookup.model.calendar.IcalRepository
+import com.github.lookupgroup27.lookup.model.calendar.MockIcalRepository
 import java.io.IOException
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
