@@ -73,7 +73,6 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     repository.updatePost(post, onSuccess, onFailure)
   }
 
-
   companion object {
     val Factory: ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {
