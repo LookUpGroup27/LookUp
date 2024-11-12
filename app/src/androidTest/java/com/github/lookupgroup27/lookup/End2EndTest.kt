@@ -16,6 +16,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+private const val PERMISSION_DIALOG_TIMEOUT = 5000L
+
 @RunWith(AndroidJUnit4::class)
 class End2EndTest {
 
@@ -78,7 +80,7 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     val allowButton: UiObject2? =
-        device.wait(Until.findObject(By.text("While using the app")), 5000)
+        device.wait(Until.findObject(By.text("While using the app")), PERMISSION_DIALOG_TIMEOUT)
     if (allowButton != null) {
       allowButton.click()
     } else {
