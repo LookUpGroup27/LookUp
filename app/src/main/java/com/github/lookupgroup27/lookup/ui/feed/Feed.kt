@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui
+package com.github.lookupgroup27.lookup.ui.feed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

@@ -9,9 +9,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.ui.FeedScreen
-import com.github.lookupgroup27.lookup.ui.Post
-import com.github.lookupgroup27.lookup.ui.PostItem
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import org.junit.Before
