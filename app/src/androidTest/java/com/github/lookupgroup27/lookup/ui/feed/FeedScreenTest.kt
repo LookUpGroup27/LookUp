@@ -111,6 +111,16 @@ class FeedScreenTest {
 
     composeTestRule.waitForIdle()
 
+    // Use waitUntil to repeatedly assert the existence of PostItem_3 within the timeout
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      try {
+        composeTestRule.onNodeWithTag("PostItem_3").assertExists()
+        true // Exit wait loop once the item is found
+      } catch (e: AssertionError) {
+        false // Continue waiting if the item is not found
+      }
+    }
+
     // Verify that the post item for User3 is displayed and contains the correct username text
     composeTestRule.onNodeWithTag("PostItem_3").assertExists()
     composeTestRule.onNodeWithTag("UsernameTag_User3").assertExists().assertTextContains("User3")
