@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     auth = FirebaseAuth.getInstance()
+
     // auth.currentUser?.let { auth.signOut() }
 
     setContent { LookUpTheme { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } } }
