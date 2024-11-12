@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
@@ -93,7 +94,7 @@ class FeedScreenTest {
     composeTestRule.onNodeWithTag("PostItem_1").assertExists()
     composeTestRule.onNodeWithTag("UsernameTag_User1").assertTextContains("User1")
 
-    composeTestRule.onNodeWithTag("PostItem_2").assertExists()
+    composeTestRule.onNodeWithTag("PostItem_2").performScrollTo().assertExists()
     composeTestRule.onNodeWithTag("UsernameTag_User2").assertTextContains("User2")
   }
 
@@ -111,7 +112,7 @@ class FeedScreenTest {
     composeTestRule.waitForIdle()
 
     // Verify that the post item for User3 is displayed and contains the correct username text
-    composeTestRule.onNodeWithTag("PostItem_3").assertExists()
+    composeTestRule.onNodeWithTag("PostItem_3").performScrollTo().assertExists()
     composeTestRule.onNodeWithTag("UsernameTag_User3").assertExists().assertTextContains("User3")
   }
 }
