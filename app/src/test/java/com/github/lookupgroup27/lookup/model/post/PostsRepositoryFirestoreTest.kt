@@ -98,7 +98,7 @@ class PostsRepositoryFirestoreTest {
             "uid" to "1",
             "uri" to "uri",
             "username" to "user",
-            "likes" to 10,
+            "likes" to 10L,
             "latitude" to 0.0,
             "longitude" to 0.0)
 

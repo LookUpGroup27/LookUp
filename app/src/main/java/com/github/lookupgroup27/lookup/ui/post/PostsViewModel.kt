@@ -1,8 +1,10 @@
-package com.github.lookupgroup27.lookup.model.post
+package com.github.lookupgroup27.lookup.ui.post
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.github.lookupgroup27.lookup.model.post.Post
+import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow

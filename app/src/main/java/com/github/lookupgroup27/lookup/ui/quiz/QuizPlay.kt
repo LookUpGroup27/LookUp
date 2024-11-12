@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.quiz.QuizQuestion
-import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.theme.DarkPurple

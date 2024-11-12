@@ -16,13 +16,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.github.lookupgroup27.lookup.model.calendar.CalendarViewModel
-import com.github.lookupgroup27.lookup.model.collection.CollectionViewModel
-import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
-import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
@@ -35,8 +32,10 @@ import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
+import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
+import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 
