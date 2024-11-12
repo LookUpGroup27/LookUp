@@ -1,15 +1,17 @@
-package com.github.lookupgroup27.lookup.model.collection
+package com.github.lookupgroup27.lookup.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
+import com.github.lookupgroup27.lookup.model.collection.CollectionRepositoryFirestore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CollectionViewModel2(private val repository: CollectionRepository) : ViewModel() {
+class CollectionViewModel(private val repository: CollectionRepository) : ViewModel() {
 
   private val _imageUrls = MutableStateFlow<List<String>>(emptyList())
   val imageUrls: StateFlow<List<String>> = _imageUrls
@@ -38,7 +40,7 @@ class CollectionViewModel2(private val repository: CollectionRepository) : ViewM
         object : ViewModelProvider.Factory {
           @Suppress("UNCHECKED_CAST")
           override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return CollectionViewModel2(
+            return CollectionViewModel(
                 CollectionRepositoryFirestore(
                     FirebaseStorage.getInstance(), FirebaseAuth.getInstance()))
                 as T
