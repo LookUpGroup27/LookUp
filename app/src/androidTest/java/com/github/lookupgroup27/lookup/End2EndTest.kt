@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.Until
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import org.junit.Rule
 import org.junit.Test
@@ -76,8 +77,13 @@ class End2EndTest {
     composeTestRule.onNodeWithText("Google Map").performClick()
     composeTestRule.waitForIdle()
 
-    val allowButton: UiObject2? = device.findObject(By.text("While using the app"))
-    allowButton?.click()
+    val allowButton: UiObject2? =
+        device.wait(Until.findObject(By.text("While using the app")), 5000)
+    if (allowButton != null) {
+      allowButton.click()
+    } else {
+      throw AssertionError("Timeout while waiting for permission dialog")
+    }
 
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
 
