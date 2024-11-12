@@ -17,6 +17,7 @@ import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -101,13 +102,17 @@ class FeedScreenTest {
   @Test
   fun testNearestPostsUpdateOnLocationChange() {
     // Simulate location change to New York (should pick User3 and other nearby posts)
-    val newLocation =
-        Location("provider").apply {
-          latitude = 40.7128
-          longitude = -74.0060
-        }
+    val newLocation = LatLng(40.7128, -74.0060)
 
-    composeTestRule.runOnIdle { locationProvider.currentLocation.value = newLocation }
+    // Simulate location update
+    composeTestRule.runOnIdle {
+      // Update the locationProvider's currentLocation value
+      locationProvider.currentLocation.value =
+          Location("provider").apply {
+            latitude = newLocation.latitude
+            longitude = newLocation.longitude
+          }
+    }
 
     composeTestRule.waitForIdle()
 
