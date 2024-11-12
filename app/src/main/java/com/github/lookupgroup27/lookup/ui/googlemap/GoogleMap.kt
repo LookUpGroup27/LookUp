@@ -39,12 +39,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
-import com.github.lookupgroup27.lookup.model.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImagePreviewDialog
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -60,15 +60,18 @@ import com.google.maps.android.compose.rememberCameraPositionState
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
 @Composable
-fun GoogleMapScreen(navigationActions: NavigationActions, postsViewModel: PostsViewModel = viewModel()) {
+fun GoogleMapScreen(
+    navigationActions: NavigationActions,
+    postsViewModel: PostsViewModel = viewModel()
+) {
   val context = LocalContext.current
   var hasLocationPermission by remember { mutableStateOf(false) }
-    val locationProvider = LocationProviderSingleton.getInstance(context)
+  val locationProvider = LocationProviderSingleton.getInstance(context)
   var autoCenteringEnabled by remember { mutableStateOf(true) } // New state for auto-centering
-    val auth = remember { FirebaseAuth.getInstance() }
-    val isLoggedIn = auth.currentUser != null
+  val auth = remember { FirebaseAuth.getInstance() }
+  val isLoggedIn = auth.currentUser != null
 
-    val allPosts by postsViewModel.allPosts.collectAsState()
+  val allPosts by postsViewModel.allPosts.collectAsState()
 
   LaunchedEffect(Unit) {
     hasLocationPermission =
@@ -96,23 +99,23 @@ fun GoogleMapScreen(navigationActions: NavigationActions, postsViewModel: PostsV
             tabList = LIST_TOP_LEVEL_DESTINATION,
             selectedItem = navigationActions.currentRoute())
       },
+      // Floating action button to take a picture
       floatingActionButton = {
-          FloatingActionButton(
-              onClick = {
-                  if (isLoggedIn) {
-                      navigationActions.navigateTo(Screen.TAKE_IMAGE)
-                  } else {
-                      navigationActions.navigateTo(Screen.AUTH)
-                  }
-              },
-              modifier = Modifier.testTag("fab_take_picture")
-          ) {
+        FloatingActionButton(
+            onClick = {
+              if (isLoggedIn) {
+                navigationActions.navigateTo(Screen.TAKE_IMAGE)
+              } else {
+                navigationActions.navigateTo(Screen.AUTH)
+              }
+            },
+            modifier = Modifier.testTag("fab_take_picture")) {
               Icon(Icons.Default.Add, contentDescription = "Take Picture")
-          }
+            }
       },
       content = { padding ->
         Column {
-          // Add buttons to toggle map modes
+          // Buttons to toggle map modes
           Box(
               modifier =
                   Modifier.fillMaxWidth()
@@ -136,12 +139,9 @@ fun GoogleMapScreen(navigationActions: NavigationActions, postsViewModel: PostsV
               hasLocationPermission,
               locationProvider.currentLocation.value,
               autoCenteringEnabled, // Pass the state
-              allPosts
-              )
+              allPosts)
         }
-      }
-
-  )
+      })
 }
 
 @Composable
@@ -152,72 +152,63 @@ fun MapView(
     autoCenteringEnabled: Boolean,
     posts: List<Post>
 ) {
-    //var mapProperties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
-    var mapProperties by remember {
-        mutableStateOf(
-            MapProperties(
-                mapType = MapType.NORMAL,
-                //isMyLocationEnabled = false // Enable the my location layer
-            )
-        )
+
+  var mapProperties by remember {
+    mutableStateOf(
+        MapProperties(
+            mapType = MapType.NORMAL,
+        ))
+  }
+  var mapUiSettings by remember { mutableStateOf(MapUiSettings(zoomControlsEnabled = false)) }
+  val cameraPositionState = rememberCameraPositionState()
+
+  // Enable location layer only when permissions are granted
+  LaunchedEffect(hasLocationPermission) {
+    if (hasLocationPermission) {
+      mapProperties = mapProperties.copy(isMyLocationEnabled = true)
     }
-    var mapUiSettings by remember { mutableStateOf(MapUiSettings(zoomControlsEnabled = false)) }
-    val cameraPositionState = rememberCameraPositionState()
+  }
 
-    // Enable location layer only when permissions are granted
-    LaunchedEffect(hasLocationPermission) {
-        if (hasLocationPermission) {
-            mapProperties = mapProperties.copy(isMyLocationEnabled = true)
-        }
+  // State for showing image preview dialog
+  var selectedPost by remember { mutableStateOf<Post?>(null) }
+
+  // Update the camera position whenever location changes
+  LaunchedEffect(location, autoCenteringEnabled) {
+    if (hasLocationPermission && location != null && autoCenteringEnabled) {
+      val latLng = LatLng(location.latitude, location.longitude)
+      val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
+      cameraPositionState.animate(cameraUpdate)
     }
+  }
 
-    // State for showing image preview dialog
-    var selectedPost by remember { mutableStateOf<Post?>(null) }
-
-    // Update the camera position whenever location changes
-    LaunchedEffect(location, autoCenteringEnabled) {
-        if (hasLocationPermission && location != null && autoCenteringEnabled) {
-            val latLng = LatLng(location.latitude, location.longitude)
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
-            cameraPositionState.animate(cameraUpdate)
-        }
-    }
-
-    GoogleMap(
-        modifier = Modifier.fillMaxSize().padding(padding),
-        properties = mapProperties,
-        uiSettings = mapUiSettings,
-        cameraPositionState = cameraPositionState
-    ) {
+  GoogleMap(
+      modifier = Modifier.fillMaxSize().padding(padding),
+      properties = mapProperties,
+      uiSettings = mapUiSettings,
+      cameraPositionState = cameraPositionState) {
         // Add markers for each post
         posts.forEach { post ->
-            val latLng = LatLng(post.latitude, post.longitude)
-            Log.d("MapView", "Adding marker at (${post.latitude}, ${post.longitude}) for URI: ${post.uri}")
-            Marker(
-                state = MarkerState(position = latLng),
-                title = post.username,
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE), // Change color
-                onClick = {
-                    // When the marker is clicked, open the image preview dialog
-                    selectedPost = post
-                    true
-                }
-            )
+          val latLng = LatLng(post.latitude, post.longitude)
+          Log.d(
+              "MapView",
+              "Adding marker at (${post.latitude}, ${post.longitude}) for URI: ${post.uri}")
+          Marker(
+              state = MarkerState(position = latLng),
+              title = post.username,
+              icon =
+                  BitmapDescriptorFactory.defaultMarker(
+                      BitmapDescriptorFactory.HUE_AZURE), // Change color
+              onClick = {
+                // When the marker is clicked, open the image preview dialog
+                selectedPost = post
+                true
+              })
         }
 
         // Display the ImagePreviewDialog when a post is selected
         selectedPost?.let {
-            ImagePreviewDialog(
-                uri = it.uri,
-                username = it.username,
-                onDismiss = { selectedPost = null }
-            )
+          ImagePreviewDialog(
+              uri = it.uri, username = it.username, onDismiss = { selectedPost = null })
         }
-
-        // Add a marker for the user's current location
-        /*if (hasLocationPermission && location != null) {
-            val latLng = LatLng(location.latitude, location.longitude)
-            Marker(state = MarkerState(position = latLng), title = "You are here")
-       }*/
-    }
+      }
 }

@@ -41,8 +41,7 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
                       data["username"] as String,
                       (data["likes"] as? Long)?.toInt() ?: 0,
                       data["latitude"] as Double,
-                      data["longitude"] as Double
-                  )
+                      data["longitude"] as Double)
                 }
                 .filterNotNull()
         onSuccess(posts)
