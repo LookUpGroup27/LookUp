@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,6 +37,7 @@ import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
+import java.io.File
 
 class MainActivity : ComponentActivity() {
 
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     auth = FirebaseAuth.getInstance()
-    auth.currentUser?.let { auth.signOut() }
+    // auth.currentUser?.let { auth.signOut() }
 
     setContent { LookUpTheme { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } } }
   }
@@ -109,11 +109,11 @@ fun LookUpApp() {
     }
 
     composable(
-        route = "${Route.IMAGE_REVIEW}/{imageUri}",
-        arguments = listOf(navArgument("imageUri") { type = NavType.StringType })) { backStackEntry
+        route = "${Route.IMAGE_REVIEW}/{imageFile}",
+        arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) { backStackEntry
           ->
-          val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }
-          ImageReviewScreen(navigationActions = navigationActions, imageUri = imageUri)
+          val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+          ImageReviewScreen(navigationActions = navigationActions, imageFile = imageFile)
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
