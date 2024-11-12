@@ -1,5 +1,4 @@
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
-import com.github.lookupgroup27.lookup.model.collection.CollectionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
