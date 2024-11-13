@@ -1,7 +1,11 @@
 package com.github.lookupgroup27.lookup
 
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -24,7 +28,63 @@ class End2EndTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   @Test
-  fun testEndToEndNavigationFlow() {
+  fun quizFlow() {
+    composeTestRule.onNodeWithContentDescription("Home Icon").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Quizzes").performClick()
+    composeTestRule.waitForIdle()
+
+    // Play Earth Quiz
+    composeTestRule.onNodeWithText("Earth").performClick()
+    composeTestRule.waitForIdle()
+
+    // Answer the quiz randomly
+    for (i in 1..15) {
+      var randomOption = (0..3).random()
+      val changeOption = (Math.random() < 0.3)
+      composeTestRule.onNodeWithTag("answer_button_$randomOption").performClick()
+      composeTestRule.waitForIdle()
+
+      if (changeOption) {
+        randomOption = (0..3).random()
+        composeTestRule.onNodeWithTag("answer_button_$randomOption").performClick()
+        composeTestRule.waitForIdle()
+      }
+
+      composeTestRule.onNodeWithText("Next Question").performClick()
+      composeTestRule.waitForIdle()
+    }
+
+    // Find the score and extract it
+    val scoreText =
+        composeTestRule
+            .onNode(hasText("Your score:", substring = true))
+            .fetchSemanticsNode()
+            .config
+            .getOrNull(SemanticsProperties.Text)
+            ?.get(0)
+            ?.text ?: throw AssertionError("Score not found")
+    val score = scoreText.substringAfter("Your score:").substringBefore("/").trim().toInt()
+
+    composeTestRule.onNodeWithText("Return to Quiz Selection").performClick()
+    composeTestRule.waitForIdle()
+
+    // Check if the Earth score is displayed and matches the score obtained
+    val earthScore =
+        composeTestRule
+            .onNode(hasText("Earth", substring = true))
+            .fetchSemanticsNode()
+            .config
+            .getOrNull(SemanticsProperties.Text)
+            ?.filter { it.text.contains("Best Score:") }
+            ?.map { it.text.substringAfter("Best Score:").substringBefore("/").trim().toInt() }
+            ?.get(0) ?: throw AssertionError("Earth score not found")
+
+    assert(earthScore == score) { "Earth score does not match" }
+  }
+
+  @Test
+  fun navigationFlow() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     // Step 1: Verify initial Landing Screen
