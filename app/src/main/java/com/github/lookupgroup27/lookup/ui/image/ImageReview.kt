@@ -66,30 +66,7 @@ fun ImageReviewScreen(
         Button(
             onClick = {
               imageFile?.let { imageViewModel.uploadImage(it) }
-              if (imageFile != null) {
-                // Get the user's current location
-                val currentLocation = locationProvider.currentLocation.value
-                if (currentLocation != null) {
-                  // Create a new post with the image URI and current location
-                  val newPost =
-                      Post(
-                          uid = postsViewModel.generateNewUid(),
-                          uri = imageFile.toURI().toString(),
-                          username =
-                              FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
-                          latitude = currentLocation.latitude,
-                          longitude = currentLocation.longitude)
-                  // Add the post to PostsViewModel
-                  postsViewModel.addPost(newPost)
-                } else {
-                  Toast.makeText(context, "Failed to get current location", Toast.LENGTH_SHORT)
-                      .show()
-                  return@Button
-                }
-              }
-              Toast.makeText(context, "Image saved", Toast.LENGTH_SHORT).show()
-              navigationActions.navigateTo(Screen.GOOGLE_MAP)
-            },
+              },
             modifier = Modifier.fillMaxWidth().testTag("confirm_button")) {
               Text(text = "Save Image")
             }
@@ -106,20 +83,37 @@ fun ImageReviewScreen(
               Text(text = "Discard Image")
             }
 
-        // Display upload status messages
-        when {
+      // Display upload status messages and create a post upon successful upload
+      when {
           uploadStatus.isLoading ->
               Text(text = "Uploading...", modifier = Modifier.padding(top = 16.dp))
           uploadStatus.downloadUrl != null -> {
-            Toast.makeText(context, "Image uploaded successfully!", Toast.LENGTH_SHORT).show()
-            navigationActions.navigateTo(Screen.TAKE_IMAGE) // Navigate after successful upload
-            imageViewModel.resetUploadStatus() // Reset status after handling
+              val downloadUrl = uploadStatus.downloadUrl // Get the download URL from upload status
+              val currentLocation = locationProvider.currentLocation.value
+              if (downloadUrl != null && currentLocation != null) {
+                  // Create a new post with the image download URL and current location
+                  val newPost = Post(
+                      uid = postsViewModel.generateNewUid(),
+                      uri = downloadUrl,
+                      username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
+                      latitude = currentLocation.latitude,
+                      longitude = currentLocation.longitude
+                  )
+                  // Add the post to PostsViewModel
+                  postsViewModel.addPost(newPost)
+                  Toast.makeText(context, "Image saved", Toast.LENGTH_SHORT).show()
+                  navigationActions.navigateTo(Screen.GOOGLE_MAP)
+              } else {
+                  Toast.makeText(context, "Failed to get current location or download URL", Toast.LENGTH_SHORT).show()
+              }
+              imageViewModel.resetUploadStatus() // Reset status after handling
           }
           uploadStatus.errorMessage != null -> {
-            Text(
-                text = "Error: ${uploadStatus.errorMessage}",
-                modifier = Modifier.padding(top = 16.dp))
+              Text(
+                  text = "Error: ${uploadStatus.errorMessage}",
+                  modifier = Modifier.padding(top = 16.dp)
+              )
           }
-        }
       }
+  }
 }
