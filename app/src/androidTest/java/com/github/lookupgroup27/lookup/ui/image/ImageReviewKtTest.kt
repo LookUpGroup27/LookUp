@@ -2,7 +2,9 @@ package com.github.lookupgroup27.lookup.ui.image
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
@@ -71,18 +73,55 @@ class ImageReviewTest {
     verify(mockNavigationActions).navigateTo(Screen.TAKE_IMAGE)
   }
 
-  /*@Test
-  fun testConfirmButtonNavigatesAfterSavingImage() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile,postsViewModel) }
 
-    // Click on the "Save Image" button
+  @Test
+  fun testImageDisplayedWhenImageFileIsNotNull() {
+    val imageFile = File("path/to/image")
+    composeTestRule.setContent {
+      ImageReviewScreen(
+        navigationActions = mockNavigationActions,
+        imageFile = imageFile, postsViewModel
+      )
+    }
+    composeTestRule.onNodeWithContentDescription("Captured Image").assertIsDisplayed()
+  }
+
+  @Test
+  fun testNoImageAvailableTextWhenImageFileIsNull() {
+    composeTestRule.setContent {
+      ImageReviewScreen(
+        navigationActions = mockNavigationActions,
+        imageFile = null, postsViewModel
+      )
+    }
+    composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
+  }
+
+
+  @Test
+  fun testSaveImageButtonTriggersUpload() {
+    val imageFile = File("path/to/image")
+    composeTestRule.setContent {
+      ImageReviewScreen(
+        navigationActions = mockNavigationActions,
+        imageFile = imageFile, postsViewModel
+      )
+    }
     composeTestRule.onNodeWithTag("confirm_button").performClick()
+    }
 
-    // Wait for Compose to complete the interactions
-    composeTestRule.waitForIdle()
+  @Test
+  fun testDiscardImageButton() {
+    composeTestRule.setContent {
+      ImageReviewScreen(
+        navigationActions = mockNavigationActions,
+        imageFile = File("path/to/image"), postsViewModel
+      )
+    }
+    composeTestRule.onNodeWithTag("cancel_button").performClick()
+    verify(mockNavigationActions).navigateTo(Screen.TAKE_IMAGE)
 
-    // Verify that the navigation to Google Map happens after clicking save
-    verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
-  }*/
+
+  }
 
 }
