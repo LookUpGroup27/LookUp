@@ -91,7 +91,7 @@ fun CameraCapture(
           })
 
       IconButton(
-          onClick = { navigationActions.navigateTo(Screen.MENU) },
+          onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) },
           modifier =
               Modifier.padding(16.dp).align(Alignment.TopStart).testTag("go_back_button_camera")) {
             Icon(
