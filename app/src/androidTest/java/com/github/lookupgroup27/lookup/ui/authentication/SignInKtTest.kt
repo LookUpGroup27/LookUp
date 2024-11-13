@@ -105,6 +105,20 @@ class SignInKtTest : TestCase() {
     resetOrientation()
   }
 
+  @Test
+  fun backArrowIsInTopLeftCorner() {
+    composeTestRule.setContent { SignInScreen(mockNavigationActions) }
+
+    val backArrowBounds =
+        composeTestRule.onNodeWithTag("go_back_button_signin").fetchSemanticsNode().boundsInRoot
+
+    val screenWidth = composeTestRule.onRoot().fetchSemanticsNode().boundsInRoot.width
+    val screenHeight = composeTestRule.onRoot().fetchSemanticsNode().boundsInRoot.height
+
+    assert(backArrowBounds.left < screenWidth * 0.1f)
+    assert(backArrowBounds.top < screenHeight * 0.1f)
+  }
+
   private fun setLandscapeOrientation() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     device.setOrientationLeft()
