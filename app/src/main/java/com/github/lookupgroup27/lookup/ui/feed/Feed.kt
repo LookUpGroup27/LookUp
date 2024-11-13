@@ -44,20 +44,17 @@ private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
-    initialNearbyPosts: List<Post>? = null, // Optional parameter for testing
-    initialLoadingState: Boolean? = null, // Optional parameter for testing
+    initialNearbyPosts: List<Post>? = null // Optional parameter for testing
 ) {
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
   val proximityPostFetcher = remember { ProximityPostFetcher(postsViewModel, context) }
 
   var locationPermissionGranted by remember { mutableStateOf(false) }
-  var isLoading by remember { mutableStateOf(initialLoadingState ?: true) }
   val nearbyPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: proximityPostFetcher.nearbyPosts.collectAsState())
 
-  // Trigger location updates and post fetch only when location is available
   LaunchedEffect(Unit) {
     locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -72,31 +69,31 @@ fun FeedScreen(
               context, "Location permission is required to access the map.", Toast.LENGTH_LONG)
           .show()
     } else {
-      // Check location every 500ms until available, then fetch posts
+      // Wait until location is available, then fetch posts
       while (locationProvider.currentLocation.value == null) {
         kotlinx.coroutines.delay(500)
       }
       proximityPostFetcher.fetchNearbyPostsWithImages()
-      isLoading = false
     }
   }
 
-  if (isLoading) {
-    Box(
-        modifier = Modifier.fillMaxSize().testTag("LoadingIndicator"),
-        contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
+  Scaffold(
+      bottomBar = {
+        Box(Modifier.testTag("BottomNavigationMenu")) {
+          BottomNavigationMenu(
+              onTabSelect = { destination -> navigationActions.navigateTo(destination) },
+              tabList = LIST_TOP_LEVEL_DESTINATION,
+              selectedItem = Route.FEED)
         }
-  } else {
-    Scaffold(
-        bottomBar = {
-          Box(Modifier.testTag("BottomNavigationMenu")) {
-            BottomNavigationMenu(
-                onTabSelect = { destination -> navigationActions.navigateTo(destination) },
-                tabList = LIST_TOP_LEVEL_DESTINATION,
-                selectedItem = Route.FEED)
-          }
-        }) { innerPadding ->
+      }) { innerPadding ->
+        if (nearbyPosts.isEmpty()) {
+          // Show a message or loading indicator if nearbyPosts hasn't been populated yet
+          Box(
+              modifier = Modifier.fillMaxSize().testTag("LoadingIndicator"),
+              contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+              }
+        } else {
           LazyColumn(
               contentPadding = innerPadding,
               modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
@@ -104,5 +101,5 @@ fun FeedScreen(
                 items(nearbyPosts) { post -> PostItem(post = post) }
               }
         }
-  }
+      }
 }
