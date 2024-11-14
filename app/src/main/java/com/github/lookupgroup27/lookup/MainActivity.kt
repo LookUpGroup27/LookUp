@@ -29,6 +29,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
+import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
@@ -61,6 +62,7 @@ fun LookUpApp() {
   val quizViewModel: QuizViewModel =
       viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
+  val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -97,7 +99,7 @@ fun LookUpApp() {
     }
 
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
-      composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
+      composable(Screen.COLLECTION) { CollectionScreen(navigationActions, collectionViewModel) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)

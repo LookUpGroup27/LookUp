@@ -1,81 +1,91 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider
+import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.*
+
+class MockCollectionRepository : CollectionRepository {
+  override fun init(onSuccess: () -> Unit) {
+    onSuccess()
+  }
+
+  override suspend fun getUserImageUrls(): List<String> {
+    return listOf("https://example.com/image1.jpg", "https://example.com/image2.jpg")
+  }
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CollectionScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  private fun createMockViewModel(): CollectionViewModel {
+    val repository = MockCollectionRepository()
+    return CollectionViewModel(repository)
+  }
+
   @Test
   fun backgroundBox_isDisplayed() {
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions()) }
+    composeTestRule.setContent {
+      CollectionScreen(
+          navigationActions = mockNavigationActions(), viewModel = createMockViewModel())
+    }
     composeTestRule.onNodeWithTag("background_box").assertIsDisplayed()
   }
 
   @Test
   fun backgroundImage_isDisplayed() {
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions()) }
+    composeTestRule.setContent {
+      CollectionScreen(
+          navigationActions = mockNavigationActions(), viewModel = createMockViewModel())
+    }
     composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
   }
 
   @Test
   fun goBackButton_isDisplayed() {
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions()) }
+    composeTestRule.setContent {
+      CollectionScreen(
+          navigationActions = mockNavigationActions(), viewModel = createMockViewModel())
+    }
     composeTestRule.onNodeWithTag("go_back_button_collection").assertIsDisplayed()
   }
 
   @Test
   fun titleText_isDisplayed() {
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions()) }
+    composeTestRule.setContent {
+      CollectionScreen(
+          navigationActions = mockNavigationActions(), viewModel = createMockViewModel())
+    }
     composeTestRule.onNodeWithTag("title_text").assertIsDisplayed()
   }
 
   @Test
   fun noImagesText_isDisplayed_whenImageUrlsAreEmpty() {
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions()) }
-    composeTestRule.onNodeWithTag("no_images_text").assertIsDisplayed()
-  }
+    val emptyRepository =
+        object : CollectionRepository {
+          override fun init(onSuccess: () -> Unit) {
+            onSuccess()
+          }
 
-  @Test
-  fun imageRows_andImageBoxes_areDisplayed_whenImagesAvailable() {
-    val testImageUrls =
-        listOf(
-            "https://example.com/image1.jpg",
-            "https://example.com/image2.jpg",
-            "https://example.com/image3.jpg",
-            "https://example.com/image4.jpg")
+          override suspend fun getUserImageUrls(): List<String> = emptyList()
+        }
+
+    val viewModel = CollectionViewModel(emptyRepository)
 
     composeTestRule.setContent {
-      CollectionScreen(
-          navigationActions = mockNavigationActions(),
-          testImageUrls = testImageUrls // Inject mock data
-          )
+      CollectionScreen(navigationActions = mockNavigationActions(), viewModel = viewModel)
     }
-
-    testImageUrls.chunked(2).forEachIndexed { rowIndex, rowImages ->
-      composeTestRule.onNodeWithTag("image_row_$rowIndex").assertIsDisplayed()
-      rowImages.forEachIndexed { colIndex, _ ->
-        composeTestRule.onNodeWithTag("image_box_${rowIndex}_$colIndex").assertIsDisplayed()
-      }
-    }
+    composeTestRule.onNodeWithTag("no_images_text").assertIsDisplayed()
   }
 
   @Test
@@ -90,32 +100,32 @@ class CollectionScreenTest {
           }
         }
 
-    composeTestRule.setContent { CollectionScreen(navigationActions = mockNavigationActions) }
+    composeTestRule.setContent {
+      CollectionScreen(navigationActions = mockNavigationActions, viewModel = createMockViewModel())
+    }
     composeTestRule.onNodeWithTag("go_back_button_collection").performClick()
     assertTrue(backButtonClicked)
   }
 
   @Test
-  fun fetchImages_displaysToastOnFailure() = runBlockingTest {
-    val mockAuth = mock(FirebaseAuth::class.java)
-    `when`(mockAuth.currentUser).thenReturn(mock())
-    `when`(mockAuth.currentUser?.email).thenReturn("test@example.com")
-
-    val mockStorage = mock(FirebaseStorage::class.java)
-    val mockImagesRef = mock(StorageReference::class.java)
-    `when`(mockStorage.getReference()).thenReturn(mockImagesRef)
-    `when`(mockImagesRef.child("images/test@example.com/")).thenReturn(mockImagesRef)
-
-    val mockContext = ApplicationProvider.getApplicationContext<Context>()
+  fun imageRow_isDisplayed_whenImageUrlsAreNotEmpty() {
     composeTestRule.setContent {
-      CollectionScreen(navigationActions = mockNavigationActions(), testImageUrls = emptyList())
+      CollectionScreen(
+          navigationActions = mockNavigationActions(), viewModel = createMockViewModel())
     }
 
-    val exception = Exception("Simulated Firebase error")
-    composeTestRule.runOnIdle {
-      Toast.makeText(mockContext, "Failed to load images: ${exception.message}", Toast.LENGTH_SHORT)
-          .show()
+    composeTestRule.onNodeWithTag("image_row_0").assertIsDisplayed()
+  }
+
+  @Test
+  fun imageBox_isDisplayed_forEachImage() {
+    composeTestRule.setContent {
+      CollectionScreen(
+          navigationActions = mockNavigationActions(), viewModel = createMockViewModel())
     }
+
+    composeTestRule.onNodeWithTag("image_box_0_0").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("image_box_0_1").assertIsDisplayed()
   }
 
   private fun mockNavigationActions() =
