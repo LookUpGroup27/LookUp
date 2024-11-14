@@ -30,6 +30,7 @@ import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
+import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
@@ -48,7 +49,6 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     auth = FirebaseAuth.getInstance()
-
     // auth.currentUser?.let { auth.signOut() }
 
     setContent { LookUpTheme { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } } }
@@ -62,7 +62,9 @@ fun LookUpApp() {
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
       viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
+
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
+  val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
@@ -100,7 +102,7 @@ fun LookUpApp() {
     }
 
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
-      composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
+      composable(Screen.COLLECTION) { CollectionScreen(navigationActions, collectionViewModel) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
