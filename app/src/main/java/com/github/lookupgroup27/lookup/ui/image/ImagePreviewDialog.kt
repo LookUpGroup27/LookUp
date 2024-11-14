@@ -19,6 +19,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.github.lookupgroup27.lookup.ui.theme.*
+
+/**
+ * Display a dialog with an image preview.
+ *
+ * @param uri The URI of the image to display.
+ * @param username The username of the user who posted the image.
+ * @param onDismiss The callback to be invoked when the dialog is dismissed.
+ */
 
 // Display a dialog with an image preview
 @Composable
@@ -28,10 +37,7 @@ fun ImagePreviewDialog(uri: String?, username: String?, onDismiss: () -> Unit) {
         onDismissRequest =
             onDismiss) { // Dismiss the dialog when the user clicks outside the dialog
           Column(
-              modifier =
-                  Modifier.padding(16.dp)
-                      .background(Color(0xFF0D1023))
-                      .testTag("imagePreviewDialog"),
+              modifier = Modifier.padding(16.dp).background(DarkBlue).testTag("imagePreviewDialog"),
               horizontalAlignment = Alignment.CenterHorizontally) {
                 if (username != null) {
                   Text(
