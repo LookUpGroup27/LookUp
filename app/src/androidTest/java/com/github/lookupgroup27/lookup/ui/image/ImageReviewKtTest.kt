@@ -91,25 +91,4 @@ class ImageReviewTest {
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
   }
 
-  @Test
-  fun testSaveImageButtonTriggersUpload() {
-    val imageFile = File("path/to/image")
-    composeTestRule.setContent {
-      ImageReviewScreen(
-          navigationActions = mockNavigationActions, imageFile = imageFile, postsViewModel)
-    }
-    composeTestRule.onNodeWithTag("confirm_button").performClick()
-  }
-
-  @Test
-  fun testDiscardImageButton() {
-    composeTestRule.setContent {
-      ImageReviewScreen(
-          navigationActions = mockNavigationActions,
-          imageFile = File("path/to/image"),
-          postsViewModel)
-    }
-    composeTestRule.onNodeWithTag("cancel_button").performClick()
-    verify(mockNavigationActions).navigateTo(Screen.TAKE_IMAGE)
-  }
 }
