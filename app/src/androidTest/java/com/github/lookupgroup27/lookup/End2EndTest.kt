@@ -49,7 +49,10 @@ class End2EndTest {
 
       if (changeOption) {
         randomOption = (0..3).random()
-        composeTestRule.onNodeWithTag("answer_button_$randomOption").performScrollTo().performClick()
+        composeTestRule
+            .onNodeWithTag("answer_button_$randomOption")
+            .performScrollTo()
+            .performClick()
         composeTestRule.waitForIdle()
       }
 
