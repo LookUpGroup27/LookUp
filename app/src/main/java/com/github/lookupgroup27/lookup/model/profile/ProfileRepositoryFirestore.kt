@@ -5,7 +5,12 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-data class UserProfile(val username: String = " ", val email: String = " ", val bio: String = " ")
+data class UserProfile(
+    val username: String = " ",
+    val email: String = " ",
+    val bio: String = " ",
+    val ratings: Map<String, Int> = emptyMap()
+)
 
 class ProfileRepositoryFirestore(
     private val db: FirebaseFirestore,

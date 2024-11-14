@@ -34,7 +34,16 @@ class PostsRepositoryFirestoreTest {
   private lateinit var postsRepositoryFirestore: PostsRepositoryFirestore
 
   private val post =
-      Post(uid = "1", uri = "uri", username = "user", likes = 10, latitude = 0.0, longitude = 0.0)
+      Post(
+          "1",
+          "testUri",
+          "testUsername",
+          10,
+          2.5,
+          0.0,
+          0.0,
+          2,
+          listOf("test@gmail.com", "joedoe@gmail.com"))
 
   @Before
   fun setUp() {
@@ -98,9 +107,12 @@ class PostsRepositoryFirestoreTest {
             "uid" to "1",
             "uri" to "uri",
             "username" to "user",
-            "likes" to 10L,
+            "starsCount" to 10L,
+            "averageStars" to 2.5,
             "latitude" to 0.0,
-            "longitude" to 0.0)
+            "longitude" to 0.0,
+            "usersNumber" to 2L,
+            "ratedBy" to listOf("test@gmail.com", "joedoe@gmail.com"))
 
     // Mock Firestore document snapshot data and behavior
     `when`(documentSnapshot.data).thenReturn(postMap)
@@ -127,9 +139,12 @@ class PostsRepositoryFirestoreTest {
     assertEquals("1", fetchedPosts?.get(0)?.uid)
     assertEquals("uri", fetchedPosts?.get(0)?.uri)
     assertEquals("user", fetchedPosts?.get(0)?.username)
-    assertEquals(10, fetchedPosts?.get(0)?.likes)
+    assertEquals(10, fetchedPosts?.get(0)?.starsCount)
+    assertEquals(2.5, fetchedPosts?.get(0)?.averageStars)
     assertEquals(0.0, fetchedPosts?.get(0)?.latitude)
     assertEquals(0.0, fetchedPosts?.get(0)?.longitude)
+    assertEquals(2, fetchedPosts?.get(0)?.usersNumber)
+    assertEquals(listOf("test@gmail.com", "joedoe@gmail.com"), fetchedPosts?.get(0)?.ratedBy)
   }
 
   @Test
@@ -225,5 +240,48 @@ class PostsRepositoryFirestoreTest {
         onFailure = { errorMessage = it.message })
 
     assertThat(errorMessage, `is`("Network error"))
+  }
+
+  @Test
+  fun `test updatePost should call onSuccess when firestore update succeeds`() {
+    `when`(mockDocumentReference.set(org.mockito.kotlin.any()))
+        .thenReturn(Tasks.forResult(null)) // Simulate successful Firestore operation
+
+    var successCalled = false
+    postsRepositoryFirestore.updatePost(
+        post,
+        onSuccess = { successCalled = true },
+        onFailure = { fail("onFailure should not be called") })
+
+    shadowOf(Looper.getMainLooper()).idle() // Ensure tasks are completed
+
+    // Verify that Firestore's set method was called with the correct post data
+    verify(mockDocumentReference).set(post)
+
+    // Ensure onSuccess callback is triggered
+    assert(successCalled)
+  }
+
+  @Test
+  fun `test updatePost should call onFailure when firestore update fails`() {
+    val exception =
+        FirebaseFirestoreException(
+            "Firestore update error", FirebaseFirestoreException.Code.ABORTED)
+    `when`(mockDocumentReference.set(org.mockito.kotlin.any()))
+        .thenReturn(Tasks.forException(exception)) // Simulate Firestore failure
+
+    var errorMessage: String? = null
+    postsRepositoryFirestore.updatePost(
+        post,
+        onSuccess = { fail("onSuccess should not be called") },
+        onFailure = { errorMessage = it.message })
+
+    shadowOf(Looper.getMainLooper()).idle() // Ensure tasks are completed
+
+    // Verify that Firestore's set method was called
+    verify(mockDocumentReference).set(post)
+
+    // Ensure onFailure callback is triggered with the correct error message
+    assertThat(errorMessage, `is`("Firestore update error"))
   }
 }
