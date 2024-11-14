@@ -33,6 +33,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
+
   val context = LocalContext.current
   val bestScores = viewModel.getAllBestScores()
 
@@ -58,8 +59,7 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
     // Quiz Content with Vertical Scrolling
     Column(
         modifier =
-            Modifier.align(Alignment.Center)
-                .padding(horizontal = 32.dp) // General padding for both orientations
+            Modifier.padding(vertical = 88.dp , horizontal = 25.dp) // General padding for both orientations
                 .verticalScroll(
                     rememberScrollState()), // Enable vertical scrolling in all orientations
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -74,7 +74,7 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
               modifier = Modifier.testTag("quiz_title"))
 
           // Quiz Options
-          bestScores.forEach { (theme, score) ->
+          bestScores.toSortedMap().forEach { (theme, score) ->
             QuizOptionButton(
                 theme = theme,
                 bestScore = "$score",
@@ -103,17 +103,16 @@ fun QuizOptionButton(theme: String, bestScore: String, onClick: () -> Unit, test
             horizontalArrangement = Arrangement.SpaceBetween) {
               Text(
                   text = theme,
-                  fontSize = 20.sp,
+                  fontSize = 16.sp,
                   fontWeight = FontWeight.Bold,
                   color = Color.White,
-                  modifier = Modifier.padding(start = 8.dp))
+                  modifier = Modifier.padding(start = 4.dp))
               Text(
                   text = "Best Score: $bestScore/15",
-                  fontSize = 16.sp,
+                  fontSize = 14.sp,
                   fontStyle = FontStyle.Italic,
                   fontWeight = FontWeight.Normal,
-                  color = Color(0xFFDADADA),
-                  modifier = Modifier.padding(end = 8.dp))
+                  color = Color(0xFFDADADA))
             }
       }
 }
