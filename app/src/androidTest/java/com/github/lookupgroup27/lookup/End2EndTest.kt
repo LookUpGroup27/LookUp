@@ -139,6 +139,7 @@ class End2EndTest {
       throw AssertionError("Timeout while waiting for permission dialog")
     }
 
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
     composeTestRule.onNodeWithText("Menu").performClick()
     composeTestRule.waitForIdle()
@@ -146,6 +147,8 @@ class End2EndTest {
 
     // Step 8: Navigate to FeedScreen from MenuScreen
     composeTestRule.onNodeWithText("Feed").performClick()
+    composeTestRule.waitForIdle()
+
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("feed_screen").assertIsDisplayed()
     composeTestRule.onNodeWithText("Menu").performClick()
