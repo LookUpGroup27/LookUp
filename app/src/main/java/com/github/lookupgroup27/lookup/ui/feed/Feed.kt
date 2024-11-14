@@ -34,13 +34,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
-import com.github.lookupgroup27.lookup.model.post.PostsViewModel
-import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
