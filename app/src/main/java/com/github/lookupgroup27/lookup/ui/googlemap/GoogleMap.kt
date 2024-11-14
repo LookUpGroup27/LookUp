@@ -39,7 +39,6 @@ import com.google.firebase.auth.FirebaseAuth
  * @param navigationActions Actions to navigate to different screens.
  * @param postsViewModel ViewModel to fetch posts.
  */
-
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
 @Composable
@@ -89,6 +88,8 @@ fun GoogleMapScreen(
               if (isLoggedIn) {
                 navigationActions.navigateTo(Screen.TAKE_IMAGE)
               } else {
+                Toast.makeText(context, "Please log in to take a picture.", Toast.LENGTH_LONG)
+                    .show()
                 navigationActions.navigateTo(Screen.AUTH)
               }
             },
