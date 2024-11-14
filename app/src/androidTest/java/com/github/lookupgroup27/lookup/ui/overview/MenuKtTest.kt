@@ -111,13 +111,13 @@ class MenuKtTest {
   }
 
   @Test
-  fun menuScreen_clickSkyTracker_navigatesToSkyTrackerScreen() {
+  fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
-    // Perform click on "Sky Tracker" button
+    // Perform click on "Google Map" button
     composeTestRule.onNodeWithText("Google Map").performClick()
 
-    // Verify navigation to Sky Tracker screen is triggered
+    // Verify navigation to Google Map screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
   }
 }

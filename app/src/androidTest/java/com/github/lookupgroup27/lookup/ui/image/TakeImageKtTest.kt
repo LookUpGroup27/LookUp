@@ -39,7 +39,7 @@ class TakeImageTest {
     composeTestRule.onNodeWithTag("go_back_button_camera").assertIsDisplayed()
     composeTestRule.onNodeWithTag("go_back_button_camera").performClick()
 
-    verify(mockNavigationActions).navigateTo(Screen.MENU)
+    verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
   }
 
   @Test
