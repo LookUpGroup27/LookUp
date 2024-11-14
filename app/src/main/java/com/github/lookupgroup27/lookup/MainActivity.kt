@@ -31,6 +31,7 @@ import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
+import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     auth = FirebaseAuth.getInstance()
-    auth.currentUser?.let { auth.signOut() }
+    // auth.currentUser?.let { auth.signOut() }
 
     setContent { LookUpTheme { Surface(modifier = Modifier.fillMaxSize()) { LookUpApp() } } }
   }
@@ -63,9 +64,11 @@ fun LookUpApp() {
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
       viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
+
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
+  val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
+  val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
   val postsRepository = PostsRepositoryFirestore(FirebaseFirestore.getInstance())
-  val postsViewModel = PostsViewModel(postsRepository)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -92,7 +95,7 @@ fun LookUpApp() {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
-      composable(Screen.GOOGLE_MAP) { GoogleMapScreen(navigationActions) }
+      composable(Screen.GOOGLE_MAP) { GoogleMapScreen(navigationActions, postsViewModel) }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }
 
@@ -102,7 +105,7 @@ fun LookUpApp() {
     }
 
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
-      composable(Screen.COLLECTION) { CollectionScreen(navigationActions) }
+      composable(Screen.COLLECTION) { CollectionScreen(navigationActions, collectionViewModel) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
@@ -118,7 +121,10 @@ fun LookUpApp() {
         arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) { backStackEntry
           ->
           val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
-          ImageReviewScreen(navigationActions = navigationActions, imageFile = imageFile)
+          ImageReviewScreen(
+              navigationActions = navigationActions,
+              imageFile = imageFile,
+              postsViewModel = postsViewModel)
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
