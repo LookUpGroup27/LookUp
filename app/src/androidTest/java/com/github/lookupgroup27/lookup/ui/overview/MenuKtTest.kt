@@ -109,4 +109,15 @@ class MenuKtTest {
     // Verify navigation to Calendar screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.CALENDAR)
   }
+
+  @Test
+  fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
+    composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
+
+    // Perform click on "Google Map" button
+    composeTestRule.onNodeWithText("Google Map").performClick()
+
+    // Verify navigation to Google Map screen is triggered
+    verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
+  }
 }
