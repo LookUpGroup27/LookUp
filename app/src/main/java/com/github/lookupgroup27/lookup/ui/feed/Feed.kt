@@ -51,8 +51,8 @@ private const val NUMBER_OF_STARS = 3
 fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
-    initialNearbyPosts: List<Post>? = null,
-    profileViewModel: ProfileViewModel // Optional parameter for testing
+    profileViewModel: ProfileViewModel,
+    initialNearbyPosts: List<Post>? = null // Optional parameter for testing
 ) {
   profileViewModel.fetchUserProfile()
   val profile = profileViewModel.userProfile.value

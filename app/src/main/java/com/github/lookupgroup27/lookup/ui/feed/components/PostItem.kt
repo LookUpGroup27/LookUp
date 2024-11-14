@@ -66,13 +66,7 @@ fun PostItem(post: Post, starStates: List<Boolean>, onRatingChanged: (List<Boole
                 onClick = {
                   // Toggle stars up to the clicked index
                   val newRating =
-                      if (isFilled) {
-                        // If the clicked star is filled, unfill it and any stars to the right
-                        starStates.mapIndexed { i, _ -> i < index }
-                      } else {
-                        // Otherwise, fill all stars up to and including the clicked one
-                        starStates.mapIndexed { i, _ -> i <= index }
-                      }
+                      starStates.mapIndexed { i, _ -> if (isFilled) i < index else i <= index }
                   onRatingChanged(newRating)
                 },
                 modifier = Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {

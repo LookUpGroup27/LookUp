@@ -125,9 +125,7 @@ fun LookUpApp() {
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
-      composable(Screen.FEED) {
-        FeedScreen(postsViewModel, navigationActions, profileViewModel = profileViewModel)
-      }
+      composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
     }
   }
 }
