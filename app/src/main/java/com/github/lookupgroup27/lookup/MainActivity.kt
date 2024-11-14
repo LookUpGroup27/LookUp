@@ -21,9 +21,9 @@ import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
 import com.github.lookupgroup27.lookup.model.post.PostsViewModel
 import com.github.lookupgroup27.lookup.model.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
-import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
+import com.github.lookupgroup27.lookup.ui.feed.FeedScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
@@ -122,7 +122,7 @@ fun LookUpApp() {
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
-      composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions) }
+      composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
     }
   }
 }
