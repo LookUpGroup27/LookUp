@@ -31,6 +31,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 /**
@@ -49,13 +50,22 @@ fun FeedScreen(
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
   val proximityPostFetcher = remember { ProximityPostFetcher(postsViewModel, context) }
+  val auth = remember { FirebaseAuth.getInstance() }
+  val isLoggedIn = auth.currentUser != null // Check if the user is logged in
 
   var locationPermissionGranted by remember { mutableStateOf(false) }
   val nearbyPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: proximityPostFetcher.nearbyPosts.collectAsState())
 
+  // Check login status and permissions
   LaunchedEffect(Unit) {
+    if (!isLoggedIn) {
+      Toast.makeText(context, "You need to log in to view the feed.", Toast.LENGTH_LONG).show()
+      return@LaunchedEffect
+    }
+
+    // Only continue with location and feed data setup if the user is logged in
     locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
@@ -66,7 +76,7 @@ fun FeedScreen(
           arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
           LOCATION_PERMISSION_REQUEST_CODE)
       Toast.makeText(
-              context, "Location permission is required to access the map.", Toast.LENGTH_LONG)
+              context, "Location permission is required to access the feed.", Toast.LENGTH_LONG)
           .show()
     } else {
       // Wait until location is available, then fetch posts
@@ -86,20 +96,23 @@ fun FeedScreen(
               selectedItem = Route.FEED)
         }
       }) { innerPadding ->
-        if (nearbyPosts.isEmpty()) {
-          // Show a message or loading indicator if nearbyPosts hasn't been populated yet
-          Box(
-              modifier = Modifier.fillMaxSize().testTag("LoadingIndicator"),
-              contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-              }
-        } else {
-          LazyColumn(
-              contentPadding = innerPadding,
-              modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
-              verticalArrangement = Arrangement.spacedBy(30.dp)) {
-                items(nearbyPosts) { post -> PostItem(post = post) }
-              }
+        if (isLoggedIn) {
+          // Show loading indicator if the feed is still loading
+          if (nearbyPosts.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().testTag("LoadingIndicator"),
+                contentAlignment = Alignment.Center) {
+                  CircularProgressIndicator()
+                }
+          } else {
+            // Display the feed if the user is logged in and posts are available
+            LazyColumn(
+                contentPadding = innerPadding,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(30.dp)) {
+                  items(nearbyPosts) { post -> PostItem(post = post) }
+                }
+          }
         }
       }
 }
