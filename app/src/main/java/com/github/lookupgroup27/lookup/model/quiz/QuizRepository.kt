@@ -43,8 +43,16 @@ class QuizRepository(private val context: Context) {
   fun getAllBestScores(): Map<String, Int> {
     val scoresMap = mutableMapOf<String, Int>()
     preferences.all.forEach { (key, value) -> if (value is Int) scoresMap[key] = value }
-    // Optionally add default scores for known themes if not present
-    listOf("Earth", "Solar System").forEach { theme -> scoresMap.putIfAbsent(theme, 0) }
+    // Add default scores for known themes if not present
+    listOf(
+            "Earth",
+            "Solar System",
+            "Space Exploration",
+            "Cosmic Objects",
+            "Astronomical Tools",
+            "Astronomers and Scientists")
+        .forEach { theme -> scoresMap.putIfAbsent(theme, 0) }
+
     return scoresMap
   }
 
@@ -61,6 +69,10 @@ class QuizRepository(private val context: Context) {
     return when (theme) {
       "Solar System" -> "${quizFolder}solar_system_quiz.csv"
       "Earth" -> "${quizFolder}earth_quiz.csv"
+      "Space Exploration" -> "${quizFolder}space_exploration_quiz.csv"
+      "Cosmic Objects" -> "${quizFolder}cosmic_objects_quiz.csv"
+      "Astronomical Tools" -> "${quizFolder}astronomical_tools_quiz.csv"
+      "Astronomers and Scientists" -> "${quizFolder}astronomers_scientists_quiz.csv"
       else -> "${quizFolder}default_quiz.csv"
     }
   }
