@@ -12,19 +12,27 @@ import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
+import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class GoogleMapScreenTest {
 
   private lateinit var navigationActions: NavigationActions
   private lateinit var locationProvider: LocationProvider
+  private lateinit var postsViewModel: PostsViewModel
+  private lateinit var postsRepository: PostsRepository
+  private lateinit var mockAuth: FirebaseAuth
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -37,6 +45,8 @@ class GoogleMapScreenTest {
     val context = ApplicationProvider.getApplicationContext<Context>()
     // Mock NavigationActions
     navigationActions = mock(NavigationActions::class.java)
+    postsRepository = mock(PostsRepository::class.java)
+    postsViewModel = PostsViewModel(postsRepository)
 
     // Setup to return the map route as current
     `when`(navigationActions.currentRoute()).thenReturn(Screen.GOOGLE_MAP)
@@ -53,7 +63,7 @@ class GoogleMapScreenTest {
     locationProvider = LocationProvider(context, mockCurrentLocation)
 
     // Set the Compose content to GoogleMapScreen
-    composeTestRule.setContent { GoogleMapScreen(navigationActions) }
+    composeTestRule.setContent { GoogleMapScreen(navigationActions, postsViewModel) }
   }
 
   @Test
@@ -132,8 +142,27 @@ class GoogleMapScreenTest {
     // Allow some time for the camera to animate to the new location
     composeTestRule.waitForIdle()
 
-    // Verify if the map is centered on the current location (you may need additional logic to
-    // verify this properly)
+    // Verify if the map is centered on the current location
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
+  }
+
+  @Test
+  fun floatingActionButtonDisplaysAndNavigatesToCameraCapture() {
+    // Mock the FirebaseAuth instance
+    mockAuth = org.mockito.kotlin.mock()
+    whenever(mockAuth.currentUser).thenReturn(null) // Can change this to test different scenarios
+
+    // Verify that the Floating Action Button is displayed
+    composeTestRule.onNodeWithTag("fab_take_picture").assertIsDisplayed()
+
+    // Simulate a click on the FAB
+    composeTestRule.onNodeWithTag("fab_take_picture").performClick()
+
+    // Verify that the navigation action to "Take Image" screen is triggered
+    if (mockAuth.currentUser != null) {
+      verify(navigationActions).navigateTo(Screen.TAKE_IMAGE)
+    } else {
+      verify(navigationActions).navigateTo(Screen.AUTH)
+    }
   }
 }

@@ -3,55 +3,57 @@ package com.github.lookupgroup27.lookup.ui.googlemap
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.location.Location
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.github.lookupgroup27.lookup.model.location.LocationProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
+import com.github.lookupgroup27.lookup.ui.googlemap.components.MapControls
+import com.github.lookupgroup27.lookup.ui.googlemap.components.MapView
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Screen that displays a Google Map with user's location and posts.
+ *
+ * @param navigationActions Actions to navigate to different screens.
+ * @param postsViewModel ViewModel to fetch posts.
+ */
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
 @Composable
-fun GoogleMapScreen(navigationActions: NavigationActions) {
+fun GoogleMapScreen(
+    navigationActions: NavigationActions,
+    postsViewModel: PostsViewModel = viewModel()
+) {
   val context = LocalContext.current
   var hasLocationPermission by remember { mutableStateOf(false) }
-  val locationProvider = remember { LocationProvider(context) }
+  val locationProvider = LocationProviderSingleton.getInstance(context)
   var autoCenteringEnabled by remember { mutableStateOf(true) } // New state for auto-centering
+  val auth = remember { FirebaseAuth.getInstance() }
+  val isLoggedIn = auth.currentUser != null
+
+  val allPosts by postsViewModel.allPosts.collectAsState()
 
   LaunchedEffect(Unit) {
     hasLocationPermission =
@@ -79,67 +81,37 @@ fun GoogleMapScreen(navigationActions: NavigationActions) {
             tabList = LIST_TOP_LEVEL_DESTINATION,
             selectedItem = navigationActions.currentRoute())
       },
+      // Floating action button to take a picture
+      floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+              if (isLoggedIn) {
+                navigationActions.navigateTo(Screen.TAKE_IMAGE)
+              } else {
+                Toast.makeText(context, "Please log in to take a picture.", Toast.LENGTH_LONG)
+                    .show()
+                navigationActions.navigateTo(Screen.AUTH)
+              }
+            },
+            modifier = Modifier.testTag("fab_take_picture")) {
+              Icon(Icons.Default.Add, contentDescription = "Take Picture")
+            }
+      },
       content = { padding ->
         Column {
-          // Add buttons to toggle map modes
-          Box(
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .background(Color(0xFF0D1023)) // Set your desired color here
-                      .padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                      Button(onClick = { autoCenteringEnabled = true }) {
-                        Text(text = "Auto Center On")
-                      }
-                      Button(onClick = { autoCenteringEnabled = false }) {
-                        Text(text = "Auto Center Off")
-                      }
-                    }
-              }
+          // Buttons to toggle map modes
+
+          MapControls(
+              autoCenteringEnabled = autoCenteringEnabled,
+              onCenteringToggle = { autoCenteringEnabled = it })
 
           // Map view below the buttons
           MapView(
               padding,
               hasLocationPermission,
               locationProvider.currentLocation.value,
-              autoCenteringEnabled // Pass the state
-              )
+              autoCenteringEnabled, // Pass the state
+              allPosts)
         }
       })
-}
-
-@Composable
-fun MapView(
-    padding: PaddingValues,
-    hasLocationPermission: Boolean,
-    location: Location?,
-    autoCenteringEnabled: Boolean
-) {
-  var mapProperties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
-  var mapUiSettings by remember { mutableStateOf(MapUiSettings(zoomControlsEnabled = false)) }
-  val cameraPositionState = rememberCameraPositionState()
-
-  // Update the camera position whenever location changes
-  LaunchedEffect(location, autoCenteringEnabled) {
-    if (hasLocationPermission && location != null && autoCenteringEnabled) {
-      val latLng = LatLng(location.latitude, location.longitude)
-      val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
-      cameraPositionState.animate(cameraUpdate)
-    }
-  }
-
-  GoogleMap(
-      modifier = Modifier.fillMaxSize().padding(padding),
-      properties = mapProperties,
-      uiSettings = mapUiSettings,
-      cameraPositionState = cameraPositionState) {
-        if (hasLocationPermission && location != null) {
-          val latLng = LatLng(location.latitude, location.longitude)
-          Marker(state = MarkerState(position = latLng), title = "You are here")
-        } else {
-          //  case where location is not available
-        }
-      }
 }

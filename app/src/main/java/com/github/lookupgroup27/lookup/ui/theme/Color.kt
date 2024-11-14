@@ -12,3 +12,5 @@ val StarWhite = Color(0xFFFFFFFF) // Light color for text on dark backgrounds
 val MeteorGrey = Color(0xFF333333) // Subtle grey for background contrast
 
 val DarkPurple = Color(0xFF30315B)
+
+val DarkBlue = Color(0xFF0D1023) // Dark blue
