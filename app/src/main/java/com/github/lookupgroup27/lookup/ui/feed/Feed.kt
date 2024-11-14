@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui
+package com.github.lookupgroup27.lookup.ui.feed
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -114,7 +114,8 @@ fun FeedScreen(
               tabList = LIST_TOP_LEVEL_DESTINATION,
               selectedItem = Route.FEED)
         }
-      }) { innerPadding ->
+      },
+      modifier = Modifier.testTag("feed_screen")) { innerPadding ->
         if (nearbyPosts.isEmpty()) {
           // Show a message or loading indicator if nearbyPosts hasn't been populated yet
           Box(

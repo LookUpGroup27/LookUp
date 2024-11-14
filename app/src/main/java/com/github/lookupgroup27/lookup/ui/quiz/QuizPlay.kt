@@ -222,7 +222,10 @@ fun ReturnToQuizSelectionButton(onClick: () -> Unit) {
 @Composable
 fun QuizRecap(questions: List<QuizQuestion>, userAnswers: List<String>) {
   LazyColumn(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(horizontal = 16.dp, vertical = 8.dp)
+              .testTag("quiz_recap"),
       verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(questions.size) { index ->
           val question = questions[index]

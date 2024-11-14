@@ -16,7 +16,6 @@ import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
-import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
@@ -104,8 +103,8 @@ class FeedScreenTest {
       FeedScreen(
           postsViewModel = postsViewModel,
           navigationActions = navigationActions,
-          initialNearbyPosts = testPosts,
-          profileViewModel = profileViewModel)
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
     }
   }
 
