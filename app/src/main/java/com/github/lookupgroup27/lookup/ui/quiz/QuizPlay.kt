@@ -35,10 +35,17 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 
+// Color Constants for Reuse
+private val CorrectColor = Color(0xFF4CAF50)
+private val IncorrectColor = Color(0xFFF44336)
+private val AnswerSelectedColor = Color(0xFFFF731F)
+private val NextButtonEnabledColor = Color(0xFF00C853)
+private val NextButtonDisabledColor = Color(0xFF6A9605)
+private val LeaveButtonColor = Color.Red
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
-
   val quizQuestions by viewModel.quizQuestions.collectAsState()
   val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
   val score by viewModel.score.collectAsState()
@@ -61,18 +68,12 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
           if (!showScore) {
-            Button(
+            LeaveQuizButton(
                 onClick = {
                   viewModel.resetQuiz()
                   navigationActions.navigateTo(Route.QUIZ)
                 },
-                modifier = Modifier.align(Alignment.Start).padding(top = 8.dp),
-                colors =
-                    androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = Color.Red, contentColor = Color.White),
-                shape = RoundedCornerShape(8.dp)) {
-                  Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
-                }
+                modifier = Modifier.align(Alignment.Start))
           }
 
           Spacer(modifier = Modifier.height(24.dp))
@@ -85,54 +86,29 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               modifier = Modifier.padding(vertical = 8.dp).testTag("quiz_title"),
               textAlign = TextAlign.Center)
 
-          Spacer(modifier = Modifier.height(30.dp))
+          Spacer(modifier = Modifier.height(20.dp))
 
           if (!showScore) {
             quizQuestions.getOrNull(currentQuestionIndex)?.let { question ->
-              Text(
-                  text = question.question,
-                  color = Color.White,
-                  fontSize = 20.sp,
-                  fontWeight = FontWeight.Bold,
-                  modifier =
-                      Modifier.fillMaxWidth().padding(vertical = 8.dp).testTag("quiz_question"),
-                  textAlign = TextAlign.Center)
+              QuestionText(questionText = question.question)
 
               Spacer(modifier = Modifier.height(20.dp))
 
               Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 question.answers.forEachIndexed { index, answer ->
                   val backgroundColor =
-                      if (selectedAnswer == answer) Color(0xFFFF731F) else DarkPurple
-                  Button(
+                      if (selectedAnswer == answer) AnswerSelectedColor else DarkPurple
+                  AnswerButton(
+                      answer = answer,
+                      backgroundColor = backgroundColor,
                       onClick = { viewModel.onAnswerSelected(answer) },
-                      colors =
-                          androidx.compose.material3.ButtonDefaults.buttonColors(
-                              containerColor = backgroundColor),
-                      modifier =
-                          Modifier.fillMaxWidth().height(60.dp).testTag("answer_button_$index")) {
-                        Text(text = answer, fontSize = 16.sp, textAlign = TextAlign.Center)
-                      }
+                      index = index)
                 }
               }
 
               Spacer(modifier = Modifier.height(40.dp))
 
-              Button(
-                  onClick = { viewModel.goToNextQuestion() },
-                  enabled = selectedAnswer != null,
-                  colors =
-                      androidx.compose.material3.ButtonDefaults.buttonColors(
-                          containerColor =
-                              if (selectedAnswer != null) Color(0xFF00C853) else Color(0xFF6A9605),
-                          contentColor = Color.White),
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .padding(vertical = 8.dp)
-                          .height(60.dp)
-                          .testTag("next_button")) {
-                    Text(text = "Next Question", fontSize = 18.sp)
-                  }
+              NextButton(enabled = selectedAnswer != null, onClick = viewModel::goToNextQuestion)
             }
           } else {
             Text(
@@ -157,7 +133,6 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
                                           listOf(
                                               Color.Transparent, Color.Black.copy(alpha = 0.6f)))))
             }
-
             Text(
                 text = "Scroll to see more",
                 fontSize = 12.sp,
@@ -167,27 +142,81 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
         }
 
     if (showScore) {
-      Box(
-          modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
-          contentAlignment = Alignment.BottomCenter) {
-            Button(
-                onClick = {
-                  viewModel.resetQuiz()
-                  navigationActions.navigateTo(Route.QUIZ)
-                },
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 24.dp)
-                        .testTag("return_to_quiz_selection_button")) {
-                  Text(
-                      text = "Return to Quiz Selection",
-                      fontSize = 18.sp,
-                      textAlign = TextAlign.Center)
-                }
-          }
+      ReturnToQuizSelectionButton(
+          onClick = {
+            viewModel.resetQuiz()
+            navigationActions.navigateTo(Route.QUIZ)
+          })
     }
   }
+}
+
+@Composable
+fun LeaveQuizButton(onClick: () -> Unit, modifier: Modifier) {
+  Button(
+      onClick = onClick,
+      modifier = modifier,
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(
+              containerColor = LeaveButtonColor, contentColor = Color.White),
+      shape = RoundedCornerShape(8.dp)) {
+        Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
+      }
+}
+
+@Composable
+fun QuestionText(questionText: String) {
+  Text(
+      text = questionText,
+      color = Color.White,
+      fontSize = 20.sp,
+      fontWeight = FontWeight.Bold,
+      modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).testTag("quiz_question"),
+      textAlign = TextAlign.Center)
+}
+
+@Composable
+fun AnswerButton(answer: String, backgroundColor: Color, onClick: () -> Unit, index: Int) {
+  Button(
+      onClick = onClick,
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = backgroundColor),
+      modifier = Modifier.fillMaxWidth().height(60.dp).testTag("answer_button_$index")) {
+        Text(text = answer, fontSize = 16.sp, textAlign = TextAlign.Center)
+      }
+}
+
+@Composable
+fun NextButton(enabled: Boolean, onClick: () -> Unit) {
+  Button(
+      onClick = onClick,
+      enabled = enabled,
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(
+              containerColor = if (enabled) NextButtonEnabledColor else NextButtonDisabledColor,
+              contentColor = Color.White),
+      modifier =
+          Modifier.fillMaxWidth().padding(vertical = 8.dp).height(60.dp).testTag("next_button")) {
+        Text(text = "Next Question", fontSize = 18.sp)
+      }
+}
+
+@Composable
+fun ReturnToQuizSelectionButton(onClick: () -> Unit) {
+  Box(
+      modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+      contentAlignment = Alignment.BottomCenter) {
+        Button(
+            onClick = onClick,
+            modifier =
+                Modifier.fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 24.dp)
+                    .testTag("return_to_quiz_selection_button")) {
+              Text(
+                  text = "Return to Quiz Selection", fontSize = 18.sp, textAlign = TextAlign.Center)
+            }
+      }
 }
 
 @Composable
@@ -205,7 +234,7 @@ fun QuizRecap(questions: List<QuizQuestion>, userAnswers: List<String>) {
                 Icon(
                     imageVector = if (isCorrect) Icons.Filled.Check else Icons.Filled.Close,
                     contentDescription = if (isCorrect) "Correct" else "Incorrect",
-                    tint = if (isCorrect) Color(0xFF4CAF50) else Color(0xFFF44336),
+                    tint = if (isCorrect) CorrectColor else IncorrectColor,
                     modifier = Modifier.size(24.dp))
 
                 Column {
@@ -214,11 +243,10 @@ fun QuizRecap(questions: List<QuizQuestion>, userAnswers: List<String>) {
                       fontWeight = FontWeight.Bold,
                       fontSize = 16.sp,
                       color = Color.White)
-
                   Text(
                       text = "Your answer: ${userAnswers[index]}",
                       fontSize = 14.sp,
-                      color = if (isCorrect) Color(0xFF4CAF50) else Color(0xFFF44336))
+                      color = if (isCorrect) CorrectColor else IncorrectColor)
                 }
               }
         }

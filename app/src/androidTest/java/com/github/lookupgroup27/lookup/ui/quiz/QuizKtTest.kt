@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
@@ -53,7 +54,6 @@ class QuizKtTest {
 
   @Test
   fun quizScreen_displaysCorrectly() {
-
     composeTestRule.setContent {
       QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
     }
@@ -91,8 +91,7 @@ class QuizKtTest {
       QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
     }
     // Perform click on the Earth button
-    composeTestRule.onNodeWithText("Earth").performClick()
-
+    composeTestRule.onNodeWithTag("earth_button").performClick()
     // Verify navigation to Earth quiz action is triggered
     verify(mockNavigationActions).navigateTo(Screen.QUIZ_PLAY)
   }
@@ -102,9 +101,8 @@ class QuizKtTest {
     composeTestRule.setContent {
       QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
     }
-    composeTestRule.onNodeWithText("Solar System").performClick()
+    composeTestRule.onNodeWithTag("solar system_button").performClick()
 
-    // Verify navigation to Earth quiz action is triggered
     verify(mockNavigationActions).navigateTo(Screen.QUIZ_PLAY)
   }
 
@@ -141,12 +139,12 @@ class QuizKtTest {
     // Perform click on the Solar System button
     composeTestRule.onNodeWithTag("solar system_button").performClick()
 
-    // Verify navigation to Solar System quiz action is triggered
+    // Verify no navigation actions are triggered
     verifyNoInteractions(mockNavigationActions)
   }
 
   @Test
-  fun quizScreen_displaysCorrectlyInLandscapeMode() {
+  fun quizScreen_displaysBottomElementsInLandscapeModeWithScroll() {
     // Set device orientation to landscape
     setLandscapeOrientation()
 
@@ -155,18 +153,16 @@ class QuizKtTest {
       QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
     }
 
-    // Verify all key UI elements are displayed in landscape mode
+    // In landscape mode, verify top elements are displayed
     composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("go_back_button_quiz").assertIsDisplayed()
     composeTestRule.onNodeWithTag("quiz_background").assertIsDisplayed()
     composeTestRule.onNodeWithTag("quiz_title").assertIsDisplayed()
     composeTestRule.onNodeWithText("Take a Quiz").assertIsDisplayed()
 
-    // Verify theme buttons are displayed
-    composeTestRule.onNodeWithTag("earth_button").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Earth").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("solar system_button").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Solar System").assertIsDisplayed()
+    // Scroll to and verify the visibility of bottom elements in the quiz screen
+    composeTestRule.onNodeWithTag("solar system_button").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("earth_button").performScrollTo().assertIsDisplayed()
 
     // Reset orientation to portrait after test
     resetOrientation()
