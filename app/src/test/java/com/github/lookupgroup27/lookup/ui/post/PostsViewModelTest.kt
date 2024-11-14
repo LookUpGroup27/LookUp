@@ -22,7 +22,17 @@ class PostsViewModelTest {
   private lateinit var firestore: FirebaseFirestore
   private lateinit var collectionReference: CollectionReference
 
-  private val testPost = Post("1", "testUri", "testUsername", 10)
+  private val testPost =
+      Post(
+          "1",
+          "testUri",
+          "testUsername",
+          10,
+          2.5,
+          0.0,
+          0.0,
+          2,
+          listOf("test@gmail.com", "joedoe@gmail.com"))
 
   @Before
   fun setUp() {
@@ -37,7 +47,12 @@ class PostsViewModelTest {
     assertThat(testPost.uid, `is`("1"))
     assertThat(testPost.uri, `is`("testUri"))
     assertThat(testPost.username, `is`("testUsername"))
-    assertThat(testPost.likes, `is`(10))
+    assertThat(testPost.starsCount, `is`(10))
+    assertThat(testPost.averageStars, `is`(2.5))
+    assertThat(testPost.latitude, `is`(0.0))
+    assertThat(testPost.longitude, `is`(0.0))
+    assertThat(testPost.usersNumber, `is`(2))
+    assertThat(testPost.ratedBy, `is`(listOf("test@gmail.com", "joedoe@gmail.com")))
   }
 
   @Test
@@ -106,5 +121,56 @@ class PostsViewModelTest {
     postsViewModel.getPosts()
 
     assertThat(postsViewModel.allPosts.first(), `is`(emptyPostList))
+  }
+
+  @Test
+  fun `test updatePost calls repository`() {
+    postsViewModel.updatePost(testPost)
+    verify(postsRepository)
+        .updatePost(
+            org.mockito.kotlin.eq(testPost), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+  }
+
+  @Test
+  fun `test updatePost success updates state`() = runBlocking {
+    // Simulate success callback
+    `when`(
+            postsRepository.updatePost(
+                org.mockito.kotlin.eq(testPost),
+                org.mockito.kotlin.any(),
+                org.mockito.kotlin.any()))
+        .thenAnswer {
+          it.getArgument<() -> Unit>(1).invoke() // Invoke onSuccess
+        }
+
+    var successCalled = false
+    postsViewModel.updatePost(testPost, onSuccess = { successCalled = true })
+
+    assertThat(successCalled, `is`(true))
+    verify(postsRepository)
+        .updatePost(
+            org.mockito.kotlin.eq(testPost), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+  }
+
+  @Test
+  fun `test updatePost calls onFailure on repository error`() = runBlocking {
+    // Simulate failure callback
+    val exception = Exception("Update error")
+    `when`(
+            postsRepository.updatePost(
+                org.mockito.kotlin.eq(testPost),
+                org.mockito.kotlin.any(),
+                org.mockito.kotlin.any()))
+        .thenAnswer {
+          it.getArgument<(Exception) -> Unit>(2).invoke(exception) // Invoke onFailure
+        }
+
+    var errorMessage: String? = null
+    postsViewModel.updatePost(testPost, onFailure = { error -> errorMessage = error.message })
+
+    assertThat(errorMessage, `is`("Update error"))
+    verify(postsRepository)
+        .updatePost(
+            org.mockito.kotlin.eq(testPost), org.mockito.kotlin.any(), org.mockito.kotlin.any())
   }
 }
