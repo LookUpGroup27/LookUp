@@ -42,22 +42,19 @@ class QuizRepository(private val context: Context) {
   // Retrieves all scores as a map of theme to score, defaulting missing scores to 0
   fun getAllBestScores(): Map<String, Int> {
     val scoresMap = mutableMapOf<String, Int>()
-    preferences.all.forEach { (key, value) ->
-      if (value is Int) scoresMap[key] = value
-    }
+    preferences.all.forEach { (key, value) -> if (value is Int) scoresMap[key] = value }
     // Add default scores for known themes if not present
     listOf(
-      "Earth",
-      "Solar System",
-      "Space Exploration",
-      "Cosmic Objects",
-      "Astronomical Tools",
-      "Astronomers and Scientists"
-    ).forEach { theme -> scoresMap.putIfAbsent(theme, 0) }
+            "Earth",
+            "Solar System",
+            "Space Exploration",
+            "Cosmic Objects",
+            "Astronomical Tools",
+            "Astronomers and Scientists")
+        .forEach { theme -> scoresMap.putIfAbsent(theme, 0) }
 
     return scoresMap
   }
-
 
   fun loadQuizDataForTheme(theme: String, context: Context) {
     val filePath = getFilePathForTheme(theme)

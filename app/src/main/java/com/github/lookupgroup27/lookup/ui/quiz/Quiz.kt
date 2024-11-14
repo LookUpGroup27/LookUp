@@ -59,7 +59,8 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
     // Quiz Content with Vertical Scrolling
     Column(
         modifier =
-            Modifier.padding(vertical = 88.dp , horizontal = 25.dp) // General padding for both orientations
+            Modifier.padding(
+                    vertical = 88.dp, horizontal = 25.dp) // General padding for both orientations
                 .verticalScroll(
                     rememberScrollState()), // Enable vertical scrolling in all orientations
         horizontalAlignment = Alignment.CenterHorizontally,

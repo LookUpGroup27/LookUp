@@ -39,7 +39,7 @@ class QuizKtTest {
   @Before
   fun setUp() {
     `when`(mockContext.getSharedPreferences(anyString(), anyInt()))
-      .thenReturn(mockSharedPreferences)
+        .thenReturn(mockSharedPreferences)
     `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
     `when`(mockEditor.putInt(anyString(), anyInt())).thenReturn(mockEditor)
     `when`(mockEditor.apply()).then {}
@@ -110,10 +110,10 @@ class QuizKtTest {
   fun quizOptionButton_behavesNormally() {
     composeTestRule.setContent {
       QuizOptionButton(
-        theme = "Earth",
-        onClick = { mockNavigationActions.navigateTo(Screen.QUIZ_PLAY) },
-        bestScore = "",
-        testTag = "earth_button")
+          theme = "Earth",
+          onClick = { mockNavigationActions.navigateTo(Screen.QUIZ_PLAY) },
+          bestScore = "",
+          testTag = "earth_button")
     }
 
     composeTestRule.onNodeWithText("Earth").assertIsDisplayed()
@@ -130,7 +130,7 @@ class QuizKtTest {
   fun quizOptionButton_doesNothingOnClickEmpty() {
     composeTestRule.setContent {
       QuizOptionButton(
-        theme = "Solar System", onClick = {}, bestScore = "", testTag = "solar system_button")
+          theme = "Solar System", onClick = {}, bestScore = "", testTag = "solar system_button")
     }
 
     composeTestRule.onNodeWithText("Solar System").assertIsDisplayed()
@@ -167,7 +167,6 @@ class QuizKtTest {
     // Reset orientation to portrait after test
     resetOrientation()
   }
-
 
   private fun setLandscapeOrientation() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())

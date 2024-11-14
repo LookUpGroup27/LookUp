@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,245 +46,209 @@ private val LeaveButtonColor = Color.Red
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
-    val quizQuestions by viewModel.quizQuestions.collectAsState()
-    val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
-    val score by viewModel.score.collectAsState()
-    val showScore by viewModel.showScore.collectAsState()
-    val selectedAnswer by viewModel.selectedAnswer.collectAsState()
-    val quizTitle = viewModel.quizTitle
+  val quizQuestions by viewModel.quizQuestions.collectAsState()
+  val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
+  val score by viewModel.score.collectAsState()
+  val showScore by viewModel.showScore.collectAsState()
+  val selectedAnswer by viewModel.selectedAnswer.collectAsState()
+  val quizTitle = viewModel.quizTitle
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+  BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+    Image(
+        painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
+        contentDescription = "Background",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxSize().blur(8.dp).testTag("quiz_background"))
 
-        Image(
-            painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
-            contentDescription = "Background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(8.dp)
-                .testTag("quiz_background")
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
+    Column(
+        modifier =
+            Modifier.fillMaxSize()
                 .padding(horizontal = 24.dp, vertical = 16.dp)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top) {
+          if (!showScore) {
+            LeaveQuizButton(
+                onClick = {
+                  viewModel.resetQuiz()
+                  navigationActions.navigateTo(Route.QUIZ)
+                },
+                modifier = Modifier.align(Alignment.Start))
+          }
 
-            if (!showScore) {
-                LeaveQuizButton(onClick = {
-                    viewModel.resetQuiz()
-                    navigationActions.navigateTo(Route.QUIZ)
-                }, modifier = Modifier.align(Alignment.Start))
+          Spacer(modifier = Modifier.height(24.dp))
+
+          Text(
+              text = "$quizTitle Quiz",
+              color = Color.White,
+              fontWeight = FontWeight.Bold,
+              fontSize = 30.sp,
+              modifier = Modifier.padding(vertical = 8.dp).testTag("quiz_title"),
+              textAlign = TextAlign.Center)
+
+          Spacer(modifier = Modifier.height(20.dp))
+
+          if (!showScore) {
+            quizQuestions.getOrNull(currentQuestionIndex)?.let { question ->
+              QuestionText(questionText = question.question)
+
+              Spacer(modifier = Modifier.height(20.dp))
+
+              Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                question.answers.forEachIndexed { index, answer ->
+                  val backgroundColor =
+                      if (selectedAnswer == answer) AnswerSelectedColor else DarkPurple
+                  AnswerButton(
+                      answer = answer,
+                      backgroundColor = backgroundColor,
+                      onClick = { viewModel.onAnswerSelected(answer) },
+                      index = index)
+                }
+              }
+
+              Spacer(modifier = Modifier.height(40.dp))
+
+              NextButton(enabled = selectedAnswer != null, onClick = viewModel::goToNextQuestion)
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
+          } else {
             Text(
-                text = "$quizTitle Quiz",
+                text = "Your score: $score/${quizQuestions.size}",
                 color = Color.White,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                modifier = Modifier.padding(vertical = 8.dp).testTag("quiz_title"),
-                textAlign = TextAlign.Center
-            )
+                modifier = Modifier.testTag("score_text"))
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Box(modifier = Modifier.height(600.dp).fillMaxWidth()) {
+              QuizRecap(viewModel.getQuestions(), viewModel.getUserAnswers())
 
-            if (!showScore) {
-                quizQuestions.getOrNull(currentQuestionIndex)?.let { question ->
-                    QuestionText(questionText = question.question)
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                        question.answers.forEachIndexed { index, answer ->
-                            val backgroundColor = if (selectedAnswer == answer) AnswerSelectedColor else DarkPurple
-                            AnswerButton(
-                                answer = answer,
-                                backgroundColor = backgroundColor,
-                                onClick = { viewModel.onAnswerSelected(answer) },
-                                index = index
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    NextButton(
-                        enabled = selectedAnswer != null,
-                        onClick = viewModel::goToNextQuestion
-                    )
-                }
-            } else {
-                Text(
-                    text = "Your score: $score/${quizQuestions.size}",
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.testTag("score_text")
-                )
-
-                Box(modifier = Modifier.height(600.dp).fillMaxWidth()) {
-                    QuizRecap(viewModel.getQuestions(), viewModel.getUserAnswers())
-
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(20.dp)
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Transparent, Color.Black.copy(alpha = 0.6f)
-                                    )
-                                )
-                            )
-                    )
-                }
-                Text(
-                    text = "Scroll to see more",
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+              Box(
+                  modifier =
+                      Modifier.align(Alignment.BottomCenter)
+                          .fillMaxWidth()
+                          .height(20.dp)
+                          .background(
+                              brush =
+                                  Brush.verticalGradient(
+                                      colors =
+                                          listOf(
+                                              Color.Transparent, Color.Black.copy(alpha = 0.6f)))))
             }
+            Text(
+                text = "Scroll to see more",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 8.dp))
+          }
         }
 
-        if (showScore) {
-            ReturnToQuizSelectionButton(onClick = {
-                viewModel.resetQuiz()
-                navigationActions.navigateTo(Route.QUIZ)
-            })
-        }
+    if (showScore) {
+      ReturnToQuizSelectionButton(
+          onClick = {
+            viewModel.resetQuiz()
+            navigationActions.navigateTo(Route.QUIZ)
+          })
     }
+  }
 }
 
 @Composable
 fun LeaveQuizButton(onClick: () -> Unit, modifier: Modifier) {
-    Button(
-        onClick = onClick,
-        modifier= modifier,
-        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-            containerColor = LeaveButtonColor, contentColor = Color.White
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
+  Button(
+      onClick = onClick,
+      modifier = modifier,
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(
+              containerColor = LeaveButtonColor, contentColor = Color.White),
+      shape = RoundedCornerShape(8.dp)) {
         Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
-    }
+      }
 }
 
 @Composable
 fun QuestionText(questionText: String) {
-    Text(
-        text = questionText,
-        color = Color.White,
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .testTag("quiz_question"),
-        textAlign = TextAlign.Center
-    )
+  Text(
+      text = questionText,
+      color = Color.White,
+      fontSize = 20.sp,
+      fontWeight = FontWeight.Bold,
+      modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).testTag("quiz_question"),
+      textAlign = TextAlign.Center)
 }
 
 @Composable
 fun AnswerButton(answer: String, backgroundColor: Color, onClick: () -> Unit, index: Int) {
-    Button(
-        onClick = onClick,
-        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-            containerColor = backgroundColor
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .testTag("answer_button_$index")
-    ) {
+  Button(
+      onClick = onClick,
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = backgroundColor),
+      modifier = Modifier.fillMaxWidth().height(60.dp).testTag("answer_button_$index")) {
         Text(text = answer, fontSize = 16.sp, textAlign = TextAlign.Center)
-    }
+      }
 }
 
 @Composable
 fun NextButton(enabled: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-            containerColor = if (enabled) NextButtonEnabledColor else NextButtonDisabledColor,
-            contentColor = Color.White
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .height(60.dp)
-            .testTag("next_button")
-    ) {
+  Button(
+      onClick = onClick,
+      enabled = enabled,
+      colors =
+          androidx.compose.material3.ButtonDefaults.buttonColors(
+              containerColor = if (enabled) NextButtonEnabledColor else NextButtonDisabledColor,
+              contentColor = Color.White),
+      modifier =
+          Modifier.fillMaxWidth().padding(vertical = 8.dp).height(60.dp).testTag("next_button")) {
         Text(text = "Next Question", fontSize = 18.sp)
-    }
+      }
 }
 
 @Composable
 fun ReturnToQuizSelectionButton(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
-        contentAlignment = Alignment.BottomCenter
-    ) {
+  Box(
+      modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+      contentAlignment = Alignment.BottomCenter) {
         Button(
             onClick = onClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 24.dp)
-                .testTag("return_to_quiz_selection_button")
-        ) {
-            Text(
-                text = "Return to Quiz Selection",
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
+            modifier =
+                Modifier.fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 24.dp)
+                    .testTag("return_to_quiz_selection_button")) {
+              Text(
+                  text = "Return to Quiz Selection", fontSize = 18.sp, textAlign = TextAlign.Center)
+            }
+      }
 }
 
 @Composable
 fun QuizRecap(questions: List<QuizQuestion>, userAnswers: List<String>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+  LazyColumn(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(questions.size) { index ->
-            val question = questions[index]
-            val isCorrect = question.correctAnswer == userAnswers[index]
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) {
+          val question = questions[index]
+          val isCorrect = question.correctAnswer == userAnswers[index]
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 Icon(
                     imageVector = if (isCorrect) Icons.Filled.Check else Icons.Filled.Close,
                     contentDescription = if (isCorrect) "Correct" else "Incorrect",
                     tint = if (isCorrect) CorrectColor else IncorrectColor,
-                    modifier = Modifier.size(24.dp)
-                )
+                    modifier = Modifier.size(24.dp))
 
                 Column {
-                    Text(
-                        text = "Q${index + 1}: ${question.question}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Your answer: ${userAnswers[index]}",
-                        fontSize = 14.sp,
-                        color = if (isCorrect) CorrectColor else IncorrectColor
-                    )
+                  Text(
+                      text = "Q${index + 1}: ${question.question}",
+                      fontWeight = FontWeight.Bold,
+                      fontSize = 16.sp,
+                      color = Color.White)
+                  Text(
+                      text = "Your answer: ${userAnswers[index]}",
+                      fontSize = 14.sp,
+                      color = if (isCorrect) CorrectColor else IncorrectColor)
                 }
-            }
+              }
         }
-    }
+      }
 }
