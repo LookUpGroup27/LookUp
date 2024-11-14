@@ -10,7 +10,6 @@ import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
-import com.github.lookupgroup27.lookup.model.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import org.junit.Before

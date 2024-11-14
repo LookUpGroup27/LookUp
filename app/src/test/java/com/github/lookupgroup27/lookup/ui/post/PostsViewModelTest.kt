@@ -1,5 +1,7 @@
-package com.github.lookupgroup27.lookup.model.post
+package com.github.lookupgroup27.lookup.ui.post
 
+import com.github.lookupgroup27.lookup.model.post.Post
+import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.first

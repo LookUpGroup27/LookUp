@@ -64,7 +64,7 @@ class SignInKtTest : TestCase() {
     composeTestRule.setContent { SignInScreen(mockNavigationActions) }
 
     // Scroll to ensure the go-back button is visible
-    composeTestRule.onNodeWithTag("go_back_button_signin").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("go_back_button_signin").assertIsDisplayed()
   }
 
   @Test
@@ -72,7 +72,7 @@ class SignInKtTest : TestCase() {
     composeTestRule.setContent { SignInScreen(mockNavigationActions) }
 
     // Perform click on the go-back button after scrolling to it
-    composeTestRule.onNodeWithTag("go_back_button_signin").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("go_back_button_signin").performClick()
     composeTestRule.waitForIdle()
 
     // Assert that the user is navigated back to the previous screen
@@ -97,12 +97,25 @@ class SignInKtTest : TestCase() {
         .assertHasClickAction()
     composeTestRule
         .onNodeWithTag("go_back_button_signin")
-        .performScrollTo()
         .assertIsDisplayed()
         .assertHasClickAction()
 
     // Reset orientation to portrait after the test
     resetOrientation()
+  }
+
+  @Test
+  fun backArrowIsInTopLeftCorner() {
+    composeTestRule.setContent { SignInScreen(mockNavigationActions) }
+
+    val backArrowBounds =
+        composeTestRule.onNodeWithTag("go_back_button_signin").fetchSemanticsNode().boundsInRoot
+
+    val screenWidth = composeTestRule.onRoot().fetchSemanticsNode().boundsInRoot.width
+    val screenHeight = composeTestRule.onRoot().fetchSemanticsNode().boundsInRoot.height
+
+    assert(backArrowBounds.left < screenWidth * 0.1f)
+    assert(backArrowBounds.top < screenHeight * 0.1f)
   }
 
   private fun setLandscapeOrientation() {

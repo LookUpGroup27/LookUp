@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.image
 
-import android.net.Uri
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,6 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import java.io.File
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,20 +19,20 @@ class ImageReviewTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  val fakeUri: Uri = Uri.parse("content://com.example.app/fake_image.jpg")
+  val fakeFile: File = File.createTempFile("temp", null)
 
   private val mockNavigationActions: NavigationActions = mock()
 
   @Test
   fun testImageReviewIsDisplayed() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeUri) }
+    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile) }
 
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
   }
 
   @Test
   fun testConfirmButtonIsDisplayedAndClickable() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeUri) }
+    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile) }
 
     composeTestRule.onNodeWithTag("confirm_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirm_button").performClick()
@@ -40,7 +40,7 @@ class ImageReviewTest {
 
   @Test
   fun testCancelButtonIsDisplayedAndClickable() {
-    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeUri) }
+    composeTestRule.setContent { ImageReviewScreen(mockNavigationActions, fakeFile) }
 
     composeTestRule.onNodeWithTag("cancel_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancel_button").performClick()

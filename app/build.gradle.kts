@@ -203,7 +203,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
-    implementation(libs.google.firebase.storage)
+    implementation (libs.firebase.storage.ktx)
+    implementation (libs.play.services.tasks)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
