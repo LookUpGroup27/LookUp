@@ -4,11 +4,13 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -39,22 +41,24 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     // Answer the quiz randomly
-    for (i in 1..15) {
+    while (!composeTestRule.onNodeWithTag("quiz_recap").isDisplayed()) {
       var randomOption = (0..3).random()
       val changeOption = (Math.random() < 0.3)
-      composeTestRule.onNodeWithTag("answer_button_$randomOption").performClick()
+      composeTestRule.onNodeWithTag("answer_button_$randomOption").performScrollTo().performClick()
       composeTestRule.waitForIdle()
 
       if (changeOption) {
         randomOption = (0..3).random()
-        composeTestRule.onNodeWithTag("answer_button_$randomOption").performClick()
+        composeTestRule.onNodeWithTag("answer_button_$randomOption").performScrollTo().performClick()
         composeTestRule.waitForIdle()
       }
 
-      composeTestRule.onNodeWithText("Next Question").performClick()
+      composeTestRule.onNodeWithText("Next Question").performScrollTo().performClick()
       composeTestRule.waitForIdle()
     }
 
+    composeTestRule.onNodeWithText("Earth Quiz").performScrollTo().assertIsDisplayed()
+    composeTestRule.waitForIdle()
     // Find the score and extract it
     val scoreText =
         composeTestRule
