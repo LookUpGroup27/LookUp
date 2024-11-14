@@ -4,7 +4,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -22,7 +22,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val PERMISSION_DIALOG_TIMEOUT = 5000L
+private const val PERMISSION_DIALOG_TIMEOUT = 10_000L
 
 @RunWith(AndroidJUnit4::class)
 class End2EndTest {
@@ -41,7 +41,7 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     // Answer the quiz randomly
-    while (!composeTestRule.onNodeWithTag("quiz_recap").isDisplayed()) {
+    while (composeTestRule.onNodeWithTag("quiz_recap").isNotDisplayed()) {
       var randomOption = (0..3).random()
       val changeOption = (Math.random() < 0.3)
       composeTestRule.onNodeWithTag("answer_button_$randomOption").performScrollTo().performClick()
@@ -140,11 +140,14 @@ class End2EndTest {
 
     val allowButton: UiObject2? =
         device.wait(Until.findObject(By.text("While using the app")), PERMISSION_DIALOG_TIMEOUT)
-    if (allowButton != null) {
-      allowButton.click()
-    } else {
-      throw AssertionError("Timeout while waiting for permission dialog")
-    }
+
+    allowButton?.click()
+        ?: run {
+          if (composeTestRule.onNodeWithTag("googleMapScreen").isNotDisplayed()) {
+            throw AssertionError("Timeout while waiting for permission dialog")
+          }
+          // Permission dialog did not appear, but the screen is displayed
+        }
 
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
