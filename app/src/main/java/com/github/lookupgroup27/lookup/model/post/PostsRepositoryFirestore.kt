@@ -39,10 +39,12 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
                       data["uid"] as String,
                       data["uri"] as String,
                       data["username"] as String,
-                      (data["likes"] as? Long)?.toInt() ?: 0,
-                      (data["latitude"] as? Long)?.toDouble() ?: 0.0,
-                      (data["longitude"] as? Long)?.toDouble() ?: 0.0,
-                  )
+                      (data["starsCount"] as? Long)?.toInt() ?: 0,
+                      (data["averageStars"] as? Double) ?: 0.0,
+                      data["latitude"] as Double,
+                      data["longitude"] as Double,
+                      (data["usersNumber"] as? Long)?.toInt() ?: 0,
+                      data["ratedBy"] as? List<String> ?: emptyList())
                 }
                 .filterNotNull()
         onSuccess(posts)
@@ -69,6 +71,16 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
   }
 
   override fun updatePost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-    TODO("Not yet implemented")
+    collection
+        .document(post.uid)
+        .set(post)
+        .addOnSuccessListener {
+          Log.d(tag, "Post updated successfully")
+          onSuccess()
+        }
+        .addOnFailureListener {
+          Log.e(tag, "Error updating post", it)
+          onFailure(it)
+        }
   }
 }
