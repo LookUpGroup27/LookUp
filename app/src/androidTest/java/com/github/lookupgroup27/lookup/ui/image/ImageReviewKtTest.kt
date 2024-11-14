@@ -90,5 +90,4 @@ class ImageReviewTest {
     }
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
   }
-
 }
