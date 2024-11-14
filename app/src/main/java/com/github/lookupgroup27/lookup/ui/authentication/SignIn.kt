@@ -75,7 +75,17 @@ fun SignInScreen(navigationActions: NavigationActions) {
       containerColor = Color.Black,
       topBar = {
         TopAppBar(
-            title = { Text("") },
+            title = {},
+            navigationIcon = {
+              IconButton(
+                  onClick = { navigationActions.goBack() },
+                  modifier = Modifier.testTag("go_back_button_signin")) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go Back",
+                        tint = Color.White)
+                  }
+            },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black))
       },
       content = { padding ->
@@ -87,18 +97,6 @@ fun SignInScreen(navigationActions: NavigationActions) {
                         rememberScrollState()), // Enable vertical scrolling in all orientations
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
-              IconButton(
-                  onClick = { navigationActions.goBack() },
-                  modifier =
-                      Modifier.padding(16.dp)
-                          .align(Alignment.Start)
-                          .testTag("go_back_button_signin")) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Go Back",
-                        tint = Color.White)
-                  }
-
               Spacer(modifier = Modifier.height(16.dp))
 
               Image(
