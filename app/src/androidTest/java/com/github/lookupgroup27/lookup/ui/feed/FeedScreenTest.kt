@@ -13,13 +13,16 @@ import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
@@ -33,7 +36,9 @@ class FeedScreenTest {
       GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
   private lateinit var postsRepository: PostsRepository
-  private lateinit var postsViewModel: PostsViewModel
+  @Mock private lateinit var postsViewModel: PostsViewModel
+  private lateinit var profileRepository: ProfileRepository
+  @Mock private lateinit var profileViewModel: ProfileViewModel
   private lateinit var navigationActions: NavigationActions
   private lateinit var locationProvider: LocationProvider
 
@@ -60,6 +65,8 @@ class FeedScreenTest {
     // Mock the repository and other dependencies
     postsRepository = mock(PostsRepository::class.java)
     postsViewModel = PostsViewModel(postsRepository)
+    profileRepository = mock(ProfileRepository::class.java)
+    profileViewModel = ProfileViewModel(profileRepository)
     navigationActions = mock(NavigationActions::class.java)
 
     // Define behavior for getPosts to immediately invoke the success callback with testPosts
@@ -77,7 +84,8 @@ class FeedScreenTest {
       FeedScreen(
           postsViewModel = postsViewModel,
           navigationActions = navigationActions,
-          initialNearbyPosts = testPosts)
+          initialNearbyPosts = testPosts,
+          profileViewModel = profileViewModel)
     }
   }
 
