@@ -16,7 +16,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
-import com.github.lookupgroup27.lookup.ui.FeedScreen
+import com.github.lookupgroup27.lookup.ui.feed.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel

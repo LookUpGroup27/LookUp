@@ -13,7 +13,6 @@ import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
-import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
