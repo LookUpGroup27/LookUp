@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
 import com.github.lookupgroup27.lookup.ui.FeedScreen
 import com.github.lookupgroup27.lookup.ui.authentication.SignInScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
@@ -39,6 +40,7 @@ import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
 
 class MainActivity : ComponentActivity() {
@@ -66,6 +68,7 @@ fun LookUpApp() {
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
+  val postsRepository = PostsRepositoryFirestore(FirebaseFirestore.getInstance())
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -125,7 +128,7 @@ fun LookUpApp() {
         }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
-      composable(Screen.FEED) { FeedScreen(navigationActions) }
+      composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions) }
     }
   }
 }
