@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,14 +20,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.quiz.components.QuizThemeButton
 
+/**
+ * Composable function that displays the main screen for selecting a quiz. This screen includes a
+ * background image, title, and a list of quiz themes with associated best scores. Users can
+ * navigate back to the menu screen or choose a quiz to start.
+ *
+ * @param viewModel The QuizViewModel that manages the quiz data and state.
+ * @param navigationActions Provides navigation actions to move between screens.
+ */
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
@@ -76,7 +82,7 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
 
           // Quiz Options
           bestScores.toSortedMap().forEach { (theme, score) ->
-            QuizOptionButton(
+            QuizThemeButton(
                 theme = theme,
                 bestScore = "$score",
                 onClick = {
@@ -87,33 +93,4 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
           }
         }
   }
-}
-
-@Composable
-fun QuizOptionButton(theme: String, bestScore: String, onClick: () -> Unit, testTag: String) {
-  Button(
-      onClick = onClick,
-      shape = RoundedCornerShape(16.dp),
-      modifier = Modifier.fillMaxWidth().height(56.dp).testTag(testTag),
-      colors =
-          androidx.compose.material3.ButtonDefaults.buttonColors(
-              containerColor = Color(0xFF4E5DAB))) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
-              Text(
-                  text = theme,
-                  fontSize = 16.sp,
-                  fontWeight = FontWeight.Bold,
-                  color = Color.White,
-                  modifier = Modifier.padding(start = 4.dp))
-              Text(
-                  text = "Best Score: $bestScore/15",
-                  fontSize = 14.sp,
-                  fontStyle = FontStyle.Italic,
-                  fontWeight = FontWeight.Normal,
-                  color = Color(0xFFDADADA))
-            }
-      }
 }
