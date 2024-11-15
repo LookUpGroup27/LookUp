@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - M1
+      - feature/apk-for-m2
   workflow_dispatch:
 
 jobs:
