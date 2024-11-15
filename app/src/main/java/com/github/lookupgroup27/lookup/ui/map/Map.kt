@@ -1,14 +1,14 @@
 package com.github.lookupgroup27.lookup.ui.map
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.*
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import com.github.lookupgroup27.lookup.R
+import androidx.compose.ui.viewinterop.AndroidView
+import com.github.lookupgroup27.lookup.opengl.MyGLSurfaceView
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -24,11 +24,9 @@ fun MapScreen(navigationActions: NavigationActions) {
             selectedItem = Route.MAP)
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen")) {
-          Image(
-              painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
-              contentDescription = null,
-              modifier = Modifier.fillMaxSize().testTag("map_background"),
-              contentScale = ContentScale.Crop)
+          AndroidView(
+              factory = { context -> MyGLSurfaceView(context) },
+              modifier = Modifier.testTag("glSurfaceView"))
         }
       }
 }
