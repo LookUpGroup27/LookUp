@@ -13,6 +13,7 @@ import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.quiz.components.QuizThemeButton
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -109,7 +110,7 @@ class QuizKtTest {
   @Test
   fun quizOptionButton_behavesNormally() {
     composeTestRule.setContent {
-      QuizOptionButton(
+      QuizThemeButton(
           theme = "Earth",
           onClick = { mockNavigationActions.navigateTo(Screen.QUIZ_PLAY) },
           bestScore = "",
@@ -129,7 +130,7 @@ class QuizKtTest {
   @Test
   fun quizOptionButton_doesNothingOnClickEmpty() {
     composeTestRule.setContent {
-      QuizOptionButton(
+      QuizThemeButton(
           theme = "Solar System", onClick = {}, bestScore = "", testTag = "solar system_button")
     }
 
