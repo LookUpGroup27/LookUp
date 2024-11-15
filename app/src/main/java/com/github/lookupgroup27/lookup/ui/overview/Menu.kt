@@ -14,9 +14,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
@@ -25,9 +25,10 @@ import com.google.firebase.auth.FirebaseAuth
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(navigationActions: NavigationActions) {
-  val context = LocalContext.current
+
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
+
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
@@ -56,7 +57,7 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier =
                   Modifier.padding(16.dp).align(Alignment.TopEnd).testTag("profile_button")) {
                 Icon(
-                    modifier = Modifier.size(56.dp),
+                    modifier = Modifier.size(1000.dp),
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Profile",
                     tint = Color.White)
@@ -67,24 +68,46 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier =
                   Modifier.align(Alignment.Center)
                       .padding(horizontal = 32.dp)
-                      .verticalScroll(rememberScrollState()) // Ensuring scroll semantics
-                      .testTag("scrollable_menu_content"), // Add unique tag for testing if needed
+                      .verticalScroll(rememberScrollState())
+                      .testTag("scrollable_menu_content"),
               horizontalAlignment = Alignment.CenterHorizontally,
               verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    text = "Welcome !",
-                    color = Color.White,
-                    style = MaterialTheme.typography.displaySmall)
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { navigationActions.navigateTo(Screen.QUIZ) }) {
-                  Text(text = "Quizzes", style = MaterialTheme.typography.headlineSmall)
-                }
-                Button(onClick = { navigationActions.navigateTo(Screen.CALENDAR) }) {
-                  Text(text = "Calendar", style = MaterialTheme.typography.headlineSmall)
-                }
-                Button(onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) }) {
-                  Text(text = "Google Map", style = MaterialTheme.typography.headlineSmall)
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.app_logo),
+                    contentDescription = "App Logo",
+                    modifier =
+                        Modifier.size(250.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .testTag("app_logo"))
+
+                Button(
+                    onClick = { navigationActions.navigateTo(Screen.QUIZ) },
+                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                      Text(
+                          text = "Quizzes",
+                          style = MaterialTheme.typography.headlineSmall,
+                          fontWeight = FontWeight.Bold)
+                    }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { navigationActions.navigateTo(Screen.CALENDAR) },
+                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                      Text(
+                          text = "Calendar",
+                          style = MaterialTheme.typography.headlineSmall,
+                          fontWeight = FontWeight.Bold)
+                    }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) },
+                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                      Text(
+                          text = "Google Map",
+                          style = MaterialTheme.typography.headlineSmall,
+                          fontWeight = FontWeight.Bold)
+                    }
               }
         }
       }
