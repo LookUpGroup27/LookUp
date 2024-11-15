@@ -96,6 +96,10 @@ fun FeedScreen(
   }
 
   LaunchedEffect(nearbyPosts, profile) {
+    if (userEmail.isEmpty()) {
+      Toast.makeText(context, "Please sign in to rate photos on the feed.", Toast.LENGTH_LONG)
+          .show()
+    }
     nearbyPosts.forEach { post ->
       if (!postRatings.containsKey(post.uid)) {
         // Get saved rating from profile, or initialize with all false
