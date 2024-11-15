@@ -45,7 +45,6 @@ jobs:
           echo "$GOOGLE_SERVICES" | base64 --decode > ./app/google-services.json
           echo "$UPLOAD_KEYSTORE" | base64 --decode > ./upload-keystore.jks
           echo "$LOCAL_PROPERTIES" | base64 --decode > ./local.properties
-          echo "$MAPS_API_KEY" | base64 --decode > ./local.properties
 
       - name: Build APK
         run: ./gradlew assembleRelease
