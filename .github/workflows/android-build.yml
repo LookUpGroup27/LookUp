@@ -38,7 +38,7 @@ jobs:
           UPLOAD_KEYSTORE: ${{ secrets.UPLOAD_KEYSTORE }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          REALEASE_KEY_PASSWORD: ${{ secrets.REALEASE_KEY_PASSWORD }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: |
