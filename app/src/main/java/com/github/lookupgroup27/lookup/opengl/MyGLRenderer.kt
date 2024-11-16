@@ -8,7 +8,7 @@ import javax.microedition.khronos.opengles.GL10
 
 class MyGLRenderer : GLSurfaceView.Renderer {
 
-  private lateinit var mShape: Pyramid
+  private lateinit var mShape: Star
 
   private val modelMatrix = FloatArray(16)
   private val viewMatrix = FloatArray(16)
@@ -23,16 +23,16 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     Matrix.setIdentityM(modelMatrix, 0)
     Matrix.setIdentityM(viewMatrix, 0)
     Matrix.setIdentityM(projMatrix, 0)
-    Matrix.translateM(viewMatrix, 0, 0f, -0.5f, -2.0f)
+    Matrix.translateM(viewMatrix, 0, 0f, 0f, -2.0f)
     // Initialize a triangle and a square
-    mShape = Pyramid()
+    mShape = Star()
   }
 
   override fun onDrawFrame(unused: GL10) {
     // Redraw background color
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
     GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
+//    TODO : Matrix.rotateM(projMatrix, 0, 0.2f, 1f, 1f, 1f)
     mShape.draw(modelMatrix, viewMatrix, projMatrix)
   }
 

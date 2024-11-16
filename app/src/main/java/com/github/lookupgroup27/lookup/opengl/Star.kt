@@ -8,7 +8,7 @@ import java.nio.ShortBuffer
 
 const val COORDS_PER_VERTEX = 3
 
-class Pyramid {
+class Star {
 
   // Vertex shader source code
   protected val vertexShaderCode =
@@ -44,25 +44,19 @@ class Pyramid {
   // number of coordinates per vertex in this array
   var coords =
       floatArrayOf(
-          -0.5f,
-          0.0f,
-          0.5f,
-          -0.5f,
-          0.0f,
-          -0.5f,
-          0.5f,
-          0.0f,
-          -0.5f,
-          0.5f,
-          0.0f,
-          0.5f,
-          0.0f,
-          0.8f,
-          0.0f)
+          -0.1f, -0.1f, 0.1f,
+          -0.1f, -0.1f, -0.1f,
+          0.1f, -0.1f, -0.1f,
+          0.1f, -0.1f, 0.1f,
+          0.0f, 0.1f, 0.0f)
 
   var colorVertex =
       floatArrayOf(
-          1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 0.0f)
 
   // Indices in which openGL will draw each triangle vertex by vertex
   // e.g. It will first draw the triangle with vertices 0, 3, 5
