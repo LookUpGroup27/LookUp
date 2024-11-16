@@ -8,6 +8,11 @@ import javax.microedition.khronos.opengles.GL10
 class MyGLRenderer : GLSurfaceView.Renderer {
 
   private lateinit var mShape: Star
+  private lateinit var mShape2: Star
+  private lateinit var mShapeX: Star
+  private lateinit var mShapeY: Star
+  private lateinit var mShapeZ: Star
+
   val camera = Camera()
 
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -15,7 +20,12 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
     GLES20.glEnable(GLES20.GL_DEPTH_TEST)
-    mShape = Star()
+    mShape = Star(0.0f, 0f, -1f, floatArrayOf(1.0f, 1.0f, 1.0f))
+    mShape2 = Star(0.24f, 0f, -0.97f, floatArrayOf(1.0f, 1.0f, 1.0f))
+
+    mShapeX = Star(1f, 0f, 0f, color = floatArrayOf(1.0f, 0.0f, 0.0f))
+    mShapeY = Star(0f, 1f, 0f, color = floatArrayOf(0.0f, 1.0f, 0.0f))
+    mShapeZ = Star(0f, 0f, 1f, color = floatArrayOf(0.0f, 0.0f, 1.0f))
   }
 
   override fun onDrawFrame(unused: GL10) {
@@ -23,6 +33,13 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
     GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
     mShape.draw(camera)
+    mShape2.draw(camera)
+
+    mShapeX.draw(camera)
+    mShapeY.draw(camera)
+    mShapeZ.draw(camera)
+
+//    camera.turnLeft()
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
