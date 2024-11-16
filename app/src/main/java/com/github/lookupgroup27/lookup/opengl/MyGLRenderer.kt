@@ -2,29 +2,19 @@ package com.github.lookupgroup27.lookup.opengl
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.opengl.Matrix
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class MyGLRenderer : GLSurfaceView.Renderer {
 
   private lateinit var mShape: Star
-
-  private val modelMatrix = FloatArray(16)
-  private val viewMatrix = FloatArray(16)
-  private val projMatrix = FloatArray(16)
+  val camera = Camera()
 
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
     GLES20.glEnable(GLES20.GL_DEPTH_TEST)
-    // Initialize matrix to identity
-    Matrix.setIdentityM(modelMatrix, 0)
-    Matrix.setIdentityM(viewMatrix, 0)
-    Matrix.setIdentityM(projMatrix, 0)
-    Matrix.translateM(viewMatrix, 0, 0f, 0f, -2.0f)
-    // Initialize a triangle and a square
     mShape = Star()
   }
 
@@ -32,8 +22,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     // Redraw background color
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
     GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
-//    TODO : Matrix.rotateM(projMatrix, 0, 0.2f, 1f, 1f, 1f)
-    mShape.draw(modelMatrix, viewMatrix, projMatrix)
+    mShape.draw(camera)
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -44,7 +33,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip
     // planes
     // It helps projects in correct aspect ratio the objects in the scene
-    Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
+    camera.updateProjectionMatrix(ratio)
   }
 }
 

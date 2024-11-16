@@ -15,5 +15,37 @@ class MyGLSurfaceView(context: Context) : GLSurfaceView(context) {
 
     // Set the Renderer for drawing on the GLSurfaceView
     setRenderer(renderer)
+
+    renderMode = RENDERMODE_WHEN_DIRTY
+  }
+
+  fun turnLeft() {
+    renderer.camera.turnLeft()
+    requestRender()
+  }
+
+  fun turnRight() {
+    renderer.camera.turnRight()
+    requestRender()
+  }
+
+  fun turnUp() {
+    renderer.camera.turnUp()
+    requestRender()
+  }
+
+  fun turnDown() {
+    renderer.camera.turnDown()
+    requestRender()
+  }
+
+  fun tiltLeft() {
+    renderer.camera.tiltLeft()
+    requestRender()
+  }
+
+  fun tiltRight() {
+    renderer.camera.tiltRight()
+    requestRender()
   }
 }
