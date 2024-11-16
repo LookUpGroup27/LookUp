@@ -5,16 +5,16 @@ import android.opengl.Matrix
 /**
  * Represents a camera for handling movement and projection in our OpenGL World.
  *
- * The camera is initialized at the origin of the world (0, 0, 0), facing
- * along the negative Z-axis. The coordinate system is defined as:
+ * The camera is initialized at the origin of the world (0, 0, 0), facing along the negative Z-axis.
+ * The coordinate system is defined as:
  *
  *     ↑ Y
  *     │
  *     │
  *   ──┼────────> X
  *
- * with the positive Y-axis pointing upward, the positive X-axis pointing to
- * the right, and the Z-axis pointing towards the viewer (into the screen).
+ * The positive Y-axis points upward, the positive X-axis points to the right, and the Z-axis points
+ * towards the viewer (into the screen).
  */
 class Camera {
 
@@ -29,9 +29,7 @@ class Camera {
     Matrix.translateM(viewMatrix, 0, 0f, 0f, 0f)
   }
 
-  /**
-   * Update the projection matrix based on the aspect ratio of the screen.
-   */
+  /** Update the projection matrix based on the aspect ratio of the screen. */
   fun updateProjectionMatrix(ratio: Float) {
     Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
   }
@@ -50,44 +48,32 @@ class Camera {
     Matrix.rotateM(modelMatrix, 0, z, 0f, 0f, 1f)
   }
 
-  /**
-   * Move the camera to the left.
-   */
+  /** Move the camera to the left. */
   fun turnLeft() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, -1f, 0f)
   }
 
-  /**
-   * Move the camera to the right.
-   */
+  /** Move the camera to the right. */
   fun turnRight() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
   }
 
-  /**
-   * Move the camera up.
-   */
+  /** Move the camera up. */
   fun turnUp() {
     Matrix.rotateM(modelMatrix, 0, 1f, -1f, 0f, 0f)
   }
 
-  /**
-   * Move the camera down.
-   */
+  /** Move the camera down. */
   fun turnDown() {
     Matrix.rotateM(modelMatrix, 0, 1f, 1f, 0f, 0f)
   }
 
-  /**
-   * Tilts the camera to the left.
-   */
+  /** Tilts the camera to the left. */
   fun tiltLeft() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, -1f)
   }
 
-  /**
-   * Tilts the camera to the right.
-   */
+  /** Tilts the camera to the right. */
   fun tiltRight() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, 1f)
   }

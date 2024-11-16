@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.map
 
-import android.opengl.GLSurfaceView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

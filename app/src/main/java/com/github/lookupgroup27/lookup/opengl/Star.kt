@@ -8,7 +8,7 @@ import java.nio.ShortBuffer
 
 const val COORDS_PER_VERTEX = 3
 
-class Star (val x: Float, val y: Float, val z: Float, color: FloatArray) {
+class Star(val x: Float, val y: Float, val z: Float, color: FloatArray) {
 
   // Vertex shader source code
   protected val vertexShaderCode =
@@ -44,19 +44,39 @@ class Star (val x: Float, val y: Float, val z: Float, color: FloatArray) {
   // number of coordinates per vertex in this array
   var coords =
       floatArrayOf(
-          -0.05f + x, -0.05f + y, 0.05f + z,
-          -0.05f + x, -0.05f + y, -0.05f + z,
-          0.05f + x, -0.05f + y, -0.05f + z,
-          0.05f+ x, -0.05f + y, 0.05f + z,
-          0.0f+ x, 0.05f + y, 0.0f + z)
+          -0.05f + x,
+          -0.05f + y,
+          0.05f + z,
+          -0.05f + x,
+          -0.05f + y,
+          -0.05f + z,
+          0.05f + x,
+          -0.05f + y,
+          -0.05f + z,
+          0.05f + x,
+          -0.05f + y,
+          0.05f + z,
+          0.0f + x,
+          0.05f + y,
+          0.0f + z)
 
   var colorVertex =
       floatArrayOf(
-        color[0], color[1], color[2],
-        color[0], color[1], color[2],
-        color[0], color[1], color[2],
-        color[0], color[1], color[2],
-        0.0f, 0.0f, 0.0f)
+          color[0],
+          color[1],
+          color[2],
+          color[0],
+          color[1],
+          color[2],
+          color[0],
+          color[1],
+          color[2],
+          color[0],
+          color[1],
+          color[2],
+          0.0f,
+          0.0f,
+          0.0f)
 
   // Indices in which openGL will draw each triangle vertex by vertex
   // e.g. It will first draw the triangle with vertices 0, 3, 5

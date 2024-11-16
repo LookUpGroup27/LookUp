@@ -39,7 +39,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     mShapeY.draw(camera)
     mShapeZ.draw(camera)
 
-//    camera.turnLeft()
+    //    camera.turnLeft()
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
