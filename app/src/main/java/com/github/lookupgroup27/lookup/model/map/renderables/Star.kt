@@ -9,7 +9,7 @@ import java.nio.ShortBuffer
 
 const val COORDS_PER_VERTEX = 3
 
-class Star(val x: Float, val y: Float, val z: Float, color: FloatArray) {
+class Star(x: Float, y: Float, z: Float, color: FloatArray) : Object() {
 
   // Vertex shader source code
   protected val vertexShaderCode =

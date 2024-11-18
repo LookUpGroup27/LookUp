@@ -6,6 +6,10 @@ import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+/**
+ * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
+ * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
+ */
 class MyGLRenderer : GLSurfaceView.Renderer {
 
   private lateinit var mShape: Star
@@ -50,24 +54,5 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     // planes
     // It helps projects in correct aspect ratio the objects in the scene
     camera.updateProjectionMatrix(ratio)
-  }
-}
-
-fun loadShader(type: Int, shaderCode: String): Int {
-  // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-  // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-  return GLES20.glCreateShader(type).also { shader ->
-
-    // add the source code to the shader and compile it
-    GLES20.glShaderSource(shader, shaderCode)
-    GLES20.glCompileShader(shader)
-    val compileStatus = IntArray(1)
-    GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
-    if (compileStatus[0] == 0) {
-      GLES20.glGetShaderInfoLog(shader)?.let { log ->
-        android.util.Log.e("ShaderError", "Error compiling shader: $log")
-      }
-      GLES20.glDeleteShader(shader)
-    }
   }
 }
