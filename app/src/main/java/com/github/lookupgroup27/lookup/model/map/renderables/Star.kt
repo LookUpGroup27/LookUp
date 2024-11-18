@@ -93,12 +93,7 @@ class Star(x: Float, y: Float, z: Float, color: FloatArray) : Object() {
         }
   }
 
-  /**
-   * Draw the star on the screen
-   *
-   * @param camera the camera to use to draw the star
-   */
-  fun draw(camera: Camera) {
+  override fun draw(camera: Camera) {
     // Add program to OpenGL ES environment
     GLES20.glUseProgram(mProgram)
 
