@@ -3,7 +3,10 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLSurfaceView
 
-class MyGLSurfaceView(context: Context, renderer: MyGLRenderer) : GLSurfaceView(context) {
+class MapSurfaceView(
+    context: Context,
+    renderer: com.github.lookupgroup27.lookup.model.map.Renderer
+) : GLSurfaceView(context) {
 
   init {
     // Create an OpenGL ES 2.0 context

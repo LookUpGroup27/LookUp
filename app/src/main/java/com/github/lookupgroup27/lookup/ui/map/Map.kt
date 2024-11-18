@@ -15,8 +15,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
-import com.github.lookupgroup27.lookup.model.map.MyGLRenderer
-import com.github.lookupgroup27.lookup.model.map.MyGLSurfaceView
+import com.github.lookupgroup27.lookup.model.map.MapSurfaceView
+import com.github.lookupgroup27.lookup.model.map.Renderer
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -25,7 +25,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 @Composable
 fun MapScreen(navigationActions: NavigationActions) {
   // Retain GLRenderer across recompositions using a ViewModel or state holder
-  val glRenderer = remember { MyGLRenderer() }
+  val glRenderer = remember { Renderer() }
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
@@ -35,7 +35,7 @@ fun MapScreen(navigationActions: NavigationActions) {
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen")) {
           AndroidView(
-              factory = { context -> MyGLSurfaceView(context, glRenderer) },
+              factory = { context -> MapSurfaceView(context, glRenderer) },
               modifier = Modifier.fillMaxSize().testTag("glSurfaceView"))
           MovingBox(Alignment.CenterStart, "left") { glRenderer.camera.turnLeft() }
           MovingBox(Alignment.CenterEnd, "right") { glRenderer.camera.turnRight() }

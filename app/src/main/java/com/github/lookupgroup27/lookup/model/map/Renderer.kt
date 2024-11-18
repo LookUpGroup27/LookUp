@@ -11,7 +11,7 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class MyGLRenderer : GLSurfaceView.Renderer {
+class Renderer : GLSurfaceView.Renderer {
 
   private lateinit var shapes: List<Object>
 
