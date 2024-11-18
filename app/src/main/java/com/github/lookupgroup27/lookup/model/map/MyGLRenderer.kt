@@ -1,7 +1,8 @@
-package com.github.lookupgroup27.lookup.opengl
+package com.github.lookupgroup27.lookup.model.map
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -38,8 +39,6 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     mShapeX.draw(camera)
     mShapeY.draw(camera)
     mShapeZ.draw(camera)
-
-    //    camera.turnLeft()
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {

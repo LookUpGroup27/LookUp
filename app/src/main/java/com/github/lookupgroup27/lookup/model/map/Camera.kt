@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.opengl
+package com.github.lookupgroup27.lookup.model.map
 
 import android.opengl.Matrix
 

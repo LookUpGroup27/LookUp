@@ -1,6 +1,7 @@
-package com.github.lookupgroup27.lookup.opengl
+package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.opengl.GLES20
+import com.github.lookupgroup27.lookup.model.map.Camera
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

@@ -15,8 +15,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
-import com.github.lookupgroup27.lookup.opengl.MyGLRenderer
-import com.github.lookupgroup27.lookup.opengl.MyGLSurfaceView
+import com.github.lookupgroup27.lookup.model.map.MyGLRenderer
+import com.github.lookupgroup27.lookup.model.map.MyGLSurfaceView
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
