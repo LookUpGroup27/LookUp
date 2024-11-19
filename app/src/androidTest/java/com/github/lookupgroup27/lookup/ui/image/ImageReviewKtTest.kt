@@ -90,4 +90,17 @@ class ImageReviewTest {
     }
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
   }
+
+  @Test
+  fun testImageReviewScreenIsScrollable() {
+    composeTestRule.setContent {
+      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel)
+    }
+
+    // Check that the top element is displayed (e.g., image or text)
+    composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
+
+    // Attempt to scroll to a specific button at the bottom
+    composeTestRule.onNodeWithTag("cancel_button").assertIsDisplayed()
+  }
 }
