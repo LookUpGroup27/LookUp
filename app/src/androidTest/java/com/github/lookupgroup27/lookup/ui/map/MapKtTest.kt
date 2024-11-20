@@ -13,26 +13,25 @@ class MapKtTest {
 
   private val mockNavigationActions: NavigationActions = mock()
 
-  @Test
-  fun mapScreen_displaysBackgroundImage() {
+  @Before
+  fun setUp() {
     composeTestRule.setContent { MapScreen(navigationActions = mockNavigationActions) }
+  }
 
+  @Test
+  fun mapScreen_displays_glSurfaceView() {
     // Verify the background image is displayed
-    composeTestRule.onNodeWithTag("map_background").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("glSurfaceView").assertIsDisplayed()
   }
 
   @Test
   fun menuScreen_displaysBottomNavigationMenu() {
-    composeTestRule.setContent { MapScreen(navigationActions = mockNavigationActions) }
-
     // Check that the bottom navigation menu is displayed
     composeTestRule.onNodeWithTag("bottomNavigationMenu").assertIsDisplayed()
   }
 
   @Test
   fun menuScreen_bottomNavigation_clickMenuTab_navigatesToMenu() {
-    composeTestRule.setContent { MapScreen(navigationActions = mockNavigationActions) }
-
     // Click on the Menu tab
     composeTestRule.onNodeWithTag("Menu").performClick()
     // Find the correct TopLevelDestination for "Map"
@@ -44,8 +43,6 @@ class MapKtTest {
 
   @Test
   fun mapScreen_bottomNavigation_clickMapTab_doesNotNavigateToMap() {
-    composeTestRule.setContent { MapScreen(navigationActions = mockNavigationActions) }
-
     // Click on the Map tab
     composeTestRule.onNodeWithTag("Map").performClick()
 
