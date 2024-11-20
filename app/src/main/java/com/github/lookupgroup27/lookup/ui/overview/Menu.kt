@@ -56,7 +56,7 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier =
                   Modifier.padding(16.dp).align(Alignment.TopEnd).testTag("profile_button")) {
                 Icon(
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(56.dp),
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Profile",
                     tint = Color.White)
