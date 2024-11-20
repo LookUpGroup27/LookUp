@@ -45,7 +45,6 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp),
               contentScale = ContentScale.Crop)
 
-          // Profile button at the top right
           IconButton(
               onClick = {
                 if (isLoggedIn) {
@@ -57,7 +56,7 @@ fun MenuScreen(navigationActions: NavigationActions) {
               modifier =
                   Modifier.padding(16.dp).align(Alignment.TopEnd).testTag("profile_button")) {
                 Icon(
-                    modifier = Modifier.size(1000.dp),
+                    modifier = Modifier.size(200.dp),
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Profile",
                     tint = Color.White)
