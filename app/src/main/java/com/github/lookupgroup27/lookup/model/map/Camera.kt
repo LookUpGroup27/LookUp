@@ -50,31 +50,31 @@ class Camera {
 
   /** Move the camera to the left. */
   fun turnLeft() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, -1f, 0f)
+    Matrix.rotateM(viewMatrix, 0, 1f, 0f, -1f, 0f)
   }
 
   /** Move the camera to the right. */
   fun turnRight() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
+    Matrix.rotateM(viewMatrix, 0, 1f, 0f, 1f, 0f)
   }
 
   /** Move the camera up. */
   fun turnUp() {
-    Matrix.rotateM(modelMatrix, 0, 1f, -1f, 0f, 0f)
+    Matrix.rotateM(viewMatrix, 0, 1f, -1f, 0f, 0f)
   }
 
   /** Move the camera down. */
   fun turnDown() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 1f, 0f, 0f)
+    Matrix.rotateM(viewMatrix, 0, 1f, 1f, 0f, 0f)
   }
 
   /** Tilts the camera to the left. */
   fun tiltLeft() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, -1f)
+    Matrix.rotateM(viewMatrix, 0, 1f, 0f, 0f, -1f)
   }
 
   /** Tilts the camera to the right. */
   fun tiltRight() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, 1f)
+    Matrix.rotateM(viewMatrix, 0, 1f, 0f, 0f, 1f)
   }
 }
