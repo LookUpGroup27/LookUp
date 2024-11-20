@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.model.map.skybox
 import android.opengl.GLES20
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
-import com.github.lookupgroup27.lookup.model.map.skybox.buffers.TextureCoordBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 
@@ -23,7 +22,6 @@ class SkyBox(
   private val vertexBuffer = VertexBuffer()
   private val colorBuffer = ColorBuffer()
   private val indexBuffer = IndexBuffer()
-  private val textureCoordBuffer = TextureCoordBuffer()
 
   // Shader program for rendering the SkyBox
   private lateinit var shaderProgram: ShaderProgram
