@@ -1,3 +1,5 @@
+package com.github.lookupgroup27.lookup.util.opengl
+
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
