@@ -10,16 +10,16 @@ import android.util.Log
 /**
  * Represents a camera for handling movement and projection in our OpenGL World.
  *
- * The camera follows the phone orientation.
- * The camera when looking straight in the north direction is projected as follows:
+ * The camera follows the phone orientation. The camera when looking straight in the north direction
+ * is projected as follows:
  *
  *     ↑ Z
  *     │
  *     │
  *   ──┼────────> X
  *
- * The positive Z-axis points upward, the positive X-axis points to the right, and
- * the positive Y-axis points into the screen.
+ * The positive Z-axis points upward, the positive X-axis points to the right, and the positive
+ * Y-axis points into the screen.
  */
 class Camera : SensorEventListener {
 
@@ -60,11 +60,9 @@ class Camera : SensorEventListener {
             // TODO : Provide a warning about unreliable sensor data
             Log.w("SensorAccuracy", "Rotation vector sensor is unreliable")
           }
-
           SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {
             Log.i("SensorAccuracy", "Rotation vector sensor accuracy is low")
           }
-
           SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {
             Log.d("SensorAccuracy", "Rotation vector sensor accuracy is high")
           }
