@@ -14,7 +14,6 @@ import javax.microedition.khronos.opengles.GL10
  */
 class Renderer : GLSurfaceView.Renderer {
 
-  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
 
   /** The camera used to draw the shapes on the screen. */
@@ -39,21 +38,10 @@ class Renderer : GLSurfaceView.Renderer {
     Matrix.setIdentityM(viewMatrix, 0)
     Matrix.setIdentityM(projectionMatrix, 0)
 
-    // Create the shapes (Make sure you always create the shapes after the OpenGL context is
-    // created)
-    /*shapes =
-    listOf(
-        Star(0.0f, 0f, -1f, floatArrayOf(1.0f, 1.0f, 1.0f)),
-        Star(0.24f, 0f, -0.97f, floatArrayOf(1.0f, 1.0f, 1.0f)),
-        Star(1f, 0f, 0f, color = floatArrayOf(1.0f, 0.0f, 0.0f)),
-        Star(0f, 1f, 0f, color = floatArrayOf(0.0f, 1.0f, 0.0f)),
-        Star(0f, 0f, 1f, color = floatArrayOf(0.0f, 0.0f, 1.0f))) */
   }
 
   override fun onDrawFrame(unused: GL10) {
-    /*// Redraw background color
-    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-    GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)*/
+
 
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
@@ -64,8 +52,6 @@ class Renderer : GLSurfaceView.Renderer {
     // Render the SkyBox
     skyBox.render(mvpMatrix)
 
-    // Draw the shapes
-    // for (shape in shapes) shape.draw(camera)
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -73,9 +59,16 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height)
 
     val ratio: Float = width.toFloat() / height.toFloat()
-    // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip
-    // planes
-    // It helps projects in correct aspect ratio the objects in the scene
-    camera.updateProjectionMatrix(ratio)
+
+    camera.updateProjectionMatrix(ratio,projectionMatrix)
+
+    // Update the view matrix
+    Matrix.setLookAtM(
+      viewMatrix,
+      0,
+      0f, 0f, 3f, // Eye position
+      0f, 0f, 0f, // Center position
+      0f, 1f, 0f  // Up vector
+    )
   }
 }
