@@ -122,9 +122,7 @@ class ImagePreviewDialogTest {
     postsViewModel.updatePost(testPost)
 
     // Verify that updatePost was called in the postsViewModel
-    verify(postsRepository)
-        .updatePost(
-            eq(testPost), any(), any())
+    verify(postsRepository).updatePost(eq(testPost), any(), any())
   }
 
   @Test
