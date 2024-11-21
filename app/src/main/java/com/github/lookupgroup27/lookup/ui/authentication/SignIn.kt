@@ -2,7 +2,6 @@ package com.github.lookupgroup27.lookup.ui.authentication
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -60,25 +60,21 @@ fun SignInScreen(navigationActions: NavigationActions) {
   val launcher =
       rememberFirebaseAuthLauncher(
           onAuthComplete = { result ->
-            Log.d("SignInScreen", "User signed in: ${result.user?.displayName}")
             Toast.makeText(context, "Login successful!", Toast.LENGTH_LONG).show()
             navigationActions.navigateTo(Screen.PROFILE)
           },
-          onAuthError = {
-            Log.e("SignInScreen", "Failed to sign in: ${it.statusCode}")
-            Toast.makeText(context, "Login Failed!", Toast.LENGTH_LONG).show()
-          })
+          onAuthError = { Toast.makeText(context, "Login Failed!", Toast.LENGTH_LONG).show() })
   val token = stringResource(R.string.default_web_client_id)
 
   Scaffold(
-      modifier = Modifier.fillMaxSize().testTag("auth_screen"),
+      modifier = Modifier.fillMaxSize(),
       containerColor = Color.Black,
       topBar = {
         TopAppBar(
             title = {},
             navigationIcon = {
               IconButton(
-                  onClick = { navigationActions.goBack() },
+                  onClick = { navigationActions.navigateTo(Screen.MENU) },
                   modifier = Modifier.testTag("go_back_button_signin")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -93,8 +89,8 @@ fun SignInScreen(navigationActions: NavigationActions) {
             modifier =
                 Modifier.fillMaxSize()
                     .padding(padding)
-                    .verticalScroll(
-                        rememberScrollState()), // Enable vertical scrolling in all orientations
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
               Spacer(modifier = Modifier.height(16.dp))
@@ -102,22 +98,24 @@ fun SignInScreen(navigationActions: NavigationActions) {
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
-                  modifier = Modifier.size(250.dp))
+                  modifier = Modifier.size(150.dp))
 
               Spacer(modifier = Modifier.height(16.dp))
 
               Text(
-                  modifier = Modifier.testTag("loginTitle"),
                   text = "Welcome to the Cosmos",
                   style =
                       MaterialTheme.typography.headlineMedium.copy(
-                          fontSize = 42.sp, lineHeight = 50.sp, letterSpacing = 1.5.sp),
-                  fontWeight = FontWeight.SemiBold,
-                  textAlign = TextAlign.Center,
-                  color = Color(0xFF8A9BB7))
+                          fontSize = 42.sp,
+                          lineHeight = 50.sp,
+                          letterSpacing = 1.5.sp,
+                          fontWeight = FontWeight.SemiBold,
+                          color = Color.White),
+                  textAlign = TextAlign.Center)
 
               Spacer(modifier = Modifier.height(48.dp))
 
+              // Google Sign-In Button (Unchanged)
               GoogleSignInButton(
                   onSignInClick = {
                     val gso =
@@ -128,6 +126,39 @@ fun SignInScreen(navigationActions: NavigationActions) {
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
                     launcher.launch(googleSignInClient.signInIntent)
                   })
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Register Button
+              Button(
+                  onClick = { navigationActions.navigateTo(Screen.REGISTER) },
+                  modifier = Modifier.fillMaxWidth(),
+                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
+                    Text("Register", color = Color.White)
+                  }
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Login Button
+              Button(
+                  onClick = { navigationActions.navigateTo(Screen.LOGIN) },
+                  modifier = Modifier.fillMaxWidth(),
+                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
+                    Text("Login", color = Color.White)
+                  }
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Forgot Password Button
+              TextButton(
+                  onClick = { navigationActions.navigateTo(Screen.PASSWORDRESET) },
+                  modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Text(
+                        text = "Forgot Password?",
+                        style =
+                            MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.primary))
+                  }
             }
       })
 }
