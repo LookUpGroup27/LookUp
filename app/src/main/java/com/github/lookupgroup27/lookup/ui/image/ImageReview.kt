@@ -3,6 +3,8 @@ package com.github.lookupgroup27.lookup.ui.image
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -44,10 +46,18 @@ fun ImageReviewScreen(
 
   val uploadStatus by imageViewModel.uploadStatus.collectAsState()
 
+  // Scroll state
+  val scrollState = rememberScrollState()
+
   Column(
-      modifier = Modifier.fillMaxSize().padding(16.dp).testTag("image_review"),
+      modifier =
+          Modifier.fillMaxSize()
+              .padding(16.dp)
+              .verticalScroll(scrollState) // Make the column scrollable
+              .testTag("image_review"),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center) {
+      verticalArrangement = Arrangement.Top // Adjust the arrangement to avoid centering all items
+      ) {
         // Display the image if available
         if (imageFile != null) {
           Image(
@@ -62,7 +72,6 @@ fun ImageReviewScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Save Image Button
-
         Button(
             onClick = { imageFile?.let { imageViewModel.uploadImage(it) } },
             modifier = Modifier.fillMaxWidth().testTag("confirm_button")) {

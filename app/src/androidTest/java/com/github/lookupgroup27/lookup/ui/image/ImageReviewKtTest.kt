@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -89,5 +90,19 @@ class ImageReviewTest {
       ImageReviewScreen(navigationActions = mockNavigationActions, imageFile = null, postsViewModel)
     }
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
+  }
+
+  @Test
+  fun testImageReviewScreenIsScrollable() {
+    composeTestRule.setContent {
+      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel)
+    }
+
+    // Check that the top element is displayed (e.g., image or text)
+    composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
+
+    // Attempt to scroll to a specific button at the bottom
+    composeTestRule.onNodeWithTag("cancel_button").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirm_button").performScrollTo().assertIsDisplayed()
   }
 }
