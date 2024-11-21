@@ -67,7 +67,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
   val token = stringResource(R.string.default_web_client_id)
 
   Scaffold(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxSize().testTag("auth_screen"),
       containerColor = Color.Black,
       topBar = {
         TopAppBar(
@@ -87,10 +87,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
       content = { padding ->
         Column(
             modifier =
-                Modifier.fillMaxSize()
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
               Spacer(modifier = Modifier.height(16.dp))
@@ -103,6 +100,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
               Spacer(modifier = Modifier.height(16.dp))
 
               Text(
+                  modifier = Modifier.testTag("loginTitle"),
                   text = "Welcome to the Cosmos",
                   style =
                       MaterialTheme.typography.headlineMedium.copy(
