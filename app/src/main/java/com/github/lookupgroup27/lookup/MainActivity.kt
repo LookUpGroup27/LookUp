@@ -22,12 +22,16 @@ import com.github.lookupgroup27.lookup.ui.feed.FeedScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
+import com.github.lookupgroup27.lookup.ui.login.LoginScreen
+import com.github.lookupgroup27.lookup.ui.login.LoginViewModel
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetViewModel
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
@@ -37,6 +41,8 @@ import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
+import com.github.lookupgroup27.lookup.ui.register.RegisterScreen
+import com.github.lookupgroup27.lookup.ui.register.RegisterViewModel
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 import java.io.File
@@ -66,6 +72,10 @@ fun LookUpApp() {
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
+  val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
+  val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
+  val passwordResetViewModel: PasswordResetViewModel =
+      viewModel(factory = PasswordResetViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -73,6 +83,11 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
       composable(Screen.MAP) { MapScreen(navigationActions) }
@@ -126,6 +141,18 @@ fun LookUpApp() {
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
+    }
+
+    navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
+      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.AUTH) { SignInScreen(navigationActions) }
+    }
+
+    navigation(startDestination = Screen.PASSWORDRESET, route = Route.PASSWORDRESET) {
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
+      composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
   }
 }
