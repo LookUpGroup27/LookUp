@@ -52,14 +52,14 @@ class SkyBox(
             .trimIndent()
 
     val fragmentShaderCode =
-      """
+        """
         precision mediump float;
         varying vec4 vInterpolatedColor;
         void main() {
             gl_FragColor = vInterpolatedColor;
         }
       """
-          .trimIndent()
+            .trimIndent()
 
     shaderProgram = ShaderProgram(vertexShaderCode, fragmentShaderCode)
   }
@@ -95,15 +95,13 @@ class SkyBox(
 
       for (i in 0 until stepsPerBand) {
         vertexBuffer.addVertex(cosAngles[i] * sinPhi, bandPos, sinAngles[i] * sinPhi)
-        //colorBuffer.addColor(color)
+        // colorBuffer.addColor(color)
         val red = ((bandPos + 1) * 127.5).toInt().coerceIn(0, 255)
         val green = (Math.abs(sinAngles[i]) * 255).toInt()
         val blue = (Math.abs(cosAngles[i]) * 255).toInt()
         colorBuffer.addColor(255, red, green, blue) // ARGB
 
-
         Log.d("SkyBox", "Vertex: (${cosAngles[i] * sinPhi}, $bandPos, ${sinAngles[i] * sinPhi})")
-
       }
 
       bandPos -= bandStep

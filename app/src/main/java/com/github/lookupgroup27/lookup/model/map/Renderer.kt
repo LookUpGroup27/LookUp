@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.model.map
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -37,11 +36,9 @@ class Renderer : GLSurfaceView.Renderer {
     // Initialize the camera's matrices
     Matrix.setIdentityM(viewMatrix, 0)
     Matrix.setIdentityM(projectionMatrix, 0)
-
   }
 
   override fun onDrawFrame(unused: GL10) {
-
 
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
@@ -51,7 +48,6 @@ class Renderer : GLSurfaceView.Renderer {
 
     // Render the SkyBox
     skyBox.render(mvpMatrix)
-
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -60,15 +56,21 @@ class Renderer : GLSurfaceView.Renderer {
 
     val ratio: Float = width.toFloat() / height.toFloat()
 
-    camera.updateProjectionMatrix(ratio,projectionMatrix)
+    camera.updateProjectionMatrix(ratio, projectionMatrix)
 
     // Update the view matrix
     Matrix.setLookAtM(
-      viewMatrix,
-      0,
-      0f, 0f, 3f, // Eye position
-      0f, 0f, 0f, // Center position
-      0f, 1f, 0f  // Up vector
-    )
+        viewMatrix,
+        0,
+        0f,
+        0f,
+        3f, // Eye position
+        0f,
+        0f,
+        0f, // Center position
+        0f,
+        1f,
+        0f // Up vector
+        )
   }
 }
