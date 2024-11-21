@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.model.map.skybox
 
 import android.opengl.GLES20
+import android.util.Log
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
@@ -51,14 +52,14 @@ class SkyBox(
             .trimIndent()
 
     val fragmentShaderCode =
-        """
-            precision mediump float;
-            varying vec4 vInterpolatedColor;
-            void main() {
-                gl_FragColor = vInterpolatedColor;
-            }
-        """
-            .trimIndent()
+      """
+        precision mediump float;
+        varying vec4 vInterpolatedColor;
+        void main() {
+            gl_FragColor = vInterpolatedColor;
+        }
+      """
+          .trimIndent()
 
     shaderProgram = ShaderProgram(vertexShaderCode, fragmentShaderCode)
   }
@@ -94,7 +95,15 @@ class SkyBox(
 
       for (i in 0 until stepsPerBand) {
         vertexBuffer.addVertex(cosAngles[i] * sinPhi, bandPos, sinAngles[i] * sinPhi)
-        colorBuffer.addColor(color)
+        //colorBuffer.addColor(color)
+        val red = ((bandPos + 1) * 127.5).toInt().coerceIn(0, 255)
+        val green = (Math.abs(sinAngles[i]) * 255).toInt()
+        val blue = (Math.abs(cosAngles[i]) * 255).toInt()
+        colorBuffer.addColor(255, red, green, blue) // ARGB
+
+
+        Log.d("SkyBox", "Vertex: (${cosAngles[i] * sinPhi}, $bandPos, ${sinAngles[i] * sinPhi})")
+
       }
 
       bandPos -= bandStep
@@ -135,28 +144,6 @@ class SkyBox(
     }
   }
 
-  /*/**
-   * Renders the skybox using OpenGL.
-   */
-  fun render() {
-      GLES20.glEnable(GLES20.GL_DEPTH_TEST)
-      GLES20.glCullFace(GLES20.GL_BACK)
-
-      vertexBuffer.bind(0) // Assuming 0 is the shader's position attribute location
-      colorBuffer.bind()
-      indexBuffer.bind()
-
-      indexBuffer.draw(GLES20.GL_TRIANGLES)
-
-      vertexBuffer.unbind(0)
-      colorBuffer.unbind()
-  }
-
-  companion object {
-      private const val DEFAULT_NUM_BANDS = 8
-      private const val DEFAULT_STEPS_PER_BAND = 10
-  }
-  */
   /**
    * Renders the skybox using the shader program.
    *
@@ -174,7 +161,7 @@ class SkyBox(
     vertexBuffer.bind(positionHandle)
 
     val colorHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vColor")
-    colorBuffer.bind()
+    colorBuffer.bind(colorHandle)
 
     // Draw the elements
     indexBuffer.bind()
@@ -186,7 +173,7 @@ class SkyBox(
   }
 
   companion object {
-    private const val DEFAULT_NUM_BANDS = 8
-    private const val DEFAULT_STEPS_PER_BAND = 10
+    private const val DEFAULT_NUM_BANDS = 20
+    private const val DEFAULT_STEPS_PER_BAND = 28
   }
 }
