@@ -26,11 +26,12 @@ class Camera {
     Matrix.setIdentityM(modelMatrix, 0)
     Matrix.setIdentityM(viewMatrix, 0)
     Matrix.setIdentityM(projMatrix, 0)
-    Matrix.translateM(viewMatrix, 0, 0f, 0f, 0f)
+    //Matrix.translateM(viewMatrix, 0, 0f, 0f, 0f)
+
   }
 
   /** Update the projection matrix based on the aspect ratio of the screen. */
-  fun updateProjectionMatrix(ratio: Float) {
+  fun updateProjectionMatrix(ratio: Float,projMatrix:FloatArray) {
     Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
   }
 
