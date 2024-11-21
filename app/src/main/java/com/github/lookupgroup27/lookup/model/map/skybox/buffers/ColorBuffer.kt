@@ -56,18 +56,19 @@ class ColorBuffer {
   }
 
   /** Binds the color buffer to the OpenGL context and enables it for rendering. */
-  fun bind() {
+  fun bind(attributeLocation: Int) {
     colorBuffer?.position(0)
 
     // Enable the color attribute and set the buffer
-    GLES20.glEnableVertexAttribArray(COLOR_ATTRIBUTE_LOCATION)
+    GLES20.glEnableVertexAttribArray(attributeLocation)
     GLES20.glVertexAttribPointer(
-        COLOR_ATTRIBUTE_LOCATION,
-        COLORS_PER_VERTEX,
-        GLES20.GL_UNSIGNED_BYTE,
-        true, // Normalize the values to [0, 1]
-        COLORS_PER_VERTEX * Int.SIZE_BYTES,
-        colorBuffer)
+      attributeLocation,
+      COLORS_PER_VERTEX,
+      GLES20.GL_UNSIGNED_BYTE,
+      true, // Normalize the values to [0, 1]
+      COLORS_PER_VERTEX * Int.SIZE_BYTES,
+      colorBuffer
+    )
   }
 
   /** Unbinds the color buffer, disabling the color attribute location. */
