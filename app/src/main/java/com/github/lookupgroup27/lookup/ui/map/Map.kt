@@ -5,18 +5,13 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -46,7 +41,8 @@ fun MapScreen(navigationActions: NavigationActions) {
     // Register the rotation sensor to control the camera orientation
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val orientation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-    sensorManager.registerListener(glRenderer.camera, orientation, SensorManager.SENSOR_DELAY_NORMAL)
+    sensorManager.registerListener(
+        glRenderer.camera, orientation, SensorManager.SENSOR_DELAY_NORMAL)
 
     onDispose {
       sensorManager.unregisterListener(glRenderer.camera)
@@ -65,21 +61,8 @@ fun MapScreen(navigationActions: NavigationActions) {
           AndroidView(
               factory = { context -> MapSurfaceView(context, glRenderer) },
               modifier = Modifier.fillMaxSize().testTag("glSurfaceView"))
-          MovingBox(Alignment.CenterStart, "left") { glRenderer.camera.turnLeft() }
-          MovingBox(Alignment.CenterEnd, "right") { glRenderer.camera.turnRight() }
-          MovingBox(Alignment.TopCenter, "up") { glRenderer.camera.turnUp() }
-          MovingBox(Alignment.BottomCenter, "down") { glRenderer.camera.turnDown() }
-          MovingBox(Alignment.TopStart, "tilt left") { glRenderer.camera.tiltLeft() }
-          MovingBox(Alignment.TopEnd, "tilt right") { glRenderer.camera.tiltRight() }
         }
       }
-}
-
-@Composable
-fun MovingBox(alignment: Alignment, text: String, onClick: () -> Unit) {
-  Box(modifier = Modifier.fillMaxSize(), contentAlignment = alignment) {
-    Button(onClick = onClick) { Text(text) }
-  }
 }
 
 @Preview
