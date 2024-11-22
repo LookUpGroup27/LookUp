@@ -35,6 +35,11 @@ class Camera {
     Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
   }
 
+  /** Recalculates the view matrix based on the current model matrix. */
+  private fun updateViewMatrix() {
+    Matrix.multiplyMM(viewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+  }
+
   /**
    * Set the camera's rotation.
    *
@@ -52,30 +57,36 @@ class Camera {
   /** Move the camera to the left. */
   fun turnLeft() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, -1f, 0f)
+    updateViewMatrix()
   }
 
   /** Move the camera to the right. */
   fun turnRight() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
+    updateViewMatrix()
   }
 
   /** Move the camera up. */
   fun turnUp() {
     Matrix.rotateM(modelMatrix, 0, 1f, -1f, 0f, 0f)
+    updateViewMatrix()
   }
 
   /** Move the camera down. */
   fun turnDown() {
     Matrix.rotateM(modelMatrix, 0, 1f, 1f, 0f, 0f)
+    updateViewMatrix()
   }
 
   /** Tilts the camera to the left. */
   fun tiltLeft() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, -1f)
+    updateViewMatrix()
   }
 
   /** Tilts the camera to the right. */
   fun tiltRight() {
     Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, 1f)
+    updateViewMatrix()
   }
 }
