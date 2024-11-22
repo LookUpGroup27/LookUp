@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -89,22 +90,25 @@ class CollectionScreenTest {
   }
 
   @Test
-  fun goBackButton_callsGoBack() {
-    var backButtonClicked = false
+  fun goBackButton_navigatesToProfile() {
+    var navigatedToProfile = false
     val mockNavigationActions =
         object :
             NavigationActions(
                 navController = NavHostController(ApplicationProvider.getApplicationContext())) {
-          override fun goBack() {
-            backButtonClicked = true
+          override fun navigateTo(screen: String) {
+            if (screen == Screen.PROFILE) {
+              navigatedToProfile = true
+            }
           }
         }
 
     composeTestRule.setContent {
       CollectionScreen(navigationActions = mockNavigationActions, viewModel = createMockViewModel())
     }
+
     composeTestRule.onNodeWithTag("go_back_button_collection").performClick()
-    assertTrue(backButtonClicked)
+    assertTrue(navigatedToProfile)
   }
 
   @Test

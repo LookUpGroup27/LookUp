@@ -66,8 +66,18 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
         }
   }
 
-  override fun deletePost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-    TODO("Not yet implemented")
+  override fun deletePost(postUid: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    collection
+        .document(postUid)
+        .delete()
+        .addOnSuccessListener {
+          Log.d(tag, "Post deleted successfully")
+          onSuccess()
+        }
+        .addOnFailureListener {
+          Log.e(tag, "Error deleting post", it)
+          onFailure(it)
+        }
   }
 
   override fun updatePost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {

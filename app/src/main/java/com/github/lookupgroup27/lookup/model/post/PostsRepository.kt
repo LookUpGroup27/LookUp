@@ -9,7 +9,7 @@ interface PostsRepository {
 
   fun addPost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
-  fun deletePost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+  fun deletePost(post: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
   fun updatePost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 }

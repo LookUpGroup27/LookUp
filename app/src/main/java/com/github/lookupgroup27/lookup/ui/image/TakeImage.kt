@@ -32,6 +32,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -117,7 +118,7 @@ fun CameraCapture(
                 object : ImageCapture.OnImageSavedCallback {
                   override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.encode(photoFile.absolutePath) // Get URI of the saved image
-                    navigationActions.navigateToImageReview(savedUri)
+                    navigationActions.navigateToWithImage(savedUri, Route.IMAGE_REVIEW)
                   }
 
                   override fun onError(exc: ImageCaptureException) {

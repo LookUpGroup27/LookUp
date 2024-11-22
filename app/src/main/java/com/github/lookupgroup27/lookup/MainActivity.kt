@@ -21,6 +21,8 @@ import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.feed.FeedScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
+import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
+import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -66,6 +68,7 @@ fun LookUpApp() {
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
+  val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -107,22 +110,35 @@ fun LookUpApp() {
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
+      composable(
+          route = "${Route.EDIT_IMAGE}/{imageUrl}",
+          arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })) {
+              backStackEntry ->
+            val imageUrl = backStackEntry.arguments?.getString("imageUrl")
+            imageUrl?.let {
+              EditImageScreen(
+                  imageUrl = it,
+                  navigationActions = navigationActions,
+                  collectionViewModel = collectionViewModel,
+                  editImageViewModel = editImageViewModel,
+                  postsViewModel = postsViewModel)
+            }
+          }
     }
 
     navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
       composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
+      composable(
+          route = "${Route.IMAGE_REVIEW}/{imageFile}",
+          arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) {
+              backStackEntry ->
+            val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+            ImageReviewScreen(
+                navigationActions = navigationActions,
+                imageFile = imageFile,
+                postsViewModel = postsViewModel)
+          }
     }
-
-    composable(
-        route = "${Route.IMAGE_REVIEW}/{imageFile}",
-        arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) { backStackEntry
-          ->
-          val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
-          ImageReviewScreen(
-              navigationActions = navigationActions,
-              imageFile = imageFile,
-              postsViewModel = postsViewModel)
-        }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
