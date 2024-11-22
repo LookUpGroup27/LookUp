@@ -1,4 +1,3 @@
 package com.github.lookupgroup27.lookup.model.register
 
-class RegisterState {
-}
+data class RegisterState(val email: String = "", val password: String = "")
