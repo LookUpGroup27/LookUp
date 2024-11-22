@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.label
+package com.github.lookupgroup27.lookup.ui.renderables
 
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
