@@ -47,13 +47,13 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
 
     GLES20.glDepthMask(false) // Disable depth writing
 
-    
+
     // Bind the texture and render the SkyBox
-    textureManager.bindTexture(skyBoxTextureHandle) 
-      
+    textureManager.bindTexture(skyBoxTextureHandle)
+
       // Use this MVP matrix to render the skybox
       skyBox.draw(camera)
-    
+
 
     GLES20.glDepthMask(true) // Re-enable depth writing for other objects
   }
