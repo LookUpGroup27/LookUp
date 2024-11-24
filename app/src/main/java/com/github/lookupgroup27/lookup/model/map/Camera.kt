@@ -11,7 +11,7 @@ import android.util.Log
  * Represents a camera for handling movement and projection in our OpenGL World.
  *
  * The camera follows the phone orientation. The camera when looking straight in the north direction
- * is projected as follows:
+ * with the phone in portrait mode is projected as follows:
  *
  *     ↑ Z
  *     │
