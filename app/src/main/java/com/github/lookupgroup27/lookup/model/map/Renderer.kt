@@ -18,11 +18,6 @@ class Renderer : GLSurfaceView.Renderer {
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
 
-  // Temporary storage for the MVP matrix
-  private val mvpMatrix = FloatArray(16)
-  private val viewMatrix = FloatArray(16)
-  private val projectionMatrix = FloatArray(16)
-
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
@@ -32,10 +27,6 @@ class Renderer : GLSurfaceView.Renderer {
     // Initialize the SkyBox
     skyBox = SkyBox()
     skyBox.initialize()
-
-    // Initialize the camera's matrices
-    Matrix.setIdentityM(camera.viewMatrix, 0)
-    Matrix.setIdentityM(projectionMatrix, 0)
   }
 
   override fun onDrawFrame(unused: GL10) {
@@ -43,27 +34,10 @@ class Renderer : GLSurfaceView.Renderer {
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-    // Calculate the MVP matrix (Model-View-Projection matrix) for the objects
-    Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, camera.viewMatrix, 0)
-
-    /*// Render the SkyBox
-    skyBox.render(mvpMatrix)*/
-    // Create a modified view matrix for the skybox that ignores translations
-    val skyboxViewMatrix = FloatArray(16)
-    System.arraycopy(camera.viewMatrix, 0, skyboxViewMatrix, 0, 16)
-    // Set translation components to zero
-    skyboxViewMatrix[12] = 0f // X translation
-    skyboxViewMatrix[13] = 0f // Y translation
-    skyboxViewMatrix[14] = 0f // Z translation
-
-    // Compute the skybox MVP matrix
-    val skyboxMvpMatrix = FloatArray(16)
-    Matrix.multiplyMM(skyboxMvpMatrix, 0, projectionMatrix, 0, skyboxViewMatrix, 0)
-
     GLES20.glDepthMask(false) // Disable depth writing
 
     // Use this MVP matrix to render the skybox
-    skyBox.render(skyboxMvpMatrix)
+    skyBox.draw(camera)
 
     GLES20.glDepthMask(true) // Re-enable depth writing for other objects
   }
@@ -74,7 +48,7 @@ class Renderer : GLSurfaceView.Renderer {
 
     val ratio: Float = width.toFloat() / height.toFloat()
 
-    camera.updateProjectionMatrix(ratio, projectionMatrix)
+    camera.updateProjectionMatrix(ratio)
 
     // Update the view matrix
     Matrix.setLookAtM(

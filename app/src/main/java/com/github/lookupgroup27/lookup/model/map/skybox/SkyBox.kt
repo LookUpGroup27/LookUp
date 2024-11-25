@@ -1,7 +1,9 @@
 package com.github.lookupgroup27.lookup.model.map.skybox
 
 import android.opengl.GLES20
+import android.opengl.Matrix
 import android.util.Log
+import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
@@ -141,14 +143,26 @@ class SkyBox(
   /**
    * Renders the skybox using the shader program.
    *
-   * @param mvpMatrix The model-view-projection matrix for the scene.
+   * @param camera The camera to use for rendering the skybox.
    */
-  fun render(mvpMatrix: FloatArray) {
+  fun draw(camera: Camera) {
+
+    // Create a modified view matrix for the skybox that ignores translations
+    val skyboxViewMatrix = FloatArray(16)
+    System.arraycopy(camera.viewMatrix, 0, skyboxViewMatrix, 0, 16)
+    skyboxViewMatrix[12] = 0f // X translation
+    skyboxViewMatrix[13] = 0f // Y translation
+    skyboxViewMatrix[14] = 0f // Z translation
+
+    // Compute the skybox MVP matrix
+    val skyboxMvpMatrix = FloatArray(16)
+    Matrix.multiplyMM(skyboxMvpMatrix, 0, camera.projMatrix, 0, skyboxViewMatrix, 0)
+
     shaderProgram.use()
 
     // Pass the MVP matrix to the shader
     val mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgram.programId, "uMVPMatrix")
-    GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0)
+    GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, skyboxMvpMatrix, 0)
 
     // Bind the vertex and color buffers
     val positionHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vPosition")
