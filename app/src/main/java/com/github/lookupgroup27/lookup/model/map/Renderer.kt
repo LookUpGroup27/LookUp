@@ -2,7 +2,6 @@ package com.github.lookupgroup27.lookup.model.map
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -26,7 +25,6 @@ class Renderer : GLSurfaceView.Renderer {
 
     // Initialize the SkyBox
     skyBox = SkyBox()
-    skyBox.initialize()
   }
 
   override fun onDrawFrame(unused: GL10) {
@@ -49,20 +47,5 @@ class Renderer : GLSurfaceView.Renderer {
     val ratio: Float = width.toFloat() / height.toFloat()
 
     camera.updateProjectionMatrix(ratio)
-
-    // Update the view matrix
-    Matrix.setLookAtM(
-        camera.viewMatrix,
-        0,
-        0f,
-        0f,
-        3f, // Eye position
-        0f,
-        0f,
-        0f, // Center position
-        0f,
-        1f,
-        0f // Up vector
-        )
   }
 }
