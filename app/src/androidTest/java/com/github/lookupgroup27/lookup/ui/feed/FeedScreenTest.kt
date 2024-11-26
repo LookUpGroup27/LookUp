@@ -20,6 +20,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,26 +45,54 @@ class FeedScreenTest {
   @Mock private lateinit var profileViewModel: ProfileViewModel
   private lateinit var navigationActions: NavigationActions
   private lateinit var locationProvider: LocationProvider
+  private val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
+  private val userEmail = user?.email ?: ""
 
-  private val testPosts =
+  // Mock the logged-in user's profile
+  val testUserProfile =
+      UserProfile(
+          username = "Test User",
+          email = userEmail, // Mocked logged-in user's email
+          bio = "This is a test bio",
+          ratings = emptyMap())
+
+  // Mock posts
+  val testPosts =
       listOf(
           Post(
               uid = "1",
               uri = "http://example.com/1.jpg",
-              username = "User1",
-              latitude = 37.7749,
-              longitude = -122.4194), // San Francisco
+              username = testUserProfile.email, // Post created by the logged-in user
+              latitude = 37.7749, // San Francisco
+              longitude = -122.4194),
           Post(
               uid = "2",
               uri = "http://example.com/2.jpg",
-              username = "User2",
-              latitude = 34.0522,
-              longitude = -118.2437) // Los Angeles
-          )
+              username = "User2", // Post created by another user
+              latitude = 34.0522, // Los Angeles
+              longitude = -118.2437),
+          Post(
+              uid = "3",
+              uri = "http://example.com/3.jpg",
+              username = "User3", // Another user's post
+              latitude = 36.7783, // Fresno (closer to SF)
+              longitude = -119.4179),
+          Post(
+              uid = "4",
+              uri = "User4",
+              username = "user4@example.com", // Another user's post
+              latitude = 40.7128, // New York City (farther from SF than LA or Fresno)
+              longitude = -74.0060),
+          Post(
+              uid = "5",
+              uri = "User5",
+              username = "user5@example.com", // Another user's post
+              latitude = -33.8688, // Sydney, Australia (farthest from SF)
+              longitude = 151.2093))
 
   private val testPost =
       Post(
-          "1",
+          "2",
           "testUri",
           "testUsername",
           10,
@@ -87,11 +116,11 @@ class FeedScreenTest {
     profileRepository = mock(ProfileRepository::class.java)
     profileViewModel = ProfileViewModel(profileRepository)
     navigationActions = mock(NavigationActions::class.java)
+    profileViewModel.fetchUserProfile()
 
-    // Define behavior for getPosts to immediately invoke the success callback with testPosts
     `when`(postsRepository.getPosts(any(), any())).thenAnswer { invocation ->
       val onSuccessCallback = invocation.getArgument<(List<Post>?) -> Unit>(0)
-      onSuccessCallback(testPosts)
+      onSuccessCallback(testPosts) // Return the mocked posts
     }
 
     // Define navigation action behavior
@@ -112,11 +141,19 @@ class FeedScreenTest {
   fun testFeedScreenDisplaysNearbyPosts() {
 
     // Assert each post item is displayed
-    composeTestRule.onNodeWithTag("PostItem_1").assertExists()
-    composeTestRule.onNodeWithTag("UsernameTag_User1").assertTextContains("User1")
-
-    composeTestRule.onNodeWithTag("PostItem_2").performScrollTo().assertExists()
+    composeTestRule.onNodeWithTag("PostItem_2").assertExists()
     composeTestRule.onNodeWithTag("UsernameTag_User2").assertTextContains("User2")
+
+    composeTestRule.onNodeWithTag("PostItem_3").performScrollTo().assertExists()
+    composeTestRule.onNodeWithTag("UsernameTag_User3").assertTextContains("User3")
+
+    composeTestRule.onNodeWithTag("PostItem_5").assertDoesNotExist()
+  }
+
+  @Test
+  fun testFeedExcludesLoggedInUserPosts() {
+    // Assert that the post by the logged-in user  is not displayed
+    composeTestRule.onNodeWithTag("PostItem_1").assertDoesNotExist()
   }
 
   @Test
@@ -133,18 +170,18 @@ class FeedScreenTest {
   fun testStarClickDisplaysAverageRating() {
     // Perform click on the first star icon of a post with uid "1"
     composeTestRule
-        .onNodeWithTag("Star_1_1")
+        .onNodeWithTag("Star_2_2")
         .assertIsDisplayed()
         .performClick() // Click on the first star
 
     // Verify that the average rating text is displayed for the post
-    composeTestRule.onNodeWithTag("AverageRatingTag_1").assertExists().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("AverageRatingTag_2").assertExists().assertIsDisplayed()
   }
 
   @Test
   fun testStarClickCallsUpdatePost() {
     // Perform click on the first star of post with uid "1"
-    composeTestRule.onNodeWithTag("Star_1_1").performClick()
+    composeTestRule.onNodeWithTag("Star_2_2").performClick()
     postsViewModel.updatePost(testPost)
 
     // Verify that updatePost was called in the postsViewModel
@@ -156,7 +193,7 @@ class FeedScreenTest {
   @Test
   fun testStarClickCallsUpdateUserProfile() {
     // Perform click on the first star of post with uid "1"
-    composeTestRule.onNodeWithTag("Star_1_1").performClick()
+    composeTestRule.onNodeWithTag("Star_2_2").performClick()
 
     profileViewModel.updateUserProfile(testProfile)
     // Verify that `updateUserProfile` was called in the profileViewModel
