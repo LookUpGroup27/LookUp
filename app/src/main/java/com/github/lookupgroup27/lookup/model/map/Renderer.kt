@@ -15,6 +15,11 @@ import javax.microedition.khronos.opengles.GL10
  */
 class Renderer : GLSurfaceView.Renderer {
 
+  companion object {
+    private const val VERTEX_SHADER_FILE = "vertex_shader.glsl"
+    private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
+  }
+
   private lateinit var shapes: List<Object>
 
   /** The camera used to draw the shapes on the screen. */
@@ -29,8 +34,8 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
     // Load the shaders
-    val vertexShaderCode = readShader(context, "vertex_shader.glsl")
-    val fragmentShaderCode = readShader(context, "fragment_shader.glsl")
+    val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
+    val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
 
     // Create the shapes (Make sure you always create the shapes after the OpenGL context is
     // created)
