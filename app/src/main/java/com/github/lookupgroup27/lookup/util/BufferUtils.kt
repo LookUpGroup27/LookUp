@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.util.opengl
+package com.github.lookupgroup27.lookup.util
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
