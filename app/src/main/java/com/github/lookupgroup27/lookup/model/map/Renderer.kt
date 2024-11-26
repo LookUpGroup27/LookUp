@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
@@ -47,13 +46,11 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
 
     GLES20.glDepthMask(false) // Disable depth writing
 
-
     // Bind the texture and render the SkyBox
     textureManager.bindTexture(skyBoxTextureHandle)
 
-      // Use this MVP matrix to render the skybox
-      skyBox.draw(camera)
-
+    // Use this MVP matrix to render the skybox
+    skyBox.draw(camera)
 
     GLES20.glDepthMask(true) // Re-enable depth writing for other objects
   }

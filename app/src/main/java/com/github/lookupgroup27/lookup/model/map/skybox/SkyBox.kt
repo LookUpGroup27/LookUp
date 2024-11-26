@@ -2,7 +2,6 @@ package com.github.lookupgroup27.lookup.model.map.skybox
 
 import android.opengl.GLES20
 import android.opengl.Matrix
-import android.util.Log
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer

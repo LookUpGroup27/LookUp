@@ -30,7 +30,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 @SuppressLint("SourceLockedOrientationActivity")
 @Composable
 fun MapScreen(navigationActions: NavigationActions) {
-    val context = LocalContext.current
+  val context = LocalContext.current
   val glRenderer = remember { Renderer(context) }
   val activity =
       context as? ComponentActivity ?: null.also { Log.e("MapScreen", "MainActivity not found") }
