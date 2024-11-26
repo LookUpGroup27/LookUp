@@ -27,10 +27,10 @@ class SkyBox(
   private val indexBuffer = IndexBuffer()
 
   // Shader program for rendering the SkyBox
-  private lateinit var shaderProgram: ShaderProgram
+  private var shaderProgram: ShaderProgram
 
   /** Initializes the skybox by generating its geometry and buffers. */
-  fun initialize() {
+  init {
     val numVertices = numBands * stepsPerBand
     val numIndices = (numBands - 1) * stepsPerBand * 6
 
