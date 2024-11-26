@@ -11,7 +11,7 @@ import android.opengl.GLSurfaceView
  */
 class MapSurfaceView(
     context: Context,
-    renderer: com.github.lookupgroup27.lookup.model.map.Renderer
+    renderer: MapRenderer
 ) : GLSurfaceView(context) {
 
   init {

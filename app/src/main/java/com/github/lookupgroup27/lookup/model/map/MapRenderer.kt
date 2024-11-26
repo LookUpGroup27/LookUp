@@ -14,7 +14,7 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class Renderer : GLSurfaceView.Renderer {
+class MapRenderer : GLSurfaceView.Renderer {
 
   companion object {
     private const val VERTEX_SHADER_FILE = "vertex_shader.glsl"

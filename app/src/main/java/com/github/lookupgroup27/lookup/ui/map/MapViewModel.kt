@@ -7,11 +7,11 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
-import com.github.lookupgroup27.lookup.model.map.Renderer
+import com.github.lookupgroup27.lookup.model.map.MapRenderer
 
 /** The ViewModel for the map screen. */
 class MapViewModel : ViewModel() {
-  val renderer = Renderer()
+  val mapRenderer = MapRenderer()
 
   /**
    * Locks the screen orientation to portrait mode.
@@ -41,7 +41,7 @@ class MapViewModel : ViewModel() {
   fun registerSensorListener(activity: ComponentActivity) {
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val orientation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-    sensorManager.registerListener(renderer.camera, orientation, SensorManager.SENSOR_DELAY_NORMAL)
+    sensorManager.registerListener(mapRenderer.camera, orientation, SensorManager.SENSOR_DELAY_NORMAL)
   }
 
   /**
@@ -51,6 +51,6 @@ class MapViewModel : ViewModel() {
    */
   fun unregisterSensorListener(activity: ComponentActivity) {
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    sensorManager.unregisterListener(renderer.camera)
+    sensorManager.unregisterListener(mapRenderer.camera)
   }
 }
