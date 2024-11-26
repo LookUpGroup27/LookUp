@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
@@ -21,6 +22,7 @@ class Renderer : GLSurfaceView.Renderer {
   }
 
   private lateinit var shapes: List<Object>
+  private lateinit var skyBox: SkyBox
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -76,15 +78,21 @@ class Renderer : GLSurfaceView.Renderer {
                 color = floatArrayOf(0.0f, 0.0f, 1.0f),
                 vertexShaderCode,
                 fragmentShaderCode))
+
+    skyBox = SkyBox()
   }
 
   override fun onDrawFrame(unused: GL10) {
-    // Redraw background color
-    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-    GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
 
-    // Draw the shapes
-    for (shape in shapes) shape.draw(camera)
+    // Clear the screen
+    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+
+    GLES20.glDepthMask(false) // Disable depth writing
+
+    // Use this MVP matrix to render the skybox
+    skyBox.draw(camera)
+
+    GLES20.glDepthMask(true) // Re-enable depth writing for other objects
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -92,9 +100,7 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height)
 
     val ratio: Float = width.toFloat() / height.toFloat()
-    // Defines a projection matrix in terms of a field of view angle, an aspect ratio, and z clip
-    // planes
-    // It helps projects in correct aspect ratio the objects in the scene
+
     camera.updateProjectionMatrix(ratio)
   }
 
