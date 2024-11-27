@@ -13,6 +13,7 @@ class MapSurfaceView(
     setEGLContextClientVersion(2)
 
     // Set the provided renderer for drawing on the GLSurfaceView
+    renderer.updateContext(context)
     setRenderer(renderer)
   }
 }

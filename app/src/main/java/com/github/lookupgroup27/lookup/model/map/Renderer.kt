@@ -13,12 +13,14 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class Renderer(private val context: Context) : GLSurfaceView.Renderer {
+class Renderer : GLSurfaceView.Renderer {
 
   private lateinit var textureManager: TextureManager
   private lateinit var skyBox: SkyBox
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
+
+  private lateinit var context: Context
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -62,5 +64,9 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
     val ratio: Float = width.toFloat() / height.toFloat()
 
     camera.updateProjectionMatrix(ratio)
+  }
+
+  fun updateContext(context: Context) {
+    this.context = context
   }
 }
