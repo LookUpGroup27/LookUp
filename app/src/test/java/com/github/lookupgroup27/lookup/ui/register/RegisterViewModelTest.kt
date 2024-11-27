@@ -55,13 +55,16 @@ class RegisterViewModelTest {
     var successCalled = false
     var errorCalled = false
 
+    // Set email, password, and confirmPassword
     viewModel.onEmailChanged("test@example.com")
     viewModel.onPasswordChanged("password123")
+    viewModel.onConfirmPasswordChanged("password123") // Add this line for the confirm password
 
     viewModel.registerUser(onSuccess = { successCalled = true }, onError = { errorCalled = true })
 
     testDispatcher.scheduler.advanceUntilIdle()
 
+    // Assert that the repository was called successfully
     assertTrue(successCalled)
     assertFalse(errorCalled)
   }
