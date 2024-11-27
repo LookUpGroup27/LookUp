@@ -49,11 +49,11 @@ class MenuKtTest {
   }
 
   @Test
-  fun menuScreen_displaysWelcomeText() {
+  fun menuScreen_displaysAppLogo() {
     composeTestRule.setContent { MenuScreen(navigationActions = mockNavigationActions) }
 
-    // Check that the "Welcome !" text is displayed
-    composeTestRule.onNodeWithText("Welcome !").assertIsDisplayed()
+    // Check that the app logo is displayed
+    composeTestRule.onNodeWithTag("app_logo").assertIsDisplayed()
   }
 
   @Test

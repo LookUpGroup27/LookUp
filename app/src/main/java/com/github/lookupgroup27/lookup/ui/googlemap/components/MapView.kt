@@ -2,25 +2,15 @@ package com.github.lookupgroup27.lookup.ui.googlemap.components
 
 import android.location.Location
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.github.lookupgroup27.lookup.model.post.Post
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.image.ImagePreviewDialog
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.*
 
 /**
  * Composable that displays a Google Map with markers for posts.
@@ -30,6 +20,11 @@ import com.google.maps.android.compose.rememberCameraPositionState
  * @param location The user's location
  * @param autoCenteringEnabled Whether auto centering is enabled
  * @param posts The list of posts to display on the map
+ * @param userEmail The email of the current user
+ * @param updateProfile Function to update the user's profile
+ * @param profile The user's profile
+ * @param updatePost Function to update a post
+ * @param postRatings The ratings for each post
  */
 @Composable
 fun MapView(
@@ -37,7 +32,12 @@ fun MapView(
     hasLocationPermission: Boolean,
     location: Location?,
     autoCenteringEnabled: Boolean,
-    posts: List<Post>
+    posts: List<Post>,
+    userEmail: String,
+    updateProfile: (UserProfile?, MutableMap<String, Int>?) -> Unit,
+    profile: UserProfile?,
+    updatePost: (Post, Double, Int, Int, List<String>) -> Unit,
+    postRatings: MutableMap<String, List<Boolean>>
 ) {
 
   var mapProperties by remember {
@@ -68,6 +68,15 @@ fun MapView(
     }
   }
 
+  LaunchedEffect(profile, posts) {
+    posts.forEach { post ->
+      val starsCount = postRatings[post.uid]?.count { it } ?: 0
+      val usersNumber = postRatings[post.uid]?.size ?: 0
+      val avg = if (usersNumber == 0) 0.0 else starsCount.toDouble() / usersNumber
+      updatePost(post, avg, starsCount, usersNumber, post.ratedBy)
+    }
+  }
+
   GoogleMap(
       modifier = Modifier.fillMaxSize().padding(padding),
       properties = mapProperties,
@@ -84,7 +93,36 @@ fun MapView(
         // Display the ImagePreviewDialog when a post is selected
         selectedPost?.let {
           ImagePreviewDialog(
-              uri = it.uri, username = it.username, onDismiss = { selectedPost = null })
+              post = it,
+              username = it.username,
+              onDismiss = { selectedPost = null },
+              starStates = postRatings[it.uid] ?: mutableListOf(false, false, false),
+              onRatingChanged = { newRating ->
+                val oldPostRatings = postRatings[it.uid] ?: mutableListOf(false, false, false)
+                val oldStarCounts = oldPostRatings.count { it }
+                // Directly modify the existing starStates list to avoid creating a new list
+                postRatings[it.uid] = newRating.toList()
+                // Update the stars count based on the new rating
+                val starsCount = newRating.count { it }
+                // Update user profile with the new rating count
+                val updatedRatings = profile?.ratings?.toMutableMap()
+                updatedRatings?.set(it.uid, starsCount)
+                updateProfile(profile, updatedRatings)
+
+                val isReturningUser = it.ratedBy.contains(userEmail)
+                val newStarsCount =
+                    if (isReturningUser) it.starsCount - oldStarCounts + starsCount
+                    else it.starsCount + starsCount
+                val newUsersNumber = if (isReturningUser) it.usersNumber else it.usersNumber + 1
+                val newAvg = newStarsCount.toDouble() / newUsersNumber
+                val newRatedBy =
+                    if (!isReturningUser) {
+                      it.ratedBy + userEmail
+                    } else {
+                      it.ratedBy
+                    }
+                updatePost(it, newAvg, newStarsCount, newUsersNumber, newRatedBy)
+              })
         }
       }
 }

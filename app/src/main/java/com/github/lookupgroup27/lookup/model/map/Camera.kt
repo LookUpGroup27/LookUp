@@ -1,80 +1,73 @@
 package com.github.lookupgroup27.lookup.model.map
 
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.opengl.Matrix
+import android.util.Log
 
 /**
  * Represents a camera for handling movement and projection in our OpenGL World.
  *
- * The camera is initialized at the origin of the world (0, 0, 0), facing along the negative Z-axis.
- * The coordinate system is defined as:
+ * The camera follows the phone orientation. The camera when looking straight in the north direction
+ * with the phone in portrait mode is projected as follows:
  *
- *     ↑ Y
+ *     ↑ Z
  *     │
  *     │
  *   ──┼────────> X
  *
- * The positive Y-axis points upward, the positive X-axis points to the right, and the Z-axis points
- * towards the viewer (into the screen).
+ * The positive Z-axis points upward, the positive X-axis points to the right, and the positive
+ * Y-axis points into the screen.
  */
-class Camera {
+class Camera : SensorEventListener {
 
   val modelMatrix = FloatArray(16)
   val viewMatrix = FloatArray(16)
   val projMatrix = FloatArray(16)
 
+  companion object {
+    const val FOV = 45f
+    const val NEAR = 0.1f
+    const val FAR = 100f
+  }
+
   init {
     Matrix.setIdentityM(modelMatrix, 0)
     Matrix.setIdentityM(viewMatrix, 0)
     Matrix.setIdentityM(projMatrix, 0)
-    Matrix.translateM(viewMatrix, 0, 0f, 0f, 0f)
   }
 
   /** Update the projection matrix based on the aspect ratio of the screen. */
   fun updateProjectionMatrix(ratio: Float) {
-    Matrix.perspectiveM(projMatrix, 0, 45f, ratio, 0.1f, 100f)
+    Matrix.perspectiveM(projMatrix, 0, FOV, ratio, NEAR, FAR)
   }
 
-  /**
-   * Set the camera's rotation.
-   *
-   * @param x the x-axis angle of the camera
-   * @param y the y-axis angle of the camera
-   * @param z the z-axis angle of the camera
-   */
-  fun setRotation(x: Float, y: Float, z: Float) {
-    Matrix.setIdentityM(modelMatrix, 0)
-    Matrix.setRotateM(modelMatrix, 0, x, 1f, 0f, 0f)
-    Matrix.rotateM(modelMatrix, 0, y, 0f, 1f, 0f)
-    Matrix.rotateM(modelMatrix, 0, z, 0f, 0f, 1f)
+  override fun onSensorChanged(event: SensorEvent?) {
+    event?.let {
+      if (event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) {
+        SensorManager.getRotationMatrixFromVector(viewMatrix, event.values)
+      }
+    }
   }
 
-  /** Move the camera to the left. */
-  fun turnLeft() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, -1f, 0f)
-  }
-
-  /** Move the camera to the right. */
-  fun turnRight() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 1f, 0f)
-  }
-
-  /** Move the camera up. */
-  fun turnUp() {
-    Matrix.rotateM(modelMatrix, 0, 1f, -1f, 0f, 0f)
-  }
-
-  /** Move the camera down. */
-  fun turnDown() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 1f, 0f, 0f)
-  }
-
-  /** Tilts the camera to the left. */
-  fun tiltLeft() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, -1f)
-  }
-
-  /** Tilts the camera to the right. */
-  fun tiltRight() {
-    Matrix.rotateM(modelMatrix, 0, 1f, 0f, 0f, 1f)
+  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    when (sensor?.type) {
+      Sensor.TYPE_ROTATION_VECTOR -> {
+        when (accuracy) {
+          SensorManager.SENSOR_STATUS_UNRELIABLE -> {
+            // TODO : Provide a warning about unreliable sensor data
+            Log.w("SensorAccuracy", "Rotation vector sensor is unreliable")
+          }
+          SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {
+            Log.i("SensorAccuracy", "Rotation vector sensor accuracy is low")
+          }
+          SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {
+            Log.d("SensorAccuracy", "Rotation vector sensor accuracy is high")
+          }
+        }
+      }
+    }
   }
 }

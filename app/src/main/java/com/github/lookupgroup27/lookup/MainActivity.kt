@@ -25,6 +25,7 @@ import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
+import com.github.lookupgroup27.lookup.ui.map.MapViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
@@ -69,6 +70,7 @@ fun LookUpApp() {
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
+  val mapViewModel: MapViewModel = viewModel()
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -78,7 +80,7 @@ fun LookUpApp() {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
-      composable(Screen.MAP) { MapScreen(navigationActions) }
+      composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
     }
     navigation(
         startDestination = Screen.LANDING,
@@ -95,7 +97,9 @@ fun LookUpApp() {
       composable(Screen.MENU) { MenuScreen(navigationActions) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
-      composable(Screen.GOOGLE_MAP) { GoogleMapScreen(navigationActions, postsViewModel) }
+      composable(Screen.GOOGLE_MAP) {
+        GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+      }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }
 
