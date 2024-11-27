@@ -20,6 +20,13 @@ import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
+/**
+ * Test class for the EditImageScreen composable.
+ *
+ * This class verifies the functionality and behavior of the EditImageScreen, including the
+ * visibility and interactivity of its UI elements, as well as its interactions with ViewModels and
+ * navigation actions.
+ */
 @RunWith(AndroidJUnit4::class)
 class EditImageScreenTest {
 
@@ -36,6 +43,7 @@ class EditImageScreenTest {
 
   private val mockNavigationActions: NavigationActions = mock()
 
+  /** Sets up the required mock objects and initializes the ViewModels before each test. */
   @Before
   fun setUp() {
     editImageRepository = Mockito.mock(EditImageRepository::class.java)
@@ -48,6 +56,7 @@ class EditImageScreenTest {
     postsViewModel = PostsViewModel(postsRepository)
   }
 
+  /** Verifies that the background image is displayed in the EditImageScreen. */
   @Test
   fun testBackgroundImageIsDisplayed() {
     composeTestRule.setContent {
@@ -62,6 +71,9 @@ class EditImageScreenTest {
     composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
   }
 
+  /**
+   * Verifies that the back button is displayed and navigates to the collection screen when clicked.
+   */
   @Test
   fun testBackButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
@@ -79,6 +91,7 @@ class EditImageScreenTest {
     verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
   }
 
+  /** Verifies that the image to be edited is displayed in the EditImageScreen. */
   @Test
   fun testEditImageIsDisplayed() {
     composeTestRule.setContent {
@@ -93,6 +106,7 @@ class EditImageScreenTest {
     composeTestRule.onNodeWithTag("display_image").assertIsDisplayed()
   }
 
+  /** Verifies that all edit buttons (crop, resize, delete) are displayed and clickable. */
   @Test
   fun testEditButtonsAreDisplayedAndClickable() {
     composeTestRule.setContent {
@@ -111,6 +125,7 @@ class EditImageScreenTest {
     verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
   }
 
+  /** Verifies that the loading indicator is displayed when the state is set to Loading. */
   @Test
   fun testLoadingIndicatorIsDisplayedWhenStateIsLoading() {
     editImageViewModel.setEditImageState(EditImageState.Loading)
@@ -127,6 +142,7 @@ class EditImageScreenTest {
     composeTestRule.onNodeWithTag("loading_indicator").assertIsDisplayed()
   }
 
+  /** Verifies that clicking the delete button navigates to the collection screen after deletion. */
   @Test
   fun testDeleteButtonNavigatesToCollectionAfterDeletion() {
     editImageViewModel.setEditImageState(EditImageState.Deleted)

@@ -28,6 +28,17 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+/**
+ * Composable function for displaying a user's collection of astronomy images.
+ *
+ * The `CollectionScreen` shows a list of images fetched from the user's collection. It allows users
+ * to navigate back to the profile screen or select an image to edit it. The layout dynamically
+ * adjusts based on whether the collection is empty or contains images.
+ *
+ * @param navigationActions The [NavigationActions] object for handling navigation between screens.
+ * @param viewModel The [CollectionViewModel] instance managing the state of the user's image
+ *   collection.
+ */
 @Composable
 fun CollectionScreen(
     navigationActions: NavigationActions,

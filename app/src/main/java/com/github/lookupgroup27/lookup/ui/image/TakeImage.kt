@@ -38,6 +38,15 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/**
+ * Composable function for capturing images using the device's camera.
+ *
+ * The `CameraCapture` composable provides a simple interface for capturing images, handling camera
+ * permissions, and saving the captured image to a file. It uses Jetpack CameraX for camera
+ * functionality and includes options for navigating back and reviewing the captured image.
+ *
+ * @param navigationActions The [NavigationActions] object for handling navigation between screens.
+ */
 @Composable
 fun CameraCapture(
     navigationActions: NavigationActions,
@@ -46,6 +55,7 @@ fun CameraCapture(
   var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
   var isCameraPermissionGranted by remember { mutableStateOf(false) }
 
+  // Executor for camera operations
   val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
   val lifecycleOwner = LocalContext.current as LifecycleOwner
 
@@ -59,15 +69,19 @@ fun CameraCapture(
         }
       }
 
+  // Request camera permission on launch
   LaunchedEffect(Unit) { launcher.launch(Manifest.permission.CAMERA) }
 
+  // Display camera preview and controls if permission is granted
   if (isCameraPermissionGranted) {
     Box(modifier = Modifier.fillMaxSize().testTag("camera_capture")) {
+      // Camera preview using AndroidView
       AndroidView(
           modifier = Modifier.fillMaxSize(),
           factory = { viewContext ->
             val previewView = PreviewView(viewContext)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(viewContext)
+
             cameraProviderFuture.addListener(
                 {
                   val cameraProvider = cameraProviderFuture.get()
@@ -91,6 +105,7 @@ fun CameraCapture(
             previewView
           })
 
+      // Back button
       IconButton(
           onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) },
           modifier =
@@ -101,6 +116,7 @@ fun CameraCapture(
                 tint = Color.White)
           }
 
+      // Take picture button
       Button(
           onClick = {
             val imageCapture = imageCapture ?: return@Button
@@ -117,7 +133,8 @@ fun CameraCapture(
                 ContextCompat.getMainExecutor(context),
                 object : ImageCapture.OnImageSavedCallback {
                   override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.encode(photoFile.absolutePath) // Get URI of the saved image
+                    val savedUri =
+                        Uri.encode(photoFile.absolutePath) // Encoded URI of the saved image
                     navigationActions.navigateToWithImage(savedUri, Route.IMAGE_REVIEW)
                   }
 
@@ -134,5 +151,6 @@ fun CameraCapture(
     }
   }
 
+  // Shutdown the camera executor when the composable is disposed
   DisposableEffect(Unit) { onDispose { cameraExecutor.shutdown() } }
 }

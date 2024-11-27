@@ -28,6 +28,21 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 
+/**
+ * Composable function to display the Edit Image Screen.
+ *
+ * This screen allows users to edit an image by cropping, resizing, or deleting it. It also provides
+ * navigation options to go back to the collection screen. The UI dynamically updates based on the
+ * state of the edit operation.
+ *
+ * @param imageUrl The URL of the image to be displayed and edited.
+ * @param editImageViewModel The [EditImageViewModel] handling the logic for image editing.
+ * @param collectionViewModel The [CollectionViewModel] managing the state of the user's image
+ *   collection.
+ * @param postsViewModel The [PostsViewModel] managing post data associated with the image.
+ * @param navigationActions An instance of [NavigationActions] for handling navigation between
+ *   screens.
+ */
 @Composable
 fun EditImageScreen(
     imageUrl: String,
