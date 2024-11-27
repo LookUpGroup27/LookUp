@@ -28,30 +28,6 @@ class EditImageViewModel(private val repository: EditImageRepository) : ViewMode
     }
   }
 
-  // TODO: Implement cropImage and resizeImage functions
-  /**
-   * fun cropImage(imageUrl: String) { viewModelScope.launch { _editImageState.value =
-   * EditImageState.Loading try { val croppedImageBytes = performCropping(imageUrl) val result =
-   * repository.uploadCroppedImage(croppedImageBytes) if (result.isSuccess) { _editImageState.value
-   * = EditImageState.Success(result.getOrThrow()) } else { _editImageState.value =
-   * EditImageState.Error(result.exceptionOrNull()?.message ?: "Error cropping image") } } catch (e:
-   * Exception) { _editImageState.value = EditImageState.Error(e.message ?: "Error cropping image")
-   * } } }
-   *
-   * fun resizeImage(imageUrl: String) { viewModelScope.launch { _editImageState.value =
-   * EditImageState.Loading try { val resizedImageBytes = performResizing(imageUrl) val result =
-   * repository.uploadResizedImage(resizedImageBytes) if (result.isSuccess) { _editImageState.value
-   * = EditImageState.Success(result.getOrThrow()) } else { _editImageState.value =
-   * EditImageState.Error(result.exceptionOrNull()?.message ?: "Error resizing image") } } catch (e:
-   * Exception) { _editImageState.value = EditImageState.Error(e.message ?: "Error resizing image")
-   * } } }
-   *
-   * private fun performCropping(imageUrl: String): ByteArray { // Placeholder for cropping logic
-   * return ByteArray(0) }
-   *
-   * private fun performResizing(imageUrl: String): ByteArray { // Placeholder for resizing logic
-   * return ByteArray(0) }
-   */
   fun resetState() {
     _editImageState.value = EditImageState.Idle
   }
