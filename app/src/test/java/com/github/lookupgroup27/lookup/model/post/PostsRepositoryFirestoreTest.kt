@@ -284,4 +284,51 @@ class PostsRepositoryFirestoreTest {
     // Ensure onFailure callback is triggered with the correct error message
     assertThat(errorMessage, `is`("Firestore update error"))
   }
+
+  @Test
+  fun `deletePost should call onSuccess when firestore deletion succeeds`() {
+    val postUid = "123"
+
+    // Simulate successful Firestore operation
+    `when`(mockDocumentReference.delete()).thenReturn(Tasks.forResult(null))
+
+    var successCalled = false
+    postsRepositoryFirestore.deletePost(
+        postUid,
+        onSuccess = { successCalled = true },
+        onFailure = { fail("onFailure should not be called") })
+
+    shadowOf(Looper.getMainLooper()).idle() // Ensure tasks are completed
+
+    // Verify Firestore's delete method was called with the correct document reference
+    verify(mockDocumentReference).delete()
+
+    // Ensure onSuccess callback is triggered
+    assert(successCalled)
+  }
+
+  @Test
+  fun `deletePost should call onFailure when firestore deletion fails`() {
+    val postUid = "123"
+    val exception =
+        FirebaseFirestoreException(
+            "Deletion failed", FirebaseFirestoreException.Code.PERMISSION_DENIED)
+
+    // Simulate Firestore failure
+    `when`(mockDocumentReference.delete()).thenReturn(Tasks.forException(exception))
+
+    var errorMessage: String? = null
+    postsRepositoryFirestore.deletePost(
+        postUid,
+        onSuccess = { fail("onSuccess should not be called") },
+        onFailure = { errorMessage = it.message })
+
+    shadowOf(Looper.getMainLooper()).idle() // Ensure tasks are completed
+
+    // Verify Firestore's delete method was called with the correct document reference
+    verify(mockDocumentReference).delete()
+
+    // Ensure onFailure callback is triggered with the correct error message
+    assertThat(errorMessage, `is`("Deletion failed"))
+  }
 }
