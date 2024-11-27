@@ -2,10 +2,10 @@ package com.github.lookupgroup27.lookup.model.map.skybox
 
 import android.opengl.GLES20
 import android.opengl.Matrix
-import android.util.Log
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
+import com.github.lookupgroup27.lookup.model.map.skybox.buffers.TextureBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 
@@ -25,6 +25,7 @@ class SkyBox(
   private val vertexBuffer = VertexBuffer()
   private val colorBuffer = ColorBuffer()
   private val indexBuffer = IndexBuffer()
+  private val textureBuffer = TextureBuffer() // New texture buffer
 
   // Shader program for rendering the SkyBox
   private var shaderProgram: ShaderProgram
@@ -37,6 +38,7 @@ class SkyBox(
     vertexBuffer.reset(numVertices)
     colorBuffer.reset(numVertices)
     indexBuffer.reset(numIndices)
+    textureBuffer.reset(numVertices) // Initialize texture buffer
 
     generateGeometry()
     // Initialize the ShaderProgram
@@ -44,11 +46,14 @@ class SkyBox(
         """
             attribute vec4 vPosition;
             attribute vec4 vColor;
+            attribute vec2 vTexCoord;
             uniform mat4 uMVPMatrix;
             varying vec4 vInterpolatedColor;
+            varying vec2 vInterpolatedTexCoord;
             void main() {
                 gl_Position = uMVPMatrix * vPosition;
                 vInterpolatedColor = vColor;
+                vInterpolatedTexCoord = vTexCoord;
             }
         """
             .trimIndent()
@@ -57,8 +62,10 @@ class SkyBox(
         """
         precision mediump float;
         varying vec4 vInterpolatedColor;
+        varying vec2 vInterpolatedTexCoord;
+        uniform sampler2D uTexture;
         void main() {
-            gl_FragColor = vInterpolatedColor;
+            gl_FragColor = texture2D(uTexture, vInterpolatedTexCoord);
         }
       """
             .trimIndent()
@@ -95,11 +102,13 @@ class SkyBox(
       val color = (intensity shl 16) or 0xff000000.toInt()
       val sinPhi = if (bandPos > -1) Math.sqrt(1 - bandPos * bandPos.toDouble()).toFloat() else 0f
 
+      val v = (band + 1f) / numBands // Latitude for texture coordinates
       for (i in 0 until stepsPerBand) {
+        val u = i.toFloat() / (stepsPerBand - 1) // Longitude for texture coordinates
+
         vertexBuffer.addVertex(cosAngles[i] * sinPhi, bandPos, sinAngles[i] * sinPhi)
         colorBuffer.addColor(color)
-
-        Log.d("SkyBox", "Vertex: (${cosAngles[i] * sinPhi}, $bandPos, ${sinAngles[i] * sinPhi})")
+        textureBuffer.addTexCoord(u, v)
       }
 
       bandPos -= bandStep
@@ -171,6 +180,9 @@ class SkyBox(
     val colorHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vColor")
     colorBuffer.bind(colorHandle)
 
+    val texCoordHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vTexCoord")
+    textureBuffer.bind(texCoordHandle)
+
     // Draw the elements
     indexBuffer.bind()
     indexBuffer.draw(GLES20.GL_TRIANGLES)
@@ -178,6 +190,7 @@ class SkyBox(
     // Unbind the buffers
     vertexBuffer.unbind(positionHandle)
     colorBuffer.unbind()
+    textureBuffer.unbind()
   }
 
   companion object {
