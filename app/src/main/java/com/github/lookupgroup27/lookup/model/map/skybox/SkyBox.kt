@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.model.map.skybox
 import android.opengl.GLES20
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
+import com.github.lookupgroup27.lookup.model.map.renderables.utils.Sphere.generateSphericalGeometry
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.TextureBuffer
@@ -35,12 +36,29 @@ class SkyBox(
     val numVertices = numBands * stepsPerBand
     val numIndices = (numBands - 1) * stepsPerBand * 6
 
+    val geometryData = generateSphericalGeometry(numBands, stepsPerBand)
+
     vertexBuffer.reset(numVertices)
     colorBuffer.reset(numVertices)
-    indexBuffer.reset(numIndices)
-    textureBuffer.reset(numVertices) // Initialize texture buffer
+    indexBuffer.reset(geometryData.indices.size)
+    textureBuffer.reset(numVertices)
 
-    generateGeometry()
+    // Add vertices
+    for (i in 0 until geometryData.vertices.size step 3) {
+      vertexBuffer.addVertex(
+          geometryData.vertices[i], geometryData.vertices[i + 1], geometryData.vertices[i + 2])
+    }
+
+    // Add colors
+    geometryData.colors.forEach { colorBuffer.addColor(it) }
+
+    // Add texture coordinates
+    for (i in 0 until geometryData.textureCoords.size step 2) {
+      textureBuffer.addTexCoord(geometryData.textureCoords[i], geometryData.textureCoords[i + 1])
+    }
+
+    // Add indices
+    geometryData.indices.forEach { indexBuffer.addIndex(it) }
     // Initialize the ShaderProgram
     val vertexShaderCode =
         """
@@ -71,82 +89,6 @@ class SkyBox(
             .trimIndent()
 
     shaderProgram = ShaderProgram(vertexShaderCode, fragmentShaderCode)
-  }
-
-  /** Generates the vertices, colors, and indices for the skybox. */
-  private fun generateGeometry() {
-    val sinAngles = FloatArray(stepsPerBand)
-    val cosAngles = FloatArray(stepsPerBand)
-
-    // Calculate angles for a circular band
-    val angleStep = 2.0f * Math.PI.toFloat() / (stepsPerBand - 1)
-    var angle = 0f
-    for (i in sinAngles.indices) {
-      sinAngles[i] = Math.sin(angle.toDouble()).toFloat()
-      cosAngles[i] = Math.cos(angle.toDouble()).toFloat()
-      angle += angleStep
-    }
-
-    val bandStep = 2.0f / (numBands - 1)
-    var bandPos = 1f
-
-    // Generate vertices and colors
-    for (band in 0 until numBands) {
-      val intensity =
-          if (bandPos > 0) {
-            (bandPos * 20 + 50).toInt()
-          } else {
-            (bandPos * 40 + 40).toInt()
-          }
-
-      val color = (intensity shl 16) or 0xff000000.toInt()
-      val sinPhi = if (bandPos > -1) Math.sqrt(1 - bandPos * bandPos.toDouble()).toFloat() else 0f
-
-      val v = (band + 1f) / numBands // Latitude for texture coordinates
-      for (i in 0 until stepsPerBand) {
-        val u = i.toFloat() / (stepsPerBand - 1) // Longitude for texture coordinates
-
-        vertexBuffer.addVertex(cosAngles[i] * sinPhi, bandPos, sinAngles[i] * sinPhi)
-        colorBuffer.addColor(color)
-        textureBuffer.addTexCoord(u, v)
-      }
-
-      bandPos -= bandStep
-    }
-
-    // Generate indices
-    var topBandStart = 0
-    var bottomBandStart = stepsPerBand
-
-    for (band in 0 until numBands - 1) {
-      for (i in 0 until stepsPerBand - 1) {
-        val topLeft = (topBandStart + i).toShort()
-        val topRight = (topLeft + 1).toShort()
-        val bottomLeft = (bottomBandStart + i).toShort()
-        val bottomRight = (bottomLeft + 1).toShort()
-
-        // First triangle
-        indexBuffer.addIndex(topLeft)
-        indexBuffer.addIndex(bottomRight)
-        indexBuffer.addIndex(bottomLeft)
-
-        // Second triangle
-        indexBuffer.addIndex(topRight)
-        indexBuffer.addIndex(bottomRight)
-        indexBuffer.addIndex(topLeft)
-      }
-
-      // Close the circular band
-      indexBuffer.addIndex((topBandStart + stepsPerBand - 1).toShort())
-      indexBuffer.addIndex(bottomBandStart.toShort())
-      indexBuffer.addIndex((bottomBandStart + stepsPerBand - 1).toShort())
-      indexBuffer.addIndex(topBandStart.toShort())
-      indexBuffer.addIndex(bottomBandStart.toShort())
-      indexBuffer.addIndex((topBandStart + stepsPerBand - 1).toShort())
-
-      topBandStart += stepsPerBand
-      bottomBandStart += stepsPerBand
-    }
   }
 
   /**
