@@ -3,10 +3,12 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
+import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
+import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
+import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -23,11 +25,14 @@ class MapRenderer : GLSurfaceView.Renderer {
 
   private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
+  private lateinit var textureManager: TextureManager
+
+  private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
+
+  private lateinit var context: Context
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
-
-  private lateinit var context: Context
 
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
     // Set the background frame color
@@ -79,6 +84,13 @@ class MapRenderer : GLSurfaceView.Renderer {
                 vertexShaderCode,
                 fragmentShaderCode))
 
+    // Initialize TextureManager
+    textureManager = TextureManager(context)
+
+    // Load the skybox texture (replace with your texture resource ID)
+    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
+
+    // Initialize the SkyBox
     skyBox = SkyBox()
   }
 
@@ -88,6 +100,9 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
     GLES20.glDepthMask(false) // Disable depth writing
+
+    // Bind the texture and render the SkyBox
+    textureManager.bindTexture(skyBoxTextureHandle)
 
     // Use this MVP matrix to render the skybox
     skyBox.draw(camera)

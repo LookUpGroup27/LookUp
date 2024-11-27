@@ -2,8 +2,8 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.opengl.GLES20
 import com.github.lookupgroup27.lookup.model.map.Camera
-import com.github.lookupgroup27.lookup.util.ShaderUtils.loadShader
 import com.github.lookupgroup27.lookup.util.BufferUtils.toBuffer
+import com.github.lookupgroup27.lookup.util.ShaderUtils.loadShader
 
 /**
  * Represents a star in the 3D space
