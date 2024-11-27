@@ -107,6 +107,25 @@ fun RegisterScreen(viewModel: RegisterViewModel, navigationActions: NavigationAc
                           unfocusedBorderColor = Color.Gray,
                           cursorColor = Color.White))
 
+              Spacer(modifier = Modifier.height(16.dp))
+
+              OutlinedTextField(
+                  value = uiState.confirmPassword,
+                  onValueChange = { viewModel.onConfirmPasswordChanged(it) },
+                  label = { Text("Confirm Password", color = Color.White) },
+                  visualTransformation = PasswordVisualTransformation(),
+                  modifier = Modifier.fillMaxWidth().testTag("confirm_password_field"),
+                  textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+                  colors =
+                      TextFieldDefaults.outlinedTextFieldColors(
+                          focusedTextColor = Color.White,
+                          unfocusedTextColor = Color.White,
+                          focusedLabelColor = Color.White,
+                          unfocusedLabelColor = Color.Gray,
+                          focusedBorderColor = Color.White,
+                          unfocusedBorderColor = Color.Gray,
+                          cursorColor = Color.White))
+
               Spacer(modifier = Modifier.height(24.dp))
 
               Button(
