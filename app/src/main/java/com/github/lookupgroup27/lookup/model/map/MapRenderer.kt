@@ -99,15 +99,13 @@ class MapRenderer : GLSurfaceView.Renderer {
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-    GLES20.glDepthMask(false) // Disable depth writing
 
     // Bind the texture and render the SkyBox
     textureManager.bindTexture(skyBoxTextureHandle)
-
-    // Use this MVP matrix to render the skybox
     skyBox.draw(camera)
 
-    GLES20.glDepthMask(true) // Re-enable depth writing for other objects
+    // Render the objects
+    shapes.forEach { it.draw(camera) }
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
