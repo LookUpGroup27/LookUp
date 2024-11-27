@@ -13,6 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class PostsViewModelTest {
@@ -172,5 +173,53 @@ class PostsViewModelTest {
     verify(postsRepository)
         .updatePost(
             org.mockito.kotlin.eq(testPost), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+  }
+
+  @Test
+  fun `test deletePost calls repository deletePost for matching post URI`() = runBlocking {
+    val postList =
+        listOf(
+            testPost,
+            Post(
+                "2",
+                "otherUri",
+                "anotherUsername",
+                5,
+                4.0,
+                10.0,
+                20.0,
+                1,
+                listOf("another@gmail.com")))
+
+    // Mock repository behavior to provide post list
+    `when`(postsRepository.getPosts(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+        .thenAnswer { it.getArgument<(List<Post>) -> Unit>(0)(postList) }
+    postsViewModel.getPosts() // Populate ViewModel with posts
+
+    var successCalled = false
+    var failureCalled = false
+
+    // Mock the repository's deletePost method to simulate success
+    doAnswer { invocation ->
+          val onSuccess = invocation.arguments[1] as () -> Unit
+          onSuccess() // Simulate success callback
+          null
+        }
+        .whenever(postsRepository)
+        .deletePost(org.mockito.kotlin.eq("1"), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+
+    // Invoke deletePost with the matching URI
+    postsViewModel.deletePost(
+        post = "testUri",
+        onSuccess = { successCalled = true },
+        onFailure = { failureCalled = true })
+
+    // Verify repository's deletePost was called with the correct UID
+    verify(postsRepository)
+        .deletePost(org.mockito.kotlin.eq("1"), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+
+    // Assert callbacks
+    assertThat(successCalled, `is`(true))
+    assertThat(failureCalled, `is`(false))
   }
 }
