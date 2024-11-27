@@ -1,50 +1,44 @@
 package com.github.lookupgroup27.lookup.ui.googlemap
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
-import com.github.lookupgroup27.lookup.ui.googlemap.components.MapControls
-import com.github.lookupgroup27.lookup.ui.googlemap.components.MapView
-import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
-import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
-import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
+import com.github.lookupgroup27.lookup.ui.googlemap.components.*
+import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
+
+private const val LOCATION_PERMISSION_REQUEST_CODE: Int = 1001
+private const val NUMBER_OF_STARS: Int = 3
 
 /**
  * Screen that displays a Google Map with user's location and posts.
  *
  * @param navigationActions Actions to navigate to different screens.
  * @param postsViewModel ViewModel to fetch posts.
+ * @param profileViewModel ViewModel to fetch user profile.
  */
-private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
-
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun GoogleMapScreen(
     navigationActions: NavigationActions,
-    postsViewModel: PostsViewModel = viewModel()
+    postsViewModel: PostsViewModel = viewModel(),
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
   val context = LocalContext.current
   var hasLocationPermission by remember { mutableStateOf(false) }
@@ -54,6 +48,15 @@ fun GoogleMapScreen(
   val isLoggedIn = auth.currentUser != null
 
   val allPosts by postsViewModel.allPosts.collectAsState()
+
+  profileViewModel.fetchUserProfile()
+  val profile = profileViewModel.userProfile.value
+  val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
+  val userEmail = user?.email ?: ""
+  val username by remember { mutableStateOf(profile?.username ?: "") }
+  val bio by remember { mutableStateOf(profile?.bio ?: "") }
+  val email by remember { mutableStateOf(userEmail) }
+  val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
   LaunchedEffect(Unit) {
     hasLocationPermission =
@@ -70,6 +73,21 @@ fun GoogleMapScreen(
       Toast.makeText(
               context, "Location permission is required to access the map.", Toast.LENGTH_LONG)
           .show()
+    }
+  }
+
+  LaunchedEffect(allPosts, profile) {
+    if (userEmail.isEmpty()) {
+      Toast.makeText(context, "Please sign in to rate photos on the feed.", Toast.LENGTH_LONG)
+          .show()
+    }
+    allPosts.forEach { post ->
+      if (!postRatings.containsKey(post.uid)) {
+        // Get saved rating from profile, or initialize with all false
+        val savedRating = profile?.ratings?.get(post.uid) ?: 0
+        val initialRating = List(NUMBER_OF_STARS) { index -> index < savedRating }
+        postRatings[post.uid] = initialRating.toMutableList()
+      }
     }
   }
 
@@ -111,7 +129,32 @@ fun GoogleMapScreen(
               hasLocationPermission,
               locationProvider.currentLocation.value,
               autoCenteringEnabled, // Pass the state
-              allPosts)
+              allPosts,
+              userEmail,
+              updateProfile = { profile, updatedRatings ->
+                val newProfile: UserProfile =
+                    profile?.copy(
+                        username = username,
+                        bio = bio,
+                        email = email,
+                        ratings = updatedRatings ?: emptyMap())
+                        ?: UserProfile(
+                            username = username,
+                            bio = bio,
+                            email = email,
+                            ratings = updatedRatings ?: emptyMap())
+                profileViewModel.updateUserProfile(newProfile)
+              },
+              profile = profile,
+              updatePost = { post, newAvg, newStarsCount, newUsersNumber, newRatedBy ->
+                postsViewModel.updatePost(
+                    post.copy(
+                        averageStars = newAvg,
+                        starsCount = newStarsCount,
+                        usersNumber = newUsersNumber,
+                        ratedBy = newRatedBy))
+              },
+              postRatings = postRatings)
         }
       })
 }
