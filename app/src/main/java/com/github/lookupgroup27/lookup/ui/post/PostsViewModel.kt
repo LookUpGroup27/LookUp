@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
@@ -12,13 +11,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   val post = mutableStateOf<Post?>(null)
@@ -82,35 +77,39 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     repository.updatePost(post, onSuccess, onFailure)
   }
 
-  fun cleanUpInvalidPosts() {
-    viewModelScope.launch {
-      try {
-        for (post in _allPosts.value) {
-          val imageExists = doesImageExist(post.uri)
-          if (!imageExists) {
-            deletePost(post.uri)
+  // This function may be used to sync the firestore database with the firebase storage.
+  // It is not used in the app, but it is a good practice to have it in case we need to sync the
+  // database with the storage.
+  /*
+    fun cleanUpInvalidPosts() {
+      viewModelScope.launch {
+        try {
+          for (post in _allPosts.value) {
+            val imageExists = doesImageExist(post.uri)
+            if (!imageExists) {
+              deletePost(post.uri)
+            }
           }
+        } catch (e: Exception) {
+          Log.e("PostsViewModel", "Error during cleanup: ${e.message}")
         }
+      }
+    }
+
+    suspend fun doesImageExist(imageUri: String): Boolean {
+      val storage = FirebaseStorage.getInstance()
+      return try {
+        storage.getReferenceFromUrl(imageUri).metadata.await()
+        true // Image exists
       } catch (e: Exception) {
-        Log.e("PostsViewModel", "Error during cleanup: ${e.message}")
+        if (e is StorageException && e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+          false // Image does not exist
+        } else {
+          throw e // Handle other exceptions
+        }
       }
     }
-  }
-
-  suspend fun doesImageExist(imageUri: String): Boolean {
-    val storage = FirebaseStorage.getInstance()
-    return try {
-      storage.getReferenceFromUrl(imageUri).metadata.await()
-      true // Image exists
-    } catch (e: Exception) {
-      if (e is StorageException && e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
-        false // Image does not exist
-      } else {
-        throw e // Handle other exceptions
-      }
-    }
-  }
-
+  */
   companion object {
     val Factory: ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {
