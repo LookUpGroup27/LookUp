@@ -41,7 +41,8 @@ class MapViewModel : ViewModel() {
   fun registerSensorListener(activity: ComponentActivity) {
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val orientation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-    sensorManager.registerListener(mapRenderer.camera, orientation, SensorManager.SENSOR_DELAY_NORMAL)
+    sensorManager.registerListener(
+        mapRenderer.camera, orientation, SensorManager.SENSOR_DELAY_NORMAL)
   }
 
   /**
