@@ -75,7 +75,7 @@ fun MenuScreen(navigationActions: NavigationActions) {
                     painter = painterResource(id = R.drawable.app_logo),
                     contentDescription = "App Logo",
                     modifier =
-                        Modifier.size(250.dp)
+                        Modifier.size(200.dp)
                             .align(Alignment.CenterHorizontally)
                             .testTag("app_logo"))
 
