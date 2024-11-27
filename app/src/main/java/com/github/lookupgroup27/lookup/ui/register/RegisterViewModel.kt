@@ -34,16 +34,31 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
     _uiState.update { it.copy(password = password) }
   }
 
+  fun onConfirmPasswordChanged(confirmPassword: String) {
+    _uiState.update { it.copy(confirmPassword = confirmPassword) }
+  }
+
   fun clearFields() {
-    _uiState.value = _uiState.value.copy(email = "", password = "")
+    _uiState.value = RegisterState()
   }
 
   fun registerUser(onSuccess: () -> Unit, onError: (String) -> Unit) {
     val email = _uiState.value.email
     val password = _uiState.value.password
+    val confirmPassword = _uiState.value.confirmPassword
 
-    if (email.isBlank() || password.isBlank()) {
-      onError("Email and password cannot be empty")
+    if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+      onError("Email, password, and confirmation cannot be empty")
+      return
+    }
+
+    if (password.length < 8) {
+      onError("Password must be at least 8 characters")
+      return
+    }
+
+    if (password != confirmPassword) {
+      onError("Passwords do not match")
       return
     }
 
