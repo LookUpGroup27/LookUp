@@ -99,7 +99,6 @@ class MapRenderer : GLSurfaceView.Renderer {
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-
     // Bind the texture and render the SkyBox
     textureManager.bindTexture(skyBoxTextureHandle)
     skyBox.draw(camera)
