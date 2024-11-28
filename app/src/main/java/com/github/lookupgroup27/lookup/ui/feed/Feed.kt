@@ -67,9 +67,10 @@ fun FeedScreen(
   val proximityPostFetcher = remember { ProximityPostFetcher(postsViewModel, context) }
 
   var locationPermissionGranted by remember { mutableStateOf(false) }
-  val nearbyPosts by
+  val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: proximityPostFetcher.nearbyPosts.collectAsState())
+  val nearbyPosts = unfilteredPosts.filter { it.username != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
