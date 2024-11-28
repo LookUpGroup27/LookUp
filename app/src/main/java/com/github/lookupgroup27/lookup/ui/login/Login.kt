@@ -25,6 +25,12 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Displays the login screen where users can enter their credentials to log in.
+ *
+ * @param viewModel The [LoginViewModel] that handles the screen state and logic.
+ * @param navigationActions Navigation actions to switch between screens.
+ */
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions) {
   val context = LocalContext.current
@@ -72,6 +78,7 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
                           fontWeight = FontWeight.Bold, color = Color.White),
                   modifier = Modifier.padding(bottom = 24.dp).testTag("screen_title"))
 
+              // Email input field using CustomOutlinedTextField.
               CustomOutlinedTextField(
                   value = uiState.email,
                   onValueChange = { viewModel.onEmailChanged(it) },
@@ -80,10 +87,12 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
 
               Spacer(modifier = Modifier.height(16.dp))
 
+              // Password input field using CustomOutlinedTextField with isPassword = true.
               CustomOutlinedTextField(
                   value = uiState.password,
                   onValueChange = { viewModel.onPasswordChanged(it) },
                   label = "Password",
+                  isPassword = true,
                   testTag = "password_field")
 
               Spacer(modifier = Modifier.height(24.dp))
@@ -101,8 +110,14 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
                         })
                   },
                   modifier = Modifier.fillMaxWidth().testTag("login_button"),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
-                    Text("Login", color = Color.White)
+                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)),
+                  enabled = uiState.email.isNotBlank() && uiState.password.isNotBlank()) {
+                    Text(
+                        "Login",
+                        color =
+                            if (uiState.email.isNotBlank() && uiState.password.isNotBlank())
+                                Color.White
+                            else Color.Gray)
                   }
             }
       })
