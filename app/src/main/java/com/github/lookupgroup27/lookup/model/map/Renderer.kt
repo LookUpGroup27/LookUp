@@ -4,7 +4,11 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.map.renderables.Object
+import com.github.lookupgroup27.lookup.model.map.renderables.Planet
+import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
+import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -15,8 +19,15 @@ import javax.microedition.khronos.opengles.GL10
  */
 class Renderer : GLSurfaceView.Renderer {
 
-  private lateinit var textureManager: TextureManager
+  companion object {
+    private const val VERTEX_SHADER_FILE = "vertex_shader.glsl"
+    private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
+  }
+
+  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
+  private lateinit var planet: Planet
+  private lateinit var textureManager: TextureManager
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
@@ -25,11 +36,60 @@ class Renderer : GLSurfaceView.Renderer {
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
 
+  /**
+   * Called when the surface is created or recreated. Initializes OpenGL settings, loads textures,
+   * and sets up the scene objects.
+   *
+   * @param unused the GL10 interface, not used
+   * @param config the EGLConfig of the created surface
+   */
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
-    // Set the background frame color
-    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f) // Set the background color
+    GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
-    GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+    // Load the shaders
+    val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
+    val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
+
+    // Create the shapes (Make sure you always create the shapes after the OpenGL context is
+    // created)
+    shapes =
+        listOf(
+            Star(
+                0.0f,
+                0f,
+                -1f,
+                floatArrayOf(1.0f, 1.0f, 1.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                0.24f,
+                0f,
+                -0.97f,
+                floatArrayOf(1.0f, 1.0f, 1.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                1f,
+                0f,
+                0f,
+                color = floatArrayOf(1.0f, 0.0f, 0.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                0f,
+                1f,
+                0f,
+                color = floatArrayOf(0.0f, 1.0f, 0.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                0f,
+                0f,
+                1f,
+                color = floatArrayOf(0.0f, 0.0f, 1.0f),
+                vertexShaderCode,
+                fragmentShaderCode))
 
     // Initialize TextureManager
     textureManager = TextureManager(context)
@@ -39,31 +99,54 @@ class Renderer : GLSurfaceView.Renderer {
 
     // Initialize the SkyBox
     skyBox = SkyBox()
+    textureManager = TextureManager(context) // Initialize texture manager
+    skyBoxTextureHandle =
+        textureManager.loadTexture(R.drawable.skybox_texture) // Load skybox texture
+    skyBox = SkyBox() // Initialize the skybox
+    intializeObjects() // Initialize other renderable objects
   }
 
+  /**
+   * Called to redraw the frame. Clears the screen, updates the camera view, and renders objects in
+   * the scene.
+   *
+   * @param unused the GL10 interface, not used
+   */
   override fun onDrawFrame(unused: GL10) {
+    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT) // Clear the screen
 
-    // Clear the screen
-    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+    GLES20.glDepthMask(false) // Disable depth writing for the skybox
 
-    GLES20.glDepthMask(false) // Disable depth writing
+    textureManager.bindTexture(skyBoxTextureHandle) // Bind skybox texture
+    skyBox.draw(camera) // Render skybox
 
-    // Bind the texture and render the SkyBox
-    textureManager.bindTexture(skyBoxTextureHandle)
+    GLES20.glDepthMask(true) // Re-enable depth writing
 
-    // Use this MVP matrix to render the skybox
-    skyBox.draw(camera)
-
-    GLES20.glDepthMask(true) // Re-enable depth writing for other objects
+    drawObjects() // Render other objects
   }
 
+  /**
+   * Called when the surface dimensions change. Adjusts the viewport and updates the projection
+   * matrix based on the new aspect ratio.
+   *
+   * @param unused the GL10 interface, not used
+   * @param width the new width of the surface
+   * @param height the new height of the surface
+   */
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
-    // Specify the size of the rendering window
-    GLES20.glViewport(0, 0, width, height)
+    GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
+    val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
+    camera.updateProjectionMatrix(ratio) // Update camera projection matrix
+  }
 
-    val ratio: Float = width.toFloat() / height.toFloat()
+  /** Initializes additional objects in the scene. Currently includes a planet. */
+  private fun intializeObjects() {
+    planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
+  }
 
-    camera.updateProjectionMatrix(ratio)
+  /** Renders additional objects in the scene using the current MVP matrix. */
+  private fun drawObjects() {
+    planet.draw(camera) // Render the planet
   }
 
   fun updateContext(context: Context) {
