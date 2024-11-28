@@ -31,8 +31,10 @@ class Planet(
     private val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
     private val textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
-    stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND
-) : Object() {
+    stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
+    private val vertexShaderCode: String = "",
+    private val fragmentShaderCode: String = ""
+) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val sphereRenderer = SphereRenderer(numBands, stepsPerBand)
 
@@ -72,6 +74,12 @@ class Planet(
   override fun draw(camera: Camera) {
     val modelMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
+    val viewMatrix = FloatArray(16)
+    val projMatrix = FloatArray(16)
+
+    // Copy camera matrices to avoid modification
+    System.arraycopy(camera.viewMatrix, 0, viewMatrix, 0, 16)
+    System.arraycopy(camera.projMatrix, 0, projMatrix, 0, 16)
 
     // Apply object transformations
     Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
@@ -79,10 +87,10 @@ class Planet(
 
     // Combine model, view, and projection matrices in correct order
     val viewModelMatrix = FloatArray(16)
-    Matrix.multiplyMM(viewModelMatrix, 0, camera.viewMatrix, 0, modelMatrix, 0)
+    Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
 
     val mvpMatrix = FloatArray(16)
-    Matrix.multiplyMM(mvpMatrix, 0, camera.projMatrix, 0, viewModelMatrix, 0)
+    Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewModelMatrix, 0)
 
     // Pass final MVP matrix to the renderer
     sphereRenderer.bindShaderAttributes(mvpMatrix)
