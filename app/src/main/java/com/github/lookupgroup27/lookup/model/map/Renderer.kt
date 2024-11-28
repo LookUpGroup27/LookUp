@@ -4,7 +4,10 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.map.renderables.Object
+import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
+import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -15,8 +18,14 @@ import javax.microedition.khronos.opengles.GL10
  */
 class Renderer : GLSurfaceView.Renderer {
 
-  private lateinit var textureManager: TextureManager
+  companion object {
+    private const val VERTEX_SHADER_FILE = "vertex_shader.glsl"
+    private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
+  }
+
+  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
+  private lateinit var textureManager: TextureManager
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
@@ -30,6 +39,50 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
     GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+
+    // Load the shaders
+    val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
+    val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
+
+    // Create the shapes (Make sure you always create the shapes after the OpenGL context is
+    // created)
+    shapes =
+        listOf(
+            Star(
+                0.0f,
+                0f,
+                -1f,
+                floatArrayOf(1.0f, 1.0f, 1.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                0.24f,
+                0f,
+                -0.97f,
+                floatArrayOf(1.0f, 1.0f, 1.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                1f,
+                0f,
+                0f,
+                color = floatArrayOf(1.0f, 0.0f, 0.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                0f,
+                1f,
+                0f,
+                color = floatArrayOf(0.0f, 1.0f, 0.0f),
+                vertexShaderCode,
+                fragmentShaderCode),
+            Star(
+                0f,
+                0f,
+                1f,
+                color = floatArrayOf(0.0f, 0.0f, 1.0f),
+                vertexShaderCode,
+                fragmentShaderCode))
 
     // Initialize TextureManager
     textureManager = TextureManager(context)

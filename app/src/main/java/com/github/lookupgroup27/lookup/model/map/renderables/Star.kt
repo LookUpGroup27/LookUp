@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 import android.opengl.GLES20
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.util.BufferUtils.toBuffer
+import com.github.lookupgroup27.lookup.util.ShaderUtils.loadShader
 
 /**
  * Represents a star in the 3D space
@@ -11,27 +12,17 @@ import com.github.lookupgroup27.lookup.util.BufferUtils.toBuffer
  * @param y the y coordinate of the star
  * @param z the z coordinate of the star
  * @param color the color of the star
+ * @param vertexShaderCode the vertex shader code
+ * @param fragmentShaderCode the fragment shader code
  */
-class Star(x: Float, y: Float, z: Float, color: FloatArray) : Object() {
-
-  private val vertexShaderCode =
-      "uniform mat4 modelMatrix;" +
-          "uniform mat4 viewMatrix;" +
-          "uniform mat4 projMatrix;" +
-          "attribute vec4 vPosition;" +
-          "attribute vec3 vColor;" +
-          "varying vec3 color;" +
-          "void main() {" +
-          "  gl_Position = projMatrix * viewMatrix * modelMatrix * vPosition;" +
-          "  color = vColor;" +
-          "}"
-
-  private val fragmentShaderCode =
-      "precision mediump float;" +
-          "varying vec3 color;" +
-          "void main() {" +
-          "  gl_FragColor = vec4(color, 1.0);" +
-          "}"
+class Star(
+    x: Float,
+    y: Float,
+    z: Float,
+    color: FloatArray,
+    vertexShaderCode: String,
+    fragmentShaderCode: String
+) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val vertexCoordinates: FloatArray =
       floatArrayOf(
