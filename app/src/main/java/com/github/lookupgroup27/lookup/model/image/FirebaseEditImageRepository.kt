@@ -43,8 +43,11 @@ class FirebaseEditImageRepository(private val firebaseStorage: FirebaseStorage) 
    * @param url The Firebase Storage image URL.
    * @return The storage path of the image in Firebase Storage.
    */
-  private fun getPathFromUrl(url: String): String {
+  fun getPathFromUrl(url: String?): String {
+    require(!url.isNullOrBlank()) { "URL cannot be null or empty" }
     val decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8.toString())
-    return decodedUrl.substringAfter("o/").substringBefore("?alt=media")
+    return decodedUrl.substringAfter("o/", "").substringBefore("?alt=media", "").ifEmpty {
+      throw IllegalArgumentException("Invalid Firebase URL: $url")
+    }
   }
 }

@@ -134,12 +134,25 @@ class FirebaseEditImageRepositoryTest {
   fun `getPathFromUrl extracts correct path from URL`() {
     val testImageUrl = "https://firebase.storage/o/images%2FtestImage.jpg?alt=media"
 
-    val path =
-        repository.javaClass
-            .getDeclaredMethod("getPathFromUrl", String::class.java)
-            .apply { isAccessible = true }
-            .invoke(repository, testImageUrl)
+    val path = repository.getPathFromUrl(testImageUrl)
 
     assertEquals("images/testImage.jpg", path)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun `getPathFromUrl throws exception for null URL`() {
+    repository.getPathFromUrl(null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun `getPathFromUrl throws exception for empty URL`() {
+    repository.getPathFromUrl("")
+  }
+
+  @Test
+  fun `getPathFromUrl handles already-decoded URL`() {
+    val url = "https://firebase.storage/o/images/testImage.jpg?alt=media"
+    val result = repository.getPathFromUrl(url)
+    assertEquals("images/testImage.jpg", result)
   }
 }
