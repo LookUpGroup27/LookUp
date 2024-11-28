@@ -61,12 +61,11 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
   override fun onDrawFrame(unused: GL10) {
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT) // Clear the screen
 
-    Matrix.multiplyMM(
-        mvpMatrix, 0, projectionMatrix, 0, camera.viewMatrix, 0) // Calculate MVP matrix
-
     GLES20.glDepthMask(false) // Disable depth writing for the skybox
+
     textureManager.bindTexture(skyBoxTextureHandle) // Bind skybox texture
     skyBox.draw(camera) // Render skybox
+
     GLES20.glDepthMask(true) // Re-enable depth writing
 
     drawObjects() // Render other objects
@@ -103,11 +102,10 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
   /** Initializes additional objects in the scene. Currently includes a planet. */
   private fun intializeObjects() {
     planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
-    planet.initialize() // Initialize planet
   }
 
   /** Renders additional objects in the scene using the current MVP matrix. */
   private fun drawObjects() {
-    planet.render(mvpMatrix) // Render the planet
+    planet.draw(camera) // Render the planet
   }
 }
