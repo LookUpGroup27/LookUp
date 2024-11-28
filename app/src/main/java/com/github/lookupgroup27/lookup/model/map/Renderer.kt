@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -25,10 +24,6 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
-  // Temporary storage for the MVP matrix
-  private val mvpMatrix = FloatArray(16)
-  private val viewMatrix = FloatArray(16)
-  private val projectionMatrix = FloatArray(16)
 
   /**
    * Called when the surface is created or recreated. Initializes OpenGL settings, loads textures,
@@ -46,10 +41,6 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
         textureManager.loadTexture(R.drawable.skybox_texture) // Load skybox texture
     skyBox = SkyBox() // Initialize the skybox
     intializeObjects() // Initialize other renderable objects
-
-    // Initialize camera matrices
-    Matrix.setIdentityM(camera.viewMatrix, 0)
-    Matrix.setIdentityM(projectionMatrix, 0)
   }
 
   /**
@@ -83,20 +74,6 @@ class Renderer(private val context: Context) : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
     camera.updateProjectionMatrix(ratio) // Update camera projection matrix
-
-    Matrix.setLookAtM(
-        camera.viewMatrix,
-        0,
-        0f,
-        0f,
-        3f, // Eye position
-        0f,
-        0f,
-        0f, // Look-at position
-        0f,
-        1f,
-        0f // Up vector
-        )
   }
 
   /** Initializes additional objects in the scene. Currently includes a planet. */
