@@ -30,12 +30,6 @@ object GeometryUtils {
 
     // Generate vertices
     for (band in 0 until numBands) {
-      val intensity =
-          if (bandPos > 0) {
-            (bandPos * 20 + 50).toInt()
-          } else {
-            (bandPos * 40 + 40).toInt()
-          }
 
       val sinPhi = if (bandPos > -1) Math.sqrt(1 - bandPos * bandPos.toDouble()).toFloat() else 0f
 
