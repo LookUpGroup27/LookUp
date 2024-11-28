@@ -4,7 +4,10 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.loader.StarsLoader
+import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
+import com.github.lookupgroup27.lookup.model.stars.StarDataRepository
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -17,10 +20,13 @@ class Renderer : GLSurfaceView.Renderer {
 
   private lateinit var textureManager: TextureManager
   private lateinit var skyBox: SkyBox
+  private lateinit var starsLoader: StarsLoader
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
   private lateinit var context: Context
+  private val renderableObjects = mutableListOf<Star>() // List of stars to render
+  private val starDataRepository = StarDataRepository() // Repository for star data
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -28,33 +34,41 @@ class Renderer : GLSurfaceView.Renderer {
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-
     GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
     // Initialize TextureManager
     textureManager = TextureManager(context)
 
-    // Load the skybox texture (replace with your texture resource ID)
+    // Load the skybox texture
     skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
 
     // Initialize the SkyBox
     skyBox = SkyBox()
+
+    // Initialize ObjectLoader
+    starsLoader = StarsLoader(starDataRepository)
+
+    // Load stars using the repository and ObjectLoader
+    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
+    if (stars.isEmpty()) {
+      println("Warning: No stars loaded for rendering.")
+    }
+    // Add stars to the renderable objects list
+    renderableObjects.addAll(stars)
   }
 
   override fun onDrawFrame(unused: GL10) {
-
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
+    // Render the skybox
     GLES20.glDepthMask(false) // Disable depth writing
-
-    // Bind the texture and render the SkyBox
     textureManager.bindTexture(skyBoxTextureHandle)
-
-    // Use this MVP matrix to render the skybox
     skyBox.draw(camera)
+    GLES20.glDepthMask(true) // Re-enable depth writing
 
-    GLES20.glDepthMask(true) // Re-enable depth writing for other objects
+    // Render stars
+    renderableObjects.forEach { it.draw(camera) }
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -62,10 +76,10 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height)
 
     val ratio: Float = width.toFloat() / height.toFloat()
-
     camera.updateProjectionMatrix(ratio)
   }
 
+  /** Updates the context used by the renderer. */
   fun updateContext(context: Context) {
     this.context = context
   }
