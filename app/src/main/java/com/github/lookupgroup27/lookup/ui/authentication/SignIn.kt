@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -128,6 +129,19 @@ fun SignInScreen(navigationActions: NavigationActions) {
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
                     launcher.launch(googleSignInClient.signInIntent)
                   })
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Forgot Password Button
+              TextButton(
+                  onClick = { navigationActions.navigateTo(Screen.PASSWORDRESET) },
+                  modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Text(
+                        text = "Forgot Password?",
+                        style =
+                            MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.primary))
+                  }
             }
       })
 }
