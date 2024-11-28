@@ -118,18 +118,23 @@ open class SphereRenderer(
   fun bindShaderAttributes(mvpMatrix: FloatArray) {
     shaderProgram.use()
 
-    // Pass the MVP matrix to the shader
+    // Get uniform locations
     val mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgram.programId, "uMVPMatrix")
+
+    // Pass the MVP matrix
     GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0)
 
-    // Bind vertex attributes
+    // Enable vertex attributes
     val positionHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vPosition")
+    GLES20.glEnableVertexAttribArray(positionHandle)
     vertexBuffer.bind(positionHandle)
 
     val colorHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vColor")
+    GLES20.glEnableVertexAttribArray(colorHandle)
     colorBuffer.bind(colorHandle)
 
     val texCoordHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vTexCoord")
+    GLES20.glEnableVertexAttribArray(texCoordHandle)
     textureBuffer.bind(texCoordHandle)
   }
 
