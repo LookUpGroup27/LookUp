@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.Matrix
+import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 
 /**
@@ -29,9 +30,11 @@ class Planet(
     private val name: String? = "Planet",
     private val position: FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f),
     private val textureId: Int,
-    numBands: Int = DEFAULT_NUM_BANDS,
-    stepsPerBand: Int = DEFAULT_STEPS_PER_BAND
-) : SphereRenderer(numBands, stepsPerBand) {
+    numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
+    stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND
+) : Object() {
+
+  private val sphereRenderer = SphereRenderer(numBands, stepsPerBand)
 
   private var textureHandle: Int = 0
   private var scale: Float = 0.3f
@@ -49,9 +52,9 @@ class Planet(
    * Initializes the planet's geometry, shaders, and texture. This method prepares the planet for
    * rendering.
    */
-  fun initialize() {
-    initializeBuffers() // Initialize sphere geometry buffers
-    initializeShaders() // Initialize shaders for rendering
+  init {
+    sphereRenderer.initializeBuffers() // Initialize sphere geometry buffers
+    sphereRenderer.initializeShaders() // Initialize shaders for rendering
 
     // Load the planet's texture
     val textureManager = TextureManager(context)
@@ -66,10 +69,13 @@ class Planet(
    *
    * @param mvpMatrix A 4x4 matrix that combines the model, view, and projection transformations.
    */
-  fun render(mvpMatrix: FloatArray) {
-    // Create and apply the model matrix
+  override fun draw(camera: Camera) {
+
+    val mvpMatrix = FloatArray(16)
+    val projectionMatrix = FloatArray(16)
     val modelMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
+    Matrix.setIdentityM(projectionMatrix, 0)
 
     // Apply translation based on the planet's position
     Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
@@ -77,23 +83,26 @@ class Planet(
     // Apply scaling
     Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
 
+    Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, camera.viewMatrix, 0)
+
     // Combine the model matrix with the MVP matrix
     val scaledMvpMatrix = FloatArray(16)
     Matrix.multiplyMM(scaledMvpMatrix, 0, mvpMatrix, 0, modelMatrix, 0)
 
     // Bind shader attributes
-    bindShaderAttributes(scaledMvpMatrix)
+    sphereRenderer.bindShaderAttributes(scaledMvpMatrix)
 
     // Bind and apply texture
-    val textureUniformHandle = GLES20.glGetUniformLocation(shaderProgram.programId, "uTexture")
+    val textureUniformHandle =
+        GLES20.glGetUniformLocation(sphereRenderer.shaderProgram.programId, "uTexture")
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle)
     GLES20.glUniform1i(textureUniformHandle, 0)
 
     // Render the sphere
-    drawSphere()
+    sphereRenderer.drawSphere()
 
     // Unbind shader attributes
-    unbindShaderAttributes()
+    sphereRenderer.unbindShaderAttributes()
   }
 }
