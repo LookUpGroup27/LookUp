@@ -78,6 +78,49 @@ class ProfileRepositoryFirestore(
     auth.signOut()
   }
 
+  override fun saveSelectedAvatar(
+      userId: String,
+      avatarId: Int,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val userDocument = usersCollection.document(userId)
+    userDocument
+        .get()
+        .addOnSuccessListener { document ->
+          if (document.exists()) {
+            // Update the existing document
+            userDocument
+                .update("selectedAvatar", avatarId)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          } else {
+            // Create the document if it doesn't exist
+            val newUserData = mapOf("selectedAvatar" to avatarId)
+            userDocument
+                .set(newUserData)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          }
+        }
+        .addOnFailureListener { exception -> onFailure(exception) }
+  }
+
+  override fun getSelectedAvatar(
+      userId: String,
+      onSuccess: (Int?) -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val userDocument = usersCollection.document(userId)
+    userDocument
+        .get()
+        .addOnSuccessListener { document ->
+          val avatarId = document.getLong("selectedAvatar")?.toInt()
+          onSuccess(avatarId)
+        }
+        .addOnFailureListener { exception -> onFailure(exception) }
+  }
+
   private fun performFirestoreOperation(
       task: Task<Void>,
       onSuccess: () -> Unit,
