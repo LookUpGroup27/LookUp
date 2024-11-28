@@ -23,6 +23,7 @@ object Route {
   const val TAKE_IMAGE = "TakeImage"
   const val IMAGE_REVIEW = "ImageReview"
   const val FEED = "Feed"
+  const val PASSWORDRESET = "PasswordReset"
 }
 
 object Screen {
@@ -40,6 +41,7 @@ object Screen {
   const val TAKE_IMAGE = "Take Image"
   const val IMAGE_REVIEW = "Image Review Screen"
   const val FEED = "Feed Screen"
+  const val PASSWORDRESET = "Password Reset Screen"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
