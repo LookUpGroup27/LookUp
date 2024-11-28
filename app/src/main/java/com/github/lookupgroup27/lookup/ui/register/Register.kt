@@ -18,11 +18,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.register.components.CustomOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,59 +72,29 @@ fun RegisterScreen(viewModel: RegisterViewModel, navigationActions: NavigationAc
                           fontWeight = FontWeight.Bold, color = Color.White),
                   modifier = Modifier.padding(bottom = 24.dp).testTag("screen_title"))
 
-              OutlinedTextField(
+              CustomOutlinedTextField(
                   value = uiState.email,
                   onValueChange = { viewModel.onEmailChanged(it) },
-                  label = { Text("Email", color = Color.White) },
-                  modifier = Modifier.fillMaxWidth().testTag("email_field"),
-                  textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
-                  colors =
-                      TextFieldDefaults.outlinedTextFieldColors(
-                          focusedTextColor = Color.White,
-                          unfocusedTextColor = Color.White,
-                          focusedLabelColor = Color.White,
-                          unfocusedLabelColor = Color.Gray,
-                          focusedBorderColor = Color.White,
-                          unfocusedBorderColor = Color.Gray,
-                          cursorColor = Color.White))
+                  label = "Email",
+                  testTag = "email_field")
 
               Spacer(modifier = Modifier.height(16.dp))
 
-              OutlinedTextField(
+              CustomOutlinedTextField(
                   value = uiState.password,
                   onValueChange = { viewModel.onPasswordChanged(it) },
-                  label = { Text("Password", color = Color.White) },
-                  visualTransformation = PasswordVisualTransformation(),
-                  modifier = Modifier.fillMaxWidth().testTag("password_field"),
-                  textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
-                  colors =
-                      TextFieldDefaults.outlinedTextFieldColors(
-                          focusedTextColor = Color.White,
-                          unfocusedTextColor = Color.White,
-                          focusedLabelColor = Color.White,
-                          unfocusedLabelColor = Color.Gray,
-                          focusedBorderColor = Color.White,
-                          unfocusedBorderColor = Color.Gray,
-                          cursorColor = Color.White))
+                  label = "Password",
+                  isPassword = true,
+                  testTag = "password_field")
 
               Spacer(modifier = Modifier.height(16.dp))
 
-              OutlinedTextField(
+              CustomOutlinedTextField(
                   value = uiState.confirmPassword,
                   onValueChange = { viewModel.onConfirmPasswordChanged(it) },
-                  label = { Text("Confirm Password", color = Color.White) },
-                  visualTransformation = PasswordVisualTransformation(),
-                  modifier = Modifier.fillMaxWidth().testTag("confirm_password_field"),
-                  textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
-                  colors =
-                      TextFieldDefaults.outlinedTextFieldColors(
-                          focusedTextColor = Color.White,
-                          unfocusedTextColor = Color.White,
-                          focusedLabelColor = Color.White,
-                          unfocusedLabelColor = Color.Gray,
-                          focusedBorderColor = Color.White,
-                          unfocusedBorderColor = Color.Gray,
-                          cursorColor = Color.White))
+                  label = "Confirm Password",
+                  isPassword = true,
+                  testTag = "confirm_password_field")
 
               Spacer(modifier = Modifier.height(24.dp))
 
