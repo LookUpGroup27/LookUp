@@ -70,7 +70,7 @@ class QuizKtTest {
     // Check the 2 themes are correctly displayed
     composeTestRule.onNodeWithTag("earth_button").assertIsDisplayed()
     composeTestRule.onNodeWithText("Earth").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("solar system_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("solar system_button").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithText("Solar System").assertIsDisplayed()
   }
 
@@ -102,7 +102,7 @@ class QuizKtTest {
     composeTestRule.setContent {
       QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
     }
-    composeTestRule.onNodeWithTag("solar system_button").performClick()
+    composeTestRule.onNodeWithTag("solar system_button").performScrollTo().performClick()
 
     verify(mockNavigationActions).navigateTo(Screen.QUIZ_PLAY)
   }
