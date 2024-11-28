@@ -2,15 +2,14 @@ package com.github.lookupgroup27.lookup.model.map.renderables.utils
 
 /**
  * Utility object for generating spherical geometry. This class provides methods for creating vertex
- * data, color data, texture coordinates, and indices for rendering a 3D sphere using OpenGL.
+ * data, texture coordinates, and indices for rendering a 3D sphere using OpenGL.
  *
  * The sphere is tessellated into latitude bands and longitude steps, which control the level of
  * detail and smoothness of the sphere.
  */
-object Sphere {
+object GeometryUtils {
   fun generateSphericalGeometry(numBands: Int = 20, stepsPerBand: Int = 28): GeometryData {
     val vertices = mutableListOf<Float>()
-    val colors = mutableListOf<Int>()
     val texCoords = mutableListOf<Float>()
     val indices = mutableListOf<Short>()
 
@@ -29,7 +28,7 @@ object Sphere {
     val bandStep = 2.0f / (numBands - 1)
     var bandPos = 1f
 
-    // Generate vertices and colors
+    // Generate vertices
     for (band in 0 until numBands) {
       val intensity =
           if (bandPos > 0) {
@@ -38,7 +37,6 @@ object Sphere {
             (bandPos * 40 + 40).toInt()
           }
 
-      val color = (intensity shl 16) or 0xff000000.toInt()
       val sinPhi = if (bandPos > -1) Math.sqrt(1 - bandPos * bandPos.toDouble()).toFloat() else 0f
 
       val v = (band + 1f) / numBands // Latitude for texture coordinates
@@ -46,7 +44,6 @@ object Sphere {
         val u = i.toFloat() / (stepsPerBand - 1) // Longitude for texture coordinates
 
         vertices.addAll(listOf(cosAngles[i] * sinPhi, bandPos, sinAngles[i] * sinPhi))
-        colors.add(color)
         texCoords.addAll(listOf(u, v))
       }
 
@@ -85,17 +82,12 @@ object Sphere {
       bottomBandStart += stepsPerBand
     }
 
-    return GeometryData(
-        vertices.toFloatArray(),
-        colors.toIntArray(),
-        texCoords.toFloatArray(),
-        indices.toShortArray())
+    return GeometryData(vertices.toFloatArray(), texCoords.toFloatArray(), indices.toShortArray())
   }
 
   /** Data class to hold geometry generation results */
   data class GeometryData(
       val vertices: FloatArray,
-      val colors: IntArray,
       val textureCoords: FloatArray,
       val indices: ShortArray
   )
