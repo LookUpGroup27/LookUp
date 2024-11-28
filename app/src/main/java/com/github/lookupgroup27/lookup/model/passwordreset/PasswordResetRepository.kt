@@ -1,4 +1,5 @@
 package com.github.lookupgroup27.lookup.model.passwordreset
 
-class PasswordResetRepository {
+interface PasswordResetRepository {
+  suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 }
