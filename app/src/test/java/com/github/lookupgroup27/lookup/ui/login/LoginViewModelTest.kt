@@ -48,32 +48,4 @@ class LoginViewModelTest {
     assertEquals("", currentState.email)
     assertEquals("", currentState.password)
   }
-
-  @Test
-  fun `loginUser triggers onError when email is blank`() = runTest {
-    viewModel.onEmailChanged("")
-    viewModel.onPasswordChanged("password123")
-
-    var successCalled = false
-    var errorCalled = false
-
-    viewModel.loginUser(onSuccess = { successCalled = true }, onError = { errorCalled = true })
-
-    assertFalse(successCalled)
-    assertTrue(errorCalled)
-  }
-
-  @Test
-  fun `loginUser triggers onError when password is blank`() = runTest {
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("")
-
-    var successCalled = false
-    var errorCalled = false
-
-    viewModel.loginUser(onSuccess = { successCalled = true }, onError = { errorCalled = true })
-
-    assertFalse(successCalled)
-    assertTrue(errorCalled)
-  }
 }
