@@ -2,6 +2,7 @@ package com.github.lookupgroup27.lookup.ui.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,7 +23,22 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
+/**
+ * Composable function for displaying a user's collection of astronomy images.
+ *
+ * The `CollectionScreen` shows a list of images fetched from the user's collection. It allows users
+ * to navigate back to the profile screen or select an image to edit it. The layout dynamically
+ * adjusts based on whether the collection is empty or contains images.
+ *
+ * @param navigationActions The [NavigationActions] object for handling navigation between screens.
+ * @param viewModel The [CollectionViewModel] instance managing the state of the user's image
+ *   collection.
+ */
 @Composable
 fun CollectionScreen(
     navigationActions: NavigationActions,
@@ -42,7 +58,7 @@ fun CollectionScreen(
         modifier = Modifier.fillMaxSize().blur(10.dp).testTag("background_image"))
 
     IconButton(
-        onClick = { navigationActions.goBack() },
+        onClick = { navigationActions.navigateTo(Screen.PROFILE) },
         modifier =
             Modifier.padding(16.dp)
                 .align(Alignment.TopStart)
@@ -97,6 +113,14 @@ fun CollectionScreen(
                                         contentScale = ContentScale.Crop,
                                         modifier =
                                             Modifier.fillMaxSize()
+                                                .clickable {
+                                                  val encodedImageUrl =
+                                                      URLEncoder.encode(
+                                                          imageUrl,
+                                                          StandardCharsets.UTF_8.toString())
+                                                  navigationActions.navigateToWithImage(
+                                                      encodedImageUrl, Route.EDIT_IMAGE)
+                                                }
                                                 .background(
                                                     MaterialTheme.colorScheme.surface.copy(
                                                         alpha = 0.3f)))
