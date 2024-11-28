@@ -29,6 +29,8 @@ class Renderer : GLSurfaceView.Renderer {
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
   private lateinit var context: Context
+  private lateinit var vertexShaderCode: String
+  private lateinit var fragmentShaderCode: String
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -40,8 +42,8 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
     // Load the shaders
-    val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
-    val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
+    vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
+    fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
 
     // Initialize TextureManager
     textureManager = TextureManager(context)
@@ -87,7 +89,14 @@ class Renderer : GLSurfaceView.Renderer {
     // Try a more central position and potentially larger size
     val position = floatArrayOf(0f, 0f, -2f) // Move closer to the camera
     val color = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
-    star = Star(context, position, color, size = 0.3f)
+    star =
+        Star(
+            context,
+            position,
+            color,
+            size = 1f,
+            vertexShaderCode = vertexShaderCode,
+            fragmentShaderCode = fragmentShaderCode)
   }
 
   private fun drawStar() {
