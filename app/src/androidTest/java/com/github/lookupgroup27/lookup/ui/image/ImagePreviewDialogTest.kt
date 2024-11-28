@@ -118,7 +118,7 @@ class ImagePreviewDialogTest {
           post = testPost, username = "User1", onDismiss = {}, testStarStates, onRatingChanged = {})
     }
     // Perform click on the first star of post with uid "1"
-    composeTestRule.onNodeWithTag("Star_1_1").performClick()
+    composeTestRule.onNodeWithTag("Star_1_1").performScrollTo().performClick()
     postsViewModel.updatePost(testPost)
 
     // Verify that updatePost was called in the postsViewModel

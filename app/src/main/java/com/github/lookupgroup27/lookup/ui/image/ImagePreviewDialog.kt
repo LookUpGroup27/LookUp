@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.image
 
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.Text
@@ -42,7 +43,7 @@ fun ImagePreviewDialog(
               shape = MaterialTheme.shapes.medium // Optional: Add a shape for rounded corners
               ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally) {
                       PostItem(
                           post = post,

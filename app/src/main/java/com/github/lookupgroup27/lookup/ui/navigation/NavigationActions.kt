@@ -24,6 +24,7 @@ object Route {
   const val IMAGE_REVIEW = "ImageReview"
   const val FEED = "Feed"
   const val LOGIN = "Login"
+  const val EDIT_IMAGE = "EditImage"
 }
 
 object Screen {
@@ -42,6 +43,7 @@ object Screen {
   const val IMAGE_REVIEW = "Image Review Screen"
   const val FEED = "Feed Screen"
   const val LOGIN = "Login Screen"
+  const val EDIT_IMAGE = "Edit Image"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
@@ -104,11 +106,11 @@ open class NavigationActions(
   }
 
   /**
-   * Navigate to the ImageReview screen with a specific imageUri.
+   * Navigate to the a screen with a specific imageUri.
    *
-   * @param encodeImageUri The URI of the captured image to review.
+   * @param image The URI of the captured image to review.
    */
-  open fun navigateToImageReview(encodeImageUri: String) {
-    navController.navigate("${Route.IMAGE_REVIEW}/$encodeImageUri")
+  open fun navigateToWithImage(image: String, route: String) {
+    navController.navigate("${route}/$image")
   }
 }
