@@ -5,7 +5,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
-import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
@@ -23,7 +22,6 @@ class Renderer : GLSurfaceView.Renderer {
     private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
   }
 
-  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
   private lateinit var star: Star
   private lateinit var textureManager: TextureManager
