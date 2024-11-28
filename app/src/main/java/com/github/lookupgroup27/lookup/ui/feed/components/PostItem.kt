@@ -1,15 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.feed.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,9 +21,22 @@ import com.github.lookupgroup27.lookup.model.post.Post
  * loaded asynchronously using the post's URI.
  *
  * @param post The post data, including image URI and username
+ * @param starStates The list of star states for the post
+ * @param onRatingChanged The callback to be invoked when the rating is changed
+ * @param color The color to use for the username and average rating
+ * @param textForUsername The text to display for the username
+ * @param showAverage Whether to display the average rating
  */
 @Composable
-fun PostItem(post: Post, starStates: List<Boolean>, onRatingChanged: (List<Boolean>) -> Unit) {
+fun PostItem(
+    post: Post,
+    starStates: List<Boolean>,
+    onRatingChanged: (List<Boolean>) -> Unit,
+    color: Color = Color.Black,
+    textForUsername: String = post.username,
+    showAverage: Boolean = true
+) {
+
   Column(
       modifier =
           Modifier.fillMaxWidth()
@@ -39,10 +45,10 @@ fun PostItem(post: Post, starStates: List<Boolean>, onRatingChanged: (List<Boole
       ) {
         // Display the username at the top of each post item
         Text(
-            text = post.username,
+            text = textForUsername,
             style =
                 MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold, color = Color.Black),
+                    fontWeight = FontWeight.Bold, color = color),
             modifier =
                 Modifier.padding(start = 4.dp)
                     .testTag("UsernameTag_${post.username}") // Tagging username for testing
@@ -77,16 +83,19 @@ fun PostItem(post: Post, starStates: List<Boolean>, onRatingChanged: (List<Boole
                       contentDescription = "Star")
                 }
           }
-          Text(
-              text = "Average rating: ${"%.1f".format(post.averageStars)}",
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .padding(start = 4.dp)
-                      .testTag("AverageRatingTag_${post.uid}"),
-              textAlign = TextAlign.End,
-              style =
-                  MaterialTheme.typography.bodyMedium.copy(
-                      fontWeight = FontWeight.Bold, color = Color.Black))
+          if (showAverage) {
+            // Display the average rating at the end of the row
+            Text(
+                text = "Average rating: ${"%.1f".format(post.averageStars)}",
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(start = 4.dp)
+                        .testTag("AverageRatingTag_${post.uid}"),
+                textAlign = TextAlign.End,
+                style =
+                    MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold, color = color))
+          }
         }
       }
 }

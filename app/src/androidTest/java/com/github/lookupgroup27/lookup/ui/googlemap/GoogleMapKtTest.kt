@@ -4,25 +4,21 @@ import android.Manifest
 import android.content.Context
 import android.location.Location
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
-import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
+import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.junit.*
+import org.mockito.Mock
+import org.mockito.Mockito.*
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -32,6 +28,8 @@ class GoogleMapScreenTest {
   private lateinit var locationProvider: LocationProvider
   private lateinit var postsViewModel: PostsViewModel
   private lateinit var postsRepository: PostsRepository
+  private lateinit var profileRepository: ProfileRepository
+  @Mock private lateinit var profileViewModel: ProfileViewModel
   private lateinit var mockAuth: FirebaseAuth
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -47,6 +45,8 @@ class GoogleMapScreenTest {
     navigationActions = mock(NavigationActions::class.java)
     postsRepository = mock(PostsRepository::class.java)
     postsViewModel = PostsViewModel(postsRepository)
+    profileRepository = mock(ProfileRepository::class.java)
+    profileViewModel = ProfileViewModel(profileRepository)
 
     // Setup to return the map route as current
     `when`(navigationActions.currentRoute()).thenReturn(Screen.GOOGLE_MAP)
@@ -63,7 +63,9 @@ class GoogleMapScreenTest {
     locationProvider = LocationProvider(context, mockCurrentLocation)
 
     // Set the Compose content to GoogleMapScreen
-    composeTestRule.setContent { GoogleMapScreen(navigationActions, postsViewModel) }
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+    }
   }
 
   @Test
