@@ -1,4 +1,8 @@
 package com.github.lookupgroup27.lookup.model.passwordreset
 
-class PasswordResetState {
-}
+data class PasswordResetState(
+    val email: String = "",
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val errorMessage: String? = null
+)
