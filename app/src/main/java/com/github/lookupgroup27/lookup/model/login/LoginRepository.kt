@@ -1,4 +1,5 @@
 package com.github.lookupgroup27.lookup.model.login
 
-class LoginRepository {
+interface LoginRepository {
+  suspend fun loginUser(email: String, password: String)
 }
