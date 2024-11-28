@@ -3,7 +3,9 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
@@ -17,6 +19,7 @@ class Renderer : GLSurfaceView.Renderer {
 
   private lateinit var textureManager: TextureManager
   private lateinit var skyBox: SkyBox
+  private lateinit var star: Star
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
@@ -26,6 +29,7 @@ class Renderer : GLSurfaceView.Renderer {
   val camera = Camera()
 
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
+    Log.d("Renderer", "OpenGL context created")
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
@@ -39,6 +43,7 @@ class Renderer : GLSurfaceView.Renderer {
 
     // Initialize the SkyBox
     skyBox = SkyBox()
+    initializeStar()
   }
 
   override fun onDrawFrame(unused: GL10) {
@@ -55,6 +60,7 @@ class Renderer : GLSurfaceView.Renderer {
     skyBox.draw(camera)
 
     GLES20.glDepthMask(true) // Re-enable depth writing for other objects
+    drawStar()
   }
 
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -68,5 +74,17 @@ class Renderer : GLSurfaceView.Renderer {
 
   fun updateContext(context: Context) {
     this.context = context
+  }
+
+  private fun initializeStar() {
+    // Initialize the star object
+    val position = floatArrayOf(0.5f, 0.0f, 0.0f)
+    val color = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
+    star = Star(context, position, color)
+  }
+
+  private fun drawStar() {
+    // Draw the star object
+    star.draw(camera)
   }
 }
