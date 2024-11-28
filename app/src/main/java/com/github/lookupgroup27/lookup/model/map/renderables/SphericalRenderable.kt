@@ -1,7 +1,7 @@
 package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.opengl.GLES20
-import com.github.lookupgroup27.lookup.model.map.renderables.utils.Sphere.generateSphericalGeometry
+import com.github.lookupgroup27.lookup.model.map.renderables.utils.GeometryUtils.generateSphericalGeometry
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.TextureBuffer
@@ -20,24 +20,24 @@ import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
  * @param stepsPerBand The number of longitude steps per latitude band. Higher values improve
  *   rendering fidelity but also increase computational cost (default is 28).
  */
-abstract class SphereRenderer(
-    protected val numBands: Int = DEFAULT_NUM_BANDS,
-    protected val stepsPerBand: Int = DEFAULT_STEPS_PER_BAND
+open class SphereRenderer(
+    private val numBands: Int = DEFAULT_NUM_BANDS,
+    private val stepsPerBand: Int = DEFAULT_STEPS_PER_BAND
 ) {
   /** Buffer for storing vertex positions. */
-  protected val vertexBuffer = VertexBuffer()
+  private val vertexBuffer = VertexBuffer()
 
   /** Buffer for storing vertex colors. */
-  protected val colorBuffer = ColorBuffer()
+  private val colorBuffer = ColorBuffer()
 
   /** Buffer for storing vertex indices for triangle drawing. */
-  protected val indexBuffer = IndexBuffer()
+  private val indexBuffer = IndexBuffer()
 
   /** Buffer for storing texture coordinates. */
-  protected val textureBuffer = TextureBuffer()
+  private val textureBuffer = TextureBuffer()
 
   /** Shader program for rendering the object. */
-  protected lateinit var shaderProgram: ShaderProgram
+  lateinit var shaderProgram: ShaderProgram
 
   /**
    * Initializes buffers for spherical geometry, including vertices, colors, and texture
@@ -46,7 +46,7 @@ abstract class SphereRenderer(
    * This method generates the geometry data for a sphere using the specified `numBands` and
    * `stepsPerBand` values and populates the corresponding buffers.
    */
-  protected fun initializeBuffers() {
+  fun initializeBuffers() {
     val geometryData = generateSphericalGeometry(numBands, stepsPerBand)
     val numVertices = numBands * stepsPerBand
 
@@ -61,9 +61,6 @@ abstract class SphereRenderer(
       vertexBuffer.addVertex(
           geometryData.vertices[i], geometryData.vertices[i + 1], geometryData.vertices[i + 2])
     }
-
-    // Populate color buffer
-    geometryData.colors.forEach { colorBuffer.addColor(it) }
 
     // Populate texture buffer
     for (i in 0 until geometryData.textureCoords.size step 2) {
@@ -80,7 +77,7 @@ abstract class SphereRenderer(
    * This method creates and compiles vertex and fragment shaders with predefined code and links
    * them into a shader program for rendering.
    */
-  protected fun initializeShaders() {
+  fun initializeShaders() {
     val vertexShaderCode =
         """
             attribute vec4 vPosition;
@@ -118,7 +115,7 @@ abstract class SphereRenderer(
    * @param mvpMatrix The Model-View-Projection matrix to be passed to the shader for
    *   transformations.
    */
-  protected fun bindShaderAttributes(mvpMatrix: FloatArray) {
+  fun bindShaderAttributes(mvpMatrix: FloatArray) {
     shaderProgram.use()
 
     // Pass the MVP matrix to the shader
@@ -137,7 +134,7 @@ abstract class SphereRenderer(
   }
 
   /** Unbinds the shader attributes after rendering. */
-  protected fun unbindShaderAttributes() {
+  fun unbindShaderAttributes() {
     val positionHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "vPosition")
     vertexBuffer.unbind(positionHandle)
     colorBuffer.unbind()
@@ -145,7 +142,7 @@ abstract class SphereRenderer(
   }
 
   /** Draws the sphere using the currently bound buffers and shader program. */
-  protected fun drawSphere() {
+  fun drawSphere() {
     indexBuffer.bind()
     indexBuffer.draw(GLES20.GL_TRIANGLES)
   }
