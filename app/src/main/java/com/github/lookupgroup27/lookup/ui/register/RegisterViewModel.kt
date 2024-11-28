@@ -11,14 +11,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// ViewModel to manage the registration process and maintain UI state.
-// Encapsulates the logic for user input validation and interaction with the RegisterRepository.
+/**
+ * ViewModel responsible for managing the registration process and maintaining the UI state.
+ * Encapsulates the logic for validating user input and interacting with the `RegisterRepository`.
+ *
+ * @property repository The repository handling user registration operations.
+ */
 class RegisterViewModel(private val repository: RegisterRepository) : ViewModel() {
 
+  // Holds the UI state for the registration screen.
   private val _uiState = MutableStateFlow(RegisterState())
   val uiState: StateFlow<RegisterState> = _uiState
 
-  // Factory for creating instances of RegisterViewModel.
+  /**
+   * Factory for creating instances of `RegisterViewModel`. This is used to provide the required
+   * dependencies (e.g., `RegisterRepository`).
+   */
   companion object {
     val Factory: ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {
@@ -30,42 +38,40 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
   }
 
   /**
-   * Updates the email in the state when the user changes the email field.
+   * Updates the email in the UI state when the user modifies the email field.
    *
-   * @param email The updated email entered by the user.
+   * @param email The new email input provided by the user.
    */
   fun onEmailChanged(email: String) {
-    // Updates the state with the new email while keeping other fields unchanged.
     _uiState.update { it.copy(email = email) }
   }
 
   /**
-   * Updates the password in the state when the user changes the password field.
+   * Updates the password in the UI state when the user modifies the password field.
    *
-   * @param password The updated password entered by the user.
+   * @param password The new password input provided by the user.
    */
   fun onPasswordChanged(password: String) {
-    // Updates the state with the new password.
     _uiState.update { it.copy(password = password) }
   }
 
   /**
-   * Updates the confirm password in the state when the user changes the confirmation field.
+   * Updates the confirm password in the UI state when the user modifies the confirmation field.
    *
-   * @param confirmPassword The updated confirmation password entered by the user.
+   * @param confirmPassword The new confirmation password input provided by the user.
    */
   fun onConfirmPasswordChanged(confirmPassword: String) {
-    // Updates the state with the new confirmation password.
     _uiState.update { it.copy(confirmPassword = confirmPassword) }
   }
 
-  /** Clears all input fields in the registration form by resetting the state to its default. */
+  /** Resets all input fields in the registration form by clearing the UI state. */
   fun clearFields() {
-    _uiState.value = RegisterState() // Resets the state to its initial values.
+    _uiState.value = RegisterState()
   }
 
   /**
-   * Validates the user input and attempts to register the user if valid.
+   * Validates the user's input and attempts to register the user if all inputs are valid. This
+   * method performs both synchronous (local) validation and asynchronous registration logic.
    *
    * @param onSuccess Callback invoked when registration succeeds.
    * @param onError Callback invoked with an error message when registration fails.
@@ -75,33 +81,45 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
     val password = _uiState.value.password
     val confirmPassword = _uiState.value.confirmPassword
 
-    // Input validation: Checks for empty fields.
+    // Validate that no fields are left empty.
     if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
       onError("Email, password, and confirmation cannot be empty")
       return
     }
 
-    // Input validation: Checks if the password meets the minimum length requirement.
-    if (password.length < 8) {
-      onError("Password must be at least 8 characters")
+    // Validate the email format.
+    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+      onError("Please enter a valid email address")
       return
     }
 
-    // Input validation: Ensures the password and confirmation match.
+    // Validate the password strength.
+    if (password.length < 8) {
+      onError("Password must be at least 8 characters long")
+      return
+    }
+    if (!password.any { it.isDigit() }) {
+      onError("Password must include at least one number")
+      return
+    }
+    if (!password.any { it.isUpperCase() }) {
+      onError("Password must include at least one uppercase letter")
+      return
+    }
+
+    // Validate that the password and confirmation match.
     if (password != confirmPassword) {
       onError("Passwords do not match")
       return
     }
 
-    // If inputs are valid, attempt to register the user asynchronously.
+    // Perform asynchronous registration using the repository.
     viewModelScope.launch {
       try {
-        // Calls the repository to register the user.
         repository.registerUser(email, password)
-        onSuccess() // Invokes the success callback when registration is complete.
+        onSuccess() // Notify the UI that registration was successful.
       } catch (e: Exception) {
-        // If registration fails, passes an error message to the UI.
-        onError(e.localizedMessage ?: "Registration failed")
+        onError(e.localizedMessage ?: "Registration failed") // Handle errors.
       }
     }
   }
