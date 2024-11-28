@@ -11,7 +11,7 @@ object GeometryUtils {
    * @param numSegments The number of triangle segments used to form the circle.
    * @return GeometryData containing vertices and indices for rendering the circle.
    */
-  fun generateCircularGeometry(numSegments: Int = 36): GeometryData {
+  fun generateCircularGeometry(numSegments: Int = 32): GeometryData {
     val vertices = mutableListOf<Float>()
     val indices = mutableListOf<Short>()
 
@@ -26,14 +26,15 @@ object GeometryUtils {
     }
 
     // Generate indices for triangle fan
-    for (i in 1 until numSegments) {
-      indices.addAll(listOf(0, i.toShort(), (i + 1).toShort()))
+    for (i in 1..numSegments) {
+      indices.add(0) // Center vertex
+      indices.add(i.toShort())
+      indices.add((i % numSegments + 1).toShort())
     }
-    indices.addAll(listOf(0, numSegments.toShort(), 1)) // Close the circle
 
     return GeometryData(
         vertices = vertices.toFloatArray(),
-        textureCoords = FloatArray(0), // No texture for a flat circle
+        textureCoords = FloatArray(0),
         indices = indices.toShortArray())
   }
 

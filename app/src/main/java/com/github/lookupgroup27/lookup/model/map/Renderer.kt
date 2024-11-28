@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.util.Log
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -29,7 +28,6 @@ class Renderer : GLSurfaceView.Renderer {
   val camera = Camera()
 
   override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
-    Log.d("Renderer", "OpenGL context created")
     // Set the background frame color
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
@@ -47,19 +45,18 @@ class Renderer : GLSurfaceView.Renderer {
   }
 
   override fun onDrawFrame(unused: GL10) {
-
     // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-    GLES20.glDepthMask(false) // Disable depth writing
-
-    // Bind the texture and render the SkyBox
+    // Render skybox first
+    GLES20.glDepthMask(false)
     textureManager.bindTexture(skyBoxTextureHandle)
-
-    // Use this MVP matrix to render the skybox
     skyBox.draw(camera)
 
-    GLES20.glDepthMask(true) // Re-enable depth writing for other objects
+    // Re-enable depth writing for other objects
+    GLES20.glDepthMask(true)
+    GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+
     drawStar()
   }
 
@@ -77,10 +74,10 @@ class Renderer : GLSurfaceView.Renderer {
   }
 
   private fun initializeStar() {
-    // Initialize the star object
-    val position = floatArrayOf(0.5f, 0.0f, 0.0f)
+    // Try a more central position and potentially larger size
+    val position = floatArrayOf(0f, 0f, -2f) // Move closer to the camera
     val color = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
-    star = Star(context, position, color)
+    star = Star(context, position, color, size = 0.3f)
   }
 
   private fun drawStar() {

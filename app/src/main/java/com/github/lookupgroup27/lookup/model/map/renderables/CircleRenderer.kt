@@ -18,7 +18,7 @@ import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 open class CircleRenderer(
     private val segments: Int = DEFAULT_SEGMENTS,
     private val radius: Float = 1.0f,
-    private val color: Int = DEFAULT_COLOR
+    private val color: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
 ) {
   /** Buffer for storing vertex positions. */
   private val vertexBuffer = VertexBuffer()
@@ -34,7 +34,6 @@ open class CircleRenderer(
 
   /** Initializes buffers for circular geometry. */
   fun initializeBuffers() {
-    Log.d("CircleRenderer", "Initializing buffers with $segments segments")
     val geometryData = GeometryUtils.generateCircularGeometry(segments)
 
     // Reset buffers to prepare for new data
@@ -56,11 +55,18 @@ open class CircleRenderer(
       indexBuffer.addIndex(index)
     }
 
-    // Apply a single color for all vertices
-    repeat(geometryData.vertices.size / 3) { colorBuffer.addColor(color) }
+    // Convert float color to integer color for buffer
+    val colorInt =
+        ((color[3] * 255).toInt() shl
+            24 or
+            (color[0] * 255).toInt() shl
+            16 or
+            (color[1] * 255).toInt() shl
+            8 or
+            (color[2] * 255).toInt())
 
-    Log.d("CircleRenderer", "Vertices: ${geometryData.vertices.contentToString()}")
-    Log.d("CircleRenderer", "Indices: ${geometryData.indices.contentToString()}")
+    // Apply a single color for all vertices
+    repeat(geometryData.vertices.size / 3) { colorBuffer.addColor(colorInt) }
   }
 
   /** Initializes shaders for rendering the circle. */
@@ -81,12 +87,12 @@ open class CircleRenderer(
 
     val fragmentShaderCode =
         """
-            precision mediump float;
-            varying vec4 vInterpolatedColor;
-            void main() {
-                gl_FragColor = vInterpolatedColor;
-            }
-            """
+    precision mediump float;
+    varying vec4 vInterpolatedColor;
+    void main() {
+        gl_FragColor = vInterpolatedColor;
+    }
+    """
             .trimIndent()
 
     shaderProgram = ShaderProgram(vertexShaderCode, fragmentShaderCode)
@@ -126,15 +132,11 @@ open class CircleRenderer(
     if (error != GLES20.GL_NO_ERROR) {
       Log.e("CircleRenderer", "OpenGL error during draw: $error")
     }
-    // Log.d("CircleRenderer", "Drawing circle with $segments segments")
     indexBuffer.draw(GLES20.GL_TRIANGLES)
   }
 
   companion object {
     /** Default number of segments for circle approximation. */
     const val DEFAULT_SEGMENTS = 32
-
-    /** Default color (white) */
-    const val DEFAULT_COLOR = 0xFFFFFFFF.toInt()
   }
 }
