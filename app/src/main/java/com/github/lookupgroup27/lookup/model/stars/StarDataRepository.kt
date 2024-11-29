@@ -1,11 +1,22 @@
 package com.github.lookupgroup27.lookup.model.stars
 
 import android.content.Context
+import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 /** Repository class to manage star data, including fetching and preprocessing. */
 class StarDataRepository {
+
+  companion object {
+    private const val STAR_FILE_PATH = "stars/"
+    private const val REQUIRED_COLUMNS_COUNT = 16
+    private const val NAME_INDEX = 6
+    private const val RA_INDEX = 7
+    private const val DEC_INDEX = 8
+    private const val MAGNITUDE_INDEX = 13
+    private const val SPECTRAL_CLASS_INDEX = 15
+  }
 
   /**
    * Loads star data from a CSV file and converts it into a list of [StarData] objects.
@@ -15,8 +26,12 @@ class StarDataRepository {
    * @return A list of processed [StarData] objects ready for use in rendering.
    */
   fun getStars(context: Context, fileName: String): List<StarData> {
+
+    require(fileName.isNotBlank()) { "File name must not be blank" }
+    require(fileName.endsWith(".csv")) { "File name must be a .csv file" }
+
     val stars = mutableListOf<StarData>()
-    val inputStream = context.assets.open("stars/$fileName")
+    val inputStream = context.assets.open(STAR_FILE_PATH + fileName)
     val reader = BufferedReader(InputStreamReader(inputStream))
 
     reader.useLines { lines ->
@@ -24,12 +39,12 @@ class StarDataRepository {
         try {
           val values = line.split(",")
 
-          if (values.size > 15) {
-            val name = values[6]
-            val ra = values[7].toDoubleOrNull() ?: 0.0
-            val dec = values[8].toDoubleOrNull() ?: 0.0
-            val magnitude = values[13].toDoubleOrNull() ?: 0.0
-            val spectralClass = values.getOrNull(15)?.takeIf { it.isNotEmpty() }
+          if (values.size >= REQUIRED_COLUMNS_COUNT) {
+            val name = values[NAME_INDEX]
+            val ra = values[RA_INDEX].toDoubleOrNull() ?: 0.0
+            val dec = values[DEC_INDEX].toDoubleOrNull() ?: 0.0
+            val magnitude = values[MAGNITUDE_INDEX].toDoubleOrNull() ?: 0.0
+            val spectralClass = values.getOrNull(SPECTRAL_CLASS_INDEX)?.takeIf { it.isNotEmpty() }
 
             // Convert RA and DEC to Cartesian coordinates
             val position = convertToCartesian(ra, dec, 1.0f)
@@ -46,7 +61,7 @@ class StarDataRepository {
                     spectralClass = spectralClass))
           }
         } catch (e: Exception) {
-          println("Error parsing line: $line. Error: ${e.message}")
+          Log.e("StarDataRepository", "Error parsing line: $line", e)
         }
       }
     }
