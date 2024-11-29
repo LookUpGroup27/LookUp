@@ -23,6 +23,7 @@ object Route {
   const val TAKE_IMAGE = "TakeImage"
   const val IMAGE_REVIEW = "ImageReview"
   const val FEED = "Feed"
+  const val REGISTER = "Register"
   const val EDIT_IMAGE = "EditImage"
 }
 
@@ -41,6 +42,7 @@ object Screen {
   const val TAKE_IMAGE = "Take Image"
   const val IMAGE_REVIEW = "Image Review Screen"
   const val FEED = "Feed Screen"
+  const val REGISTER = "Register Screen"
   const val EDIT_IMAGE = "Edit Image"
 }
 
