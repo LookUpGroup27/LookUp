@@ -143,7 +143,6 @@ fun LookUpApp() {
                   postsViewModel = postsViewModel)
             }
           }
-
     }
 
     navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
