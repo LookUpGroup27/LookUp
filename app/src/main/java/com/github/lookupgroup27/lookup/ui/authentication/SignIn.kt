@@ -130,7 +130,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
                   })
 
               Spacer(modifier = Modifier.height(16.dp))
-              
+
               // Register Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.REGISTER) },
@@ -147,8 +147,8 @@ fun SignInScreen(navigationActions: NavigationActions) {
                   modifier = Modifier.fillMaxWidth(),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
                     Text("Login", color = Color.White)
-              }
-        }
+                  }
+            }
       })
 }
 
