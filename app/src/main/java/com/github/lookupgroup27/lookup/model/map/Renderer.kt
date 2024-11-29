@@ -125,14 +125,14 @@ class Renderer : GLSurfaceView.Renderer {
     val position = floatArrayOf(0f, 0f, -2f) // Move closer to the camera
     val color = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
     star =
-      Star(
-          context,
-          position,
-          color,
-          size = 1f,
-          vertexShaderCode = vertexShaderCode,
-          fragmentShaderCode = fragmentShaderCode)  // Create star
-    }
+        Star(
+            context,
+            position,
+            color,
+            size = 1f,
+            vertexShaderCode = vertexShaderCode,
+            fragmentShaderCode = fragmentShaderCode) // Create star
+  }
 
   /** Renders additional objects in the scene using the current MVP matrix. */
   private fun drawObjects() {

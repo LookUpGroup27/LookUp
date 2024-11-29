@@ -12,9 +12,10 @@ class StarsLoader(private val repository: StarDataRepository) {
     val stars = repository.getStars(context, fileName)
     return stars.map { starData ->
       Star(
-          x = starData.position.first,
-          y = starData.position.second,
-          z = starData.position.third,
+          context = context,
+          position =
+              floatArrayOf(
+                  starData.position.first, starData.position.second, starData.position.third),
           color = starData.color,
           vertexShaderCode = "TODO",
           fragmentShaderCode = "TODO")
