@@ -2,8 +2,8 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.opengl.GLES20
 import com.github.lookupgroup27.lookup.model.map.Camera
-import com.github.lookupgroup27.lookup.util.ShaderUtils.loadShader
 import com.github.lookupgroup27.lookup.util.BufferUtils.toBuffer
+import com.github.lookupgroup27.lookup.util.ShaderUtils.loadShader
 
 /**
  * Represents a star in the 3D space
@@ -16,10 +16,10 @@ import com.github.lookupgroup27.lookup.util.BufferUtils.toBuffer
  * @param fragmentShaderCode the fragment shader code
  */
 class Star(
-    x: Float,
-    y: Float,
-    z: Float,
-    color: FloatArray,
+    val x: Float,
+    val y: Float,
+    val z: Float,
+    val color: FloatArray,
     vertexShaderCode: String,
     fragmentShaderCode: String
 ) : Object(vertexShaderCode, fragmentShaderCode) {
@@ -112,8 +112,7 @@ class Star(
     val projMatrixHandle = GLES20.glGetUniformLocation(mProgram, "projMatrix")
     GLES20.glUniformMatrix4fv(projMatrixHandle, 1, false, camera.projMatrix, 0)
 
-    // This time we use draw elements cause it's a composition of multiple triangles
-    // Draw every triangles
+    // Draw elements
     GLES20.glDrawElements(
         GLES20.GL_TRIANGLES,
         vertexDrawOrder.size,

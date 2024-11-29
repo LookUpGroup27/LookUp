@@ -78,7 +78,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
             title = {},
             navigationIcon = {
               IconButton(
-                  onClick = { navigationActions.goBack() },
+                  onClick = { navigationActions.navigateTo(Screen.MENU) },
                   modifier = Modifier.testTag("go_back_button_signin")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -128,6 +128,16 @@ fun SignInScreen(navigationActions: NavigationActions) {
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
                     launcher.launch(googleSignInClient.signInIntent)
                   })
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Register Button
+              Button(
+                  onClick = { navigationActions.navigateTo(Screen.REGISTER) },
+                  modifier = Modifier.fillMaxWidth(),
+                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
+                    Text("Register", color = Color.White)
+                  }
             }
       })
 }
