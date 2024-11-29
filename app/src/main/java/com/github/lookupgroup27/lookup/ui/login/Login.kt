@@ -20,9 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.ui.login.components.CustomOutlinedTextField
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.register.components.CustomOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 /**
@@ -48,7 +48,7 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
                     viewModel.clearFields()
                     navigationActions.navigateTo(Screen.AUTH)
                   },
-                  modifier = Modifier.testTag("back_button")) {
+                  modifier = Modifier.testTag("back_button_login")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go Back",
@@ -69,21 +69,22 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
-                  modifier = Modifier.size(150.dp).padding(bottom = 16.dp).testTag("app_logo"))
+                  modifier =
+                      Modifier.size(150.dp).padding(bottom = 16.dp).testTag("app_logo_login"))
 
               Text(
                   text = "Log In to Your Account",
                   style =
                       MaterialTheme.typography.headlineMedium.copy(
                           fontWeight = FontWeight.Bold, color = Color.White),
-                  modifier = Modifier.padding(bottom = 24.dp).testTag("screen_title"))
+                  modifier = Modifier.padding(bottom = 24.dp).testTag("screen_title_login"))
 
               // Email input field using CustomOutlinedTextField.
               CustomOutlinedTextField(
                   value = uiState.email,
                   onValueChange = { viewModel.onEmailChanged(it) },
                   label = "Email",
-                  testTag = "email_field")
+                  testTag = "email_field_login")
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -93,7 +94,7 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
                   onValueChange = { viewModel.onPasswordChanged(it) },
                   label = "Password",
                   isPassword = true,
-                  testTag = "password_field")
+                  testTag = "password_field_login")
 
               Spacer(modifier = Modifier.height(24.dp))
 
@@ -109,7 +110,7 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
                           Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                         })
                   },
-                  modifier = Modifier.fillMaxWidth().testTag("login_button"),
+                  modifier = Modifier.fillMaxWidth().testTag("login_button_login"),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)),
                   enabled = uiState.email.isNotBlank() && uiState.password.isNotBlank()) {
                     Text(
