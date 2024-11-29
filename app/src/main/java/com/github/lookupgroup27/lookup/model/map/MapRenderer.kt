@@ -26,7 +26,9 @@ class MapRenderer : GLSurfaceView.Renderer {
     private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
   }
 
+  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
+  private lateinit var planet: Planet
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
 
