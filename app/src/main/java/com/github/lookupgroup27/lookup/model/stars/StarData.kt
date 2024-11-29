@@ -12,7 +12,7 @@ package com.github.lookupgroup27.lookup.model.stars
  */
 data class StarData(
     val name: String,
-    val position: Triple<Float, Float, Float>,
+    var position: Triple<Float, Float, Float>,
     val size: Float,
     val color: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f), // Default white color
     val magnitude: Double,
