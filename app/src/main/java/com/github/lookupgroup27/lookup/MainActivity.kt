@@ -140,7 +140,8 @@ fun LookUpApp() {
             ImageReviewScreen(
                 navigationActions = navigationActions,
                 imageFile = imageFile,
-                postsViewModel = postsViewModel)
+                postsViewModel = postsViewModel,
+                collectionViewModel = collectionViewModel)
           }
     }
 
