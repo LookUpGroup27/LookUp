@@ -25,7 +25,6 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
  * @param userId the user ID of the current user
  * @param navigationActions the navigation actions
  */
-
 @Composable
 fun AvatarSelectionScreen(
     avatarViewModel: AvatarViewModel,
@@ -69,7 +68,10 @@ fun AvatarSelectionScreen(
                             width = if (selectedAvatar == avatar) 4.dp else 0.dp,
                             color = if (selectedAvatar == avatar) Color.Blue else Color.Transparent,
                             shape = CircleShape)
-                        .clickable { avatarViewModel.saveSelectedAvatar(userId, avatar) }) {
+                        .clickable {
+                          avatarViewModel.saveSelectedAvatar(userId, avatar)
+                          avatarViewModel.updateUserProfileWithAvatar(userId, avatar)
+                        }) {
                   Image(
                       painter = painterResource(id = avatar),
                       contentDescription = "Avatar",

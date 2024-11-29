@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
  *
  * @param profileRepository the repository for profile data
  */
-
 class AvatarViewModel(private val profileRepository: ProfileRepository) : ViewModel() {
 
   private val _selectedAvatar = MutableStateFlow<Int?>(null)
@@ -42,6 +41,22 @@ class AvatarViewModel(private val profileRepository: ProfileRepository) : ViewMo
           userId,
           avatarId,
           onSuccess = { _selectedAvatar.value = avatarId },
+          onFailure = { exception -> _error.value = exception.message })
+    }
+  }
+
+  fun updateUserProfileWithAvatar(userId: String, avatarId: Int) {
+    viewModelScope.launch {
+      profileRepository.getUserProfile(
+          onSuccess = { profile ->
+            if (profile != null) {
+              val updatedProfile = profile.copy(selectedAvatar = avatarId)
+              profileRepository.updateUserProfile(
+                  updatedProfile,
+                  onSuccess = { _selectedAvatar.value = avatarId },
+                  onFailure = { exception -> _error.value = exception.message })
+            }
+          },
           onFailure = { exception -> _error.value = exception.message })
     }
   }
