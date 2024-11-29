@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.After
 import org.junit.Before
@@ -76,7 +77,7 @@ class SignInKtTest : TestCase() {
     composeTestRule.waitForIdle()
 
     // Assert that the user is navigated back to the previous screen
-    verify(mockNavigationActions).goBack()
+    verify(mockNavigationActions).navigateTo(Screen.MENU)
   }
 
   @Test

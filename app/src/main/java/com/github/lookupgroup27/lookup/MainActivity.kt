@@ -21,6 +21,8 @@ import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.feed.FeedScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
+import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
+import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.map.MapViewModel
@@ -40,6 +42,8 @@ import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
+import com.github.lookupgroup27.lookup.ui.register.RegisterScreen
+import com.github.lookupgroup27.lookup.ui.register.RegisterViewModel
 import com.github.lookupgroup27.lookup.ui.theme.LookUpTheme
 import com.google.firebase.auth.FirebaseAuth
 import java.io.File
@@ -69,6 +73,8 @@ fun LookUpApp() {
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
+  val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
+  val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
   val mapViewModel: MapViewModel = viewModel()
   val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
 
@@ -78,6 +84,7 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
       composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
@@ -114,31 +121,52 @@ fun LookUpApp() {
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
+
       composable(Screen.AVATAR_SELECTION) {
         AvatarSelectionScreen(
             avatarViewModel = avatarViewModel,
             userId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
             navigationActions = navigationActions)
       }
+
+      composable(
+          route = "${Route.EDIT_IMAGE}/{imageUrl}",
+          arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })) {
+              backStackEntry ->
+            val imageUrl = backStackEntry.arguments?.getString("imageUrl")
+            imageUrl?.let {
+              EditImageScreen(
+                  imageUrl = it,
+                  navigationActions = navigationActions,
+                  collectionViewModel = collectionViewModel,
+                  editImageViewModel = editImageViewModel,
+                  postsViewModel = postsViewModel)
+            }
+          }
+
     }
 
     navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
       composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
+      composable(
+          route = "${Route.IMAGE_REVIEW}/{imageFile}",
+          arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) {
+              backStackEntry ->
+            val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+            ImageReviewScreen(
+                navigationActions = navigationActions,
+                imageFile = imageFile,
+                postsViewModel = postsViewModel,
+                collectionViewModel = collectionViewModel)
+          }
     }
-
-    composable(
-        route = "${Route.IMAGE_REVIEW}/{imageFile}",
-        arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) { backStackEntry
-          ->
-          val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
-          ImageReviewScreen(
-              navigationActions = navigationActions,
-              imageFile = imageFile,
-              postsViewModel = postsViewModel)
-        }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
+    }
+    navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
+      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
   }
 }
