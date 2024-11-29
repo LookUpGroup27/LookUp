@@ -45,6 +45,10 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
     }
   }
 
+  fun updateImages() {
+    fetchImages()
+  }
+
   /**
    * Factory object to create instances of [CollectionViewModel] with required dependencies. Uses
    * [CollectionRepositoryFirestore] to interact with Firebase for authenticated user image data.

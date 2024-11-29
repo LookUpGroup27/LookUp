@@ -23,6 +23,7 @@ import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
@@ -31,7 +32,8 @@ import java.io.File
 fun ImageReviewScreen(
     navigationActions: NavigationActions,
     imageFile: File?,
-    postsViewModel: PostsViewModel = viewModel()
+    postsViewModel: PostsViewModel = viewModel(),
+    collectionViewModel: CollectionViewModel = viewModel()
 ) {
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
@@ -108,6 +110,7 @@ fun ImageReviewScreen(
                       longitude = currentLocation.longitude)
               // Add the post to PostsViewModel
               postsViewModel.addPost(newPost)
+              collectionViewModel.updateImages()
               Toast.makeText(context, "Image saved", Toast.LENGTH_SHORT).show()
               navigationActions.navigateTo(Screen.GOOGLE_MAP)
             } else {
