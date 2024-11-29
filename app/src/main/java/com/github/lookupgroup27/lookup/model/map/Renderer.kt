@@ -28,6 +28,7 @@ class Renderer : GLSurfaceView.Renderer {
 
   private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
+  private lateinit var star: Star
   private lateinit var planet: Planet
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
@@ -35,6 +36,8 @@ class Renderer : GLSurfaceView.Renderer {
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
   private lateinit var context: Context
+  private lateinit var vertexShaderCode: String
+  private lateinit var fragmentShaderCode: String
   private val renderableObjects = mutableListOf<Star>() // List of stars to render
   private val starDataRepository = StarDataRepository() // Repository for star data
 
@@ -53,48 +56,8 @@ class Renderer : GLSurfaceView.Renderer {
     GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
     // Load the shaders
-    val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
-    val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
-
-    // Create the shapes (Make sure you always create the shapes after the OpenGL context is
-    // created)
-    shapes =
-        listOf(
-            Star(
-                0.0f,
-                0f,
-                -1f,
-                floatArrayOf(1.0f, 1.0f, 1.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                0.24f,
-                0f,
-                -0.97f,
-                floatArrayOf(1.0f, 1.0f, 1.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                1f,
-                0f,
-                0f,
-                color = floatArrayOf(1.0f, 0.0f, 0.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                0f,
-                1f,
-                0f,
-                color = floatArrayOf(0.0f, 1.0f, 0.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                0f,
-                0f,
-                1f,
-                color = floatArrayOf(0.0f, 0.0f, 1.0f),
-                vertexShaderCode,
-                fragmentShaderCode))
+    vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
+    fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
 
     // Initialize TextureManager
     textureManager = TextureManager(context)
@@ -128,15 +91,16 @@ class Renderer : GLSurfaceView.Renderer {
    * @param unused the GL10 interface, not used
    */
   override fun onDrawFrame(unused: GL10) {
-
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT) // Clear the screen
 
-    GLES20.glDepthMask(false) // Disable depth writing for the skybox
+    // Render skybox first
+    GLES20.glDepthMask(false)
+    textureManager.bindTexture(skyBoxTextureHandle)
+    skyBox.draw(camera)
 
-    textureManager.bindTexture(skyBoxTextureHandle) // Bind skybox texture
-    skyBox.draw(camera) // Render skybox
-
-    GLES20.glDepthMask(true) // Re-enable depth writing
+    // Re-enable depth writing for other objects
+    GLES20.glDepthMask(true)
+    GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
     drawObjects() // Render other objects
   }
@@ -158,11 +122,22 @@ class Renderer : GLSurfaceView.Renderer {
   /** Initializes additional objects in the scene. Currently includes a planet. */
   private fun intializeObjects() {
     planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
+    val position = floatArrayOf(0f, 0f, -2f) // Move closer to the camera
+    val color = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
+    star =
+        Star(
+            context,
+            position,
+            color,
+            size = 1f,
+            vertexShaderCode = vertexShaderCode,
+            fragmentShaderCode = fragmentShaderCode) // Create star
   }
 
   /** Renders additional objects in the scene using the current MVP matrix. */
   private fun drawObjects() {
     planet.draw(camera) // Render the planet
+    star.draw(camera)
   }
 
   /** Updates the context used by the renderer. */
