@@ -85,25 +85,10 @@ class ProfileRepositoryFirestore(
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    val userDocument = usersCollection.document(userId)
-    userDocument
-        .get()
-        .addOnSuccessListener { document ->
-          if (document.exists()) {
-            // Update the existing document
-            userDocument
-                .update("selectedAvatar", avatarId)
-                .addOnSuccessListener { onSuccess() }
-                .addOnFailureListener { exception -> onFailure(exception) }
-          } else {
-            // Create the document if it doesn't exist
-            val newUserData = mapOf("selectedAvatar" to avatarId)
-            userDocument
-                .set(newUserData)
-                .addOnSuccessListener { onSuccess() }
-                .addOnFailureListener { exception -> onFailure(exception) }
-          }
-        }
+    usersCollection
+        .document(userId)
+        .update("selectedAvatar", avatarId)
+        .addOnSuccessListener { onSuccess() }
         .addOnFailureListener { exception -> onFailure(exception) }
   }
 
