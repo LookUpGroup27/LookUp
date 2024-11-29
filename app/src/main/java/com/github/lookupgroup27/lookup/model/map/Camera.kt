@@ -27,13 +27,21 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
   val modelMatrix = FloatArray(16)
   val viewMatrix = FloatArray(16)
   val projMatrix = FloatArray(16)
-  private var fov = FOV
-  private var aspectRatio = 1f
+  private var fov = DEFAULT_FOV
+  private var aspectRatio = DEFAULT_ASPECT_RATIO
 
   companion object {
-    const val FOV = 45f
+    // FOV constants
+    const val MAX_FOV = 110f
+    const val DEFAULT_FOV = 45f
+    const val MIN_FOV = 1f
+
+    // Near and far clipping plane constants
     const val NEAR = 0.1f
     const val FAR = 100f
+
+    // Aspect ratio constants
+    const val DEFAULT_ASPECT_RATIO = 1f
   }
 
   init {
@@ -44,7 +52,7 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
 
   /** Update the projection matrix based on the aspect ratio of the screen. */
   fun updateProjectionMatrix(ratio: Float) {
-    aspectRatio = ratio
+    this.aspectRatio = ratio
     Matrix.perspectiveM(projMatrix, 0, fov, aspectRatio, NEAR, FAR)
   }
 
@@ -76,19 +84,9 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
   }
 
   override fun onScale(detector: ScaleGestureDetector): Boolean {
-    // Calculate the scale factor from the gesture detector
     val scaleFactor = detector.scaleFactor
-
-    // Modify the FOV based on the scale factor
-    // Decrease FOV when scaling up (zooming in)
-    // Increase FOV when scaling down (zooming out)
-    val newFOV = FOV / scaleFactor
-
-    // Optional: Add clamping to prevent extreme zoom
-    val clampedFOV = newFOV.coerceIn(30f, 90f)
-
-    // Update the projection matrix with the new FOV
-    updateProjectionMatrix(aspectRatio)
+    fov = (fov / scaleFactor).coerceIn(MIN_FOV, MAX_FOV)
+    Matrix.perspectiveM(projMatrix, 0, fov, aspectRatio, NEAR, FAR)
 
     return true
   }
@@ -98,6 +96,6 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
   }
 
   override fun onScaleEnd(detector: ScaleGestureDetector) {
-    TODO("Not yet implemented")
+    // No-op
   }
 }

@@ -26,9 +26,7 @@ class MapRenderer : GLSurfaceView.Renderer {
     private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
   }
 
-  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
-  private lateinit var planet: Planet
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
 
@@ -53,48 +51,9 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
     // Load the shaders
+    // TODO : Use this in some way normally resolved in issue #191
     val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
     val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
-
-    // Create the shapes (Make sure you always create the shapes after the OpenGL context is
-    // created)
-    shapes =
-        listOf(
-            Star(
-                0.0f,
-                0f,
-                -1f,
-                floatArrayOf(1.0f, 1.0f, 1.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                0.24f,
-                0f,
-                -0.97f,
-                floatArrayOf(1.0f, 1.0f, 1.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                1f,
-                0f,
-                0f,
-                color = floatArrayOf(1.0f, 0.0f, 0.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                0f,
-                1f,
-                0f,
-                color = floatArrayOf(0.0f, 1.0f, 0.0f),
-                vertexShaderCode,
-                fragmentShaderCode),
-            Star(
-                0f,
-                0f,
-                1f,
-                color = floatArrayOf(0.0f, 0.0f, 1.0f),
-                vertexShaderCode,
-                fragmentShaderCode))
 
     // Initialize TextureManager
     textureManager = TextureManager(context)
@@ -118,7 +77,6 @@ class MapRenderer : GLSurfaceView.Renderer {
     skyBoxTextureHandle =
         textureManager.loadTexture(R.drawable.skybox_texture) // Load skybox texture
     skyBox = SkyBox() // Initialize the skybox
-    intializeObjects() // Initialize other renderable objects
   }
 
   /**
@@ -129,16 +87,15 @@ class MapRenderer : GLSurfaceView.Renderer {
    */
   override fun onDrawFrame(unused: GL10) {
 
+    // Clear the screen
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT) // Clear the screen
 
-    GLES20.glDepthMask(false) // Disable depth writing for the skybox
+    // Bind the texture and render the SkyBox
+    textureManager.bindTexture(skyBoxTextureHandle)
+    skyBox.draw(camera)
 
-    textureManager.bindTexture(skyBoxTextureHandle) // Bind skybox texture
-    skyBox.draw(camera) // Render skybox
-
-    GLES20.glDepthMask(true) // Re-enable depth writing
-
-    drawObjects() // Render other objects
+    // Render the stars
+    renderableObjects.forEach { it.draw(camera) }
   }
 
   /**
@@ -153,16 +110,6 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
     camera.updateProjectionMatrix(ratio) // Update camera projection matrix
-  }
-
-  /** Initializes additional objects in the scene. Currently includes a planet. */
-  private fun intializeObjects() {
-    planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
-  }
-
-  /** Renders additional objects in the scene using the current MVP matrix. */
-  private fun drawObjects() {
-    planet.draw(camera) // Render the planet
   }
 
   /** Updates the context used by the renderer. */
