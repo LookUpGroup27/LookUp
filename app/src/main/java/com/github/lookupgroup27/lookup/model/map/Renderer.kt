@@ -36,7 +36,7 @@ class Renderer : GLSurfaceView.Renderer {
 
   private lateinit var context: Context
   private val renderableObjects = mutableListOf<Star>() // List of stars to render
-  private val starDataRepository = StarDataRepository() // Repository for star data
+  //private val starDataRepository = StarDataRepository(context) // Repository for star data
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -105,15 +105,16 @@ class Renderer : GLSurfaceView.Renderer {
     // Initialize the SkyBox
     skyBox = SkyBox()
     // Initialize ObjectLoader
-    starsLoader = StarsLoader(starDataRepository)
+    //starsLoader = StarsLoader(starDataRepository)
 
     // Load stars using the repository and ObjectLoader
-    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
-    if (stars.isEmpty()) {
+    /**val stars = starsLoader.loadStars(context, "hyg_stars.csv")
+      if (stars.isEmpty()) {
       println("Warning: No stars loaded for rendering.")
     }
     // Add stars to the renderable objects list
     renderableObjects.addAll(stars)
+    **/
     textureManager = TextureManager(context) // Initialize texture manager
     skyBoxTextureHandle =
         textureManager.loadTexture(R.drawable.skybox_texture) // Load skybox texture
