@@ -17,8 +17,27 @@ class StarsLoader(private val repository: StarDataRepository) {
               floatArrayOf(
                   starData.position.first, starData.position.second, starData.position.third),
           color = starData.color,
-          vertexShaderCode = "TODO",
-          fragmentShaderCode = "TODO")
+          vertexShaderCode =
+              """
+            attribute vec4 vPosition;
+            attribute vec4 vColor;
+            uniform mat4 uMVPMatrix;
+            varying vec4 vInterpolatedColor;
+            void main() {
+                gl_Position = uMVPMatrix * vPosition;
+                vInterpolatedColor = vColor;
+            }
+            """
+                  .trimIndent(),
+          fragmentShaderCode =
+              """
+            precision mediump float;
+            varying vec4 vInterpolatedColor;
+            void main() {
+                gl_FragColor = vInterpolatedColor;
+            }
+            """
+                  .trimIndent())
     }
   }
 }
