@@ -9,7 +9,8 @@ data class UserProfile(
     val username: String = " ",
     val email: String = " ",
     val bio: String = " ",
-    val ratings: Map<String, Int> = emptyMap()
+    val ratings: Map<String, Int> = emptyMap(),
+    val selectedAvatar: Int? = null
 )
 
 class ProfileRepositoryFirestore(
