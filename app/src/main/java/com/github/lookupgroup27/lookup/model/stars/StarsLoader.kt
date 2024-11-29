@@ -18,7 +18,7 @@ class StarsLoader(private val repository: StarDataRepository) {
                   starData.position.first, starData.position.second, starData.position.third),
           color = starData.color,
           vertexShaderCode = "TODO",
-          fragmentShaderCode ="TODO")
+          fragmentShaderCode = "TODO")
     }
   }
 }
