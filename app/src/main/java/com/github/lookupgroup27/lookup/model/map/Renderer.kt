@@ -4,13 +4,13 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.model.loader.StarsLoader
 import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
-import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
-import com.github.lookupgroup27.lookup.model.loader.StarsLoader
 import com.github.lookupgroup27.lookup.model.stars.StarDataRepository
+import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -95,7 +95,7 @@ class Renderer : GLSurfaceView.Renderer {
                 color = floatArrayOf(0.0f, 0.0f, 1.0f),
                 vertexShaderCode,
                 fragmentShaderCode))
-        
+
     // Initialize TextureManager
     textureManager = TextureManager(context)
 
@@ -119,7 +119,6 @@ class Renderer : GLSurfaceView.Renderer {
         textureManager.loadTexture(R.drawable.skybox_texture) // Load skybox texture
     skyBox = SkyBox() // Initialize the skybox
     intializeObjects() // Initialize other renderable objects
-    
   }
 
   /**

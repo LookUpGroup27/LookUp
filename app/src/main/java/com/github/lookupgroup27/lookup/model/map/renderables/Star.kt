@@ -15,9 +15,14 @@ import com.github.lookupgroup27.lookup.util.ShaderUtils.loadShader
  * @param vertexShaderCode the vertex shader code
  * @param fragmentShaderCode the fragment shader code
  */
-class Star(val x: Float, val y: Float, val z: Float, val color: FloatArray,
+class Star(
+    val x: Float,
+    val y: Float,
+    val z: Float,
+    val color: FloatArray,
     vertexShaderCode: String,
-    fragmentShaderCode: String) : Object(vertexShaderCode, fragmentShaderCode) {
+    fragmentShaderCode: String
+) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val vertexCoordinates: FloatArray =
       floatArrayOf(
