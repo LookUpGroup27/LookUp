@@ -2,7 +2,6 @@ package com.github.lookupgroup27.lookup.ui.feed
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -21,9 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.feed.ProximityPostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
@@ -81,12 +81,8 @@ fun FeedScreen(
             PackageManager.PERMISSION_GRANTED
 
     if (!locationPermissionGranted) {
-      ActivityCompat.requestPermissions(
-          context as Activity,
-          arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-          LOCATION_PERMISSION_REQUEST_CODE)
       Toast.makeText(
-              context, "Location permission is required to access the feed.", Toast.LENGTH_LONG)
+              context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG)
           .show()
     } else {
       // Wait until location is available, then fetch posts
@@ -110,7 +106,7 @@ fun FeedScreen(
 
   Scaffold(
       bottomBar = {
-        Box(Modifier.testTag("BottomNavigationMenu")) {
+        Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
           BottomNavigationMenu(
               onTabSelect = { destination -> navigationActions.navigateTo(destination) },
               tabList = LIST_TOP_LEVEL_DESTINATION,
@@ -118,11 +114,13 @@ fun FeedScreen(
               selectedItem = Route.FEED)
         }
       },
-      modifier = Modifier.testTag("feed_screen")) { innerPadding ->
+      modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))) { innerPadding ->
         if (nearbyPosts.isEmpty()) {
           // Show a message or loading indicator if nearbyPosts hasn't been populated yet
           Box(
-              modifier = Modifier.fillMaxSize().testTag("LoadingIndicator"),
+              modifier =
+                  Modifier.fillMaxSize()
+                      .testTag(stringResource(R.string.loading_indicator_test_tag)),
               contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
               }

@@ -2,4 +2,9 @@
     <string name="app_name">LookUp</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="default_web_client_id">547744760272-ai2a9ujavpfaod29tk7bohs254ngsu3u.apps.googleusercontent.com</string>
+    <string name="location_permission_required">Location permission is required to access the feed.</string>
+    <string name="loading_indicator">Loading...</string>
+    <string name="feed_screen_test_tag">feed_screen</string>
+    <string name="bottom_navigation_menu">BottomNavigationMenu</string>
+    <string name="loading_indicator_test_tag">LoadingIndicator</string>
 </resources>
