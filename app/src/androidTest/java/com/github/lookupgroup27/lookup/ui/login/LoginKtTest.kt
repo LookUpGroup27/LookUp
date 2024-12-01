@@ -32,7 +32,7 @@ class LoginKtTest {
     composeTestRule.setContent {
       LoginScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("app_logo_login").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("app_logo").assertIsDisplayed()
   }
 
   @Test
@@ -40,7 +40,7 @@ class LoginKtTest {
     composeTestRule.setContent {
       LoginScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("screen_title_login").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("screen_title").assertIsDisplayed()
   }
 
   @Test
@@ -48,7 +48,7 @@ class LoginKtTest {
     composeTestRule.setContent {
       LoginScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("email_field_login").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("email_field").assertIsDisplayed()
   }
 
   @Test
@@ -56,7 +56,7 @@ class LoginKtTest {
     composeTestRule.setContent {
       LoginScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("password_field_login").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("password_field").assertIsDisplayed()
   }
 
   @Test
@@ -64,7 +64,7 @@ class LoginKtTest {
     composeTestRule.setContent {
       LoginScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("login_button_login").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("login_button").assertIsDisplayed()
   }
 
   @Test
@@ -72,6 +72,6 @@ class LoginKtTest {
     composeTestRule.setContent {
       LoginScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("back_button_login").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("back_button").assertIsDisplayed()
   }
 }
