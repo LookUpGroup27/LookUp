@@ -1,6 +1,7 @@
-package com.github.lookupgroup27.lookup.model.image
+package com.github.lookupgroup27.lookup.ui.image
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.github.lookupgroup27.lookup.model.image.FirebaseImageRepository
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
