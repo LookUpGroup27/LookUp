@@ -57,6 +57,7 @@ fun FeedScreen(
   profileViewModel.fetchUserProfile()
   val profile = profileViewModel.userProfile.value
   val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
+  val isUserLoggedIn = user != null
   val userEmail = user?.email ?: ""
   val username by remember { mutableStateOf(profile?.username ?: "") }
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
@@ -97,10 +98,6 @@ fun FeedScreen(
   }
 
   LaunchedEffect(nearbyPosts, profile) {
-    if (userEmail.isEmpty()) {
-      Toast.makeText(context, "Please sign in to rate photos on the feed.", Toast.LENGTH_LONG)
-          .show()
-    }
     nearbyPosts.forEach { post ->
       if (!postRatings.containsKey(post.uid)) {
         // Get saved rating from profile, or initialize with all false
@@ -117,6 +114,7 @@ fun FeedScreen(
           BottomNavigationMenu(
               onTabSelect = { destination -> navigationActions.navigateTo(destination) },
               tabList = LIST_TOP_LEVEL_DESTINATION,
+              isUserLoggedIn = isUserLoggedIn,
               selectedItem = Route.FEED)
         }
       },
