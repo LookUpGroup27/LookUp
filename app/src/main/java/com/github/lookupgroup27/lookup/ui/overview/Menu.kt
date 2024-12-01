@@ -34,6 +34,7 @@ fun MenuScreen(navigationActions: NavigationActions) {
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isLoggedIn,
             selectedItem = Route.MENU)
       },
       modifier = Modifier.testTag("menu_screen")) { paddingValues ->

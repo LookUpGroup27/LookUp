@@ -97,6 +97,7 @@ fun GoogleMapScreen(
         BottomNavigationMenu(
             onTabSelect = { route -> navigationActions.navigateTo(route) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isLoggedIn,
             selectedItem = navigationActions.currentRoute())
       },
       // Floating action button to take a picture

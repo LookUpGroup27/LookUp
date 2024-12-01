@@ -22,17 +22,21 @@ import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.profile.components.ProfileButton
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions) {
   val configuration = LocalConfiguration.current
   val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+  val user = FirebaseAuth.getInstance().currentUser
+  val isUserLoggedIn = user != null
 
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isUserLoggedIn,
             selectedItem = navigationActions.currentRoute())
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
