@@ -163,12 +163,13 @@ fun LookUpApp() {
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
     }
-    
+
     navigation(startDestination = Screen.PASSWORDRESET, route = Route.PASSWORDRESET) {
       composable(Screen.PASSWORDRESET) {
         PasswordResetScreen(passwordResetViewModel, navigationActions)
       }
-      
+    }
+
     navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
