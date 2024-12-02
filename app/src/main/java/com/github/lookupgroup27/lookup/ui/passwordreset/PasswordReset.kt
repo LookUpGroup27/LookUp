@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +41,7 @@ fun PasswordResetScreen(viewModel: PasswordResetViewModel, navigationActions: Na
               IconButton(
                   onClick = {
                     viewModel.clearFields()
-                    navigationActions.goBack()
+                    navigationActions.navigateTo(Screen.AUTH)
                   },
                   modifier = Modifier.testTag("back_button")) {
                     Icon(
