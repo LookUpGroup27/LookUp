@@ -131,7 +131,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
                   })
 
               Spacer(modifier = Modifier.height(16.dp))
-              
+
               // Register Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.REGISTER) },
@@ -148,11 +148,10 @@ fun SignInScreen(navigationActions: NavigationActions) {
                   modifier = Modifier.fillMaxWidth(),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
                     Text("Login", color = Color.White)
-
                   }
-              
+
               Spacer(modifier = Modifier.height(16.dp))
-              
+
               // Forgot Password Button
               TextButton(
                   onClick = { navigationActions.navigateTo(Screen.PASSWORDRESET) },
@@ -162,7 +161,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
                         style =
                             MaterialTheme.typography.bodyLarge.copy(
                                 color = MaterialTheme.colorScheme.primary))
-              }
+                  }
             }
       })
 }
