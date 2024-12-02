@@ -5,7 +5,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
-import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -79,8 +78,10 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT) // Clear the screen
 
     // Bind the texture and render the SkyBox
+    GLES20.glDepthMask(false)
     textureManager.bindTexture(skyBoxTextureHandle)
     skyBox.draw(camera)
+    GLES20.glDepthMask(true)
 
     // Draw the objects in the scene
     drawObjects()
