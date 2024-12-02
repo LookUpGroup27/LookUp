@@ -24,6 +24,8 @@ import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
+import com.github.lookupgroup27.lookup.ui.login.LoginScreen
+import com.github.lookupgroup27.lookup.ui.login.LoginViewModel
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.map.MapViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -74,6 +76,7 @@ fun LookUpApp() {
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
   val mapViewModel: MapViewModel = viewModel()
+  val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -81,6 +84,7 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {

@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.ui.register
+package com.github.lookupgroup27.lookup.ui.login
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -17,13 +17,19 @@ import com.github.lookupgroup27.lookup.ui.register.components.AuthScreen
 import com.github.lookupgroup27.lookup.ui.register.components.CustomOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Displays the login screen where users can enter their credentials to log in.
+ *
+ * @param viewModel The [LoginViewModel] that handles the screen state and logic.
+ * @param navigationActions Navigation actions to switch between screens.
+ */
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel, navigationActions: NavigationActions) {
+fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions) {
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsState()
 
   AuthScreen(
-      title = "Create Your Account",
+      title = "Log In to Your Account",
       onBackClicked = {
         viewModel.clearFields()
         navigationActions.navigateTo(Screen.AUTH)
@@ -43,30 +49,26 @@ fun RegisterScreen(viewModel: RegisterViewModel, navigationActions: NavigationAc
             isPassword = true,
             testTag = "password_field")
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        CustomOutlinedTextField(
-            value = uiState.confirmPassword,
-            onValueChange = { viewModel.onConfirmPasswordChanged(it) },
-            label = "Confirm Password",
-            isPassword = true,
-            testTag = "confirm_password_field")
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-              viewModel.registerUser(
+              viewModel.loginUser(
                   onSuccess = {
-                    Toast.makeText(context, "Registration successful!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Login successful!", Toast.LENGTH_LONG).show()
                     viewModel.clearFields()
-                    navigationActions.navigateTo(Screen.AUTH)
+                    navigationActions.navigateTo(Screen.PROFILE)
                   },
                   onError = { error -> Toast.makeText(context, error, Toast.LENGTH_LONG).show() })
             },
-            modifier = Modifier.fillMaxWidth().testTag("register_button"),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
-              Text("Register", color = Color.White)
+            modifier = Modifier.fillMaxWidth().testTag("login_button"),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)),
+            enabled = uiState.email.isNotBlank() && uiState.password.isNotBlank()) {
+              Text(
+                  "Login",
+                  color =
+                      if (uiState.email.isNotBlank() && uiState.password.isNotBlank()) Color.White
+                      else Color.Gray)
             }
       }
 }
