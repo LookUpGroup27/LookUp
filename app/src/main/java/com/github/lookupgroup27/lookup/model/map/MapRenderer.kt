@@ -26,7 +26,6 @@ class MapRenderer : GLSurfaceView.Renderer {
     private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
   }
 
-  private lateinit var shapes: List<Object>
   private lateinit var skyBox: SkyBox
   private lateinit var planet: Planet
   private lateinit var textureManager: TextureManager
@@ -60,25 +59,12 @@ class MapRenderer : GLSurfaceView.Renderer {
     // Initialize TextureManager
     textureManager = TextureManager(context)
 
-    // Load the skybox texture
-    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
-
     // Initialize the SkyBox
+    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
     skyBox = SkyBox()
-    // Initialize ObjectLoader
-    starsLoader = StarsLoader(starDataRepository)
 
-    // Load stars using the repository and ObjectLoader
-    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
-    if (stars.isEmpty()) {
-      println("Warning: No stars loaded for rendering.")
-    }
-    // Add stars to the renderable objects list
-    renderableObjects.addAll(stars)
-    textureManager = TextureManager(context) // Initialize texture manager
-    skyBoxTextureHandle =
-        textureManager.loadTexture(R.drawable.skybox_texture) // Load skybox texture
-    skyBox = SkyBox() // Initialize the skybox
+    // Initialize the objects in the scene
+    initializeObjects()
   }
 
   /**
@@ -96,8 +82,8 @@ class MapRenderer : GLSurfaceView.Renderer {
     textureManager.bindTexture(skyBoxTextureHandle)
     skyBox.draw(camera)
 
-    // Render the stars
-    renderableObjects.forEach { it.draw(camera) }
+    // Draw the objects in the scene
+    drawObjects()
   }
 
   /**
@@ -112,6 +98,29 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
     camera.updateProjectionMatrix(ratio) // Update camera projection matrix
+  }
+
+  /** Initialize the objects in the scene. */
+  private fun initializeObjects() {
+    // Stars
+    starsLoader = StarsLoader(starDataRepository)
+    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
+    if (stars.isEmpty()) {
+      println("Warning: No stars loaded for rendering.")
+    }
+    renderableObjects.addAll(stars)
+
+    // Planet
+    planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
+  }
+
+  /** Draws the objects in the scene. */
+  private fun drawObjects() {
+    // Renderable Objects
+    renderableObjects.forEach { o -> o.draw(camera) }
+
+    // Planet
+    planet.draw(camera)
   }
 
   /** Updates the context used by the renderer. */
