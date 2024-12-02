@@ -24,6 +24,7 @@ object Route {
   const val IMAGE_REVIEW = "ImageReview"
   const val FEED = "Feed"
   const val AVATAR_SELECTION = "AvatarSelection"
+  const val LOGIN = "Login"
   const val REGISTER = "Register"
   const val EDIT_IMAGE = "EditImage"
 }
@@ -44,6 +45,7 @@ object Screen {
   const val IMAGE_REVIEW = "Image Review Screen"
   const val FEED = "Feed Screen"
   const val AVATAR_SELECTION = "Avatar Selection Screen"
+  const val LOGIN = "Login Screen"
   const val REGISTER = "Register Screen"
   const val EDIT_IMAGE = "Edit Image"
 }
