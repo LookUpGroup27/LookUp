@@ -68,13 +68,7 @@ fun AvatarSelectionScreen(
         }
     Button(
         onClick = {
-          userId.let { id ->
-            avatarViewModel.verifyOrCreateProfile(
-                id,
-                onSuccess = { selectedAvatar?.let { avatarViewModel.saveSelectedAvatar(id, it) } },
-                onFailure = { error -> })
-          }
-          navigationActions.goBack()
+          navigationActions.goBack() // Navigate back to ProfileScreen
         },
         modifier = Modifier.fillMaxWidth()) {
           Text("Confirm Selection")
