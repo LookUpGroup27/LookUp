@@ -19,4 +19,6 @@ interface ProfileRepository {
   )
 
   fun getSelectedAvatar(userId: String, onSuccess: (Int?) -> Unit, onFailure: (Exception) -> Unit)
+
+  fun verifyOrCreateProfile(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 }

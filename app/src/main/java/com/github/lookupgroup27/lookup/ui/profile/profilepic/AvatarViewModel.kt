@@ -61,6 +61,13 @@ class AvatarViewModel(private val profileRepository: ProfileRepository) : ViewMo
     }
   }
 
+  fun verifyOrCreateProfile(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    viewModelScope.launch {
+      profileRepository.verifyOrCreateProfile(
+          userId, onSuccess = { onSuccess() }, onFailure = { exception -> onFailure(exception) })
+    }
+  }
+
   companion object {
     val Factory: ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {

@@ -79,16 +79,59 @@ class ProfileRepositoryFirestore(
     auth.signOut()
   }
 
+  override fun verifyOrCreateProfile(
+      userId: String,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val userDocument = usersCollection.document(userId)
+    userDocument
+        .get()
+        .addOnSuccessListener { document ->
+          if (!document.exists()) {
+            // Create a default profile if none exists
+            val defaultProfile =
+                UserProfile(
+                    username = "Default Username",
+                    email = auth.currentUser?.email ?: "",
+                    bio = "",
+                    selectedAvatar = null)
+            userDocument
+                .set(defaultProfile)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          } else {
+            onSuccess()
+          }
+        }
+        .addOnFailureListener { exception -> onFailure(exception) }
+  }
+
   override fun saveSelectedAvatar(
       userId: String,
       avatarId: Int,
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    usersCollection
-        .document(userId)
-        .update("selectedAvatar", avatarId)
-        .addOnSuccessListener { onSuccess() }
+    val userDocument = usersCollection.document(userId)
+    userDocument
+        .get()
+        .addOnSuccessListener { document ->
+          if (!document.exists()) {
+            // Create a default profile with the selected avatar
+            val defaultProfile = mapOf("selectedAvatar" to avatarId)
+            userDocument
+                .set(defaultProfile)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          } else {
+            // Update the existing profile with the selected avatar
+            userDocument
+                .update("selectedAvatar", avatarId)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          }
+        }
         .addOnFailureListener { exception -> onFailure(exception) }
   }
 
