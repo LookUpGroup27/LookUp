@@ -62,7 +62,8 @@ class MapViewModelTest {
     verify(mockActivity).getSystemService(Context.SENSOR_SERVICE)
     verify(mockSensorManager).getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
     verify(mockSensorManager)
-        .registerListener(viewModel.renderer.camera, mockSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        .registerListener(
+            viewModel.mapRenderer.camera, mockSensor, SensorManager.SENSOR_DELAY_NORMAL)
   }
 
   @Test
@@ -70,6 +71,6 @@ class MapViewModelTest {
     viewModel.unregisterSensorListener(mockActivity)
 
     verify(mockActivity).getSystemService(Context.SENSOR_SERVICE)
-    verify(mockSensorManager).unregisterListener(viewModel.renderer.camera)
+    verify(mockSensorManager).unregisterListener(viewModel.mapRenderer.camera)
   }
 }

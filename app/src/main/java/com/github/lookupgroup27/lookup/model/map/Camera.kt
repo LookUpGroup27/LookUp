@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.opengl.Matrix
 import android.util.Log
+import android.view.ScaleGestureDetector
 
 /**
  * Represents a camera for handling movement and projection in our OpenGL World.
@@ -21,14 +22,21 @@ import android.util.Log
  * The positive Z-axis points upward, the positive X-axis points to the right, and the positive
  * Y-axis points into the screen.
  */
-class Camera : SensorEventListener {
+class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener {
 
   val modelMatrix = FloatArray(16)
   val viewMatrix = FloatArray(16)
   val projMatrix = FloatArray(16)
+  private var fov = DEFAULT_FOV
+  private var aspectRatio = 16 / 9f
 
   companion object {
-    const val FOV = 45f
+    // FOV constants
+    const val MAX_FOV = 110f
+    const val DEFAULT_FOV = 45f
+    const val MIN_FOV = 1f
+
+    // Near and far clipping plane constants
     const val NEAR = 0.1f
     const val FAR = 100f
   }
@@ -41,7 +49,8 @@ class Camera : SensorEventListener {
 
   /** Update the projection matrix based on the aspect ratio of the screen. */
   fun updateProjectionMatrix(ratio: Float) {
-    Matrix.perspectiveM(projMatrix, 0, FOV, ratio, NEAR, FAR)
+    this.aspectRatio = ratio
+    Matrix.perspectiveM(projMatrix, 0, fov, aspectRatio, NEAR, FAR)
   }
 
   override fun onSensorChanged(event: SensorEvent?) {
@@ -69,5 +78,21 @@ class Camera : SensorEventListener {
         }
       }
     }
+  }
+
+  override fun onScale(detector: ScaleGestureDetector): Boolean {
+    val scaleFactor = detector.scaleFactor
+    fov = (fov / scaleFactor).coerceIn(MIN_FOV, MAX_FOV)
+    Matrix.perspectiveM(projMatrix, 0, fov, aspectRatio, NEAR, FAR)
+
+    return true
+  }
+
+  override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+    return true
+  }
+
+  override fun onScaleEnd(detector: ScaleGestureDetector) {
+    // No-op
   }
 }
