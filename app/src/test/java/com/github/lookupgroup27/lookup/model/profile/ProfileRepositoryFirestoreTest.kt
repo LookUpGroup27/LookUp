@@ -2,6 +2,7 @@ package com.github.lookupgroup27.lookup.model.profile
 
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import com.github.lookupgroup27.lookup.R
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -303,5 +304,78 @@ class ProfileRepositoryFirestoreTest {
     // Assert
     verify(onFailure).invoke(any()) // Ensure onFailure is called
     verify(onSuccess, never()).invoke() // Ensure onSuccess was not called
+  }
+
+  @Test
+  fun `saveSelectedAvatar calls onSuccess on successful Firestore operation`() {
+    val userId = "testUserId"
+    val avatarId = R.drawable.avatar1
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    `when`(mockDocumentReference.update("selectedAvatar", avatarId))
+        .thenReturn(Tasks.forResult(null))
+
+    profileRepositoryFirestore.saveSelectedAvatar(userId, avatarId, onSuccess, onFailure)
+
+    shadowOf(Looper.getMainLooper()).idle()
+
+    verify(onSuccess).invoke()
+    verify(onFailure, never()).invoke(any())
+  }
+
+  @Test
+  fun `saveSelectedAvatar calls onFailure on failed Firestore operation`() {
+    val userId = "testUserId"
+    val avatarId = R.drawable.avatar1
+    val exception = Exception("Firestore update error")
+    val onSuccess = mock<() -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    `when`(mockDocumentReference.update("selectedAvatar", avatarId))
+        .thenReturn(Tasks.forException(exception))
+
+    profileRepositoryFirestore.saveSelectedAvatar(userId, avatarId, onSuccess, onFailure)
+
+    shadowOf(Looper.getMainLooper()).idle()
+
+    verify(onFailure).invoke(exception)
+    verify(onSuccess, never()).invoke()
+  }
+
+  @Test
+  fun `getSelectedAvatar calls onSuccess with avatarId on successful Firestore operation`() {
+    val userId = "testUserId"
+    val avatarId = R.drawable.avatar1
+    val mockDocumentSnapshot = mock(DocumentSnapshot::class.java)
+    val onSuccess = mock<(Int?) -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    `when`(mockDocumentSnapshot.getLong("selectedAvatar")).thenReturn(avatarId.toLong())
+    `when`(mockDocumentReference.get()).thenReturn(Tasks.forResult(mockDocumentSnapshot))
+
+    profileRepositoryFirestore.getSelectedAvatar(userId, onSuccess, onFailure)
+
+    shadowOf(Looper.getMainLooper()).idle()
+
+    verify(onSuccess).invoke(avatarId)
+    verify(onFailure, never()).invoke(any())
+  }
+
+  @Test
+  fun `getSelectedAvatar calls onFailure on failed Firestore operation`() {
+    val userId = "testUserId"
+    val exception = Exception("Firestore get error")
+    val onSuccess = mock<(Int?) -> Unit>()
+    val onFailure = mock<(Exception) -> Unit>()
+
+    `when`(mockDocumentReference.get()).thenReturn(Tasks.forException(exception))
+
+    profileRepositoryFirestore.getSelectedAvatar(userId, onSuccess, onFailure)
+
+    shadowOf(Looper.getMainLooper()).idle()
+
+    verify(onFailure).invoke(exception)
+    verify(onSuccess, never()).invoke(any())
   }
 }
