@@ -8,10 +8,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
+import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import java.io.File
 import org.junit.Before
 import org.junit.Rule
@@ -28,6 +30,9 @@ class ImageReviewTest {
   private lateinit var postsViewModel: PostsViewModel
   private lateinit var postsRepository: PostsRepository
 
+  private lateinit var collectionViewModel: CollectionViewModel
+  private lateinit var collectionRepository: CollectionRepository
+
   @get:Rule val composeTestRule = createComposeRule()
 
   private val fakeFile: File = File.createTempFile("temp", null)
@@ -39,6 +44,9 @@ class ImageReviewTest {
     postsRepository = Mockito.mock(PostsRepository::class.java)
     postsViewModel = PostsViewModel(postsRepository)
 
+    collectionRepository = Mockito.mock(CollectionRepository::class.java)
+    collectionViewModel = CollectionViewModel(collectionRepository)
+
     // Mock UID generator to return a fixed value
     `when`(postsViewModel.generateNewUid()).thenReturn("mocked_uid")
   }
@@ -46,7 +54,7 @@ class ImageReviewTest {
   @Test
   fun testImageReviewIsDisplayed() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel)
+      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
     }
 
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
@@ -55,7 +63,7 @@ class ImageReviewTest {
   @Test
   fun testConfirmButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel)
+      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
     }
 
     composeTestRule.onNodeWithTag("confirm_button").assertIsDisplayed()
@@ -65,7 +73,7 @@ class ImageReviewTest {
   @Test
   fun testCancelButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel)
+      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
     }
 
     composeTestRule.onNodeWithTag("cancel_button").assertIsDisplayed()
@@ -79,7 +87,10 @@ class ImageReviewTest {
     val imageFile = File("path/to/image")
     composeTestRule.setContent {
       ImageReviewScreen(
-          navigationActions = mockNavigationActions, imageFile = imageFile, postsViewModel)
+          navigationActions = mockNavigationActions,
+          imageFile = imageFile,
+          postsViewModel,
+          collectionViewModel)
     }
     composeTestRule.onNodeWithContentDescription("Captured Image").assertIsDisplayed()
   }
@@ -87,7 +98,11 @@ class ImageReviewTest {
   @Test
   fun testNoImageAvailableTextWhenImageFileIsNull() {
     composeTestRule.setContent {
-      ImageReviewScreen(navigationActions = mockNavigationActions, imageFile = null, postsViewModel)
+      ImageReviewScreen(
+          navigationActions = mockNavigationActions,
+          imageFile = null,
+          postsViewModel,
+          collectionViewModel)
     }
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
   }
@@ -95,7 +110,7 @@ class ImageReviewTest {
   @Test
   fun testImageReviewScreenIsScrollable() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel)
+      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
     }
 
     // Check that the top element is displayed (e.g., image or text)
