@@ -35,26 +35,32 @@ class AvatarViewModel(private val profileRepository: ProfileRepository) : ViewMo
     }
   }
 
-  fun saveSelectedAvatar(userId: String, avatarId: Int) {
+  fun saveSelectedAvatar(userId: String, avatarId: Int?) {
     viewModelScope.launch {
       profileRepository.saveSelectedAvatar(
           userId,
           avatarId,
-          onSuccess = { _selectedAvatar.value = avatarId },
+          onSuccess = { _selectedAvatar.value = avatarId }, // Update to null if reset
           onFailure = { exception -> _error.value = exception.message })
     }
   }
 
-  fun updateUserProfileWithAvatar(userId: String, avatarId: Int) {
+  fun updateUserProfileWithAvatar(userId: String, avatarId: Int?) {
     viewModelScope.launch {
       profileRepository.getUserProfile(
           onSuccess = { profile ->
             if (profile != null) {
+              // Update profile with the new avatar, or clear it if avatarId is null
               val updatedProfile = profile.copy(selectedAvatar = avatarId)
               profileRepository.updateUserProfile(
                   updatedProfile,
-                  onSuccess = { _selectedAvatar.value = avatarId },
+                  onSuccess = {
+                    _selectedAvatar.value = avatarId
+                  }, // Update state to match new profile
                   onFailure = { exception -> _error.value = exception.message })
+            } else {
+              // Handle case where the profile is null
+              _error.value = "User profile not found. Cannot update avatar."
             }
           },
           onFailure = { exception -> _error.value = exception.message })
