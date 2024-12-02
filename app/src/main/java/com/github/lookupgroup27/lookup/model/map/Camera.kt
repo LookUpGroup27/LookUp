@@ -28,7 +28,7 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
   val viewMatrix = FloatArray(16)
   val projMatrix = FloatArray(16)
   private var fov = DEFAULT_FOV
-  private var aspectRatio = DEFAULT_ASPECT_RATIO
+  private var aspectRatio = 16 / 9f
 
   companion object {
     // FOV constants
@@ -39,9 +39,6 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
     // Near and far clipping plane constants
     const val NEAR = 0.1f
     const val FAR = 100f
-
-    // Aspect ratio constants
-    const val DEFAULT_ASPECT_RATIO = 1f
   }
 
   init {
