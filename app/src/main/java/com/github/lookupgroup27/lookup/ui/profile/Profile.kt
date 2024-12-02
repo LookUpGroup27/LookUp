@@ -23,6 +23,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.profile.components.ProfileButton
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
+import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -73,10 +74,11 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
 
                 Button(
                     onClick = { navigationActions.navigateTo(Screen.AVATAR_SELECTION) },
+                    colors = ButtonDefaults.buttonColors(DarkPurple)
                     // modifier = Modifier.align(Alignment.Center)
-                ) {
-                  Text("Change Avatar")
-                }
+                    ) {
+                      Text("Change Avatar")
+                    }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
