@@ -1,8 +1,9 @@
-package com.github.lookupgroup27.lookup.model.image
+package com.github.lookupgroup27.lookup.ui.image
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.lookupgroup27.lookup.model.image.ImageRepository
 import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
