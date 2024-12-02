@@ -307,12 +307,17 @@ class ProfileRepositoryFirestoreTest {
   }
 
   @Test
-  fun `saveSelectedAvatar calls onSuccess on successful Firestore operation`() {
+  fun `saveSelectedAvatar verifies or creates profile and calls onSuccess on successful Firestore operation`() {
     val userId = "testUserId"
     val avatarId = R.drawable.avatar1
     val onSuccess = mock<() -> Unit>()
     val onFailure = mock<(Exception) -> Unit>()
 
+    // Mock `verifyOrCreateProfile` to succeed
+    `when`(mockDocumentReference.get()).thenReturn(Tasks.forResult(mockDocumentSnapshot))
+    `when`(mockDocumentSnapshot.exists()).thenReturn(true)
+
+    // Mock Firestore update to succeed
     `when`(mockDocumentReference.update("selectedAvatar", avatarId))
         .thenReturn(Tasks.forResult(null))
 
@@ -320,18 +325,25 @@ class ProfileRepositoryFirestoreTest {
 
     shadowOf(Looper.getMainLooper()).idle()
 
+    verify(mockDocumentReference).get() // Ensure `verifyOrCreateProfile` logic is called
+    verify(mockDocumentReference).update("selectedAvatar", avatarId)
     verify(onSuccess).invoke()
     verify(onFailure, never()).invoke(any())
   }
 
   @Test
-  fun `saveSelectedAvatar calls onFailure on failed Firestore operation`() {
+  fun `saveSelectedAvatar verifies or creates profile and calls onFailure on failed Firestore operation`() {
     val userId = "testUserId"
     val avatarId = R.drawable.avatar1
     val exception = Exception("Firestore update error")
     val onSuccess = mock<() -> Unit>()
     val onFailure = mock<(Exception) -> Unit>()
 
+    // Mock `verifyOrCreateProfile` to succeed
+    `when`(mockDocumentReference.get()).thenReturn(Tasks.forResult(mockDocumentSnapshot))
+    `when`(mockDocumentSnapshot.exists()).thenReturn(true)
+
+    // Mock Firestore update to fail
     `when`(mockDocumentReference.update("selectedAvatar", avatarId))
         .thenReturn(Tasks.forException(exception))
 
@@ -339,6 +351,8 @@ class ProfileRepositoryFirestoreTest {
 
     shadowOf(Looper.getMainLooper()).idle()
 
+    verify(mockDocumentReference).get() // Ensure `verifyOrCreateProfile` logic is called
+    verify(mockDocumentReference).update("selectedAvatar", avatarId)
     verify(onFailure).invoke(exception)
     verify(onSuccess, never()).invoke()
   }
