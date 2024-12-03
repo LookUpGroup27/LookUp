@@ -98,20 +98,8 @@ fun EditImageScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
               Button(
-                  onClick = { /*editImageViewModel.cropImage(imageUrl)*/},
-                  modifier = Modifier.testTag("crop_button")) {
-                    Text("Crop Image")
-                  }
-              Button(
-                  onClick = { /*editImageViewModel.resizeImage(imageUrl)*/},
-                  modifier = Modifier.testTag("resize_button")) {
-                    Text("Resize Image")
-                  }
-              Button(
                   onClick = {
                     editImageViewModel.deleteImage(imageUrl)
-                    collectionViewModel.updateImages()
-                    postsViewModel.deletePost(imageUrl)
                     navigationActions.navigateTo(Screen.COLLECTION)
                   },
                   colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
@@ -129,12 +117,6 @@ fun EditImageScreen(
                         .padding(top = 16.dp)
                         .testTag("loading_indicator"))
           }
-          is EditImageState.Success -> {
-            val newImageUrl = (editImageState as EditImageState.Success).imageUrl
-            LaunchedEffect(editImageState) {
-              Toast.makeText(context, "Success! Image updated.", Toast.LENGTH_SHORT).show()
-            }
-          }
           is EditImageState.Error -> {
             val errorMessage = (editImageState as EditImageState.Error).message
             LaunchedEffect(editImageState) {
@@ -142,6 +124,8 @@ fun EditImageScreen(
             }
           }
           is EditImageState.Deleted -> {
+              collectionViewModel.updateImages()
+              postsViewModel.deletePost(imageUrl)
             LaunchedEffect(editImageState) {
               Toast.makeText(context, "Image deleted successfully.", Toast.LENGTH_SHORT).show()
               editImageViewModel.resetState()
