@@ -1,5 +1,18 @@
 precision mediump float;
-varying vec3 color;
+
+// Color
+varying bool vUseColor;
+varying vec4 vInterpolatedColor;
+
+// Texture
+varying bool vUseTexture;
+varying vec2 vInterpolatedTexCoord;
+uniform sampler2D uTexture;
+
 void main() {
-  gl_FragColor = vec4(color, 1.0);
+    if (vUseColor) {
+        gl_FragColor = vInterpolatedColor;
+    } else if (vUseTexture) {
+        gl_FragColor = texture2D(uTexture, vInterpolatedTexCoord);
+    }
 }
