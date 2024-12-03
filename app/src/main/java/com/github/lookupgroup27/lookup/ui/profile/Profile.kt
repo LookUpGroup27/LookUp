@@ -6,30 +6,40 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.profile.components.ProfileButton
+import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
+import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProfileScreen(navigationActions: NavigationActions) {
+fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
   val configuration = LocalConfiguration.current
   val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
+
+  val userId = Firebase.auth.currentUser?.uid
+  LaunchedEffect(userId) { userId?.let { avatarViewModel.fetchSelectedAvatar(it) } }
+
+  // Collect the selected avatar state
+  val selectedAvatar by avatarViewModel.selectedAvatar.collectAsState()
 
   Scaffold(
       bottomBar = {
@@ -57,11 +67,22 @@ fun ProfileScreen(navigationActions: NavigationActions) {
               horizontalAlignment = Alignment.CenterHorizontally,
               verticalArrangement = Arrangement.Top) {
                 // Profile Icon
+                val avatarRes = selectedAvatar ?: R.drawable.default_profile_icon
                 Icon(
-                    painter = painterResource(id = R.drawable.profile_icon),
+                    painter = painterResource(id = avatarRes),
                     contentDescription = "Profile Icon",
-                    modifier = Modifier.size(if (isLandscape) 100.dp else 150.dp),
-                    tint = Color.Unspecified)
+                    modifier = Modifier.size(150.dp),
+                    tint =
+                        if (avatarRes == R.drawable.default_profile_icon) Color.White
+                        else Color.Unspecified)
+
+                Button(
+                    onClick = { navigationActions.navigateTo(Screen.AVATAR_SELECTION) },
+                    colors = ButtonDefaults.buttonColors(DarkPurple)
+                    // modifier = Modifier.align(Alignment.Center)
+                    ) {
+                      Text("Change Avatar")
+                    }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -82,12 +103,4 @@ fun ProfileScreen(navigationActions: NavigationActions) {
               }
         }
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-  val navController = rememberNavController()
-  val navigationActions = NavigationActions(navController)
-  ProfileScreen(navigationActions)
 }

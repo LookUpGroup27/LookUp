@@ -10,4 +10,13 @@ interface ProfileRepository {
   fun deleteUserProfile(profile: UserProfile, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
   fun logoutUser()
+
+  fun saveSelectedAvatar(
+      userId: String,
+      avatarId: Int,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  )
+
+  fun getSelectedAvatar(userId: String, onSuccess: (Int?) -> Unit, onFailure: (Exception) -> Unit)
 }

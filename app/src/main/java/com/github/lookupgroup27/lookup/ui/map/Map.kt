@@ -59,7 +59,7 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel =
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen")) {
           AndroidView(
-              factory = { context -> MapSurfaceView(context, mapViewModel.renderer) },
+              factory = { context -> MapSurfaceView(context, mapViewModel.mapRenderer) },
               modifier = Modifier.fillMaxSize().testTag("glSurfaceView"))
         }
       }

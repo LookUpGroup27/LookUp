@@ -118,8 +118,6 @@ class EditImageScreenTest {
           postsViewModel = postsViewModel)
     }
 
-    composeTestRule.onNodeWithTag("crop_button").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("resize_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("delete_button").assertIsDisplayed().performClick()
 
     verify(mockNavigationActions).navigateTo(Screen.COLLECTION)

@@ -24,6 +24,8 @@ import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
+import com.github.lookupgroup27.lookup.ui.login.LoginScreen
+import com.github.lookupgroup27.lookup.ui.login.LoginViewModel
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
 import com.github.lookupgroup27.lookup.ui.map.MapViewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -37,6 +39,8 @@ import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
+import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarSelectionScreen
+import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
@@ -74,6 +78,8 @@ fun LookUpApp() {
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
   val mapViewModel: MapViewModel = viewModel()
+  val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
+  val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -81,6 +87,7 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
@@ -91,15 +98,15 @@ fun LookUpApp() {
         route = Route.LANDING,
     ) {
       composable(Screen.LANDING) { LandingScreen(navigationActions) }
-      composable(Screen.MENU) { MenuScreen(navigationActions) }
+      composable(Screen.MENU) { MenuScreen(navigationActions, avatarViewModel) }
     }
 
     navigation(
         startDestination = Screen.MENU,
         route = Route.MENU,
     ) {
-      composable(Screen.MENU) { MenuScreen(navigationActions) }
-      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.MENU) { MenuScreen(navigationActions, avatarViewModel) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions, avatarViewModel) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
       composable(Screen.GOOGLE_MAP) {
         GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
@@ -114,10 +121,18 @@ fun LookUpApp() {
 
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
       composable(Screen.COLLECTION) { CollectionScreen(navigationActions, collectionViewModel) }
-      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions, avatarViewModel) }
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
+
+      composable(Screen.AVATAR_SELECTION) {
+        AvatarSelectionScreen(
+            avatarViewModel = avatarViewModel,
+            userId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+            navigationActions = navigationActions)
+      }
+
       composable(
           route = "${Route.EDIT_IMAGE}/{imageUrl}",
           arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })) {
