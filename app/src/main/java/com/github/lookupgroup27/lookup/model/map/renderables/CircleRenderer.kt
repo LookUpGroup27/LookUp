@@ -1,11 +1,13 @@
 package com.github.lookupgroup27.lookup.model.map.renderables
 
+import android.content.Context
 import android.opengl.GLES20
 import android.util.Log
 import com.github.lookupgroup27.lookup.model.map.renderables.utils.GeometryUtils
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
+import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 
 /**
@@ -16,6 +18,7 @@ import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
  * @param color Color of the circle as an integer (RGBA)
  */
 open class CircleRenderer(
+    private val context: Context,
     private val segments: Int = DEFAULT_SEGMENTS,
     private val radius: Float = 1.0f,
     private val color: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
@@ -72,28 +75,9 @@ open class CircleRenderer(
   /** Initializes shaders for rendering the circle. */
   fun initializeShaders() {
     Log.d("CircleRenderer", "Compiling shaders")
-    val vertexShaderCode =
-        """
-            attribute vec4 vPosition;
-            attribute vec4 vColor;
-            uniform mat4 uMVPMatrix;
-            varying vec4 vInterpolatedColor;
-            void main() {
-                gl_Position = uMVPMatrix * vPosition;
-                vInterpolatedColor = vColor;
-            }
-            """
-            .trimIndent()
+    val vertexShaderCode = readShader(context, "circle_vertex_shader.glsl")
 
-    val fragmentShaderCode =
-        """
-    precision mediump float;
-    varying vec4 vInterpolatedColor;
-    void main() {
-        gl_FragColor = vInterpolatedColor;
-    }
-    """
-            .trimIndent()
+    val fragmentShaderCode = readShader(context, "circle_fragment_shader.glsl")
 
     shaderProgram = ShaderProgram(vertexShaderCode, fragmentShaderCode)
   }

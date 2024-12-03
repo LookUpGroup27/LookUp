@@ -9,7 +9,6 @@ import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.model.stars.StarDataRepository
-import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -19,11 +18,6 @@ import javax.microedition.khronos.opengles.GL10
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
 class MapRenderer : GLSurfaceView.Renderer {
-
-  companion object {
-    private const val VERTEX_SHADER_FILE = "vertex_shader.glsl"
-    private const val FRAGMENT_SHADER_FILE = "fragment_shader.glsl"
-  }
 
   private lateinit var skyBox: SkyBox
   private lateinit var planet: Planet
@@ -50,17 +44,12 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f) // Set the background color
     GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
-    // Load the shaders
-    // TODO : Use this in some way normally resolved in issue #191
-    val vertexShaderCode = readShader(context, VERTEX_SHADER_FILE)
-    val fragmentShaderCode = readShader(context, FRAGMENT_SHADER_FILE)
-
     // Initialize TextureManager
     textureManager = TextureManager(context)
 
     // Initialize the SkyBox
     skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
-    skyBox = SkyBox()
+    skyBox = SkyBox(context)
 
     // Initialize the objects in the scene
     initializeObjects()

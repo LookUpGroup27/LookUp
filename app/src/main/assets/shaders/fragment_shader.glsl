@@ -1,3 +1,5 @@
+// TODO: Add classes to use this multi-task shader only as given
+
 precision mediump float;
 
 // Color

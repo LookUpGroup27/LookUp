@@ -1,3 +1,5 @@
+// TODO: Add classes to use this multi-task shader as given
+
 // MVP matrix
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;

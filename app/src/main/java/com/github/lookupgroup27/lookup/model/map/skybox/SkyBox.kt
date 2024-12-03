@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.model.map.skybox
 
+import android.content.Context
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.model.map.renderables.SphereRenderer
@@ -13,8 +14,11 @@ import com.github.lookupgroup27.lookup.model.map.renderables.SphereRenderer
  * @param numBands The number of vertex bands in the skybox.
  * @param stepsPerBand The number of steps in each band.
  */
-class SkyBox(numBands: Int = DEFAULT_NUM_BANDS, stepsPerBand: Int = DEFAULT_STEPS_PER_BAND) :
-    SphereRenderer(numBands, stepsPerBand) {
+class SkyBox(
+    context: Context,
+    numBands: Int = DEFAULT_NUM_BANDS,
+    stepsPerBand: Int = DEFAULT_STEPS_PER_BAND
+) : SphereRenderer(context, numBands, stepsPerBand) {
 
   /** Initializes buffers and shaders for rendering the skybox. */
   init {
