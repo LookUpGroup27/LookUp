@@ -124,8 +124,8 @@ fun EditImageScreen(
             }
           }
           is EditImageState.Deleted -> {
-              collectionViewModel.updateImages()
-              postsViewModel.deletePost(imageUrl)
+            collectionViewModel.updateImages()
+            postsViewModel.deletePost(imageUrl)
             LaunchedEffect(editImageState) {
               Toast.makeText(context, "Image deleted successfully.", Toast.LENGTH_SHORT).show()
               editImageViewModel.resetState()
