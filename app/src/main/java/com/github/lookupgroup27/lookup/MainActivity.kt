@@ -24,6 +24,7 @@ import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
+import com.github.lookupgroup27.lookup.ui.image.ImageViewModel
 import com.github.lookupgroup27.lookup.ui.login.LoginScreen
 import com.github.lookupgroup27.lookup.ui.login.LoginViewModel
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
@@ -69,7 +70,7 @@ fun LookUpApp() {
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
       viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
-
+  val imageViewModel: ImageViewModel = viewModel(factory = ImageViewModel.Factory)
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
@@ -148,6 +149,7 @@ fun LookUpApp() {
             ImageReviewScreen(
                 navigationActions = navigationActions,
                 imageFile = imageFile,
+                imageViewModel = imageViewModel,
                 postsViewModel = postsViewModel,
                 collectionViewModel = collectionViewModel)
           }
