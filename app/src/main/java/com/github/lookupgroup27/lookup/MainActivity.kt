@@ -33,6 +33,8 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetViewModel
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
@@ -78,6 +80,8 @@ fun LookUpApp() {
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
   val mapViewModel: MapViewModel = viewModel()
+  val passwordResetViewModel: PasswordResetViewModel =
+      viewModel(factory = PasswordResetViewModel.Factory)
   val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
   val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
@@ -87,6 +91,9 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
       composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
     }
@@ -167,6 +174,13 @@ fun LookUpApp() {
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
     }
+
+    navigation(startDestination = Screen.PASSWORDRESET, route = Route.PASSWORDRESET) {
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
+    }
+
     navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
