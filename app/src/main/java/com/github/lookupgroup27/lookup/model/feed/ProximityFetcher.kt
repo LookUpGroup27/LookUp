@@ -59,8 +59,11 @@ class ProximityPostFetcher(private val postsViewModel: PostsViewModel, context: 
                     // Pair each post with its distance from the user
                     post to distance
                   }
-                  // Sort posts by distance in ascending order
-                  .sortedBy { (_, distance) -> distance }
+                  // Sort first by distance (ascending), then by timestamp (descending)
+                  .sortedWith(
+                      compareBy<Pair<Post, Double>> { it.second } // Sort by distance
+                          .thenByDescending { it.first.timestamp } // Sort by timestamp
+                      )
                   // Take the 3 closest posts for now
                   .take(3)
                   // Extract only the post objects from the pairs
