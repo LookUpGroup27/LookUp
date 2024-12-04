@@ -22,6 +22,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.util.DateUtils.isSameDay
 import com.github.lookupgroup27.lookup.util.DateUtils.updateMonth
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
 import net.fortuna.ical4j.model.Property
@@ -51,6 +52,8 @@ fun CalendarScreen(
   var searchQuery by remember { mutableStateOf("") }
   var showDialog by remember { mutableStateOf(false) }
   var searchResults by remember { mutableStateOf<List<VEvent>>(emptyList()) }
+  val user = FirebaseAuth.getInstance().currentUser
+  val isUserLoggedIn = user != null
 
   // Observing events from ViewModel.
   val icalEvents by calendarViewModel.icalEvents.collectAsState()
@@ -61,6 +64,7 @@ fun CalendarScreen(
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isUserLoggedIn,
             selectedItem = Route.CALENDAR)
       },
       content = { paddingValues ->
