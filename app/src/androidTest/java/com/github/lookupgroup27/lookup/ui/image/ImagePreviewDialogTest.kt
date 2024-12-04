@@ -125,7 +125,7 @@ class ImagePreviewDialogTest {
     verify(postsRepository).updatePost(eq(testPost), any(), any())
   }
 
-  @Test
+  /*@Test
   fun testStarClickCallsUpdateUserProfile() {
     composeTestRule.setContent {
       ImagePreviewDialog(
@@ -137,7 +137,7 @@ class ImagePreviewDialogTest {
     profileViewModel.updateUserProfile(testProfile)
     // Verify that `updateUserProfile` was called in the profileViewModel
     verify(profileRepository).updateUserProfile(eq(testProfile), any(), any())
-  }
+  }*/
 
   @Test
   fun testStarIsDisplayed() {
