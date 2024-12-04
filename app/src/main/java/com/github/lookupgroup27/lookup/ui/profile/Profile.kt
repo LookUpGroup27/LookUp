@@ -25,8 +25,8 @@ import com.github.lookupgroup27.lookup.ui.profile.components.ProfileButton
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {

@@ -217,5 +217,4 @@ class FeedScreenTest {
     // Verify that the navigation action to the Feed was not triggered
     verify(navigationActions, never()).navigateTo(eq(TopLevelDestinations.FEED))
   }
-
 }
