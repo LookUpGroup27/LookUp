@@ -22,11 +22,14 @@ import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("SourceLockedOrientationActivity")
 @Composable
 fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel = viewModel()) {
   val context = LocalContext.current
+  val user = FirebaseAuth.getInstance().currentUser
+  val isUserLoggedIn = user != null
   val activity =
       context as? ComponentActivity ?: null.also { Log.e("MapScreen", "MainActivity not found") }
 
@@ -51,6 +54,7 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel =
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isUserLoggedIn,
             selectedItem = Route.MAP)
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen")) {

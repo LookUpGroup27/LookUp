@@ -24,6 +24,7 @@ import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
+import com.github.lookupgroup27.lookup.ui.image.ImageViewModel
 import com.github.lookupgroup27.lookup.ui.login.LoginScreen
 import com.github.lookupgroup27.lookup.ui.login.LoginViewModel
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
@@ -33,6 +34,8 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetViewModel
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
@@ -71,13 +74,15 @@ fun LookUpApp() {
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
       viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
-
+  val imageViewModel: ImageViewModel = viewModel(factory = ImageViewModel.Factory)
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
   val mapViewModel: MapViewModel = viewModel()
+  val passwordResetViewModel: PasswordResetViewModel =
+      viewModel(factory = PasswordResetViewModel.Factory)
   val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
   val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
@@ -87,6 +92,9 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
       composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
     }
@@ -159,6 +167,7 @@ fun LookUpApp() {
             ImageReviewScreen(
                 navigationActions = navigationActions,
                 imageFile = imageFile,
+                imageViewModel = imageViewModel,
                 postsViewModel = postsViewModel,
                 collectionViewModel = collectionViewModel)
           }
@@ -167,6 +176,13 @@ fun LookUpApp() {
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
     }
+
+    navigation(startDestination = Screen.PASSWORDRESET, route = Route.PASSWORDRESET) {
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
+    }
+
     navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
       composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
       composable(Screen.AUTH) { SignInScreen(navigationActions) }

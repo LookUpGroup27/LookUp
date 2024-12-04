@@ -3,7 +3,10 @@ package com.github.lookupgroup27.lookup.ui.image
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.lookupgroup27.lookup.model.image.FirebaseImageRepository
 import com.github.lookupgroup27.lookup.model.image.ImageRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,23 +70,32 @@ class ImageViewModel(private val repository: ImageRepository) : ViewModel() {
     _uploadStatus.value = UploadStatus()
   }
 
+  /**
+   * Manually sets the state to a specific value.
+   *
+   * This method can be useful for testing or custom state management scenarios.
+   *
+   * @param status The new state to set.
+   */
+  fun setEditImageState(status: UploadStatus) {
+    _uploadStatus.value = status
+  }
+
+  /**
+   * Provides a factory method to create an instance of [ImageViewModel] using the given
+   * [ImageRepository].
+   *
+   * @return A [ViewModelProvider.Factory] that creates [ImageViewModel] instances.
+   */
   companion object {
-    /**
-     * Provides a factory method to create an instance of [ImageViewModel] using the given
-     * [ImageRepository].
-     *
-     * @param repository The [ImageRepository] instance used for uploading images.
-     * @return A [ViewModelProvider.Factory] that creates [ImageViewModel] instances.
-     */
-    fun provideFactory(repository: ImageRepository): ViewModelProvider.Factory {
-      return object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-          if (modelClass.isAssignableFrom(ImageViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST") return ImageViewModel(repository) as T
+    val Factory: ViewModelProvider.Factory =
+        object : ViewModelProvider.Factory {
+          @Suppress("UNCHECKED_CAST")
+          override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return ImageViewModel(
+                FirebaseImageRepository(FirebaseStorage.getInstance(), FirebaseAuth.getInstance()))
+                as T
           }
-          throw IllegalArgumentException("Unknown ViewModel class")
         }
-      }
-    }
   }
 }

@@ -28,12 +28,15 @@ import com.github.lookupgroup27.lookup.ui.profile.components.ProfileButton
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
   val configuration = LocalConfiguration.current
   val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+  val user = FirebaseAuth.getInstance().currentUser
+  val isUserLoggedIn = user != null
 
   val userId = Firebase.auth.currentUser?.uid
   LaunchedEffect(userId) { userId?.let { avatarViewModel.fetchSelectedAvatar(it) } }
@@ -46,6 +49,7 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isUserLoggedIn,
             selectedItem = navigationActions.currentRoute())
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {

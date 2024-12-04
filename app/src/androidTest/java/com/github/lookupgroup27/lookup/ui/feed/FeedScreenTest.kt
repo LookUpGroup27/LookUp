@@ -18,6 +18,7 @@ import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -26,10 +27,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+
+private lateinit var mockAuth: FirebaseAuth
 
 class FeedScreenTest {
 
@@ -198,5 +203,18 @@ class FeedScreenTest {
     profileViewModel.updateUserProfile(testProfile)
     // Verify that `updateUserProfile` was called in the profileViewModel
     verify(profileRepository).updateUserProfile(eq(testProfile), any(), any())
-  }*/
+  }  }*/
+
+  @Test
+  fun testNavigationToFeedBlockedForLoggedOutUser() {
+    // Mock the user as not logged in
+    mockAuth = org.mockito.kotlin.mock()
+    whenever(mockAuth.currentUser).thenReturn(null)
+
+    // Simulate clicking the Feed tab in the bottom navigation
+    composeTestRule.onNodeWithTag("Feed").performClick()
+
+    // Verify that the navigation action to the Feed was not triggered
+    verify(navigationActions, never()).navigateTo(eq(TopLevelDestinations.FEED))
+  }
 }

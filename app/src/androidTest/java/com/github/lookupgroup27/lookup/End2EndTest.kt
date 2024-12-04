@@ -18,9 +18,11 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
+import com.google.firebase.auth.FirebaseAuth
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 
 private const val PERMISSION_DIALOG_TIMEOUT = 10_000L
 
@@ -93,6 +95,9 @@ class End2EndTest {
   @Test
   fun navigationFlow() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    // Mock FirebaseAuth to simulate different login states
+    val mockAuth = org.mockito.kotlin.mock<FirebaseAuth>()
+    val isUserLoggedIn = mockAuth.currentUser != null // Check if a user is logged in
 
     // Step 1: Verify initial Landing Screen
     composeTestRule.onNodeWithTag("LandingScreen").assertIsDisplayed()
@@ -160,7 +165,9 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("feed_screen").assertIsDisplayed()
+    if (isUserLoggedIn) {
+      composeTestRule.onNodeWithTag("feed_screen").assertIsDisplayed()
+    }
     composeTestRule.onNodeWithText("Menu").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()

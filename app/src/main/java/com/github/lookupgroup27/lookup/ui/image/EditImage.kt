@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.ui.image.components.ActionButton
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
@@ -97,15 +98,14 @@ fun EditImageScreen(
                     .testTag("edit_buttons_column"),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
-              Button(
+              ActionButton(
+                  text = "Delete Image",
                   onClick = {
                     editImageViewModel.deleteImage(imageUrl)
                     navigationActions.navigateTo(Screen.COLLECTION)
                   },
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                  modifier = Modifier.testTag("delete_button")) {
-                    Text("Delete Image")
-                  }
+                  color = Color.Red,
+                  modifier = Modifier.testTag("delete_button"))
             }
 
         // Loading indicator and state handling
