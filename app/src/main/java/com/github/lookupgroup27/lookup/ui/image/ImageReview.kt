@@ -26,6 +26,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
+import com.github.lookupgroup27.lookup.ui.image.components.ActionButton
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
@@ -66,7 +67,7 @@ fun ImageReviewScreen(
         Column(
             modifier =
                 Modifier.fillMaxWidth()
-                    .align(BiasAlignment(0f, 0f))
+                    .align(Alignment.Center)
                     .padding(16.dp)
                     .verticalScroll(scrollState) // Make the column scrollable
                     .testTag("edit_buttons_column"),
@@ -91,24 +92,20 @@ fun ImageReviewScreen(
               Spacer(modifier = Modifier.height(65.dp))
 
               // Save Image Button
-              Button(
-                  onClick = { imageFile?.let { imageViewModel.uploadImage(it) } },
-                  modifier = Modifier.testTag("confirm_button").width(200.dp),
-              ) {
-                Text(text = "Save Image")
-              }
 
-              // Discard Image Button
-              Button(
+              ActionButton(
+                  text = "Save Image",
+                  onClick = { imageFile?.let { imageViewModel.uploadImage(it) } },
+                  modifier = Modifier.testTag("confirm_button"))
+
+              ActionButton(
+                  text = "Discard Image",
                   onClick = {
                     Toast.makeText(context, "Image discarded", Toast.LENGTH_SHORT).show()
-                    navigationActions.navigateTo(Screen.TAKE_IMAGE) // Navigate back without saving
+                    navigationActions.navigateTo(Screen.TAKE_IMAGE)
                   },
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                  modifier = Modifier.testTag("cancel_button").width(200.dp),
-              ) {
-                Text(text = "Discard Image")
-              }
+                  modifier = Modifier.testTag("cancel_button"),
+                  color = Color.Red)
             }
 
         // Display upload status messages and create a post upon successful upload
