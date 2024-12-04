@@ -119,12 +119,6 @@ fun AvatarSelectionScreen(
             avatarViewModel.saveSelectedAvatar(userId, it) // Save pending avatar
             avatarViewModel.updateUserProfileWithAvatar(userId, it) // Update profile
           }
-          userId.let { id ->
-            avatarViewModel.verifyOrCreateProfile(
-                id,
-                onSuccess = { selectedAvatar?.let { avatarViewModel.saveSelectedAvatar(id, it) } },
-                onFailure = { error -> })
-          }
           navigationActions.goBack()
         },
         enabled = (pendingAvatar != null), // Enable only if an avatar is selected
