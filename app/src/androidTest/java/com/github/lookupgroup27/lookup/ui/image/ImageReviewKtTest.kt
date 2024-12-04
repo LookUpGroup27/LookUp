@@ -9,6 +9,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
+import com.github.lookupgroup27.lookup.model.image.ImageRepository
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
@@ -33,6 +34,9 @@ class ImageReviewTest {
   private lateinit var collectionViewModel: CollectionViewModel
   private lateinit var collectionRepository: CollectionRepository
 
+  private lateinit var imageViewModel: ImageViewModel
+  private lateinit var imageRepository: ImageRepository
+
   @get:Rule val composeTestRule = createComposeRule()
 
   private val fakeFile: File = File.createTempFile("temp", null)
@@ -44,6 +48,9 @@ class ImageReviewTest {
     postsRepository = Mockito.mock(PostsRepository::class.java)
     postsViewModel = PostsViewModel(postsRepository)
 
+    imageRepository = Mockito.mock(ImageRepository::class.java)
+    imageViewModel = ImageViewModel(imageRepository)
+
     collectionRepository = Mockito.mock(CollectionRepository::class.java)
     collectionViewModel = CollectionViewModel(collectionRepository)
 
@@ -54,7 +61,8 @@ class ImageReviewTest {
   @Test
   fun testImageReviewIsDisplayed() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
+      ImageReviewScreen(
+          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
     }
 
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
@@ -63,20 +71,22 @@ class ImageReviewTest {
   @Test
   fun testConfirmButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
+      ImageReviewScreen(
+          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
     }
 
-    composeTestRule.onNodeWithTag("confirm_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirm_button").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirm_button").performClick()
   }
 
   @Test
   fun testCancelButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
+      ImageReviewScreen(
+          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
     }
 
-    composeTestRule.onNodeWithTag("cancel_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancel_button").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancel_button").performClick()
 
     verify(mockNavigationActions).navigateTo(Screen.TAKE_IMAGE)
@@ -89,6 +99,7 @@ class ImageReviewTest {
       ImageReviewScreen(
           navigationActions = mockNavigationActions,
           imageFile = imageFile,
+          imageViewModel,
           postsViewModel,
           collectionViewModel)
     }
@@ -101,6 +112,7 @@ class ImageReviewTest {
       ImageReviewScreen(
           navigationActions = mockNavigationActions,
           imageFile = null,
+          imageViewModel,
           postsViewModel,
           collectionViewModel)
     }
@@ -110,7 +122,8 @@ class ImageReviewTest {
   @Test
   fun testImageReviewScreenIsScrollable() {
     composeTestRule.setContent {
-      ImageReviewScreen(mockNavigationActions, fakeFile, postsViewModel, collectionViewModel)
+      ImageReviewScreen(
+          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
     }
 
     // Check that the top element is displayed (e.g., image or text)
@@ -119,5 +132,26 @@ class ImageReviewTest {
     // Attempt to scroll to a specific button at the bottom
     composeTestRule.onNodeWithTag("cancel_button").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirm_button").performScrollTo().assertIsDisplayed()
+  }
+
+  /** Verifies that the background image is displayed in the EditImageScreen. */
+  @Test
+  fun testBackgroundImageIsDisplayed() {
+    composeTestRule.setContent {
+      ImageReviewScreen(
+          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+    }
+    composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
+  }
+
+  /** Verifies that the loading indicator is displayed when the state is set to Loading. */
+  @Test
+  fun testLoadingIndicatorIsDisplayedWhenStateIsLoading() {
+    imageViewModel.setEditImageState(ImageViewModel.UploadStatus(isLoading = true))
+    composeTestRule.setContent {
+      ImageReviewScreen(
+          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+    }
+    composeTestRule.onNodeWithTag("loading_indicator").assertIsDisplayed()
   }
 }
