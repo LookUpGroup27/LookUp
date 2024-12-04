@@ -24,24 +24,38 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 
+/**
+ * Composable function for the Password Reset Screen.
+ *
+ * This screen allows users to reset their password by providing their email address. It displays
+ * the app logo, a text input field for the email, and a button to trigger the reset. The screen
+ * also shows loading indicators, error messages, or success messages based on the current state of
+ * the UI.
+ *
+ * @param viewModel The [PasswordResetViewModel] that manages the UI state and business logic.
+ * @param navigationActions Handles navigation actions for transitioning between screens.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordResetScreen(viewModel: PasswordResetViewModel, navigationActions: NavigationActions) {
+  // Observes the UI state from the ViewModel
   val uiState by viewModel.uiState.collectAsState()
 
+  // Resets the UI state when the screen is first launched
   LaunchedEffect(Unit) { viewModel.resetUiState() }
 
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       containerColor = Color.Black,
       topBar = {
+        // Top App Bar with a back button to navigate back to the authentication screen
         TopAppBar(
             title = {},
             navigationIcon = {
               IconButton(
                   onClick = {
-                    viewModel.clearFields()
-                    navigationActions.navigateTo(Screen.AUTH)
+                    viewModel.clearFields() // Clears any input fields
+                    navigationActions.navigateTo(Screen.AUTH) // Navigates back to the auth screen
                   },
                   modifier = Modifier.testTag("back_button")) {
                     Icon(
@@ -53,19 +67,22 @@ fun PasswordResetScreen(viewModel: PasswordResetViewModel, navigationActions: Na
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black))
       },
       content = { padding ->
+        // Main content of the screen
         Column(
             modifier =
                 Modifier.fillMaxSize()
                     .padding(padding)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()) // Enables vertical scrolling
                     .padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
+              // Displays the app logo
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
                   modifier = Modifier.size(150.dp).padding(bottom = 16.dp).testTag("app_logo"))
 
+              // Screen title
               Text(
                   text = "Reset Your Password",
                   style =
@@ -73,6 +90,7 @@ fun PasswordResetScreen(viewModel: PasswordResetViewModel, navigationActions: Na
                           fontWeight = FontWeight.Bold, color = Color.White),
                   modifier = Modifier.padding(bottom = 24.dp).testTag("screen_title"))
 
+              // Email input field
               OutlinedTextField(
                   value = uiState.email,
                   onValueChange = { viewModel.onEmailChanged(it) },
@@ -90,6 +108,7 @@ fun PasswordResetScreen(viewModel: PasswordResetViewModel, navigationActions: Na
 
               Spacer(modifier = Modifier.height(24.dp))
 
+              // Button to send the password reset email
               Button(
                   onClick = { viewModel.resetPassword() },
                   modifier = Modifier.fillMaxWidth().testTag("reset_button"),
@@ -99,6 +118,7 @@ fun PasswordResetScreen(viewModel: PasswordResetViewModel, navigationActions: Na
 
               Spacer(modifier = Modifier.height(16.dp))
 
+              // Displays loading, error, or success messages based on the UI state
               when {
                 uiState.isLoading -> {
                   CircularProgressIndicator(
