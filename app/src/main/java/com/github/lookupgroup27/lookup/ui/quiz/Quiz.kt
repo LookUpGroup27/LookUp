@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,12 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +24,7 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.quiz.components.QuizThemeButton
+import components.BackgroundImage
 
 /**
  * Composable function that displays the main screen for selecting a quiz. This screen includes a
@@ -45,11 +43,10 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize().testTag("quiz_screen")) {
     // Background Image
-    Image(
-        painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
-        contentDescription = "Background",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize().blur(10.dp).testTag("quiz_background"))
+    BackgroundImage(
+        painterResId = R.drawable.background_blurred,
+        contentDescription = stringResource(R.string.background_description),
+        testTag = stringResource(R.string.background_test_tag))
 
     // Back Button
     IconButton(

@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import components.BackgroundImage
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -37,11 +39,10 @@ fun LandingScreen(navigationActions: NavigationActions) {
             navigationActions.navigateTo(Screen.MAP)
           }) {
         // Background Image
-        Image(
-            painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
-            contentDescription = "Background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize())
+        BackgroundImage(
+            painterResId = R.drawable.landing_screen_bckgrnd,
+            contentDescription = stringResource(R.string.background_test_tag),
+        )
 
         // Content Layout with Vertical Scrolling
         Column(

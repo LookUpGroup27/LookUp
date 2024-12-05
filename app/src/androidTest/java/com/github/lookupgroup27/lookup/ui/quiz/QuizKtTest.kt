@@ -61,7 +61,7 @@ class QuizKtTest {
 
     composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("go_back_button_quiz").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("quiz_background").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("background_test_tag").assertIsDisplayed()
 
     // Check the title is correctly displayed
     composeTestRule.onNodeWithTag("quiz_title").assertIsDisplayed()
@@ -157,7 +157,7 @@ class QuizKtTest {
     // In landscape mode, verify top elements are displayed
     composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("go_back_button_quiz").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("quiz_background").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("background_test_tag").assertIsDisplayed()
     composeTestRule.onNodeWithTag("quiz_title").assertIsDisplayed()
     composeTestRule.onNodeWithText("Take a Quiz").assertIsDisplayed()
 
