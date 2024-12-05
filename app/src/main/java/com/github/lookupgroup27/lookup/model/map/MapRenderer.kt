@@ -8,7 +8,6 @@ import com.github.lookupgroup27.lookup.model.loader.StarsLoader
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
-import com.github.lookupgroup27.lookup.model.stars.StarDataRepository
 import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
@@ -34,7 +33,7 @@ class MapRenderer : GLSurfaceView.Renderer {
 
   private lateinit var context: Context
   private val renderableObjects = mutableListOf<Star>() // List of stars to render
-  private val starDataRepository = StarDataRepository() // Repository for star data
+  // private val starDataRepository = StarDataRepository(context) // Repository for star data
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -103,13 +102,11 @@ class MapRenderer : GLSurfaceView.Renderer {
 
   /** Initialize the objects in the scene. */
   private fun initializeObjects() {
-    // Stars
-    starsLoader = StarsLoader(starDataRepository)
-    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
-    if (stars.isEmpty()) {
-      println("Warning: No stars loaded for rendering.")
-    }
-    renderableObjects.addAll(stars)
+    /**
+     * // Stars starsLoader = StarsLoader(starDataRepository) val stars =
+     * starsLoader.loadStars(context, "hyg_stars.csv") if (stars.isEmpty()) { println("Warning: No
+     * stars loaded for rendering.") } renderableObjects.addAll(stars)
+     */
 
     // Planet
     planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
