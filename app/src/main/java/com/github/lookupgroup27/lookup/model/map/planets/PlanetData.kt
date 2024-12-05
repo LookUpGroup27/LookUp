@@ -1,8 +1,6 @@
 package com.github.lookupgroup27.lookup.model.map.planets
 
-/**
- * Data class for planet information.
- */
+/** Data class for planet information. */
 data class PlanetData(
     val name: String,
     val id: String,

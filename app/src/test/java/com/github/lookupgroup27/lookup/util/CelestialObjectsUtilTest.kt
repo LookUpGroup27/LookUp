@@ -17,43 +17,39 @@ class CelestialObjectsUtilsTest {
     }
   }
 
-    @Test
-    fun `test convertToHorizonCoordinates produces values within tolerated bounds`() {
-        // Define test cases with RA, Dec, Latitude, and Local Sidereal Time
-        val testCases = listOf(
-            Triple(0.0, 0.0, 46.0),   // RA=0, Dec=0, Latitude=46.0
-            Triple(90.0, 0.0, 46.0),  // RA=90, Dec=0, Latitude=46.0
+  @Test
+  fun `test convertToHorizonCoordinates produces values within tolerated bounds`() {
+    // Define test cases with RA, Dec, Latitude, and Local Sidereal Time
+    val testCases =
+        listOf(
+            Triple(0.0, 0.0, 46.0), // RA=0, Dec=0, Latitude=46.0
+            Triple(90.0, 0.0, 46.0), // RA=90, Dec=0, Latitude=46.0
             Triple(180.0, 0.0, 46.0), // RA=180, Dec=0, Latitude=46.0
-            Triple(0.0, 90.0, 46.0),  // RA=0, Dec=90, Latitude=46.0
+            Triple(0.0, 90.0, 46.0), // RA=0, Dec=90, Latitude=46.0
             Triple(270.0, -45.0, 46.0) // RA=270, Dec=-45, Latitude=46.0
-        )
-
-        val siderealTime = 100.0 // Local sidereal time (example value)
-        val azimuthBounds = 0.0..360.0 // Azimuth must be within [0, 360)
-        val altitudeBounds = -90.0..90.0 // Altitude must be within [-90, 90]
-
-        // Iterate over test cases
-        for ((ra, dec, latitude) in testCases) {
-            val (azimuth, altitude) = CelestialObjectsUtils.convertToHorizonCoordinates(
-                ra = ra,
-                dec = dec,
-                latitude = latitude,
-                localSiderealTime = siderealTime
             )
 
-            // Assert azimuth is within bounds
-            assertTrue(
-                "Azimuth $azimuth is out of bounds for RA=$ra, Dec=$dec, Latitude=$latitude",
-                azimuth in azimuthBounds
-            )
+    val siderealTime = 100.0 // Local sidereal time (example value)
+    val azimuthBounds = 0.0..360.0 // Azimuth must be within [0, 360)
+    val altitudeBounds = -90.0..90.0 // Altitude must be within [-90, 90]
 
-            // Assert altitude is within bounds
-            assertTrue(
-                "Altitude $altitude is out of bounds for RA=$ra, Dec=$dec, Latitude=$latitude",
-                altitude in altitudeBounds
-            )
-        }
+    // Iterate over test cases
+    for ((ra, dec, latitude) in testCases) {
+      val (azimuth, altitude) =
+          CelestialObjectsUtils.convertToHorizonCoordinates(
+              ra = ra, dec = dec, latitude = latitude, localSiderealTime = siderealTime)
+
+      // Assert azimuth is within bounds
+      assertTrue(
+          "Azimuth $azimuth is out of bounds for RA=$ra, Dec=$dec, Latitude=$latitude",
+          azimuth in azimuthBounds)
+
+      // Assert altitude is within bounds
+      assertTrue(
+          "Altitude $altitude is out of bounds for RA=$ra, Dec=$dec, Latitude=$latitude",
+          altitude in altitudeBounds)
     }
+  }
 
   /**
    * Temporary test as computeSiderealTime changes values with time emporary test as

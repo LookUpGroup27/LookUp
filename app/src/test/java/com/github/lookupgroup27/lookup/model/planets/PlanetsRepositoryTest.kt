@@ -8,10 +8,8 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.fail
 import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -21,51 +19,52 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class PlanetsRepositoryTest {
 
-    private lateinit var repository: PlanetsRepository
-    private lateinit var mockLocationProvider: TestLocationProvider
-    private lateinit var mockWebServer: MockWebServer
-    private val tolerance = 0.01 // Tolerance for floating-point comparisons
-    private lateinit var context: Context
+  private lateinit var repository: PlanetsRepository
+  private lateinit var mockLocationProvider: TestLocationProvider
+  private lateinit var mockWebServer: MockWebServer
+  private val tolerance = 0.01 // Tolerance for floating-point comparisons
+  private lateinit var context: Context
 
-    @Before
-    fun setup() {
-        // Initialize MockWebServer
-        mockWebServer = MockWebServer()
-        mockWebServer.start()
+  @Before
+  fun setup() {
+    // Initialize MockWebServer
+    mockWebServer = MockWebServer()
+    mockWebServer.start()
 
-        context = ApplicationProvider.getApplicationContext()
-        if (FirebaseApp.getApps(context).isEmpty()) {
-            FirebaseApp.initializeApp(context)
-        }
+    context = ApplicationProvider.getApplicationContext()
+    if (FirebaseApp.getApps(context).isEmpty()) {
+      FirebaseApp.initializeApp(context)
+    }
 
-        // Initialize TestLocationProvider
-        mockLocationProvider = TestLocationProvider(context)
-        // Set a test location
-        val observerLatitude = 46.51852 // Lausanne, Switzerland
-        val observerLongitude = 6.56188
-        mockLocationProvider.setLocation(observerLatitude, observerLongitude)
+    // Initialize TestLocationProvider
+    mockLocationProvider = TestLocationProvider(context)
+    // Set a test location
+    val observerLatitude = 46.51852 // Lausanne, Switzerland
+    val observerLongitude = 6.56188
+    mockLocationProvider.setLocation(observerLatitude, observerLongitude)
 
-        // Initialize PlanetsRepository with the mock client and base URL
-        repository = PlanetsRepository(
+    // Initialize PlanetsRepository with the mock client and base URL
+    repository =
+        PlanetsRepository(
             locationProvider = mockLocationProvider,
             client = OkHttpClient(),
-            baseUrl = mockWebServer.url("/").toString()
-        )
+            baseUrl = mockWebServer.url("/").toString())
 
-        // Option 1: Limit the planets list to only Mars
-        repository.planets.clear()
-        repository.planets.add(PlanetData("Mars", "499"))
-    }
+    // Option 1: Limit the planets list to only Mars
+    repository.planets.clear()
+    repository.planets.add(PlanetData("Mars", "499"))
+  }
 
-    @After
-    fun tearDown() {
-        mockWebServer.shutdown()
-    }
+  @After
+  fun tearDown() {
+    mockWebServer.shutdown()
+  }
 
-    @Test
-    fun `test updatePlanetsData updates planetary positions`() {
-        // Prepare mock response for Mars
-        val mockApiResponseMars = """
+  @Test
+  fun `test updatePlanetsData updates planetary positions`() {
+    // Prepare mock response for Mars
+    val mockApiResponseMars =
+        """
             {
               "signature": {
                 "version": "1.0",
@@ -108,53 +107,50 @@ class PlanetsRepositoryTest {
         *******************************************************************************
                   "
             }
-        """.trimIndent()
+        """
+            .trimIndent()
 
-        // Enqueue the mock response
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-                .setBody(mockApiResponseMars)
-        )
+    // Enqueue the mock response
+    mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(mockApiResponseMars))
 
-        // Execute the method under test
-        try {
-            repository.updatePlanetsData()
-        } catch (e: Exception) {
-            fail("Exception during updatePlanetsData: ${e.message}")
-        }
-
-        // Verify that planets data has been updated
-        val planetsCartesian = repository.getPlanetsCartesianCoordinates()
-        assertNotNull(planetsCartesian)
-        assertEquals(1, planetsCartesian.size) // Only Mars is in the list
-
-        // Check Mars data
-        val mars = repository.planets.find { it.id == "499" }
-        assertNotNull(mars)
-
-        val expectedRa = 25.0
-        val expectedDec = -10.0
-        if (mars != null) {
-            assertEquals(expectedRa, mars.ra, tolerance)
-        }
-        if (mars != null) {
-            assertEquals(expectedDec, mars.dec, tolerance)
-        }
+    // Execute the method under test
+    try {
+      repository.updatePlanetsData()
+    } catch (e: Exception) {
+      fail("Exception during updatePlanetsData: ${e.message}")
     }
 
-    /** TestLocationProvider allows for manual setting of location values. */
-    class TestLocationProvider(context: Context) : LocationProvider(context) {
-        fun setLocation(latitude: Double?, longitude: Double?) {
-            if (latitude != null && longitude != null) {
-                currentLocation.value =
-                    Location("test").apply {
-                        this.latitude = latitude
-                        this.longitude = longitude
-                    }
-            } else {
-                currentLocation.value = null
+    // Verify that planets data has been updated
+    val planetsCartesian = repository.getPlanetsCartesianCoordinates()
+    assertNotNull(planetsCartesian)
+    assertEquals(1, planetsCartesian.size) // Only Mars is in the list
+
+    // Check Mars data
+    val mars = repository.planets.find { it.id == "499" }
+    assertNotNull(mars)
+
+    val expectedRa = 25.0
+    val expectedDec = -10.0
+    if (mars != null) {
+      assertEquals(expectedRa, mars.ra, tolerance)
+    }
+    if (mars != null) {
+      assertEquals(expectedDec, mars.dec, tolerance)
+    }
+  }
+
+  /** TestLocationProvider allows for manual setting of location values. */
+  class TestLocationProvider(context: Context) : LocationProvider(context) {
+    fun setLocation(latitude: Double?, longitude: Double?) {
+      if (latitude != null && longitude != null) {
+        currentLocation.value =
+            Location("test").apply {
+              this.latitude = latitude
+              this.longitude = longitude
             }
-        }
+      } else {
+        currentLocation.value = null
+      }
     }
+  }
 }
