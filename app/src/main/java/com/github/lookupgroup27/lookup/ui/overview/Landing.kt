@@ -41,7 +41,7 @@ fun LandingScreen(navigationActions: NavigationActions) {
         // Background Image
         BackgroundImage(
             painterResId = R.drawable.landing_screen_bckgrnd,
-            contentDescription = stringResource(R.string.background_test_tag),
+            contentDescription = stringResource(R.string.background_description),
         )
 
         // Content Layout with Vertical Scrolling

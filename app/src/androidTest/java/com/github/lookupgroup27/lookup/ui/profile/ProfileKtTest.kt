@@ -173,8 +173,8 @@ class ProfileKtTest {
     }
 
     // Ensure that the "Map" and "Menu" tabs are still displayed even if the route is empty
-    composeTestRule.onNodeWithText(getResourceString(R.string.map_map)).assertExists()
-    composeTestRule.onNodeWithText(getResourceString(R.string.menu_menu)).assertExists()
+    composeTestRule.onNodeWithText(getResourceString(R.string.map)).assertExists()
+    composeTestRule.onNodeWithText(getResourceString(R.string.menu)).assertExists()
 
     // Verify that currentRoute() was called
     Mockito.verify(mockNavigationActions).currentRoute()

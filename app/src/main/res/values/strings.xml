@@ -19,6 +19,6 @@
     <string name="profile_change_avatar">Change Avatar</string>
     <string name="profile_personal_info_button">Personal Info ></string>
     <string name="profile_collection_button">Your Collection ></string>
-    <string name="map_map">Map</string>
-    <string name="menu_menu">Menu</string>
+    <string name="map">Map</string>
+    <string name="menu">Menu</string>
 </resources>
