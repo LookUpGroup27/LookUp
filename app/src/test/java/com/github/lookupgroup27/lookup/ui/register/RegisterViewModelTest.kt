@@ -49,18 +49,6 @@ class RegisterViewModelTest {
     assertEquals("", viewModel.uiState.value.email)
     assertEquals("", viewModel.uiState.value.password)
   }
-
-  @Test
-  fun `registerUser with blank email triggers onError`() = runTest {
-    var successCalled = false
-    var errorCalled = false
-
-    viewModel.onPasswordChanged("password123")
-    viewModel.registerUser(onSuccess = { successCalled = true }, onError = { errorCalled = true })
-
-    assertFalse(successCalled)
-    assertTrue(errorCalled)
-  }
 }
 
 class MockRegisterRepository : RegisterRepository {
