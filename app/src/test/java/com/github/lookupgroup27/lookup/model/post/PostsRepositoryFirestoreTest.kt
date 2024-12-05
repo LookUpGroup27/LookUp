@@ -58,7 +58,8 @@ class PostsRepositoryFirestoreTest {
           0.0,
           0.0,
           2,
-          listOf("test@gmail.com", "joedoe@gmail.com"))
+          listOf("test@gmail.com", "joedoe@gmail.com"),
+          0L)
 
   /**
    * Sets up the test environment before each test.
