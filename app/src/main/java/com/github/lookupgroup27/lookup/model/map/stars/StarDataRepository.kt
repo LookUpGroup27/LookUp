@@ -26,7 +26,6 @@ class StarDataRepository(
   }
 
   private val stars = mutableListOf<StarData>()
-  private var isSkyMapLoaded = false
 
   init {
     // Start location updates when the repository is created
