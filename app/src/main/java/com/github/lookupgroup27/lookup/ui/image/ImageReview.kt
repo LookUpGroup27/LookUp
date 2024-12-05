@@ -40,10 +40,12 @@ fun ImageReviewScreen(
     imageFile: File?,
     imageViewModel: ImageViewModel = viewModel(),
     postsViewModel: PostsViewModel = viewModel(),
-    collectionViewModel: CollectionViewModel = viewModel()
+    collectionViewModel: CollectionViewModel = viewModel(),
+    timestamp: Long?
 ) {
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
+  val currentTimestamp = timestamp ?: System.currentTimeMillis() // Fallback to current time
 
   val uploadStatus by imageViewModel.uploadStatus.collectAsState()
 
@@ -128,7 +130,8 @@ fun ImageReviewScreen(
                       uri = downloadUrl,
                       username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
                       latitude = currentLocation.latitude,
-                      longitude = currentLocation.longitude)
+                      longitude = currentLocation.longitude,
+                      timestamp = currentTimestamp)
               // Add the post to PostsViewModel
               postsViewModel.addPost(newPost)
               collectionViewModel.updateImages()
