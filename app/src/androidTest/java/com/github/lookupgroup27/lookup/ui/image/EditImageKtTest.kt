@@ -159,4 +159,64 @@ class EditImageScreenTest {
 
     verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
   }
+
+  /** Verifies that the star icon is displayed on the EditImageScreen. */
+  @Test
+  fun testStarIconIsDisplayed() {
+    composeTestRule.setContent {
+      EditImageScreen(
+          imageUrl = "mock_image_url",
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    composeTestRule.onNodeWithTag("star_collection").assertIsDisplayed()
+  }
+
+  /** Verifies that the average rating is displayed correctly on the EditImageScreen. */
+  @Test
+  fun testAverageRatingIsDisplayed() {
+    composeTestRule.setContent {
+      EditImageScreen(
+          imageUrl = "mock_image_url",
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    composeTestRule.onNodeWithTag("average_rating_collection").assertIsDisplayed()
+  }
+
+  /** Verifies that the user icon is displayed on the EditImageScreen. */
+  @Test
+  fun testUserIconIsDisplayed() {
+    composeTestRule.setContent {
+      EditImageScreen(
+          imageUrl = "mock_image_url",
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    composeTestRule.onNodeWithTag("user_icon_collection").assertIsDisplayed()
+  }
+
+  /** Verifies that the number of users who rated is displayed correctly on the EditImageScreen. */
+  @Test
+  fun testRatedByNumberIsDisplayed() {
+    composeTestRule.setContent {
+      EditImageScreen(
+          imageUrl = "mock_image_url",
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    composeTestRule.onNodeWithTag("rated_by_collection").assertIsDisplayed()
+  }
 }
