@@ -1,12 +1,9 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
@@ -14,7 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,12 +20,14 @@ import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.profile.components.ChangeAvatarButton
 import com.github.lookupgroup27.lookup.ui.profile.components.ProfileButton
+import com.github.lookupgroup27.lookup.ui.profile.components.ProfileFab
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
-import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import components.BackgroundImage
 
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
@@ -54,11 +52,9 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
           // Background Image
-          Image(
-              painter = painterResource(id = R.drawable.background_blurred),
-              contentDescription = stringResource(R.string.background_description),
-              contentScale = ContentScale.Crop,
-              modifier = Modifier.fillMaxSize())
+          BackgroundImage(
+              painterResId = R.drawable.background_blurred,
+              contentDescription = stringResource(R.string.background_description))
 
           // Scrollable Profile Content
           Column(
@@ -75,51 +71,35 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
                   val avatarRes = selectedAvatar ?: R.drawable.default_profile_icon
                   Icon(
                       painter = painterResource(id = avatarRes),
-                      contentDescription = stringResource(R.string.profile_icon_description),
+                      contentDescription =
+                          stringResource(R.string.profile_profile_icon_description),
                       modifier = Modifier.size(150.dp).padding(bottom = 8.dp),
                       tint =
                           if (avatarRes == R.drawable.default_profile_icon) Color.White
                           else Color.Unspecified)
 
                   // Show FAB when no avatar is selected
-                  if (selectedAvatar == null || selectedAvatar == R.drawable.default_profile_icon) {
-                    FloatingActionButton(
-                        onClick = { navigationActions.navigateTo(Screen.AVATAR_SELECTION) },
-                        containerColor = DarkPurple,
-                        modifier =
-                            Modifier.size(36.dp) // Smaller size for Instagram-like style
-                                .offset(x = (-8).dp, y = (-8).dp) // Adjust position slightly
-                        ) {
-                          Icon(
-                              imageVector = Icons.Filled.Add,
-                              contentDescription = stringResource(R.string.add_avatar),
-                              tint = Color.White)
-                        }
+                  ProfileFab(selectedAvatar) {
+                    navigationActions.navigateTo(Screen.AVATAR_SELECTION)
                   }
                 }
 
-                if (selectedAvatar != null && selectedAvatar != R.drawable.default_profile_icon) {
-                  // Show "Change Avatar" button only if a custom avatar is selected
-                  Button(
-                      onClick = { navigationActions.navigateTo(Screen.AVATAR_SELECTION) },
-                      modifier = Modifier.padding(top = 16.dp),
-                      colors = ButtonDefaults.buttonColors(DarkPurple)) {
-                        Text(stringResource(R.string.change_avatar))
-                      }
+                ChangeAvatarButton(selectedAvatar) {
+                  navigationActions.navigateTo(Screen.AVATAR_SELECTION)
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Personal Info Button
                 ProfileButton(
-                    text = stringResource(R.string.personal_info_button),
+                    text = stringResource(R.string.profile_personal_info_button),
                     onClick = { navigationActions.navigateTo(Screen.PROFILE_INFORMATION) })
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Collection Button
                 ProfileButton(
-                    text = stringResource(R.string.collection_button),
+                    text = stringResource(R.string.profile_collection_button),
                     onClick = { navigationActions.navigateTo(Screen.COLLECTION) })
 
                 Spacer(modifier = Modifier.height(16.dp)) // Extra space
