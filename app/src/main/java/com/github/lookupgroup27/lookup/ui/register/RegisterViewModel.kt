@@ -25,6 +25,8 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
   // Exposed immutable StateFlow for observing UI state changes.
   val uiState: StateFlow<RegisterState> = _uiState
 
+  private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+
   /**
    * Companion object providing a custom [ViewModelProvider.Factory] for creating
    * [RegisterViewModel] instances.
@@ -84,7 +86,7 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
   private fun validateEmail(email: String): String? {
     return when {
       email.isBlank() -> "Email cannot be empty."
-      !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Invalid email address."
+      !EMAIL_REGEX.matches(email) -> "Invalid email address."
       else -> null
     }
   }
