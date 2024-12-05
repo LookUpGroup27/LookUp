@@ -112,11 +112,13 @@ open class NavigationActions(
   }
 
   /**
-   * Navigate to the a screen with a specific imageUri.
+   * Navigate to a screen with a specific imageUri and timestamp.
    *
    * @param image The URI of the captured image to review.
+   * @param route The route to navigate to.
+   * @param timestamp The timestamp of when the image was captured.
    */
-  open fun navigateToWithImage(image: String, route: String) {
-    navController.navigate("${route}/$image")
+  open fun navigateToWithImage(image: String, route: String, timestamp: Long) {
+    navController.navigate("${route}/$image/$timestamp")
   }
 }
