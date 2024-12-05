@@ -1,11 +1,13 @@
 package com.github.lookupgroup27.lookup.model.map.renderables
 
+import android.content.Context
 import android.opengl.GLES20
 import com.github.lookupgroup27.lookup.model.map.renderables.utils.GeometryUtils.generateSphericalGeometry
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.TextureBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
+import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 
 /**
@@ -21,6 +23,7 @@ import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
  *   rendering fidelity but also increase computational cost (default is 28).
  */
 open class SphereRenderer(
+    private val context: Context,
     private val numBands: Int = DEFAULT_NUM_BANDS,
     private val stepsPerBand: Int = DEFAULT_STEPS_PER_BAND
 ) {
@@ -78,33 +81,9 @@ open class SphereRenderer(
    * them into a shader program for rendering.
    */
   fun initializeShaders() {
-    val vertexShaderCode =
-        """
-            attribute vec4 vPosition;
-            attribute vec4 vColor;
-            attribute vec2 vTexCoord;
-            uniform mat4 uMVPMatrix;
-            varying vec4 vInterpolatedColor;
-            varying vec2 vInterpolatedTexCoord;
-            void main() {
-                gl_Position = uMVPMatrix * vPosition;
-                vInterpolatedColor = vColor;
-                vInterpolatedTexCoord = vTexCoord;
-            }
-        """
-            .trimIndent()
+    val vertexShaderCode = readShader(context, "sphere_vertex_shader.glsl")
 
-    val fragmentShaderCode =
-        """
-            precision mediump float;
-            varying vec4 vInterpolatedColor;
-            varying vec2 vInterpolatedTexCoord;
-            uniform sampler2D uTexture;
-            void main() {
-                gl_FragColor = texture2D(uTexture, vInterpolatedTexCoord);
-            }
-        """
-            .trimIndent()
+    val fragmentShaderCode = readShader(context, "sphere_fragment_shader.glsl")
 
     shaderProgram = ShaderProgram(vertexShaderCode, fragmentShaderCode)
   }

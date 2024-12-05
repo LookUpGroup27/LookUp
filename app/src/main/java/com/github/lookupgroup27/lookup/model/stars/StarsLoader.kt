@@ -17,6 +17,7 @@ class StarsLoader(private val repository: StarDataRepository) {
               floatArrayOf(
                   starData.position.first, starData.position.second, starData.position.third),
           color = starData.color,
+          size = 0.01f,
           vertexShaderCode = "TODO",
           fragmentShaderCode = "TODO")
     }

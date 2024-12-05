@@ -36,7 +36,7 @@ class Planet(
     private val fragmentShaderCode: String = ""
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
-  private val sphereRenderer = SphereRenderer(numBands, stepsPerBand)
+  private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
 
   private var textureHandle: Int = 0
   private var scale: Float = 0.3f
