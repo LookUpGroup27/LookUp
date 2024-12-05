@@ -21,9 +21,9 @@ import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
  *   the avatar selection screen or to trigger avatar addition logic.
  */
 @Composable
-fun AvatarFab(onClick: () -> Unit) {
+fun AvatarFab(onFabClick: () -> Unit) {
   FloatingActionButton(
-      onClick = onClick,
+      onClick = onFabClick,
       containerColor = DarkPurple,
       modifier = Modifier.size(36.dp).offset(x = (-8).dp, y = (-8).dp)) {
         Icon(

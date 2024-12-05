@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.profile.components
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import com.github.lookupgroup27.lookup.R
 
@@ -16,8 +17,15 @@ import com.github.lookupgroup27.lookup.R
  *   the avatar selection screen.
  */
 @Composable
-fun ProfileFab(selectedAvatar: Int?, onFabClick: () -> Unit) {
-  if (selectedAvatar == null || selectedAvatar == R.drawable.default_profile_icon) {
+fun ProfileFab(selectedAvatar: Int?, isAvatarDefaultOrNull: Boolean, onFabClick: () -> Unit) {
+  val isAvatarInvalid = selectedAvatar == null && selectedAvatar != R.drawable.default_profile_icon
+
+  if (isAvatarInvalid) {
+    Log.d("ChangeAvatarButton", "Invalid  selectedAvatar: $selectedAvatar")
+  }
+  if (isAvatarDefaultOrNull) {
+    // Add debug log for invalid case
+    Log.d("ProfileFab", "Invalid or default selectedAvatar: $selectedAvatar")
     AvatarFab(onFabClick)
   }
 }

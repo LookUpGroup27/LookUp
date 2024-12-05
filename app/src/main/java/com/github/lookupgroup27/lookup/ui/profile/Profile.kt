@@ -41,6 +41,8 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
 
   // Collect the selected avatar state
   val selectedAvatar by avatarViewModel.selectedAvatar.collectAsState()
+  val isAvatarDefaultOrNull =
+      selectedAvatar == null || selectedAvatar == R.drawable.default_profile_icon
 
   Scaffold(
       bottomBar = {
@@ -79,12 +81,12 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
                           else Color.Unspecified)
 
                   // Show FAB when no avatar is selected
-                  ProfileFab(selectedAvatar) {
+                  ProfileFab(selectedAvatar, isAvatarDefaultOrNull) {
                     navigationActions.navigateTo(Screen.AVATAR_SELECTION)
                   }
                 }
 
-                ChangeAvatarButton(selectedAvatar) {
+                ChangeAvatarButton(selectedAvatar, isAvatarDefaultOrNull) {
                   navigationActions.navigateTo(Screen.AVATAR_SELECTION)
                 }
 

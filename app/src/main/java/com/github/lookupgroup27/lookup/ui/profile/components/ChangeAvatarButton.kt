@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.profile.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,8 +21,19 @@ import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
  *   navigate to the avatar selection screen.
  */
 @Composable
-fun ChangeAvatarButton(selectedAvatar: Int?, onButtonClick: () -> Unit) {
-  if (selectedAvatar != null && selectedAvatar != R.drawable.default_profile_icon) {
+fun ChangeAvatarButton(
+    selectedAvatar: Int?,
+    isAvatarDefaultOrNull: Boolean,
+    onButtonClick: () -> Unit
+) {
+  val isAvatarInvalid =
+      (selectedAvatar == null && selectedAvatar != R.drawable.default_profile_icon)
+
+  if (isAvatarInvalid) {
+    Log.d("ChangeAvatarButton", "Invalid  selectedAvatar: $selectedAvatar")
+  }
+
+  if (!isAvatarDefaultOrNull) {
     Button(
         onClick = onButtonClick,
         modifier = Modifier.padding(top = 16.dp),
