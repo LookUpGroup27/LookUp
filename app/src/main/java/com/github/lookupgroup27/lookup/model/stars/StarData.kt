@@ -1,20 +1,26 @@
-package com.github.lookupgroup27.lookup.model.stars
+package com.github.lookupgroup27.lookup.model.map.stars
 
 /**
  * Represents the properties of a star.
  *
- * @param name The name of the star.
- * @param position The 3D Cartesian coordinates of the star (x, y, z).
- * @param size The size of the star for rendering.
- * @param color The RGB color of the star.
- * @param magnitude The magnitude (brightness) of the star.
- * @param spectralClass Optional spectral classification of the star.
+ * @param name The common name of the star.
+ * @param ra Right Ascension in degrees.
+ * @param dec Declination in degrees.
+ * @param dist Distance in parsecs.
+ * @param x Cartesian x-coordinate of the star.
+ * @param y Cartesian y-coordinate of the star.
+ * @param z Cartesian z-coordinate of the star.
+ * @param magnitude Apparent visual magnitude.
+ * @param spectralClass Spectral type of the star.
  */
 data class StarData(
-    val name: String,
-    val position: Triple<Float, Float, Float>,
-    val size: Float,
-    val color: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f), // Default white color
+    val name: String?,
+    val ra: Double,
+    val dec: Double,
+    val dist: Double,
+    var x: Double,
+    var y: Double,
+    var z: Double,
     val magnitude: Double,
-    val spectralClass: String? = null
+    val spectralClass: String?
 )
