@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 
@@ -135,8 +137,58 @@ class PostsRepositoryFirestoreTest {
    * - The `onSuccess` callback is triggered with the correct list of posts.
    */
   @Test
-  fun `test getPosts should return posts when firestore succeeds`() {
-    // Test logic...
+  fun `getPosts should call onSuccess with list of posts when Firestore query succeeds`() {
+    // Mock QuerySnapshot and DocumentSnapshots
+    val mockQuerySnapshot = mock(QuerySnapshot::class.java)
+    val mockDocumentSnapshot1 = mock(DocumentSnapshot::class.java)
+    val mockDocumentSnapshot2 = mock(DocumentSnapshot::class.java)
+
+    // Simulate Firestore data
+    val post1 =
+        mapOf(
+            "uid" to "1",
+            "uri" to "uri1",
+            "username" to "user1",
+            "latitude" to 1.0,
+            "longitude" to 1.0,
+            "timestamp" to 1000L)
+    val post2 =
+        mapOf(
+            "uid" to "2",
+            "uri" to "uri2",
+            "username" to "user2",
+            "latitude" to 2.0,
+            "longitude" to 2.0,
+            "timestamp" to 2000L)
+
+    // Setup mock DocumentSnapshot behavior
+    `when`(mockDocumentSnapshot1.data).thenReturn(post1)
+    `when`(mockDocumentSnapshot2.data).thenReturn(post2)
+    `when`(mockQuerySnapshot.documents)
+        .thenReturn(listOf(mockDocumentSnapshot1, mockDocumentSnapshot2))
+
+    // Mock Firestore's addSnapshotListener behavior
+    doAnswer { invocation ->
+          val listener =
+              invocation.arguments[0] as com.google.firebase.firestore.EventListener<QuerySnapshot>
+          listener.onEvent(mockQuerySnapshot, null) // Trigger success callback
+          null
+        }
+        .whenever(mockCollectionReference)
+        .addSnapshotListener(any())
+
+    // Test behavior
+    var result: List<Post>? = null
+    postsRepositoryFirestore.getPosts(
+        onSuccess = { posts -> result = posts },
+        onFailure = { fail("onFailure should not be called") })
+
+    shadowOf(Looper.getMainLooper()).idle() // Process main thread tasks
+
+    // Assertions
+    assertThat(result?.size, `is`(2))
+    assertThat(result?.get(0)?.uid, `is`("1"))
+    assertThat(result?.get(1)?.uid, `is`("2"))
   }
 
   /**
