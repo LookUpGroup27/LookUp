@@ -35,7 +35,7 @@ class AvatarViewModel(private val profileRepository: ProfileRepository) : ViewMo
     }
   }
 
-  fun saveSelectedAvatar(userId: String, avatarId: Int) {
+  fun saveSelectedAvatar(userId: String, avatarId: Int?) {
     viewModelScope.launch {
       profileRepository.saveSelectedAvatar(
           userId,
@@ -45,7 +45,7 @@ class AvatarViewModel(private val profileRepository: ProfileRepository) : ViewMo
     }
   }
 
-  fun updateUserProfileWithAvatar(userId: String, avatarId: Int) {
+  fun updateUserProfileWithAvatar(userId: String, avatarId: Int?) {
     viewModelScope.launch {
       profileRepository.getUserProfile(
           onSuccess = { profile ->

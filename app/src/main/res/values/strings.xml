@@ -7,4 +7,18 @@
     <string name="feed_screen_test_tag">feed_screen</string>
     <string name="bottom_navigation_menu">BottomNavigationMenu</string>
     <string name="loading_indicator_test_tag">LoadingIndicator</string>
+    <string name="back">Back</string>
+    <string name="avatar_choose_your_avatar">Choose Your Avatar</string>
+    <string name="avatar_avatar">Avatar</string>
+    <string name="avatar_confirm_selection">Confirm Selection</string>
+    <string name="avatar_reset_to_default_avatar">Reset to Default Avatar</string>
+    <string name="background_description">Background</string>
+    <string name="background_test_tag">background_test_tag</string>
+    <string name="profile_profile_icon_description">Profile Icon</string>
+    <string name="profile_add_avatar">Add Avatar</string>
+    <string name="profile_change_avatar">Change Avatar</string>
+    <string name="profile_personal_info_button">Personal Info ></string>
+    <string name="profile_collection_button">Your Collection ></string>
+    <string name="map">Map</string>
+    <string name="menu">Menu</string>
 </resources>

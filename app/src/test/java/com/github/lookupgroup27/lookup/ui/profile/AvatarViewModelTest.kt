@@ -67,7 +67,7 @@ class AvatarViewModelTest {
         object : ProfileRepository by repository {
           override fun saveSelectedAvatar(
               userId: String,
-              avatarId: Int,
+              avatarId: Int?,
               onSuccess: () -> Unit,
               onFailure: (Exception) -> Unit
           ) {

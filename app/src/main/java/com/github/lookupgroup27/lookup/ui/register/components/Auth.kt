@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +17,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 
+/**
+ * A composable function representing the base layout for authentication screens.
+ *
+ * This function provides a consistent layout structure with a top app bar, an app logo, a screen
+ * title, and a content area for custom content specific to each screen.
+ *
+ * @param title The title to display at the top of the screen.
+ * @param onBackClicked Callback invoked when the back button is clicked.
+ * @param content The custom content to display within the screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(
@@ -52,11 +61,13 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             content = {
+              // App Logo
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
                   modifier = Modifier.size(150.dp).padding(bottom = 16.dp).testTag("app_logo"))
 
+              // Screen Title
               Text(
                   text = title,
                   style =
@@ -64,7 +75,8 @@ fun AuthScreen(
                           fontWeight = FontWeight.Bold, color = Color.White),
                   modifier = Modifier.padding(bottom = 24.dp).testTag("screen_title"))
 
-              content() // Custom content provided for each screen.
+              // Custom Content
+              content()
             })
       })
 }

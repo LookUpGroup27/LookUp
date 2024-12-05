@@ -60,6 +60,14 @@ class RegisterKtTest {
   }
 
   @Test
+  fun confirmPasswordField_isDisplayed() {
+    composeTestRule.setContent {
+      RegisterScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
+    }
+    composeTestRule.onNodeWithTag("confirm_password_field").assertIsDisplayed()
+  }
+
+  @Test
   fun registerButton_isDisplayed() {
     composeTestRule.setContent {
       RegisterScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())

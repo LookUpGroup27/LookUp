@@ -62,7 +62,12 @@ class ImageReviewTest {
   fun testImageReviewIsDisplayed() {
     composeTestRule.setContent {
       ImageReviewScreen(
-          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+          mockNavigationActions,
+          fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
 
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
@@ -72,7 +77,12 @@ class ImageReviewTest {
   fun testConfirmButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
       ImageReviewScreen(
-          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+          mockNavigationActions,
+          fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
 
     composeTestRule.onNodeWithTag("confirm_button").performScrollTo().assertIsDisplayed()
@@ -83,7 +93,12 @@ class ImageReviewTest {
   fun testCancelButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
       ImageReviewScreen(
-          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+          mockNavigationActions,
+          fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
 
     composeTestRule.onNodeWithTag("cancel_button").performScrollTo().assertIsDisplayed()
@@ -101,7 +116,8 @@ class ImageReviewTest {
           imageFile = imageFile,
           imageViewModel,
           postsViewModel,
-          collectionViewModel)
+          collectionViewModel,
+          timestamp = 123456789L)
     }
     composeTestRule.onNodeWithContentDescription("Captured Image").assertIsDisplayed()
   }
@@ -114,7 +130,8 @@ class ImageReviewTest {
           imageFile = null,
           imageViewModel,
           postsViewModel,
-          collectionViewModel)
+          collectionViewModel,
+          timestamp = 123456789L)
     }
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
   }
@@ -123,7 +140,12 @@ class ImageReviewTest {
   fun testImageReviewScreenIsScrollable() {
     composeTestRule.setContent {
       ImageReviewScreen(
-          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+          mockNavigationActions,
+          fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
 
     // Check that the top element is displayed (e.g., image or text)
@@ -139,7 +161,12 @@ class ImageReviewTest {
   fun testBackgroundImageIsDisplayed() {
     composeTestRule.setContent {
       ImageReviewScreen(
-          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+          mockNavigationActions,
+          fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
     composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
   }
@@ -150,7 +177,12 @@ class ImageReviewTest {
     imageViewModel.setEditImageState(ImageViewModel.UploadStatus(isLoading = true))
     composeTestRule.setContent {
       ImageReviewScreen(
-          mockNavigationActions, fakeFile, imageViewModel, postsViewModel, collectionViewModel)
+          mockNavigationActions,
+          fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
     composeTestRule.onNodeWithTag("loading_indicator").assertIsDisplayed()
   }

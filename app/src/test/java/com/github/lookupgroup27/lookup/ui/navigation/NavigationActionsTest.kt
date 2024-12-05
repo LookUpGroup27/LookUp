@@ -85,4 +85,17 @@ class NavigationActionsTest {
     assertThat(navOptionsBuilder.launchSingleTop, `is`(true))
     assertThat(navOptionsBuilder.restoreState, `is`(true))
   }
+
+  @Test
+  fun navigateToWithImageAndTimestampCallsControllerWithCorrectRoute() {
+    // Arrange
+    val imageUri = "sample_image_uri"
+    val timestamp = 1620000000000L
+
+    // Act
+    navigationActions.navigateToWithImage(imageUri, Route.IMAGE_REVIEW, timestamp)
+
+    // Assert
+    verify(navHostController).navigate("${Route.IMAGE_REVIEW}/$imageUri/$timestamp")
+  }
 }
