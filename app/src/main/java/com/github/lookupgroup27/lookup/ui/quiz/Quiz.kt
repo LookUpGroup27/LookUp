@@ -46,7 +46,7 @@ fun QuizScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
     BackgroundImage(
         painterResId = R.drawable.background_blurred,
         contentDescription = stringResource(R.string.background_description),
-        testTag = stringResource(R.string.background_test_tag))
+        testTag = "background_test_tag")
 
     // Back Button
     IconButton(

@@ -13,7 +13,7 @@
     <string name="avatar_confirm_selection">Confirm Selection</string>
     <string name="avatar_reset_to_default_avatar">Reset to Default Avatar</string>
     <string name="background_description">Background</string>
-    <string name="background_test_tag">Background</string>
+    <string name="background_test_tag">background_test_tag</string>
     <string name="profile_profile_icon_description">Profile Icon</string>
     <string name="profile_add_avatar">Add Avatar</string>
     <string name="profile_change_avatar">Change Avatar</string>
