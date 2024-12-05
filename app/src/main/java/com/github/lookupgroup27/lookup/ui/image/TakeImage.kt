@@ -135,7 +135,8 @@ fun CameraCapture(
                   override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri =
                         Uri.encode(photoFile.absolutePath) // Encoded URI of the saved image
-                    navigationActions.navigateToWithImage(savedUri, Route.IMAGE_REVIEW)
+                    val timestamp = System.currentTimeMillis()
+                    navigationActions.navigateToWithImage(savedUri, Route.IMAGE_REVIEW, timestamp)
                   }
 
                   override fun onError(exc: ImageCaptureException) {
