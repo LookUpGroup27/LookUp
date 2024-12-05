@@ -59,7 +59,9 @@ class AvatarSelectionScreenTest {
     composeTestRule.onAllNodesWithContentDescription("Avatar")[0].performClick()
 
     // Click the Confirm button
-    composeTestRule.onNodeWithText(getResourceString(R.string.confirm_selection)).performClick()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.avatar_confirm_selection))
+        .performClick()
 
     // Verify that saveSelectedAvatar was called with the correct resource ID
     verify(profileRepository).saveSelectedAvatar(eq(userId), eq(avatarResourceId), any(), any())
@@ -79,7 +81,7 @@ class AvatarSelectionScreenTest {
 
     // Verify Reset button is disabled
     composeTestRule
-        .onNodeWithText(getResourceString(R.string.reset_to_default_avatar))
+        .onNodeWithText(getResourceString(R.string.avatar_reset_to_default_avatar))
         .assertIsNotEnabled()
   }
 
@@ -118,7 +120,9 @@ class AvatarSelectionScreenTest {
     composeTestRule.onAllNodesWithContentDescription("Avatar")[3].performClick()
 
     // Click the Confirm button
-    composeTestRule.onNodeWithText(getResourceString(R.string.confirm_selection)).performClick()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.avatar_confirm_selection))
+        .performClick()
 
     // Verify that saveSelectedAvatar was called with the new avatar
     verify(profileRepository).saveSelectedAvatar(eq(userId), eq(newAvatarResourceId), any(), any())
@@ -144,11 +148,13 @@ class AvatarSelectionScreenTest {
     composeTestRule.onAllNodesWithContentDescription("Avatar")[0].performClick()
 
     // Click the Confirm button
-    composeTestRule.onNodeWithText(getResourceString(R.string.confirm_selection)).performClick()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.avatar_confirm_selection))
+        .performClick()
 
     // Click Reset button (shows that it is enabled)
     composeTestRule
-        .onNodeWithText(getResourceString(R.string.reset_to_default_avatar))
+        .onNodeWithText(getResourceString(R.string.avatar_reset_to_default_avatar))
         .performClick()
 
     // Verify that the avatar was reset in the repository

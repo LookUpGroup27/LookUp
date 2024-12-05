@@ -74,7 +74,7 @@ fun AvatarSelectionScreen(
           Spacer(modifier = Modifier.width(8.dp))
 
           Text(
-              text = stringResource(R.string.choose_your_avatar),
+              text = stringResource(R.string.avatar_choose_your_avatar),
               style =
                   MaterialTheme.typography.headlineMedium.copy(
                       color = DarkPurple, fontWeight = FontWeight.Bold),
@@ -105,7 +105,7 @@ fun AvatarSelectionScreen(
                 ) {
                   Image(
                       painter = painterResource(id = avatar),
-                      contentDescription = stringResource(R.string.avatar),
+                      contentDescription = stringResource(R.string.avatar_avatar),
                       modifier = Modifier.fillMaxSize().padding(8.dp) // Add internal padding
                       )
                 }
@@ -127,7 +127,7 @@ fun AvatarSelectionScreen(
             ButtonDefaults.buttonColors(
                 containerColor = if (pendingAvatar == null) Color.Gray else DarkPurple),
         shape = RoundedCornerShape(16.dp)) {
-          Text(stringResource(R.string.confirm_selection))
+          Text(stringResource(R.string.avatar_confirm_selection))
         }
 
     // Reset to Default Avatar Button
@@ -147,7 +147,7 @@ fun AvatarSelectionScreen(
                     if (selectedAvatar == null || selectedAvatar == defaultAvatar) Color.Gray
                     else DarkPurple),
         shape = RoundedCornerShape(16.dp)) {
-          Text(stringResource(R.string.reset_to_default_avatar))
+          Text(stringResource(R.string.avatar_reset_to_default_avatar))
         }
   }
 }
