@@ -28,14 +28,14 @@ import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class ProximityPostFetcherTest {
+class ProximityAndTimePostFetcherTest {
 
   @Mock private lateinit var mockFirestore: FirebaseFirestore
   @Mock private lateinit var mockCollectionReference: CollectionReference
 
   private lateinit var postsRepositoryFirestore: PostsRepositoryFirestore
   private lateinit var postsViewModel: PostsViewModel
-  private lateinit var proximityPostFetcher: ProximityPostFetcher
+  private lateinit var proximityAndTimePostFetcher: ProximityAndTimePostFetcher
   private lateinit var context: Context
   private lateinit var locationProvider: TestLocationProvider
   private lateinit var postsRepository: PostsRepository
@@ -55,7 +55,7 @@ class ProximityPostFetcherTest {
     postsRepositoryFirestore = PostsRepositoryFirestore(mockFirestore)
     postsViewModel = PostsViewModel(postsRepositoryFirestore)
 
-    proximityPostFetcher = ProximityPostFetcher(postsViewModel, context)
+    proximityAndTimePostFetcher = ProximityAndTimePostFetcher(postsViewModel, context)
     locationProvider = TestLocationProvider()
   }
 
@@ -70,13 +70,13 @@ class ProximityPostFetcherTest {
     locationProvider.setLocation(null, null)
 
     // Call the function
-    proximityPostFetcher.fetchNearbyPostsWithImages()
+    proximityAndTimePostFetcher.fetchSortedPosts()
 
     // Wait for any asynchronous updates
     testScheduler.advanceUntilIdle()
 
     // Assert that no nearby posts are returned when location is null
-    assertTrue(proximityPostFetcher.nearbyPosts.value.isEmpty())
+    assertTrue(proximityAndTimePostFetcher.nearbyPosts.value.isEmpty())
   }
 
   @Test
@@ -90,13 +90,13 @@ class ProximityPostFetcherTest {
     }
 
     // Fetch posts
-    proximityPostFetcher.fetchNearbyPostsWithImages()
+    proximityAndTimePostFetcher.fetchSortedPosts()
 
     // Wait for asynchronous updates
     testScheduler.advanceUntilIdle()
 
     // Assert that no nearby posts are returned when there are no posts in the repository
-    assertTrue(proximityPostFetcher.nearbyPosts.value.isEmpty())
+    assertTrue(proximityAndTimePostFetcher.nearbyPosts.value.isEmpty())
   }
 
   /** TestLocationProvider allows for manual setting of location values. */
