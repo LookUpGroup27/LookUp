@@ -55,14 +55,18 @@ class ProfileKtTest {
 
     // Verify if the profile icon is displayed
     composeTestRule
-        .onNodeWithContentDescription(getResourceString(R.string.profile_icon_description))
+        .onNodeWithContentDescription(getResourceString(R.string.profile_profile_icon_description))
         .assertExists()
 
     // Verify if the Personal Info button is displayed
-    composeTestRule.onNodeWithText(getResourceString(R.string.collection_button)).assertExists()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.profile_collection_button))
+        .assertExists()
 
     // Verify if the Your Collection button is displayed
-    composeTestRule.onNodeWithText(getResourceString(R.string.personal_info_button)).assertExists()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.profile_personal_info_button))
+        .assertExists()
 
     // Verify if the Bottom Navigation is displayed with proper tabs
     LIST_TOP_LEVEL_DESTINATION.forEach { destination ->
@@ -91,7 +95,7 @@ class ProfileKtTest {
 
     // Verify that the correct avatar is displayed
     composeTestRule
-        .onNodeWithContentDescription(getResourceString(R.string.profile_icon_description))
+        .onNodeWithContentDescription(getResourceString(R.string.profile_profile_icon_description))
         .assertExists()
   }
 
@@ -111,12 +115,12 @@ class ProfileKtTest {
 
     // Verify that the FAB is displayed
     composeTestRule
-        .onNodeWithContentDescription(getResourceString(R.string.add_avatar))
+        .onNodeWithContentDescription(getResourceString(R.string.profile_add_avatar))
         .assertExists()
 
     // Click the FAB to navigate to the Avatar Selection Screen
     composeTestRule
-        .onNodeWithContentDescription(getResourceString(R.string.add_avatar))
+        .onNodeWithContentDescription(getResourceString(R.string.profile_add_avatar))
         .performClick()
 
     // Verify that navigation to the Avatar Selection Screen occurred
@@ -134,7 +138,9 @@ class ProfileKtTest {
     composeTestRule.waitForIdle()
 
     // Click the "Personal Info" button
-    composeTestRule.onNodeWithText(getResourceString(R.string.personal_info_button)).performClick()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.profile_personal_info_button))
+        .performClick()
 
     // Verify that the navigation to the Profile screen happens
     Mockito.verify(mockNavigationActions).navigateTo(Screen.PROFILE_INFORMATION)
@@ -148,7 +154,9 @@ class ProfileKtTest {
     }
 
     // Click the "Your Collection" button
-    composeTestRule.onNodeWithText(getResourceString(R.string.collection_button)).performClick()
+    composeTestRule
+        .onNodeWithText(getResourceString(R.string.profile_collection_button))
+        .performClick()
 
     // Verify that the navigation to the Collection screen happens
     Mockito.verify(mockNavigationActions).navigateTo(Screen.COLLECTION)
@@ -165,8 +173,8 @@ class ProfileKtTest {
     }
 
     // Ensure that the "Map" and "Menu" tabs are still displayed even if the route is empty
-    composeTestRule.onNodeWithText(getResourceString(R.string.map)).assertExists()
-    composeTestRule.onNodeWithText(getResourceString(R.string.menu)).assertExists()
+    composeTestRule.onNodeWithText(getResourceString(R.string.map_map)).assertExists()
+    composeTestRule.onNodeWithText(getResourceString(R.string.menu_menu)).assertExists()
 
     // Verify that currentRoute() was called
     Mockito.verify(mockNavigationActions).currentRoute()
@@ -188,14 +196,14 @@ class ProfileKtTest {
 
     // Check that main elements are displayed after scrolling in landscape mode
     composeTestRule
-        .onNodeWithContentDescription(getResourceString(R.string.profile_icon_description))
+        .onNodeWithContentDescription(getResourceString(R.string.profile_profile_icon_description))
         .assertExists()
     composeTestRule
-        .onNodeWithText(getResourceString(R.string.personal_info_button))
+        .onNodeWithText(getResourceString(R.string.profile_personal_info_button))
         .performScrollTo()
         .assertExists()
     composeTestRule
-        .onNodeWithText(getResourceString(R.string.collection_button))
+        .onNodeWithText(getResourceString(R.string.profile_collection_button))
         .performScrollTo()
         .assertExists()
 
