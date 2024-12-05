@@ -96,7 +96,7 @@ fun LookUpApp() {
         PasswordResetScreen(passwordResetViewModel, navigationActions)
       }
       composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
-      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
       composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
@@ -184,7 +184,7 @@ fun LookUpApp() {
     }
 
     navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
-      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
   }
