@@ -69,31 +69,36 @@ class FeedScreenTest {
               uri = "http://example.com/1.jpg",
               username = testUserProfile.email, // Post created by the logged-in user
               latitude = 37.7749, // San Francisco
-              longitude = -122.4194),
+              longitude = -122.4194,
+              description = "This is a test description"),
           Post(
               uid = "2",
               uri = "http://example.com/2.jpg",
               username = "User2", // Post created by another user
               latitude = 34.0522, // Los Angeles
-              longitude = -118.2437),
+              longitude = -118.2437,
+              description = "This is another test description"),
           Post(
               uid = "3",
               uri = "http://example.com/3.jpg",
               username = "User3", // Another user's post
               latitude = 36.7783, // Fresno (closer to SF)
-              longitude = -119.4179),
+              longitude = -119.4179,
+              description = "This is yet another test description"),
           Post(
               uid = "4",
               uri = "User4",
               username = "user4@example.com", // Another user's post
               latitude = 40.7128, // New York City (farther from SF than LA or Fresno)
-              longitude = -74.0060),
+              longitude = -74.0060,
+              description = "This is a test description"),
           Post(
               uid = "5",
               uri = "User5",
               username = "user5@example.com", // Another user's post
               latitude = -33.8688, // Sydney, Australia (farthest from SF)
-              longitude = 151.2093))
+              longitude = 151.2093,
+              description = "This is a test description"))
 
   private val testPost =
       Post(
@@ -190,9 +195,7 @@ class FeedScreenTest {
     postsViewModel.updatePost(testPost)
 
     // Verify that updatePost was called in the postsViewModel
-    verify(postsRepository)
-        .updatePost(
-            org.mockito.kotlin.eq(testPost), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+    verify(postsRepository).updatePost(eq(testPost), any(), any())
   }
 
   /*@Test
@@ -216,5 +219,21 @@ class FeedScreenTest {
 
     // Verify that the navigation action to the Feed was not triggered
     verify(navigationActions, never()).navigateTo(eq(TopLevelDestinations.FEED))
+  }
+
+  @Test
+  fun testAddressIsDisplayed() {
+    // Verify that the address is displayed for each post
+    composeTestRule.onNodeWithTag("AddressTag_2").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("AddressTag_3").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("AddressTag_5").assertDoesNotExist()
+  }
+
+  @Test
+  fun testDescriptionIsDisplayed() {
+    // Verify that the description is displayed for each post
+    composeTestRule.onNodeWithTag("DescriptionTag_2").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("DescriptionTag_3").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("DescriptionTag_5").assertDoesNotExist()
   }
 }
