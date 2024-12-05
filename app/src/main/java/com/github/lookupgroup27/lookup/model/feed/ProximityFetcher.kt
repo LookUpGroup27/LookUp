@@ -15,13 +15,13 @@ import kotlinx.coroutines.launch
 
 /**
  * ProximityPostFetcher is responsible for fetching posts and filtering them based on their
- * proximity to the user's current location. It updates a list of nearby posts based on distance
- * from the user.
+ * proximity to the user's current location and also on the time the posts were taken. It updates a
+ * list of the most recent and nearby posts based on distance from the user.
  *
  * @param postsViewModel ViewModel to access the list of all posts
  * @param context Application context to access the singleton LocationProvider
  */
-class ProximityPostFetcher(private val postsViewModel: PostsViewModel, context: Context) {
+class ProximityAndTimePostFetcher(private val postsViewModel: PostsViewModel, context: Context) {
   // LocationProvider instance to get user's current location
   private val locationProvider = LocationProviderSingleton.getInstance(context)
 
@@ -30,10 +30,10 @@ class ProximityPostFetcher(private val postsViewModel: PostsViewModel, context: 
   val nearbyPosts: StateFlow<List<Post>> = _nearbyPosts
 
   /**
-   * Fetches nearby posts with images based on the user's current location. Filters and sorts posts
-   * by distance, limiting results to the 3 closest posts.
+   * Fetches nearby posts with images based on the user's current location and the time they were
+   * posted. Filters and sorts posts by distance and time, limiting results to the 3 closest posts.
    */
-  fun fetchNearbyPostsWithImages() {
+  fun fetchSortedPosts() {
     val userLocation = locationProvider.currentLocation.value
     if (userLocation == null) {
       Log.e("ProximityPostFetcher", "User location is null; cannot fetch nearby posts.")
