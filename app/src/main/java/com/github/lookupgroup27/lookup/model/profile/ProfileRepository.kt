@@ -13,7 +13,7 @@ interface ProfileRepository {
 
   fun saveSelectedAvatar(
       userId: String,
-      avatarId: Int,
+      avatarId: Int?,
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   )
