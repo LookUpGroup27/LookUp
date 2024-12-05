@@ -63,7 +63,6 @@ object CelestialObjectsUtils {
 
     // Calculate hour angle in degrees
     val hourAngle = (localSiderealTime - ra + 360) % 360
-    println("Hour Angle: $hourAngle")
 
     // Convert to radians where needed and calculate altitude directly
     val altitude =
@@ -73,7 +72,6 @@ object CelestialObjectsUtils {
                     Math.cos(Math.toRadians(dec)) *
                         Math.cos(Math.toRadians(latitude)) *
                         Math.cos(Math.toRadians(hourAngle))))
-    println("Altitude: $altitude")
 
     // Calculate azimuth using trigonometric functions, directly using degrees to radians conversion
     var azimuth =
@@ -87,7 +85,6 @@ object CelestialObjectsUtils {
     if (azimuth < 0) {
       azimuth += 360.0
     }
-    println("Azimuth: $azimuth")
 
     return Pair(azimuth, altitude)
   }
