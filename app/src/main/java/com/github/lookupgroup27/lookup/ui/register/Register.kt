@@ -1,72 +1,113 @@
 package com.github.lookupgroup27.lookup.ui.register
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.register.components.AuthScreen
 import com.github.lookupgroup27.lookup.ui.register.components.CustomOutlinedTextField
 
+/**
+ * Composable function representing the registration screen.
+ *
+ * This screen allows users to create a new account by providing their email, password, and
+ * confirming their password. It provides real-time validation feedback and handles the registration
+ * process asynchronously.
+ *
+ * @param navigationActions The navigation actions used to navigate between screens.
+ * @param viewModel The [RegisterViewModel] managing the registration logic.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel, navigationActions: NavigationActions) {
+fun RegisterScreen(
+    navigationActions: NavigationActions,
+    viewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
+) {
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsState()
 
-  AuthScreen(
-      title = "Create Your Account",
-      onBackClicked = {
-        viewModel.clearFields()
-        navigationActions.navigateTo(Screen.AUTH)
-      }) {
-        CustomOutlinedTextField(
-            value = uiState.email,
-            onValueChange = { viewModel.onEmailChanged(it) },
-            label = "Email",
-            testTag = "email_field")
+  // Main container for the screen content.
+  Box(modifier = Modifier.fillMaxSize()) {
+    // Base authentication screen layout.
+    AuthScreen(
+        title = "Create Your Account",
+        onBackClicked = {
+          viewModel.clearFields()
+          navigationActions.navigateTo(Screen.AUTH)
+        }) {
+          // Email Input Field
+          CustomOutlinedTextField(
+              value = uiState.email,
+              onValueChange = viewModel::onEmailChanged,
+              label = "Email",
+              errorMessage = uiState.emailError,
+              testTag = "email_field")
 
-        Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(16.dp))
 
-        CustomOutlinedTextField(
-            value = uiState.password,
-            onValueChange = { viewModel.onPasswordChanged(it) },
-            label = "Password",
-            isPassword = true,
-            testTag = "password_field")
+          // Password Input Field
+          CustomOutlinedTextField(
+              value = uiState.password,
+              onValueChange = viewModel::onPasswordChanged,
+              label = "Password",
+              isPassword = true,
+              errorMessage = uiState.passwordError,
+              testTag = "password_field")
 
-        Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(16.dp))
 
-        CustomOutlinedTextField(
-            value = uiState.confirmPassword,
-            onValueChange = { viewModel.onConfirmPasswordChanged(it) },
-            label = "Confirm Password",
-            isPassword = true,
-            testTag = "confirm_password_field")
+          // Confirm Password Input Field
+          CustomOutlinedTextField(
+              value = uiState.confirmPassword,
+              onValueChange = viewModel::onConfirmPasswordChanged,
+              label = "Confirm Password",
+              isPassword = true,
+              errorMessage = uiState.confirmPasswordError,
+              testTag = "confirm_password_field")
 
-        Spacer(modifier = Modifier.height(24.dp))
+          Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-              viewModel.registerUser(
-                  onSuccess = {
-                    Toast.makeText(context, "Registration successful!", Toast.LENGTH_LONG).show()
-                    viewModel.clearFields()
-                    navigationActions.navigateTo(Screen.AUTH)
-                  },
-                  onError = { error -> Toast.makeText(context, error, Toast.LENGTH_LONG).show() })
-            },
-            modifier = Modifier.fillMaxWidth().testTag("register_button"),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
-              Text("Register", color = Color.White)
-            }
-      }
+          // Register Button
+          Button(
+              onClick = {
+                viewModel.registerUser {
+                  viewModel.clearFields()
+                  navigationActions.navigateTo(Screen.AUTH)
+                  Toast.makeText(context, "Registration successful!", Toast.LENGTH_LONG).show()
+                }
+              },
+              modifier = Modifier.fillMaxWidth().testTag("register_button"),
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
+                Text("Register", color = Color.White)
+              }
+
+          // General Error Message
+          uiState.generalError?.let { error ->
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium)
+          }
+        }
+
+    // Loading Indicator Overlay
+    if (uiState.isLoading) {
+      Box(
+          modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)),
+          contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color.White)
+          }
+    }
+  }
 }

@@ -2,99 +2,123 @@ package com.github.lookupgroup27.lookup.ui.image
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.github.lookupgroup27.lookup.model.image.FirebaseImageRepository
+import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
+import com.github.lookupgroup27.lookup.ui.image.components.ActionButton
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
 @Composable
 fun ImageReviewScreen(
     navigationActions: NavigationActions,
     imageFile: File?,
+    imageViewModel: ImageViewModel = viewModel(),
     postsViewModel: PostsViewModel = viewModel(),
-    collectionViewModel: CollectionViewModel = viewModel()
+    collectionViewModel: CollectionViewModel = viewModel(),
+    timestamp: Long?
 ) {
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-
-  // Instantiate the repository
-  val repository =
-      FirebaseImageRepository(FirebaseStorage.getInstance(), FirebaseAuth.getInstance())
-
-  // Use the companion object factory to create the ViewModel
-  val imageViewModel: ImageViewModel =
-      viewModel(factory = ImageViewModel.provideFactory(repository))
+  val currentTimestamp = timestamp ?: System.currentTimeMillis() // Fallback to current time
 
   val uploadStatus by imageViewModel.uploadStatus.collectAsState()
 
   // Scroll state
   val scrollState = rememberScrollState()
 
-  Column(
+  Box(
       modifier =
           Modifier.fillMaxSize()
-              .padding(16.dp)
-              .verticalScroll(scrollState) // Make the column scrollable
+              .background(MaterialTheme.colorScheme.background)
               .testTag("image_review"),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Top // Adjust the arrangement to avoid centering all items
-      ) {
-        // Display the image if available
-        if (imageFile != null) {
-          Image(
-              painter = rememberAsyncImagePainter(imageFile),
-              contentDescription = "Captured Image",
-              modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-              contentScale = ContentScale.Crop)
-        } else {
-          Text(text = "No image available")
-        }
+      contentAlignment = Alignment.TopStart) {
+        // Background image
+        Image(
+            painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
+            contentDescription = "Background",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize().blur(10.dp).testTag("background_image"))
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // Save and Discard buttons aligned to the bottom center
+        Column(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(16.dp)
+                    .verticalScroll(scrollState) // Make the column scrollable
+                    .testTag("edit_buttons_column"),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
 
-        // Save Image Button
-        Button(
-            onClick = { imageFile?.let { imageViewModel.uploadImage(it) } },
-            modifier = Modifier.fillMaxWidth().testTag("confirm_button")) {
-              Text(text = "Save Image")
-            }
+              // Display the image if available
+              if (imageFile != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(imageFile),
+                    contentDescription = "Captured Image",
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(16.dp)
+                            .aspectRatio(1f)
+                            .testTag("display_image"),
+                    contentScale = ContentScale.Crop)
+              } else {
+                Text(text = "No image available")
+              }
 
-        Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(65.dp))
 
-        // Discard Image Button
-        Button(
-            onClick = {
-              Toast.makeText(context, "Image discarded", Toast.LENGTH_SHORT).show()
-              navigationActions.navigateTo(Screen.TAKE_IMAGE) // Navigate back without saving
-            },
-            modifier = Modifier.fillMaxWidth().testTag("cancel_button")) {
-              Text(text = "Discard Image")
+              // Save Image Button
+
+              ActionButton(
+                  text = "Save Image",
+                  onClick = { imageFile?.let { imageViewModel.uploadImage(it) } },
+                  modifier = Modifier.testTag("confirm_button"))
+
+              ActionButton(
+                  text = "Discard Image",
+                  onClick = {
+                    Toast.makeText(context, "Image discarded", Toast.LENGTH_SHORT).show()
+                    navigationActions.navigateTo(Screen.TAKE_IMAGE)
+                  },
+                  modifier = Modifier.testTag("cancel_button"),
+                  color = Color.Red)
             }
 
         // Display upload status messages and create a post upon successful upload
         when {
-          uploadStatus.isLoading ->
-              Text(text = "Uploading...", modifier = Modifier.padding(top = 16.dp))
+          uploadStatus.isLoading -> {
+            CircularProgressIndicator(
+                modifier =
+                    Modifier.align(BiasAlignment(0f, 0.30f))
+                        .padding(top = 16.dp)
+                        .testTag("loading_indicator"))
+          }
           uploadStatus.downloadUrl != null -> {
             val downloadUrl = uploadStatus.downloadUrl // Get the download URL from upload status
             val currentLocation = locationProvider.currentLocation.value
@@ -106,7 +130,8 @@ fun ImageReviewScreen(
                       uri = downloadUrl,
                       username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
                       latitude = currentLocation.latitude,
-                      longitude = currentLocation.longitude)
+                      longitude = currentLocation.longitude,
+                      timestamp = currentTimestamp)
               // Add the post to PostsViewModel
               postsViewModel.addPost(newPost)
               collectionViewModel.updateImages()
@@ -120,9 +145,10 @@ fun ImageReviewScreen(
             imageViewModel.resetUploadStatus() // Reset status after handling
           }
           uploadStatus.errorMessage != null -> {
-            Text(
-                text = "Error: ${uploadStatus.errorMessage}",
-                modifier = Modifier.padding(top = 16.dp))
+            val errorMessage = uploadStatus.errorMessage
+            LaunchedEffect(uploadStatus) {
+              Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+            }
           }
         }
       }

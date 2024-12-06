@@ -9,5 +9,6 @@ data class Post(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val usersNumber: Int = 0,
-    val ratedBy: List<String> = emptyList()
+    val ratedBy: List<String> = emptyList(),
+    val timestamp: Long = 0L
 )

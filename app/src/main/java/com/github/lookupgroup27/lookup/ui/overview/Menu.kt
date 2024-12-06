@@ -5,9 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.*
@@ -20,20 +19,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
+import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(navigationActions: NavigationActions) {
+fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
 
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
+
+  val userId = auth.currentUser?.uid.orEmpty()
+
+  // Fetch the selected avatar for the logged-in user
+  val selectedAvatar by avatarViewModel.selectedAvatar.collectAsState(initial = null)
 
   Scaffold(
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
+            isUserLoggedIn = isLoggedIn,
             selectedItem = Route.MENU)
       },
       modifier = Modifier.testTag("menu_screen")) { paddingValues ->
@@ -55,11 +61,20 @@ fun MenuScreen(navigationActions: NavigationActions) {
               },
               modifier =
                   Modifier.padding(16.dp).align(Alignment.TopEnd).testTag("profile_button")) {
+                // Display the selected avatar or default icon
+                val iconRes =
+                    if (isLoggedIn && selectedAvatar != null) {
+                      selectedAvatar
+                    } else {
+                      R.drawable.default_profile_icon
+                    }
                 Icon(
-                    modifier = Modifier.size(56.dp),
-                    imageVector = Icons.Default.AccountCircle,
+                    painter = painterResource(id = iconRes!!),
                     contentDescription = "Profile",
-                    tint = Color.White)
+                    modifier = Modifier.size(56.dp),
+                    tint =
+                        if (iconRes == R.drawable.default_profile_icon) Color.White
+                        else Color.Unspecified)
               }
 
           // Main content with scrollable column

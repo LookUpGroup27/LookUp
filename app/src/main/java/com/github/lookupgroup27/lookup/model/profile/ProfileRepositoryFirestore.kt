@@ -9,7 +9,8 @@ data class UserProfile(
     val username: String = " ",
     val email: String = " ",
     val bio: String = " ",
-    val ratings: Map<String, Int> = emptyMap()
+    val ratings: Map<String, Int> = emptyMap(),
+    val selectedAvatar: Int? = null
 )
 
 class ProfileRepositoryFirestore(
@@ -76,6 +77,49 @@ class ProfileRepositoryFirestore(
 
   override fun logoutUser() {
     auth.signOut()
+  }
+
+  override fun saveSelectedAvatar(
+      userId: String,
+      avatarId: Int?,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val userDocument = usersCollection.document(userId)
+    userDocument
+        .get()
+        .addOnSuccessListener { document ->
+          if (!document.exists()) {
+            // Create a default profile with the selected avatar
+            val defaultProfile = mapOf("selectedAvatar" to avatarId)
+            userDocument
+                .set(defaultProfile)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          } else {
+            // Update the existing profile with the selected avatar
+            userDocument
+                .update("selectedAvatar", avatarId)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+          }
+        }
+        .addOnFailureListener { exception -> onFailure(exception) }
+  }
+
+  override fun getSelectedAvatar(
+      userId: String,
+      onSuccess: (Int?) -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val userDocument = usersCollection.document(userId)
+    userDocument
+        .get()
+        .addOnSuccessListener { document ->
+          val avatarId = document.getLong("selectedAvatar")?.toInt()
+          onSuccess(avatarId)
+        }
+        .addOnFailureListener { exception -> onFailure(exception) }
   }
 
   private fun performFirestoreOperation(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.ui.image.components.ActionButton
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
@@ -51,8 +53,10 @@ fun EditImageScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions
 ) {
+  val allPosts = postsViewModel.allPosts.collectAsState()
   val editImageState by editImageViewModel.editImageState.collectAsState()
   val context = LocalContext.current
+  val selectedPost = allPosts.value.find { it.uri == imageUrl }
 
   Box(
       modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -92,20 +96,42 @@ fun EditImageScreen(
         Column(
             modifier =
                 Modifier.fillMaxWidth()
-                    .align(BiasAlignment(0f, 0.85f)) // Align to the bottom center of the Box
+                    .align(BiasAlignment(0f, 0.60f)) // Align to the bottom center of the Box
                     .padding(16.dp)
                     .testTag("edit_buttons_column"),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
-              Button(
+              Row {
+                Image(
+                    painter = painterResource(id = R.drawable.full_star),
+                    contentDescription = "Star Rating",
+                    modifier = Modifier.testTag("star_collection").size(28.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Average Rating: ${selectedPost?.averageStars}",
+                    color = Color.White,
+                    modifier = Modifier.testTag("average_rating_collection"))
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "User Icon",
+                    tint = Color.White,
+                    modifier = Modifier.testTag("user_icon_collection"))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Rated by : ${selectedPost?.ratedBy?.size} users",
+                    color = Color.White,
+                    modifier = Modifier.testTag("rated_by_collection"))
+              }
+
+              ActionButton(
+                  text = "Delete Image",
                   onClick = {
                     editImageViewModel.deleteImage(imageUrl)
                     navigationActions.navigateTo(Screen.COLLECTION)
                   },
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                  modifier = Modifier.testTag("delete_button")) {
-                    Text("Delete Image")
-                  }
+                  color = Color.Red,
+                  modifier = Modifier.testTag("delete_button"))
             }
 
         // Loading indicator and state handling

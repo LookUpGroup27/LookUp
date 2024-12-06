@@ -118,8 +118,9 @@ fun CollectionScreen(
                                                       URLEncoder.encode(
                                                           imageUrl,
                                                           StandardCharsets.UTF_8.toString())
+                                                  val timestamp = System.currentTimeMillis()
                                                   navigationActions.navigateToWithImage(
-                                                      encodedImageUrl, Route.EDIT_IMAGE)
+                                                      encodedImageUrl, Route.EDIT_IMAGE, timestamp)
                                                 }
                                                 .background(
                                                     MaterialTheme.colorScheme.surface.copy(

@@ -24,6 +24,7 @@ import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
 import com.github.lookupgroup27.lookup.ui.image.ImageReviewScreen
+import com.github.lookupgroup27.lookup.ui.image.ImageViewModel
 import com.github.lookupgroup27.lookup.ui.login.LoginScreen
 import com.github.lookupgroup27.lookup.ui.login.LoginViewModel
 import com.github.lookupgroup27.lookup.ui.map.MapScreen
@@ -33,12 +34,16 @@ import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetScreen
+import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetViewModel
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileInformationScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileScreen
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
+import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarSelectionScreen
+import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.github.lookupgroup27.lookup.ui.quiz.QuizPlayScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizScreen
 import com.github.lookupgroup27.lookup.ui.quiz.QuizViewModel
@@ -69,13 +74,16 @@ fun LookUpApp() {
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
       viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
-
+  val imageViewModel: ImageViewModel = viewModel(factory = ImageViewModel.Factory)
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
   val mapViewModel: MapViewModel = viewModel()
+  val passwordResetViewModel: PasswordResetViewModel =
+      viewModel(factory = PasswordResetViewModel.Factory)
+  val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
   val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
@@ -84,8 +92,11 @@ fun LookUpApp() {
         route = Route.AUTH,
     ) {
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
       composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
-      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
       composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
@@ -95,15 +106,15 @@ fun LookUpApp() {
         route = Route.LANDING,
     ) {
       composable(Screen.LANDING) { LandingScreen(navigationActions) }
-      composable(Screen.MENU) { MenuScreen(navigationActions) }
+      composable(Screen.MENU) { MenuScreen(navigationActions, avatarViewModel) }
     }
 
     navigation(
         startDestination = Screen.MENU,
         route = Route.MENU,
     ) {
-      composable(Screen.MENU) { MenuScreen(navigationActions) }
-      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.MENU) { MenuScreen(navigationActions, avatarViewModel) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions, avatarViewModel) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
       composable(Screen.GOOGLE_MAP) {
         GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
@@ -118,12 +129,20 @@ fun LookUpApp() {
 
     navigation(startDestination = Screen.PROFILE, route = Route.PROFILE) {
       composable(Screen.COLLECTION) { CollectionScreen(navigationActions, collectionViewModel) }
-      composable(Screen.PROFILE) { ProfileScreen(navigationActions) }
+      composable(Screen.PROFILE) { ProfileScreen(navigationActions, avatarViewModel) }
       composable(Screen.PROFILE_INFORMATION) {
         ProfileInformationScreen(profileViewModel, navigationActions)
       }
+
+      composable(Screen.AVATAR_SELECTION) {
+        AvatarSelectionScreen(
+            avatarViewModel = avatarViewModel,
+            userId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+            navigationActions = navigationActions)
+      }
+
       composable(
-          route = "${Route.EDIT_IMAGE}/{imageUrl}",
+          route = "${Route.EDIT_IMAGE}/{imageUrl}/{timestamp}",
           arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })) {
               backStackEntry ->
             val imageUrl = backStackEntry.arguments?.getString("imageUrl")
@@ -141,23 +160,35 @@ fun LookUpApp() {
     navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
       composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
       composable(
-          route = "${Route.IMAGE_REVIEW}/{imageFile}",
-          arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) {
-              backStackEntry ->
+          route = "${Route.IMAGE_REVIEW}/{imageFile}/{timestamp}",
+          arguments =
+              listOf(
+                  navArgument("imageFile") { type = NavType.StringType },
+                  navArgument("timestamp") { type = NavType.LongType })) { backStackEntry ->
             val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+            val timestamp = backStackEntry.arguments?.getLong("timestamp") // Extract the timestamp
             ImageReviewScreen(
                 navigationActions = navigationActions,
                 imageFile = imageFile,
+                imageViewModel = imageViewModel,
                 postsViewModel = postsViewModel,
-                collectionViewModel = collectionViewModel)
+                collectionViewModel = collectionViewModel,
+                timestamp = timestamp)
           }
     }
 
     navigation(startDestination = Screen.FEED, route = Route.FEED) {
       composable(Screen.FEED) { FeedScreen(postsViewModel, navigationActions, profileViewModel) }
     }
+
+    navigation(startDestination = Screen.PASSWORDRESET, route = Route.PASSWORDRESET) {
+      composable(Screen.PASSWORDRESET) {
+        PasswordResetScreen(passwordResetViewModel, navigationActions)
+      }
+    }
+
     navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
-      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
   }

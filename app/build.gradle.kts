@@ -259,6 +259,9 @@ dependencies {
         exclude(group = "com.android.support", module = "support-v4")
     }
     implementation(libs.coil.compose.v210)
+
+    // Register Screen
+    implementation ("androidx.compose.material:material-icons-extended:1.5.0")
 }
 
 tasks.withType<Test> {

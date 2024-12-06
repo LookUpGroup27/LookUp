@@ -23,7 +23,7 @@ class Star(
     val fragmentShaderCode: String
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
-  private val circleRenderer = CircleRenderer(segments)
+  private val circleRenderer = CircleRenderer(context, segments)
 
   init {
     // Initialize shaders and buffers once, no textures needed

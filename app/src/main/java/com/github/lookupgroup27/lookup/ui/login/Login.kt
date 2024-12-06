@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -69,6 +70,18 @@ fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions)
                   color =
                       if (uiState.email.isNotBlank() && uiState.password.isNotBlank()) Color.White
                       else Color.Gray)
+            }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(
+            onClick = { navigationActions.navigateTo(Screen.PASSWORDRESET) },
+            modifier =
+                Modifier.align(Alignment.CenterHorizontally).testTag("forgot_password_button")) {
+              Text(
+                  text = "Forgot Password?",
+                  style =
+                      MaterialTheme.typography.bodyLarge.copy(
+                          color = MaterialTheme.colorScheme.primary))
             }
       }
 }
