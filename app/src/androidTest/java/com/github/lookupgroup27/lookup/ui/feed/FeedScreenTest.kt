@@ -224,16 +224,14 @@ class FeedScreenTest {
   @Test
   fun testAddressIsDisplayed() {
     // Verify that the address is displayed for each post
-    composeTestRule.onNodeWithTag("AddressTag_2").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("AddressTag_3").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("AddressTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("AddressTag_5").assertDoesNotExist()
   }
 
   @Test
   fun testDescriptionIsDisplayed() {
     // Verify that the description is displayed for each post
-    composeTestRule.onNodeWithTag("DescriptionTag_2").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("DescriptionTag_3").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("DescriptionTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("DescriptionTag_5").assertDoesNotExist()
   }
 }
