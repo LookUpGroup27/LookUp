@@ -11,4 +11,5 @@ data class Post(
     val usersNumber: Int = 0,
     val ratedBy: List<String> = emptyList(),
     val description: String = "",
+    val timestamp: Long = 0L
 )

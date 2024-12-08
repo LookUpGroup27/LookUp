@@ -70,7 +70,8 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
                       data["longitude"] as Double,
                       (data["usersNumber"] as? Long)?.toInt() ?: 0,
                       data["ratedBy"] as? List<String> ?: emptyList(),
-                      data["description"] as? String ?: "")
+                      data["description"] as? String ?: "",
+                      (data["timestamp"] as? Long) ?: 0L)
                 }
                 .filterNotNull()
         onSuccess(posts)

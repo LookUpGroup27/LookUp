@@ -2,30 +2,48 @@ package com.github.lookupgroup27.lookup.model.register
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import kotlinx.coroutines.tasks.await
 
-// An implementation of RegisterRepository that uses Firebase Authentication.
-// Handles creating a new user in the Firebase backend.
+/**
+ * Implementation of the [RegisterRepository] interface using Firebase Authentication.
+ *
+ * This class handles the user registration process by interacting with FirebaseAuth to create new
+ * users. It captures specific exceptions thrown by FirebaseAuth and translates them into custom
+ * exceptions for better error handling in the ViewModel.
+ *
+ * @property auth The FirebaseAuth instance used to perform authentication operations.
+ */
 class RegisterRepositoryFirestore(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) :
     RegisterRepository {
 
   /**
-   * Registers a user in Firebase with the provided email and password.
+   * Registers a new user with the provided email and password.
    *
-   * @param email The email of the user to register.
-   * @param password The password of the user to register.
-   * @throws Exception If the registration process fails, the error is logged and rethrown.
+   * This function uses FirebaseAuth to create a new user account. It handles specific exceptions
+   * thrown by FirebaseAuth and rethrows them as custom exceptions to be handled by the ViewModel.
+   *
+   * @param email The email address of the new user.
+   * @param password The password for the new user.
+   * @throws UserAlreadyExistsException If the email is already associated with an existing account.
+   * @throws WeakPasswordException If the password does not meet Firebase's security requirements.
+   * @throws Exception For any other errors during the registration process.
    */
   override suspend fun registerUser(email: String, password: String) {
     try {
-      // Firebase's method to create a user with email and password is called here.
-      // The 'await()' ensures the asynchronous operation completes before proceeding.
+      // Attempt to create a new user with the provided email and password.
       auth.createUserWithEmailAndPassword(email, password).await()
+    } catch (e: FirebaseAuthUserCollisionException) {
+      // Thrown if the email is already in use.
+      throw UserAlreadyExistsException("An account with this email already exists.")
+    } catch (e: FirebaseAuthWeakPasswordException) {
+      // Thrown if the password is not strong enough.
+      throw WeakPasswordException("Your password is too weak.")
     } catch (e: Exception) {
-      // Logs the error to assist with debugging in case of failure.
+      // Log the error and rethrow a generic exception for any other errors.
       Log.e("RegisterRepository", "Error creating user", e)
-      // Rethrows the exception to allow higher-level error handling.
-      throw e
+      throw Exception("Registration failed due to an unexpected error.")
     }
   }
 }

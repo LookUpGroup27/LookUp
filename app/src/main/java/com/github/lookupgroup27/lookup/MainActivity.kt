@@ -96,7 +96,7 @@ fun LookUpApp() {
         PasswordResetScreen(passwordResetViewModel, navigationActions)
       }
       composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
-      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
     }
     navigation(startDestination = Screen.MAP, route = Route.MAP) {
       composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
@@ -142,7 +142,7 @@ fun LookUpApp() {
       }
 
       composable(
-          route = "${Route.EDIT_IMAGE}/{imageUrl}",
+          route = "${Route.EDIT_IMAGE}/{imageUrl}/{timestamp}",
           arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })) {
               backStackEntry ->
             val imageUrl = backStackEntry.arguments?.getString("imageUrl")
@@ -160,16 +160,20 @@ fun LookUpApp() {
     navigation(startDestination = Screen.TAKE_IMAGE, route = Route.TAKE_IMAGE) {
       composable(Screen.TAKE_IMAGE) { CameraCapture(navigationActions) }
       composable(
-          route = "${Route.IMAGE_REVIEW}/{imageFile}",
-          arguments = listOf(navArgument("imageFile") { type = NavType.StringType })) {
-              backStackEntry ->
+          route = "${Route.IMAGE_REVIEW}/{imageFile}/{timestamp}",
+          arguments =
+              listOf(
+                  navArgument("imageFile") { type = NavType.StringType },
+                  navArgument("timestamp") { type = NavType.LongType })) { backStackEntry ->
             val imageFile = backStackEntry.arguments?.getString("imageFile")?.let { File(it) }
+            val timestamp = backStackEntry.arguments?.getLong("timestamp") // Extract the timestamp
             ImageReviewScreen(
                 navigationActions = navigationActions,
                 imageFile = imageFile,
                 imageViewModel = imageViewModel,
                 postsViewModel = postsViewModel,
-                collectionViewModel = collectionViewModel)
+                collectionViewModel = collectionViewModel,
+                timestamp = timestamp)
           }
     }
 
@@ -184,7 +188,7 @@ fun LookUpApp() {
     }
 
     navigation(startDestination = Screen.REGISTER, route = Route.REGISTER) {
-      composable(Screen.REGISTER) { RegisterScreen(registerViewModel, navigationActions) }
+      composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
       composable(Screen.AUTH) { SignInScreen(navigationActions) }
     }
   }

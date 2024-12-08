@@ -50,7 +50,13 @@ class CollectionRepositoryFirestore(
 
     return try {
       val result = imagesRef.listAll().await()
-      result.items.mapNotNull { it.downloadUrl.await().toString() }
+      result.items.mapNotNull {
+        if (!it.name.endsWith(".tmp")) {
+          it.downloadUrl.await().toString()
+        } else {
+          null
+        }
+      }
     } catch (e: Exception) {
       Log.e("FirebaseCollectionRepo", "Error retrieving images from Firebase Storage", e)
       emptyList()

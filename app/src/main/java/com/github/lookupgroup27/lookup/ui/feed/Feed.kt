@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.model.feed.ProximityPostFetcher
+import com.github.lookupgroup27.lookup.model.feed.ProximityAndTimePostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
@@ -65,12 +65,14 @@ fun FeedScreen(
 
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-  val proximityPostFetcher = remember { ProximityPostFetcher(postsViewModel, context) }
+  val proximityAndTimePostFetcher = remember {
+    ProximityAndTimePostFetcher(postsViewModel, context)
+  }
 
   var locationPermissionGranted by remember { mutableStateOf(false) }
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
-          ?: proximityPostFetcher.nearbyPosts.collectAsState())
+          ?: proximityAndTimePostFetcher.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.username != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
@@ -89,7 +91,7 @@ fun FeedScreen(
       while (locationProvider.currentLocation.value == null) {
         kotlinx.coroutines.delay(500)
       }
-      proximityPostFetcher.fetchNearbyPostsWithImages()
+      proximityAndTimePostFetcher.fetchSortedPosts()
     }
   }
 

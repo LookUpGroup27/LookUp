@@ -2,10 +2,9 @@ package com.github.lookupgroup27.lookup.model.register
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.*
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +17,6 @@ class RegisterRepositoryFirestoreTest {
 
   private lateinit var repository: RegisterRepositoryFirestore
   private lateinit var mockAuth: FirebaseAuth
-  private lateinit var mockUser: FirebaseUser
 
   @Before
   fun setUp() {
@@ -36,52 +34,66 @@ class RegisterRepositoryFirestoreTest {
 
   @Test
   fun `registerUser succeeds with valid credentials`() = runBlocking {
-    `when`(mockAuth.createUserWithEmailAndPassword("test@example.com", "password123"))
-        .thenReturn(Tasks.forResult(mock()))
+    val mockResult = mock(AuthResult::class.java)
+    `when`(mockAuth.createUserWithEmailAndPassword("test@example.com", "Password123"))
+        .thenReturn(Tasks.forResult(mockResult))
 
     try {
-      repository.registerUser("test@example.com", "password123")
+      repository.registerUser("test@example.com", "Password123")
       assertTrue(true)
     } catch (e: Exception) {
-      assert(false)
+      fail("Expected registration to succeed, but it failed with exception: ${e.message}")
     }
   }
 
   @Test
-  fun `registerUser fails with invalid credentials`() = runBlocking {
-    val exception = Exception("Invalid email format")
-    `when`(mockAuth.createUserWithEmailAndPassword("invalid-email", "password123"))
+  fun `registerUser throws UserAlreadyExistsException when email is already in use`() =
+      runBlocking {
+        val exception =
+            FirebaseAuthUserCollisionException(
+                "ERROR_EMAIL_ALREADY_IN_USE",
+                "The email address is already in use by another account.")
+        `when`(mockAuth.createUserWithEmailAndPassword("test@example.com", "Password123"))
+            .thenReturn(Tasks.forException(exception))
+
+        try {
+          repository.registerUser("test@example.com", "Password123")
+          fail("Expected UserAlreadyExistsException to be thrown")
+        } catch (e: UserAlreadyExistsException) {
+          assertEquals("An account with this email already exists.", e.message)
+        } catch (e: Exception) {
+          fail("Expected UserAlreadyExistsException, but got ${e::class.simpleName}")
+        }
+      }
+
+  @Test
+  fun `registerUser throws WeakPasswordException when password is weak`() = runBlocking {
+    val exception =
+        FirebaseAuthWeakPasswordException("ERROR_WEAK_PASSWORD", "Password is too weak", null)
+    `when`(mockAuth.createUserWithEmailAndPassword("test@example.com", "weakpass"))
         .thenReturn(Tasks.forException(exception))
 
     try {
-      repository.registerUser("invalid-email", "password123")
-      assert(false)
+      repository.registerUser("test@example.com", "weakpass")
+      fail("Expected WeakPasswordException to be thrown")
+    } catch (e: WeakPasswordException) {
+      assertEquals("Your password is too weak.", e.message)
     } catch (e: Exception) {
-      assert(e.message == "Invalid email format")
+      fail("Expected WeakPasswordException, but got ${e::class.simpleName}")
     }
   }
 
   @Test
-  fun `registerUser fails when FirebaseAuth throws exception`() = runBlocking {
-    val exception = Exception("Firebase error")
-    `when`(mockAuth.createUserWithEmailAndPassword(anyString(), anyString()))
+  fun `registerUser throws Exception for unknown errors`() = runBlocking {
+    val exception = Exception("Unknown error")
+    `when`(mockAuth.createUserWithEmailAndPassword("test@example.com", "Password123"))
         .thenReturn(Tasks.forException(exception))
 
     try {
-      repository.registerUser("test@example.com", "password123")
-      assert(false)
+      repository.registerUser("test@example.com", "Password123")
+      fail("Expected Exception to be thrown")
     } catch (e: Exception) {
-      assert(e.message == "Firebase error")
-    }
-  }
-
-  @Test
-  fun `registerUser returns exception for empty email or password`() = runBlocking {
-    try {
-      repository.registerUser("", "")
-      assert(false)
-    } catch (e: Exception) {
-      assert(true)
+      assertEquals("Registration failed due to an unexpected error.", e.message)
     }
   }
 }
