@@ -23,7 +23,7 @@ class Star(
     val fragmentShaderCode: String
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
-  private val circleRenderer = CircleRenderer(context, segments)
+  private val circleRenderer = CircleRenderer(context, segments, 1.0f, color.copyOf(4))
 
   init {
     // Initialize shaders and buffers once, no textures needed
@@ -35,20 +35,62 @@ class Star(
     // Model-View-Projection (MVP) Matrix
     val mvpMatrix = FloatArray(16)
     val modelMatrix = FloatArray(16)
-    val viewMatrix = FloatArray(16)
-    val projMatrix = FloatArray(16)
+    val billboardMatrix = FloatArray(16)
 
-    // Copy camera matrices to avoid modification
-    System.arraycopy(camera.viewMatrix, 0, viewMatrix, 0, 16)
-    System.arraycopy(camera.projMatrix, 0, projMatrix, 0, 16)
-
+    // Reset matrices
     Matrix.setIdentityM(modelMatrix, 0)
-    Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
-    Matrix.scaleM(modelMatrix, 0, size, size, size)
+    Matrix.setIdentityM(billboardMatrix, 0)
 
-    // Multiply matrices in correct order: Projection * View * Model
-    Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-    Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, mvpMatrix, 0)
+    // Extract camera look direction from view matrix
+    val lookX = -camera.viewMatrix[2] // Third column of view matrix
+    val lookY = -camera.viewMatrix[6] // is the look direction
+    val lookZ = -camera.viewMatrix[10]
+
+    // Create billboard rotation
+    val upX = camera.viewMatrix[1] // Second column is up vector
+    val upY = camera.viewMatrix[5]
+    val upZ = camera.viewMatrix[9]
+
+    // Calculate right vector (cross product)
+    val rightX = upY * lookZ - upZ * lookY
+    val rightY = upZ * lookX - upX * lookZ
+    val rightZ = upX * lookY - upY * lookX
+
+    // Set billboard matrix
+    billboardMatrix[0] = rightX
+    billboardMatrix[1] = rightY
+    billboardMatrix[2] = rightZ
+    billboardMatrix[3] = 0f
+
+    billboardMatrix[4] = upX
+    billboardMatrix[5] = upY
+    billboardMatrix[6] = upZ
+    billboardMatrix[7] = 0f
+
+    billboardMatrix[8] = lookX
+    billboardMatrix[9] = lookY
+    billboardMatrix[10] = lookZ
+    billboardMatrix[11] = 0f
+
+    billboardMatrix[12] = 0f
+    billboardMatrix[13] = 0f
+    billboardMatrix[14] = 0f
+    billboardMatrix[15] = 1f
+
+    // First translate to position
+    Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
+
+    // Then apply billboard rotation
+    val rotatedMatrix = FloatArray(16)
+    Matrix.multiplyMM(rotatedMatrix, 0, modelMatrix, 0, billboardMatrix, 0)
+
+    // Finally apply scale
+    Matrix.scaleM(rotatedMatrix, 0, size, size, size)
+
+    // Compute final MVP matrix
+    val viewModelMatrix = FloatArray(16)
+    Matrix.multiplyMM(viewModelMatrix, 0, camera.viewMatrix, 0, rotatedMatrix, 0)
+    Matrix.multiplyMM(mvpMatrix, 0, camera.projMatrix, 0, viewModelMatrix, 0)
 
     // Bind shader attributes and draw the circle
     circleRenderer.bindShaderAttributes(mvpMatrix)
