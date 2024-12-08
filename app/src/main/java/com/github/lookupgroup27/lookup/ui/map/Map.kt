@@ -7,10 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -18,11 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.model.map.MapSurfaceView
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
@@ -72,14 +77,20 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel =
               modifier = Modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Bottom,
               horizontalAlignment = Alignment.CenterHorizontally) {
+            Row {
+                Button(
+                    content = { Text(stringResource(R.string.map_button_reset_text)) },
+                    onClick = { mapViewModel.updateFov(Camera.DEFAULT_FOV) },
+                    modifier = Modifier.padding(16.dp))
                 Slider(
                     value = mapViewModel.fov,
                     onValueChange = { mapViewModel.updateFov(it) },
                     valueRange = Camera.MIN_FOV..Camera.MAX_FOV,
                     steps = 100,
                     modifier = Modifier.padding(16.dp))
-//            TODO : Make test for the slider composable
+//            TODO : Make test for the new composable in this new feature
               }
+          }
         }
       }
 }
