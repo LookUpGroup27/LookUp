@@ -123,9 +123,21 @@ fun PostItem(
       }
 }
 
-suspend fun getAddressFromLatLngUsingNominatim(lat: Double, lon: Double): String {
+suspend fun getAddressFromLatLngUsingNominatim(
+    lat: Double,
+    lon: Double,
+    client: OkHttpClient = OkHttpClient()
+): String {
+
+  // Validate coordinates first
+  if (lat < -90 || lat > 90) {
+    return "Error fetching address: Invalid latitude: $lat"
+  }
+  if (lon < -180 || lon > 180) {
+    return "Error fetching address: Invalid longitude: $lon"
+  }
+
   val url = "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lon&format=json"
-  val client = OkHttpClient()
 
   return withContext(Dispatchers.IO) {
     try {
