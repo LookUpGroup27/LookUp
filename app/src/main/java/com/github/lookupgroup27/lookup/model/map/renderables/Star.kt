@@ -42,12 +42,12 @@ class Star(
     Matrix.setIdentityM(billboardMatrix, 0)
 
     // Extract camera look direction from view matrix
-    val lookX = -camera.viewMatrix[2]  // Third column of view matrix
-    val lookY = -camera.viewMatrix[6]  // is the look direction
+    val lookX = -camera.viewMatrix[2] // Third column of view matrix
+    val lookY = -camera.viewMatrix[6] // is the look direction
     val lookZ = -camera.viewMatrix[10]
 
     // Create billboard rotation
-    val upX = camera.viewMatrix[1]    // Second column is up vector
+    val upX = camera.viewMatrix[1] // Second column is up vector
     val upY = camera.viewMatrix[5]
     val upZ = camera.viewMatrix[9]
 
@@ -92,8 +92,7 @@ class Star(
     Matrix.multiplyMM(viewModelMatrix, 0, camera.viewMatrix, 0, rotatedMatrix, 0)
     Matrix.multiplyMM(mvpMatrix, 0, camera.projMatrix, 0, viewModelMatrix, 0)
 
-
-      // Bind shader attributes and draw the circle
+    // Bind shader attributes and draw the circle
     circleRenderer.bindShaderAttributes(mvpMatrix)
     circleRenderer.drawCircle()
     circleRenderer.unbindShaderAttributes()
