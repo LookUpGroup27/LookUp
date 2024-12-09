@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepositoryFirestore
+import com.github.lookupgroup27.lookup.model.post.Post
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,8 +22,8 @@ import kotlinx.coroutines.launch
  */
 class CollectionViewModel(private val repository: CollectionRepository) : ViewModel() {
 
-  private val _imageUrls = MutableStateFlow<List<String>>(emptyList())
-  val imageUrls: StateFlow<List<String>> = _imageUrls
+  private val _myPosts = MutableStateFlow<List<Post>>(emptyList())
+  val myPosts: StateFlow<List<Post>> = _myPosts
 
   private val _error = MutableStateFlow<String?>(null)
   val error: StateFlow<String?> = _error
@@ -36,8 +39,13 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
   private fun fetchImages() {
     viewModelScope.launch {
       try {
-        val images = repository.getUserImageUrls()
-        _imageUrls.value = images
+        repository.getUserPosts(
+            onSuccess = {
+              if (it != null) {
+                _myPosts.value = it
+              }
+            },
+            onFailure = { _error.value = "Failed to load images: ${it.localizedMessage}" })
         _error.value = null // Clear any previous error state if successful
       } catch (e: Exception) {
         _error.value = "Failed to load images: ${e.localizedMessage}"
@@ -59,8 +67,7 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
           @Suppress("UNCHECKED_CAST")
           override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CollectionViewModel(
-                CollectionRepositoryFirestore(
-                    FirebaseStorage.getInstance(), FirebaseAuth.getInstance()))
+                CollectionRepositoryFirestore(Firebase.firestore, FirebaseAuth.getInstance()))
                 as T
           }
         }

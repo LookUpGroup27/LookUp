@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.collection
 
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
+import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,60 +34,71 @@ class CollectionViewModelTest {
   }
 
   @Test
-  fun `test imageUrls are empty initially`() = runBlocking {
+  fun `test myPosts are empty initially`() = runBlocking {
     val mockRepository: CollectionRepository = mock()
-    whenever(mockRepository.getUserImageUrls()).thenReturn(emptyList())
+    whenever(mockRepository.getUserPosts(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Post>?) -> Unit
+      onSuccess(emptyList())
+    }
 
     viewModel = CollectionViewModel(mockRepository)
-    val initialImageUrls = viewModel.imageUrls.first()
+    val initialPosts = viewModel.myPosts.first()
 
-    assertTrue("Initial image URLs should be empty", initialImageUrls.isEmpty())
+    assertTrue("Initial image URLs should be empty", initialPosts.isEmpty())
   }
 
   @Test
-  fun `test fetchImages updates imageUrls with correct values`() = runTest {
+  fun `test fetchImages updates myPosts with correct values`() = runTest {
     val mockRepository: CollectionRepository = mock()
-    val mockImageUrls = listOf("mock_url_1", "mock_url_2")
+    val mockPosts = listOf(Post("mock_url_1"), Post("mock_url_2"))
 
-    // Mock repository to return the mock image URLs
-    whenever(mockRepository.getUserImageUrls()).thenReturn(mockImageUrls)
+    // Mock repository to execute success callback with mock data
+    whenever(mockRepository.getUserPosts(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Post>?) -> Unit
+      onSuccess(mockPosts)
+    }
     whenever(mockRepository.init(any())).thenAnswer { invocation ->
       (invocation.arguments[0] as () -> Unit).invoke()
     }
 
     // Initialize the ViewModel with the mock repository
-    viewModel = CollectionViewModel(mockRepository)
+    val viewModel = CollectionViewModel(mockRepository)
 
     // Advance coroutine execution until completion
     advanceUntilIdle()
 
-    // Check that imageUrls state contains the mock URLs
-    val imageUrls = viewModel.imageUrls.first()
-    assertEquals(mockImageUrls, imageUrls)
+    // Check that myPosts state contains the mock posts
+    val myPosts = viewModel.myPosts.first()
+    assertEquals(mockPosts, myPosts)
   }
 
   @Test
-  fun `test fetchImages does not update imageUrls on empty result`() = runBlocking {
+  fun `test fetchImages does not update posts on empty result`() = runBlocking {
     val mockRepository: CollectionRepository = mock()
-    whenever(mockRepository.getUserImageUrls()).thenReturn(emptyList())
+    whenever(mockRepository.getUserPosts(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Post>?) -> Unit
+      onSuccess(emptyList())
+    }
 
     viewModel = CollectionViewModel(mockRepository)
     testDispatcher.scheduler.advanceUntilIdle()
 
-    val imageUrls = viewModel.imageUrls.first()
-    assertTrue("Image URLs should be empty when no data is returned", imageUrls.isEmpty())
+    val myPosts = viewModel.myPosts.first()
+    assertTrue("myPosts should be empty when no data is returned", myPosts.isEmpty())
   }
 
   @Test
   fun `test error state when repository fails`() = runBlocking {
     val failingMockRepository: CollectionRepository = mock()
-    whenever(failingMockRepository.getUserImageUrls())
-        .thenThrow(RuntimeException("Simulated repository failure"))
+    whenever(failingMockRepository.getUserPosts(any(), any())).thenAnswer { invocation ->
+      val onFailure = invocation.arguments[1] as (Exception) -> Unit
+      onFailure(RuntimeException("Simulated repository failure"))
+    }
 
     viewModel = CollectionViewModel(failingMockRepository)
     testDispatcher.scheduler.advanceUntilIdle()
 
-    val imageUrls = viewModel.imageUrls.first()
-    assertTrue("Image URLs should be empty when an error occurs", imageUrls.isEmpty())
+    val myPosts = viewModel.myPosts.first()
+    assertTrue("myPosts should be empty when an error occurs", myPosts.isEmpty())
   }
 }

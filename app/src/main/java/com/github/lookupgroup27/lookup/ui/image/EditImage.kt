@@ -47,16 +47,17 @@ import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
  */
 @Composable
 fun EditImageScreen(
-    imageUrl: String,
+    postUri: String,
+    postAverageStar: Double,
+    postRatedByNb: Int,
+    postUid: String,
     editImageViewModel: EditImageViewModel,
     collectionViewModel: CollectionViewModel,
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions
 ) {
-  val allPosts = postsViewModel.allPosts.collectAsState()
   val editImageState by editImageViewModel.editImageState.collectAsState()
   val context = LocalContext.current
-  val selectedPost = allPosts.value.find { it.uri == imageUrl }
 
   Box(
       modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -84,7 +85,7 @@ fun EditImageScreen(
 
         // Display the image
         Image(
-            painter = rememberAsyncImagePainter(imageUrl),
+            painter = rememberAsyncImagePainter(postUri),
             contentDescription = "Edit Image",
             modifier =
                 Modifier.fillMaxWidth()
@@ -108,7 +109,7 @@ fun EditImageScreen(
                     modifier = Modifier.testTag("star_collection").size(28.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Average Rating: ${selectedPost?.averageStars}",
+                    text = "Average Rating: ${postAverageStar}",
                     color = Color.White,
                     modifier = Modifier.testTag("average_rating_collection"))
                 Spacer(modifier = Modifier.width(8.dp))
@@ -119,7 +120,7 @@ fun EditImageScreen(
                     modifier = Modifier.testTag("user_icon_collection"))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Rated by : ${selectedPost?.ratedBy?.size} users",
+                    text = "Rated by : ${postRatedByNb} users",
                     color = Color.White,
                     modifier = Modifier.testTag("rated_by_collection"))
               }
@@ -127,7 +128,7 @@ fun EditImageScreen(
               ActionButton(
                   text = "Delete Image",
                   onClick = {
-                    editImageViewModel.deleteImage(imageUrl)
+                    editImageViewModel.deleteImage(postUri)
                     navigationActions.navigateTo(Screen.COLLECTION)
                   },
                   color = Color.Red,
@@ -151,7 +152,7 @@ fun EditImageScreen(
           }
           is EditImageState.Deleted -> {
             collectionViewModel.updateImages()
-            postsViewModel.deletePost(imageUrl)
+            postsViewModel.deletePost(postUid)
             LaunchedEffect(editImageState) {
               Toast.makeText(context, "Image deleted successfully.", Toast.LENGTH_SHORT).show()
               editImageViewModel.resetState()
