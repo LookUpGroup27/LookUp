@@ -25,11 +25,11 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  * @property stepsPerBand The number of longitude steps per latitude band. Higher values improve
  *   rendering fidelity.
  */
-class Planet(
+open class Planet(
     private val context: Context,
     private val name: String? = "Planet",
     private val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
-    private val textureId: Int,
+    protected var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
     private val vertexShaderCode: String = "",
@@ -38,8 +38,33 @@ class Planet(
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
 
-  private var textureHandle: Int = 0
+  // Make textureHandle protected so it can be accessed by subclasses
+  protected var textureHandle: Int = 0
+
   private var scale: Float = 0.3f
+  private var textureManager: TextureManager
+
+  /** Initializes the planet's geometry, shaders, and texture. */
+  init {
+    sphereRenderer.initializeBuffers()
+    sphereRenderer.initializeShaders()
+
+    // Initialize TextureManager and load initial texture
+    textureManager = TextureManager(context)
+    loadTexture()
+  }
+
+  /** Loads or reloads the texture for the planet. */
+  protected fun loadTexture() {
+    // Release the existing texture if it exists
+    if (textureHandle != 0) {
+      val textureHandleArray = intArrayOf(textureHandle)
+      GLES20.glDeleteTextures(1, textureHandleArray, 0)
+    }
+
+    // Load new texture
+    textureHandle = textureManager.loadTexture(textureId)
+  }
 
   /**
    * Updates the scale of the planet, allowing customization of its size in the rendered scene.
@@ -51,25 +76,9 @@ class Planet(
   }
 
   /**
-   * Initializes the planet's geometry, shaders, and texture. This method prepares the planet for
-   * rendering.
-   */
-  init {
-    sphereRenderer.initializeBuffers() // Initialize sphere geometry buffers
-    sphereRenderer.initializeShaders() // Initialize shaders for rendering
-
-    // Load the planet's texture
-    val textureManager = TextureManager(context)
-    textureHandle = textureManager.loadTexture(textureId)
-  }
-
-  /**
-   * Renders the planet using the provided Model-View-Projection (MVP) matrix.
+   * Renders the planet using the provided camera.
    *
-   * The planet's position and scale are applied to the MVP matrix to generate the final
-   * transformation for rendering.
-   *
-   * @param mvpMatrix A 4x4 matrix that combines the model, view, and projection transformations.
+   * @param camera The camera used for rendering the scene.
    */
   override fun draw(camera: Camera) {
     val modelMatrix = FloatArray(16)
