@@ -5,6 +5,7 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import com.github.lookupgroup27.lookup.ui.map.MapViewModel
 
 /**
  * Our GLSurfaceView for rendering the map.
@@ -12,7 +13,7 @@ import android.view.ScaleGestureDetector
  * @param context The context of the application.
  * @param renderer The renderer to use for drawing on the GLSurfaceView.
  */
-class MapSurfaceView(context: Context, renderer: MapRenderer) : GLSurfaceView(context) {
+class MapSurfaceView(context: Context, viewModel: MapViewModel) : GLSurfaceView(context) {
 
   private val scaleGestureDetector: ScaleGestureDetector
 
@@ -21,10 +22,10 @@ class MapSurfaceView(context: Context, renderer: MapRenderer) : GLSurfaceView(co
     setEGLContextClientVersion(2)
 
     // Set the provided renderer for drawing on the GLSurfaceView
-    renderer.updateContext(context)
-    setRenderer(renderer)
+    viewModel.mapRenderer.updateContext(context)
+    setRenderer(viewModel.mapRenderer)
 
-    scaleGestureDetector = ScaleGestureDetector(context, renderer.camera)
+    scaleGestureDetector = ScaleGestureDetector(context, viewModel)
   }
 
   @SuppressLint("ClickableViewAccessibility")
