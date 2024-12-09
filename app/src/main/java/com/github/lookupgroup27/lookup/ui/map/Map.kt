@@ -16,7 +16,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -77,20 +76,20 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel =
               modifier = Modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Bottom,
               horizontalAlignment = Alignment.CenterHorizontally) {
-            Row {
-                Button(
-                    content = { Text(stringResource(R.string.map_button_reset_text)) },
-                    onClick = { mapViewModel.updateFov(Camera.DEFAULT_FOV) },
-                    modifier = Modifier.padding(16.dp))
-                Slider(
-                    value = mapViewModel.fov,
-                    onValueChange = { mapViewModel.updateFov(it) },
-                    valueRange = Camera.MIN_FOV..Camera.MAX_FOV,
-                    steps = 100,
-                    modifier = Modifier.padding(16.dp))
-//            TODO : Make test for the new composable in this new feature
+                Row {
+                  Button(
+                      content = { Text(stringResource(R.string.map_button_reset_text)) },
+                      onClick = { mapViewModel.updateFov(Camera.DEFAULT_FOV) },
+                      modifier = Modifier.padding(16.dp))
+                  Slider(
+                      value = mapViewModel.zoomPercentage,
+                      onValueChange = { mapViewModel.updateZoom(it) },
+                      valueRange = 0f..100f,
+                      steps = 100,
+                      modifier = Modifier.padding(16.dp))
+                  //            TODO : Make test for the new composable in this new feature
+                }
               }
-          }
         }
       }
 }

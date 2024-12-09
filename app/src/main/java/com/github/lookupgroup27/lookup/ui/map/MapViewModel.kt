@@ -7,9 +7,8 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.view.ScaleGestureDetector
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.github.lookupgroup27.lookup.model.map.Camera
@@ -17,9 +16,14 @@ import com.github.lookupgroup27.lookup.model.map.MapRenderer
 
 /** The ViewModel for the map screen. */
 class MapViewModel : ViewModel(), ScaleGestureDetector.OnScaleGestureListener {
-  private var _fov by mutableStateOf(Camera.DEFAULT_FOV)
-  val fov: Float
+  private var _fov by mutableFloatStateOf(Camera.DEFAULT_FOV)
+
+  private val fov: Float
     get() = _fov
+
+  /** The zoom level of the camera as a percentage. */
+  val zoomPercentage: Float
+    get() = 100 - (_fov - Camera.MIN_FOV) / (Camera.MAX_FOV - Camera.MIN_FOV) * 100
 
   val mapRenderer = MapRenderer(fov)
 
@@ -63,6 +67,15 @@ class MapViewModel : ViewModel(), ScaleGestureDetector.OnScaleGestureListener {
   fun unregisterSensorListener(activity: ComponentActivity) {
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     sensorManager.unregisterListener(mapRenderer.camera)
+  }
+
+  /**
+   * Updates the zoom level of the camera.
+   *
+   * @param percentage the new zoom level as a percentage
+   */
+  fun updateZoom(percentage: Float) {
+    updateFov(Camera.MIN_FOV + (Camera.MAX_FOV - Camera.MIN_FOV) * (100 - percentage) / 100)
   }
 
   /**
