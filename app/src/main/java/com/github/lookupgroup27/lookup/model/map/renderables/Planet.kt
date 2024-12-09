@@ -27,7 +27,7 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  */
 class Planet(
     private val context: Context,
-    private val name: String? = "Planet",
+    val name: String? = "Planet",
     private val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
     private val textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
@@ -105,5 +105,41 @@ class Planet(
     // Render the sphere
     sphereRenderer.drawSphere()
     sphereRenderer.unbindShaderAttributes()
+  }
+
+  /**
+   * Checks if a ray intersects the planet's surface.
+   *
+   * This method calculates the intersection of a ray with the planet's bounding sphere. If the ray
+   * intersects the sphere, the method returns true; otherwise, it returns false.
+   *
+   * @param rayOrigin The origin of the ray in 3D space.
+   * @param rayDirection The direction of the ray in 3D space.
+   * @return True if the ray intersects the planet's bounding sphere, false otherwise.
+   */
+  fun checkHit(rayOrigin: FloatArray, rayDirection: FloatArray): Boolean {
+
+    // Calculate the distance from the ray to the sphere's center
+    val sphereCenter = position
+    val radius = scale // Assume scale is the radius of the sphere
+
+    // Calculate the vector from the ray origin to the sphere's center
+    val oc =
+        floatArrayOf(
+            rayOrigin[0] - sphereCenter[0],
+            rayOrigin[1] - sphereCenter[1],
+            rayOrigin[2] - sphereCenter[2])
+
+    // Calculate coefficients for the quadratic equation
+    val a = dot(rayDirection, rayDirection)
+    val b = 2.0f * dot(oc, rayDirection)
+    val c = dot(oc, oc) - radius * radius
+
+    val discriminant = b * b - 4 * a * c
+    return discriminant >= 0 // If the discriminant is non-negative, there is an intersection
+  }
+
+  private fun dot(a: FloatArray, b: FloatArray): Float {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
   }
 }
