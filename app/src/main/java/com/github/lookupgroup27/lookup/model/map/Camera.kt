@@ -32,9 +32,9 @@ class Camera(private var fov: Float) : SensorEventListener {
 
   companion object {
     // FOV constants
-    const val MAX_FOV = 110f
     const val DEFAULT_FOV = 45f
-    const val MIN_FOV = 1f
+    const val MAX_FOV = DEFAULT_FOV + 40f
+    const val MIN_FOV = DEFAULT_FOV - 40f
 
     // Near and far clipping plane constants
     const val NEAR = 0.1f
