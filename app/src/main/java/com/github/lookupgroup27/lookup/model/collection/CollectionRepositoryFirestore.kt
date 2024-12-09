@@ -1,9 +1,9 @@
 package com.github.lookupgroup27.lookup.model.collection
 
 import android.util.Log
+import com.github.lookupgroup27.lookup.model.post.Post
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * CollectionRepositoryFirestore is responsible for fetching image URLs associated with a user's
@@ -14,9 +14,12 @@ import kotlinx.coroutines.tasks.await
  * @param auth The FirebaseAuth instance used for user authentication.
  */
 class CollectionRepositoryFirestore(
-    private val db: FirebaseStorage,
+    private val db: FirebaseFirestore,
     private val auth: FirebaseAuth
 ) : CollectionRepository {
+
+  private val collection = db.collection("posts")
+  private val tag = "FeedRepositoryFirestore"
 
   /**
    * Initializes the repository by checking the authentication state of the user. If the user is
@@ -38,28 +41,44 @@ class CollectionRepositoryFirestore(
    *
    * @return A list of image URLs associated with the user's email.
    */
-  override suspend fun getUserImageUrls(): List<String> {
-    val userEmail = auth.currentUser?.email ?: ""
-    if (userEmail.isEmpty()) {
-      Log.e("FirebaseCollectionRepo", "User email is empty.")
-      return emptyList()
-    }
+  override suspend fun getUserPosts(
+      onSuccess: (List<Post>?) -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous"
 
-    val folderPath = "images/$userEmail/"
-    val imagesRef = db.reference.child(folderPath)
-
-    return try {
-      val result = imagesRef.listAll().await()
-      result.items.mapNotNull {
-        if (!it.name.endsWith(".tmp")) {
-          it.downloadUrl.await().toString()
-        } else {
-          null
-        }
+    collection.addSnapshotListener { snapshot, exception ->
+      if (exception != null) {
+        Log.e(tag, "Error getting posts...", exception)
+        onFailure(exception)
+        return@addSnapshotListener
       }
-    } catch (e: Exception) {
-      Log.e("FirebaseCollectionRepo", "Error retrieving images from Firebase Storage", e)
-      emptyList()
+      if (snapshot != null) {
+        val posts =
+            snapshot.documents
+                .map { post ->
+                  Log.d(tag, "${post.id} => ${post.data}")
+                  val data = post.data ?: return@map null
+                  if (data["username"] as String == username) {
+                    Post(
+                        data["uid"] as String,
+                        data["uri"] as String,
+                        data["username"] as String,
+                        (data["starsCount"] as? Long)?.toInt() ?: 0,
+                        (data["averageStars"] as? Double) ?: 0.0,
+                        data["latitude"] as Double,
+                        data["longitude"] as Double,
+                        (data["usersNumber"] as? Long)?.toInt() ?: 0,
+                        data["ratedBy"] as? List<String> ?: emptyList(),
+                        data["description"] as? String ?: "",
+                        (data["timestamp"] as? Long) ?: 0L)
+                  } else {
+                    null
+                  }
+                }
+                .filterNotNull()
+        onSuccess(posts)
+      }
     }
   }
 }

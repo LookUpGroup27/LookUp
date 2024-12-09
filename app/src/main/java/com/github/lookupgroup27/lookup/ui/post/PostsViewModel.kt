@@ -108,18 +108,15 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   /**
    * Deletes a post from the repository.
    *
-   * Identifies the post to delete by its `uri`.
+   * Identifies the post to delete by its `uid`.
    *
-   * @param post The URI of the post to delete.
+   * @param postUid The UID of the post to delete.
    * @param onSuccess Callback executed on successful deletion.
    * @param onFailure Callback executed on deletion failure.
    */
-  fun deletePost(post: String, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
-    for (p in _allPosts.value) {
-      if (p.uri == post) {
-        repository.deletePost(p.uid, onSuccess, onFailure)
-      }
-    }
+  fun deletePost(postUid: String, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
+
+    repository.deletePost(postUid, onSuccess, onFailure)
   }
 
   /**

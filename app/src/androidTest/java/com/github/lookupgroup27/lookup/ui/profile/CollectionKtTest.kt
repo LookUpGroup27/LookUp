@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
+import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,8 +27,15 @@ class MockCollectionRepository : CollectionRepository {
     onSuccess()
   }
 
-  override suspend fun getUserImageUrls(): List<String> {
-    return listOf("https://example.com/image1.jpg", "https://example.com/image2.jpg")
+  override suspend fun getUserPosts(
+      onSuccess: (List<Post>?) -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    onSuccess(
+        listOf(
+            Post(uid = "p1"),
+            Post(uid = "p2"),
+        ))
   }
 }
 
@@ -101,7 +109,12 @@ class CollectionScreenTest {
             onSuccess()
           }
 
-          override suspend fun getUserImageUrls(): List<String> = emptyList()
+          override suspend fun getUserPosts(
+              onSuccess: (List<Post>?) -> Unit,
+              onFailure: (Exception) -> Unit
+          ) {
+            onSuccess(emptyList())
+          }
         }
 
     val viewModel = CollectionViewModel(emptyRepository)

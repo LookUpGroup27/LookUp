@@ -45,7 +45,7 @@ fun CollectionScreen(
     viewModel: CollectionViewModel =
         androidx.lifecycle.viewmodel.compose.viewModel(factory = CollectionViewModel.Factory)
 ) {
-  val imageUrls by viewModel.imageUrls.collectAsState()
+  val myPosts by viewModel.myPosts.collectAsState()
 
   Box(
       modifier = Modifier.fillMaxSize().testTag("background_box"),
@@ -84,7 +84,7 @@ fun CollectionScreen(
               color = Color.White,
               modifier = Modifier.padding(bottom = 16.dp).testTag("title_text"))
 
-          if (imageUrls.isEmpty()) {
+          if (myPosts.isEmpty()) {
             Text(
                 text = "No images in your collection yet.",
                 color = Color.White,
@@ -95,12 +95,12 @@ fun CollectionScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(8.dp)) {
-                  imageUrls.chunked(2).forEachIndexed { rowIndex, rowImages ->
+                  myPosts.chunked(2).forEachIndexed { rowIndex, rowImages ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth().testTag("image_row_$rowIndex")) {
-                          rowImages.forEachIndexed { colIndex, imageUrl ->
-                            imageUrl?.let {
+                          rowImages.forEachIndexed { colIndex, post ->
+                            post.uri.let {
                               Box(
                                   modifier =
                                       Modifier.weight(1f)
@@ -116,11 +116,15 @@ fun CollectionScreen(
                                                 .clickable {
                                                   val encodedImageUrl =
                                                       URLEncoder.encode(
-                                                          imageUrl,
+                                                          post.uri,
                                                           StandardCharsets.UTF_8.toString())
-                                                  val timestamp = System.currentTimeMillis()
-                                                  navigationActions.navigateToWithImage(
-                                                      encodedImageUrl, Route.EDIT_IMAGE, timestamp)
+                                                  // val timestamp = System.currentTimeMillis()
+                                                  navigationActions.navigateToWithPostInfo(
+                                                      encodedUri = encodedImageUrl,
+                                                      route = Route.EDIT_IMAGE,
+                                                      postUid = post.uid,
+                                                      postAverageStar = post.averageStars.toFloat(),
+                                                      postRatedByNb = post.ratedBy.size)
                                                 }
                                                 .background(
                                                     MaterialTheme.colorScheme.surface.copy(

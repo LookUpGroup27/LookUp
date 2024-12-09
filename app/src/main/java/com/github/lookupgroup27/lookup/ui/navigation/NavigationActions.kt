@@ -121,4 +121,15 @@ open class NavigationActions(
   open fun navigateToWithImage(image: String, route: String, timestamp: Long) {
     navController.navigate("${route}/$image/$timestamp")
   }
+
+  /** Navigate to a screen with a specific post information. */
+  fun navigateToWithPostInfo(
+      encodedUri: String,
+      postAverageStar: Float,
+      postRatedByNb: Int,
+      postUid: String,
+      route: String
+  ) {
+    navController.navigate("${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid")
+  }
 }
