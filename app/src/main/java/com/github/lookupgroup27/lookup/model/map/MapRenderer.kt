@@ -18,7 +18,7 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class MapRenderer : GLSurfaceView.Renderer {
+class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
   private lateinit var planet: Planet
@@ -34,7 +34,7 @@ class MapRenderer : GLSurfaceView.Renderer {
   private val starDataRepository = StarDataRepository() // Repository for star data
 
   /** The camera used to draw the shapes on the screen. */
-  val camera = Camera()
+  val camera = Camera(fov)
 
   /**
    * Called when the surface is created or recreated. Initializes OpenGL settings, loads textures,
@@ -90,7 +90,7 @@ class MapRenderer : GLSurfaceView.Renderer {
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
     GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
-    camera.updateProjectionMatrix(ratio) // Update camera projection matrix
+    camera.updateScreenRatio(ratio) // Update camera projection matrix
   }
 
   /** Initialize the objects in the scene. */

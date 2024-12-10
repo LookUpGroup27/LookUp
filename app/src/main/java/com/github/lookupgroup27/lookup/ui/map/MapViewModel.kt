@@ -5,14 +5,33 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.view.ScaleGestureDetector
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.github.lookupgroup27.lookup.model.map.MapRenderer
 
 /** The ViewModel for the map screen. */
-class MapViewModel : ViewModel() {
-  val mapRenderer = MapRenderer()
+class MapViewModel : ViewModel(), ScaleGestureDetector.OnScaleGestureListener {
+  private var _fov by mutableFloatStateOf(DEFAULT_FOV)
 
+  val fov: Float
+    get() = _fov
+
+  /** The zoom level of the camera as a percentage. */
+  val zoomPercentage: Float
+    get() = 100 - (_fov - MIN_FOV) / (MAX_FOV - MIN_FOV) * 100
+
+  val mapRenderer = MapRenderer(fov)
+
+  companion object {
+    // FOV constants
+    const val DEFAULT_FOV = 45f
+    const val MAX_FOV = DEFAULT_FOV + 40f
+    const val MIN_FOV = DEFAULT_FOV - 40f
+  }
   /**
    * Locks the screen orientation to portrait mode.
    *
@@ -53,5 +72,37 @@ class MapViewModel : ViewModel() {
   fun unregisterSensorListener(activity: ComponentActivity) {
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     sensorManager.unregisterListener(mapRenderer.camera)
+  }
+
+  /**
+   * Updates the zoom level of the camera.
+   *
+   * @param percentage the new zoom level as a percentage
+   */
+  fun updateZoom(percentage: Float) {
+    updateFov(MIN_FOV + (MAX_FOV - MIN_FOV) * (100 - percentage) / 100)
+  }
+
+  /**
+   * Updates the field of view of the camera.
+   *
+   * @param fov the new field of view
+   */
+  fun updateFov(fov: Float) {
+    _fov = fov.coerceIn(MIN_FOV, MAX_FOV)
+    mapRenderer.camera.updateFov(_fov)
+  }
+
+  override fun onScale(detector: ScaleGestureDetector): Boolean {
+    updateFov((fov / detector.scaleFactor))
+    return true
+  }
+
+  override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+    return true
+  }
+
+  override fun onScaleEnd(detector: ScaleGestureDetector) {
+    // No-op
   }
 }
