@@ -31,11 +31,6 @@ class Camera(private var fov: Float) : SensorEventListener {
   private var aspectRatio = 16 / 9f
 
   companion object {
-    // FOV constants
-    const val DEFAULT_FOV = 45f
-    const val MAX_FOV = DEFAULT_FOV + 40f
-    const val MIN_FOV = DEFAULT_FOV - 40f
-
     // Near and far clipping plane constants
     const val NEAR = 0.1f
     const val FAR = 100f
@@ -85,7 +80,6 @@ class Camera(private var fov: Float) : SensorEventListener {
       Sensor.TYPE_ROTATION_VECTOR -> {
         when (accuracy) {
           SensorManager.SENSOR_STATUS_UNRELIABLE -> {
-            // TODO : Provide a warning about unreliable sensor data
             Log.w("SensorAccuracy", "Rotation vector sensor is unreliable")
           }
           SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {
