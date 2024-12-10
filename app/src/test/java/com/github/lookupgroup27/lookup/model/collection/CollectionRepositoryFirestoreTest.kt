@@ -11,12 +11,15 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
+import java.util.EventListener
 import junit.framework.TestCase.fail
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -41,6 +44,7 @@ class CollectionRepositoryFirestoreTest {
   private lateinit var mockAuth: FirebaseAuth
   private lateinit var mockUser: FirebaseUser
   private lateinit var mockImagesRef: StorageReference
+  private lateinit var mockSnapshot: QuerySnapshot
 
   @Before
   fun setUp() {
@@ -50,6 +54,7 @@ class CollectionRepositoryFirestoreTest {
     mockImagesRef = mock()
     mockCollectionReference = mock()
     mockDocumentReference = mock()
+    mockSnapshot = mock()
 
     // Initialize Firebase if not already initialized
     if (FirebaseApp.getApps(ApplicationProvider.getApplicationContext()).isEmpty()) {
@@ -169,4 +174,35 @@ class CollectionRepositoryFirestoreTest {
     assertThat(result?.get(0)?.longitude, `is`(post1["longitude"]))
     assertThat(result?.get(0)?.timestamp, `is`(post1["timestamp"]))
   }
+
+  @Test
+  fun `getUserPosts should call onFailure with exception when Firestore query fails`() =
+      runBlocking {
+        // Mock Firestore exception
+        val mockException =
+            FirebaseFirestoreException("Test exception", FirebaseFirestoreException.Code.UNKNOWN)
+
+        // Mock Firestore's addSnapshotListener behavior
+        doAnswer { invocation ->
+              val listener =
+                  invocation.arguments[0]
+                      as com.google.firebase.firestore.EventListener<QuerySnapshot>
+              listener.onEvent(null, mockException) // Trigger failure callback
+              null
+            }
+            .whenever(mockCollectionReference)
+            .addSnapshotListener(Mockito.any())
+
+        // Test behavior
+        var failureResult: Exception? = null
+        repository.getUserPosts(
+            onSuccess = { fail("onSuccess should not be called") },
+            onFailure = { exception -> failureResult = exception })
+
+        shadowOf(Looper.getMainLooper()).idle() // Process main thread tasks
+
+        // Assertions
+        assertThat(failureResult, `is`(notNullValue()))
+        assertThat(failureResult?.message, `is`("Test exception"))
+      }
 }
