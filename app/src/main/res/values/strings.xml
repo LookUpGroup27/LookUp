@@ -23,5 +23,4 @@
     <string name="menu">Menu</string>
     <string name="map_button_reset_text">Reset</string>
     <string name="map_slider_test_tag">map_slider_tag</string>
-    <string name="map_text_zoomlevel_test_tag">map_text_zoomlevel_test_tag</string>
 </resources>

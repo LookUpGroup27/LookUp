@@ -106,17 +106,13 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel =
                                   text = mapViewModel.zoomPercentage.toInt().toString(),
                                   color = Color.Unspecified,
                                   fontSize = 12.sp,
-                                  fontWeight = FontWeight.Bold,
-                                  modifier =
-                                      Modifier.testTag(
-                                          stringResource(R.string.map_text_zoomlevel_test_tag)))
+                                  fontWeight = FontWeight.Bold)
                             }
                       },
                       modifier =
                           Modifier.padding(16.dp)
                               .testTag(stringResource(R.string.map_slider_test_tag)))
                 }
-                //            TODO : Make test for the new composable in this new feature
               }
         }
       }

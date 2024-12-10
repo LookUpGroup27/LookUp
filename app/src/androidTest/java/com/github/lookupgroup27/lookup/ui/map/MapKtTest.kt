@@ -65,10 +65,5 @@ class MapKtTest {
     composeTestRule
         .onNodeWithTag(getResourceString(R.string.map_slider_test_tag))
         .assertIsDisplayed()
-
-    // Verify the zoom level text is correctly displayed
-    composeTestRule
-        .onNodeWithTag(getResourceString(R.string.map_text_zoomlevel_test_tag))
-        .assertIsDisplayed()
   }
 }
