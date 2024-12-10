@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Menu
@@ -131,11 +130,6 @@ open class NavigationActions(
       postUid: String,
       route: String
   ) {
-    Log.d("encodedUri", encodedUri)
-    Log.d("postAverageStar", postAverageStar.toString())
-    Log.d("postRatedByNb", postRatedByNb.toString())
-    Log.d("postUid", postUid)
-    Log.d("route", route)
     navController.navigate("${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid")
   }
 }

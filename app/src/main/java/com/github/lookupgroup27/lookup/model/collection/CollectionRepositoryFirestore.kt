@@ -45,7 +45,7 @@ class CollectionRepositoryFirestore(
       onSuccess: (List<Post>?) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    val username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous"
+    val username = auth.currentUser?.displayName ?: "Anonymous"
 
     collection.addSnapshotListener { snapshot, exception ->
       if (exception != null) {
