@@ -250,6 +250,7 @@ dependencies {
 
     // Networking with OkHttp
     implementation(libs.okhttp)
+    implementation("com.squareup.okhttp3:mockwebserver:4.9.1")
 
     // Calendar
     implementation(libs.ical4j)
