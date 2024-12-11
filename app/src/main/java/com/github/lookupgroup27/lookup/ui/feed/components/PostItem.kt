@@ -107,8 +107,8 @@ fun PostItem(
                                 painter =
                                     painterResource(
                                         id =
-                                            if (isFilled) R.drawable.full_star
-                                            else R.drawable.empty_star),
+                                            if (isFilled) R.drawable.full_star2
+                                            else R.drawable.empty_star2),
                                 contentDescription = "Star")
                           }
                     }
