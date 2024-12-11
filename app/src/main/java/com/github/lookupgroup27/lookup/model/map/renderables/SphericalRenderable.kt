@@ -7,7 +7,7 @@ import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.TextureBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
-import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
+import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 
 /**

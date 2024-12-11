@@ -2,8 +2,6 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.lookupgroup27.lookup.model.map.renderables.label.Label
-import com.github.lookupgroup27.lookup.model.map.renderables.label.LabelUtils
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith

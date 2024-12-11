@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.model.map.renderables.label
+package com.github.lookupgroup27.lookup.util.opengl
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
