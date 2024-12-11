@@ -17,7 +17,7 @@ import java.nio.FloatBuffer
  * @param text The text to display on the label
  * @param position The position of the label in 3D coordinates (x, y, z)
  */
-class Label(context: Context, text: String, position: FloatArray) {
+class Label(context: Context, text: String, position: FloatArray, size: Float) {
   private val shaderProgram: ShaderProgram
   private val textureId: Int
   private val vertexBuffer: FloatBuffer
@@ -34,17 +34,17 @@ class Label(context: Context, text: String, position: FloatArray) {
     // These coordinates represent a quad that fills the screen
     val vertices =
         floatArrayOf(
-            -1f + position[0],
-            -1f + position[1],
+            -size + position[0],
+            -size + position[1],
             0f + position[2], // Bottom left
-            1f + position[0],
-            -1f + position[1],
+            size + position[0],
+            -size + position[1],
             0f + position[2], // Bottom right
-            -1f + position[0],
-            1f + position[1],
+            -size + position[0],
+            size + position[1],
             0f + position[2], // Top left
-            1f + position[0],
-            1f + position[1],
+            size + position[0],
+            size + position[1],
             0f + position[2] // Top right
             )
     vertexBuffer = vertices.toBuffer()
