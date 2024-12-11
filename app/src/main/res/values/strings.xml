@@ -23,4 +23,5 @@
     <string name="menu">Menu</string>
     <string name="map_button_reset_text">Reset</string>
     <string name="map_slider_test_tag">map_slider_tag</string>
+    <string name="nearby_posts_title">Nearby Stargazers</string>
 </resources>
