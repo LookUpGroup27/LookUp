@@ -128,8 +128,10 @@ open class NavigationActions(
       postAverageStar: Float,
       postRatedByNb: Int,
       postUid: String,
+      postDescription: String,
       route: String
   ) {
-    navController.navigate("${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid")
+    navController.navigate(
+        "${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid/$postDescription")
   }
 }
