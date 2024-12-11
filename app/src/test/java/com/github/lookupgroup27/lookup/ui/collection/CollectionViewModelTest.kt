@@ -48,7 +48,7 @@ class CollectionViewModelTest {
   }
 
   @Test
-  fun `test fetchImages updates myPosts with correct values`() = runTest {
+  fun `test fetchPosts updates myPosts with correct values`() = runTest {
     val mockRepository: CollectionRepository = mock()
     val mockPosts = listOf(Post("mock_url_1"), Post("mock_url_2"))
 
@@ -73,7 +73,7 @@ class CollectionViewModelTest {
   }
 
   @Test
-  fun `test fetchImages does not update posts on empty result`() = runBlocking {
+  fun `test fetchPosts does not update posts on empty result`() = runBlocking {
     val mockRepository: CollectionRepository = mock()
     whenever(mockRepository.getUserPosts(any(), any())).thenAnswer { invocation ->
       val onSuccess = invocation.arguments[0] as (List<Post>?) -> Unit

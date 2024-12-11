@@ -16,11 +16,13 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
 import java.util.EventListener
+import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.fail
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -92,15 +94,22 @@ class CollectionRepositoryFirestoreTest {
   }
 
   @Test
-  fun `test getUserPosts returns empty list when user is not logged in`(): Unit = runBlocking {
-    whenever(mockAuth.currentUser).thenReturn(null)
+  fun `test getUserPosts calls onFailure with exception when user is not logged in`() =
+      runBlocking {
+        // Arrange
+        whenever(mockAuth.currentUser).thenReturn(null) // Simulate no logged-in user
 
-    var result: List<Post>? = null
-    repository.getUserPosts(
-        onSuccess = { posts -> result = posts },
-        onFailure = { fail("onFailure should not be called") })
-    result?.let { assertTrue("Expected empty list when no images are available", it.isEmpty()) }
-  }
+        var capturedException: Exception? = null
+
+        // Act
+        repository.getUserPosts(
+            onSuccess = { fail("onSuccess should not be called when user is not logged in") },
+            onFailure = { exception -> capturedException = exception })
+
+        // Assert
+        assertNotNull("onFailure should have been called with an exception", capturedException)
+        assertEquals("User is not authenticated.", capturedException?.message)
+      }
 
   @Test
   fun `test getUserPosts handles error and returns empty list`(): Unit = runBlocking {

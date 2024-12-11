@@ -9,7 +9,6 @@ import com.github.lookupgroup27.lookup.model.post.Post
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,14 +28,14 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
   val error: StateFlow<String?> = _error
 
   init {
-    repository.init { fetchImages() }
+    repository.init { fetchPosts() }
   }
 
   /**
    * Retrieves the list of image URLs associated with the user from the repository. Updates
    * [_imageUrls] with the fetched data on success, or sets an error message in [_error] on failure.
    */
-  private fun fetchImages() {
+  private fun fetchPosts() {
     viewModelScope.launch {
       try {
         repository.getUserPosts(
@@ -54,7 +53,7 @@ class CollectionViewModel(private val repository: CollectionRepository) : ViewMo
   }
 
   fun updateImages() {
-    fetchImages()
+    fetchPosts()
   }
 
   /**

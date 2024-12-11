@@ -30,10 +30,7 @@ class MockCollectionRepository : CollectionRepository {
     onSuccess()
   }
 
-  override suspend fun getUserPosts(
-      onSuccess: (List<Post>?) -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
+  override fun getUserPosts(onSuccess: (List<Post>?) -> Unit, onFailure: (Exception) -> Unit) {
     onSuccess(
         listOf(
             Post(uid = "p1"),
@@ -112,7 +109,7 @@ class CollectionScreenTest {
             onSuccess()
           }
 
-          override suspend fun getUserPosts(
+          override fun getUserPosts(
               onSuccess: (List<Post>?) -> Unit,
               onFailure: (Exception) -> Unit
           ) {
@@ -225,7 +222,7 @@ class CollectionScreenTest {
             onSuccess()
           }
 
-          override suspend fun getUserPosts(
+          override fun getUserPosts(
               onSuccess: (List<Post>?) -> Unit,
               onFailure: (Exception) -> Unit
           ) {

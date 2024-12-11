@@ -6,11 +6,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 /**
- * CollectionRepositoryFirestore is responsible for fetching image URLs associated with a user's
- * email from Firebase Storage. This implementation utilizes Firebase Authentication and Storage
- * services to retrieve user-specific data.
+ * CollectionRepositoryFirestore fetches user-specific posts from Firestore. It queries the "posts"
+ * collection and filters by the currently authenticated user's username. It returns a list of
+ * [Post] objects, enabling the UI to display the user's personal collection.
  *
- * @param db The FirebaseStorage instance used to access storage data.
+ * @param db The FirebaseFirestore instance used to access firestore data.
  * @param auth The FirebaseAuth instance used for user authentication.
  */
 class CollectionRepositoryFirestore(
@@ -19,7 +19,7 @@ class CollectionRepositoryFirestore(
 ) : CollectionRepository {
 
   private val collection = db.collection("posts")
-  private val tag = "FeedRepositoryFirestore"
+  private val tag = "CollectionRepositoryFirestore"
 
   /**
    * Initializes the repository by checking the authentication state of the user. If the user is
@@ -41,11 +41,13 @@ class CollectionRepositoryFirestore(
    *
    * @return A list of image URLs associated with the user's email.
    */
-  override suspend fun getUserPosts(
-      onSuccess: (List<Post>?) -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    val username = auth.currentUser?.displayName ?: "Anonymous"
+  override fun getUserPosts(onSuccess: (List<Post>?) -> Unit, onFailure: (Exception) -> Unit) {
+
+    val username = auth.currentUser?.displayName
+    if (username == null) {
+      onFailure(Exception("User is not authenticated."))
+      return
+    }
 
     collection.addSnapshotListener { snapshot, exception ->
       if (exception != null) {
