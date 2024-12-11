@@ -3,10 +3,12 @@ package com.github.lookupgroup27.lookup.ui.map.renderables
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLUtils
+import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.util.opengl.BufferUtils.toBuffer
 import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.LabelUtils
+import com.github.lookupgroup27.lookup.util.opengl.Position
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
 import java.nio.FloatBuffer
 
@@ -15,9 +17,9 @@ import java.nio.FloatBuffer
  *
  * @param context The application context
  * @param text The text to display on the label
- * @param position The position of the label in 3D coordinates (x, y, z)
+ * @param pos The position of the label TODO Implement this in others OpenGL classes
  */
-class Label(context: Context, text: String, position: FloatArray, size: Float) {
+class Label(context: Context, text: String, var pos: Position, size: Float) {
   private val shaderProgram: ShaderProgram
   private val textureId: Int
   private val vertexBuffer: FloatBuffer
@@ -33,34 +35,34 @@ class Label(context: Context, text: String, position: FloatArray, size: Float) {
     // Define vertices for a quad that will display the label
     // These coordinates represent a quad that fills the screen
     val vertices =
-        floatArrayOf(
-            -size + position[0],
-            -size + position[1],
-            0f + position[2], // Bottom left
-            size + position[0],
-            -size + position[1],
-            0f + position[2], // Bottom right
-            -size + position[0],
-            size + position[1],
-            0f + position[2], // Top left
-            size + position[0],
-            size + position[1],
-            0f + position[2] // Top right
-            )
+      floatArrayOf(
+        -size,
+        -size,
+        0f, // Bottom left
+        size,
+        -size,
+        0f, // Bottom right
+        -size,
+        size,
+        0f, // Top left
+        size,
+        size,
+        0f // Top right
+      )
     vertexBuffer = vertices.toBuffer()
 
     // Define texture coordinates
     val texCoords =
-        floatArrayOf(
-            0f,
-            1f, // Bottom left
-            1f,
-            1f, // Bottom right
-            0f,
-            0f, // Top left
-            1f,
-            0f // Top right
-            )
+      floatArrayOf(
+        0f,
+        1f, // Bottom left
+        1f,
+        1f, // Bottom right
+        0f,
+        0f, // Top left
+        1f,
+        0f // Top right
+      )
     texCoordBuffer = texCoords.toBuffer()
 
     // Initialize Label texture
@@ -110,8 +112,56 @@ class Label(context: Context, text: String, position: FloatArray, size: Float) {
     GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
     GLES20.glEnableVertexAttribArray(texCoordHandle)
 
+    val billboardMatrix = FloatArray(16)
+    val modelMatrix = camera.modelMatrix.clone()
+
+    // Extract camera look direction from view matrix
+    val lookX = -camera.viewMatrix[2]
+    val lookY = -camera.viewMatrix[6]
+    val lookZ = -camera.viewMatrix[10]
+
+    // Create billboard rotation (this is the vector compared to the object that points up for the text
+    // Example we take a text Hello, we have:
+    // ↑ Hello
+    val upX = camera.viewMatrix[1]
+    val upY = camera.viewMatrix[5]
+    val upZ = camera.viewMatrix[9]
+
+    // Calculate right vector (cross product)
+    val rightX = upY * lookZ - upZ * lookY
+    val rightY = upZ * lookX - upX * lookZ
+    val rightZ = upX * lookY - upY * lookX
+
+    // Set billboard matrix
+    billboardMatrix[0] = -rightX
+    billboardMatrix[1] = -rightY
+    billboardMatrix[2] = -rightZ
+    billboardMatrix[3] = 0f
+
+    billboardMatrix[4] = upX
+    billboardMatrix[5] = upY
+    billboardMatrix[6] = upZ
+    billboardMatrix[7] = 0f
+
+    billboardMatrix[8] = lookX
+    billboardMatrix[9] = lookY
+    billboardMatrix[10] = lookZ
+    billboardMatrix[11] = 0f
+
+    billboardMatrix[12] = 0f
+    billboardMatrix[13] = 0f
+    billboardMatrix[14] = 0f
+    billboardMatrix[15] = 1f
+
+    // First translate to position
+    Matrix.translateM(modelMatrix, 0, pos.x, pos.y, pos.z)
+
+    // Then apply billboard rotation
+    val rotatedMatrix = FloatArray(16)
+    Matrix.multiplyMM(rotatedMatrix, 0, modelMatrix, 0, billboardMatrix, 0)
+
     // Set the MVP matrix
-    GLES20.glUniformMatrix4fv(modelMatrixHandle, 1, false, camera.modelMatrix, 0)
+    GLES20.glUniformMatrix4fv(modelMatrixHandle, 1, false, rotatedMatrix, 0)
     GLES20.glUniformMatrix4fv(viewMatrixHandle, 1, false, camera.viewMatrix, 0)
     GLES20.glUniformMatrix4fv(projMatrixHandle, 1, false, camera.projMatrix, 0)
 
