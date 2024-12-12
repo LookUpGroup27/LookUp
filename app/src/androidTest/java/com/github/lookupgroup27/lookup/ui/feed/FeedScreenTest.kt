@@ -105,6 +105,7 @@ class FeedScreenTest {
           "2",
           "testUri",
           "testUsername",
+            "testUserMail",
           10,
           2.5,
           0.0,

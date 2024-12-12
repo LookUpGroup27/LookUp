@@ -4,6 +4,7 @@ data class Post(
     val uid: String = "",
     val uri: String = "",
     val username: String = "",
+    val userMail: String = "",
     val starsCount: Int = 0,
     val averageStars: Double = 0.0,
     val latitude: Double = 0.0,
