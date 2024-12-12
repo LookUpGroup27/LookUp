@@ -79,7 +79,7 @@ class MapRenderer(
     // Bind the texture and render the SkyBox
     GLES20.glDepthMask(false)
     textureManager.bindTexture(skyBoxTextureHandle)
-    skyBox.draw(camera)
+    // skyBox.draw(camera) commented out until the texture is changed to see stars
     GLES20.glDepthMask(true)
 
     // Draw the objects in the scene
@@ -117,5 +117,4 @@ class MapRenderer(
 
     moon.draw(camera)
   }
-
 }

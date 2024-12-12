@@ -5,8 +5,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
-import io.mockk.mockk
 import io.github.kakaocup.kakao.common.utilities.getResourceString
+import io.mockk.mockk
 import org.junit.*
 import org.mockito.kotlin.*
 

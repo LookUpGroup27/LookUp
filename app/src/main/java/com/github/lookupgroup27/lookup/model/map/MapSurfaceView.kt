@@ -23,7 +23,6 @@ class MapSurfaceView(context: Context, viewModel: MapViewModel) : GLSurfaceView(
 
     setRenderer(viewModel.mapRenderer)
     scaleGestureDetector = ScaleGestureDetector(context, viewModel)
-
   }
 
   @SuppressLint("ClickableViewAccessibility")

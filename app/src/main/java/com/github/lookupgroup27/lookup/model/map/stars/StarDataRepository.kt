@@ -7,16 +7,17 @@ import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
 /**
  * Repository class to manage star data, including:
  * - Loading star catalog data from a CSV file.
- * - Storing and updating the stars' positions based on the observer's location and local sidereal time.
- * - Converting celestial coordinates (RA/Dec) into horizon coordinates (Azimuth/Altitude), and
- *   then into Cartesian coordinates for 3D rendering.
+ * - Storing and updating the stars' positions based on the observer's location and local sidereal
+ *   time.
+ * - Converting celestial coordinates (RA/Dec) into horizon coordinates (Azimuth/Altitude), and then
+ *   into Cartesian coordinates for 3D rendering.
  *
- * The CSV file should contain star attributes like name, RA, Dec, distance, and Cartesian coordinates.
- * Magnitude and spectral class data may also be included.
+ * The CSV file should contain star attributes like name, RA, Dec, distance, and Cartesian
+ * coordinates. Magnitude and spectral class data may also be included.
  */
 class StarDataRepository(
-  private val context: Context,
-  private val locationProvider: LocationProvider
+    private val context: Context,
+    private val locationProvider: LocationProvider
 ) {
   companion object {
     private const val STAR_FILE_PATH = "stars/hyg_stars.csv"
@@ -37,8 +38,8 @@ class StarDataRepository(
   /**
    * Loads star data from a specified CSV file and populates the [stars] list.
    *
-   * The CSV file is expected to contain columns for RA, Dec, and other stellar attributes. RA values
-   * are converted from hours to degrees before storage. Any missing or non-parsable values
+   * The CSV file is expected to contain columns for RA, Dec, and other stellar attributes. RA
+   * values are converted from hours to degrees before storage. Any missing or non-parsable values
    * default to zero.
    *
    * @param filePath The relative path to the CSV file within the app's assets.
@@ -67,15 +68,15 @@ class StarDataRepository(
 
           // Convert RA from hours to degrees for consistency with Dec
           stars.add(
-            StarData(
-              name = name,
-              ra = CelestialObjectsUtils.convertRaHoursToDegrees(ra),
-              dec = dec,
-              dist = dist,
-              x = x,
-              y = y,
-              z = z,
-              magnitude = magnitude))
+              StarData(
+                  name = name,
+                  ra = CelestialObjectsUtils.convertRaHoursToDegrees(ra),
+                  dec = dec,
+                  dist = dist,
+                  x = x,
+                  y = y,
+                  z = z,
+                  magnitude = magnitude))
         }
       }
     }
@@ -108,8 +109,8 @@ class StarDataRepository(
 
       stars.forEach { star ->
         val (azimuth, altitude) =
-          CelestialObjectsUtils.convertToHorizonCoordinates(
-            ra = star.ra, dec = star.dec, latitude = latitude, localSiderealTime = siderealTime)
+            CelestialObjectsUtils.convertToHorizonCoordinates(
+                ra = star.ra, dec = star.dec, latitude = latitude, localSiderealTime = siderealTime)
 
         // Update the star's (x, y, z) coordinates based on the computed horizon coordinates
         val updatedCartesianPosition = CelestialObjectsUtils.convertToCartesian(azimuth, altitude)

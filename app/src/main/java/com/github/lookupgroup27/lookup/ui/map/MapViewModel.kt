@@ -17,7 +17,6 @@ import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.map.MapRenderer
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 
-
 // FOV constants
 const val DEFAULT_FOV = 45f
 const val MAX_FOV = DEFAULT_FOV + 40f
@@ -39,8 +38,7 @@ class MapViewModel(
   val zoomPercentage: Float
     get() = 100 - (_fov - MIN_FOV) / (MAX_FOV - MIN_FOV) * 100
 
-  val mapRenderer = MapRenderer(context, starDataRepository, planetsRepository,fov)
-
+  val mapRenderer = MapRenderer(context, starDataRepository, planetsRepository, fov)
 
   /**
    * Locks the screen orientation to portrait mode.
@@ -124,19 +122,19 @@ class MapViewModel(
     const val MIN_FOV = DEFAULT_FOV - 40f
 
     fun createFactory(context: Context): ViewModelProvider.Factory =
-      object : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        object : ViewModelProvider.Factory {
+          @Suppress("UNCHECKED_CAST")
+          override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-          // Initialize repositories
-          val locationProvider = LocationProviderSingleton.getInstance(context)
+            // Initialize repositories
+            val locationProvider = LocationProviderSingleton.getInstance(context)
 
-          val starDataRepository = StarDataRepository(context, locationProvider)
-          val planetsRepository = PlanetsRepository(locationProvider)
+            val starDataRepository = StarDataRepository(context, locationProvider)
+            val planetsRepository = PlanetsRepository(locationProvider)
 
-          // Return MapViewModel instance
-          return MapViewModel(context, starDataRepository, planetsRepository) as T
+            // Return MapViewModel instance
+            return MapViewModel(context, starDataRepository, planetsRepository) as T
+          }
         }
-      }
   }
 }
