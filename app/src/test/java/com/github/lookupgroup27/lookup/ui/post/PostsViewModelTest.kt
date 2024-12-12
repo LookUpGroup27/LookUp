@@ -4,6 +4,7 @@ import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import junit.framework.TestCase.fail
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
@@ -271,5 +272,84 @@ class PostsViewModelTest {
     // Assert callbacks
     assert(!successCalled) { "onSuccess callback should not have been called" }
     assert(failureCalled) { "onFailure callback was not called" }
+  }
+
+  @Test
+  fun `test updateDescription calls onSuccess after repository method completes`() {
+    val postUid = "validUid"
+    val newDescription = "Valid description"
+    var callbackTriggered = false
+
+    doAnswer { invocation ->
+          val onSuccess = invocation.arguments[2] as () -> Unit
+          onSuccess() // Simulate success callback
+          assert(callbackTriggered) { "onSuccess should be called after repository method" }
+          null
+        }
+        .whenever(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { callbackTriggered = true },
+        onFailure = { fail("onFailure should not be called") })
+
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+  }
+
+  @Test
+  fun `test updateDescription handles exceptions thrown by repository`() {
+    val postUid = "validUid"
+    val newDescription = "Valid description"
+
+    doThrow(RuntimeException("Repository exception"))
+        .whenever(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    var failureTriggered = false
+
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { fail("onSuccess should not be called") },
+        onFailure = { exception ->
+          failureTriggered = true
+          assert(exception.message == "Repository exception") { "Unexpected exception message" }
+        })
+
+    assert(failureTriggered) { "onFailure should be triggered when repository throws an exception" }
+  }
+
+  @Test
+  fun `test updateDescription calls repository with exact arguments`() {
+    val postUid = "validUid"
+    val newDescription = "Valid description"
+
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = {},
+        onFailure = { fail("onFailure should not be called") })
+
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
   }
 }

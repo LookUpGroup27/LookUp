@@ -143,7 +143,11 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
       onSuccess: () -> Unit = {},
       onFailure: (Exception) -> Unit = {}
   ) {
-    repository.updateDescription(postUid, newDescription, onSuccess, onFailure)
+    try {
+      repository.updateDescription(postUid, newDescription, onSuccess, onFailure)
+    } catch (exception: Exception) {
+      onFailure(exception)
+    }
   }
 
   companion object {
