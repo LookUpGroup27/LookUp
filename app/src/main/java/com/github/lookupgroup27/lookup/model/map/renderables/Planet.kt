@@ -28,7 +28,7 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 class Planet(
     private val context: Context,
     private val name: String? = "Planet",
-    private val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
+    val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
     private val textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
@@ -39,7 +39,7 @@ class Planet(
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
 
   private var textureHandle: Int = 0
-  private var scale: Float = 0.3f
+  private var scale: Float = 0.5f
 
   /**
    * Updates the scale of the planet, allowing customization of its size in the rendered scene.
