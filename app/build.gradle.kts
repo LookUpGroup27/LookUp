@@ -252,6 +252,14 @@ dependencies {
     implementation(libs.okhttp)
     implementation("com.squareup.okhttp3:mockwebserver:4.9.1")
 
+    //Hamcrest
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
+
+    // Espresso
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
+
     // Calendar
     implementation(libs.ical4j)
     implementation(libs.compose)
