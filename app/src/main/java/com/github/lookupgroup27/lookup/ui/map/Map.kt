@@ -149,17 +149,13 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
                   }
                 }
           }
-        }else {
+        } else {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .testTag("map_screen_loading"),
-                contentAlignment = Alignment.Center
-            ) {
+          Box(
+              modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen_loading"),
+              contentAlignment = Alignment.Center) {
                 Text("Loading map...", modifier = Modifier.testTag("map_screen"))
-            }
+              }
         }
       }
 }
