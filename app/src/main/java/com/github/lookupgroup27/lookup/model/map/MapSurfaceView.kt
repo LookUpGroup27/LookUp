@@ -6,7 +6,6 @@ import android.opengl.GLSurfaceView
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Toast
-import com.github.lookupgroup27.lookup.ui.map.MapViewModel
 
 /**
  * Our GLSurfaceView for rendering the map.

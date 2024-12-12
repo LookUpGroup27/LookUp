@@ -5,8 +5,8 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
-import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Moon
+import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.utils.RayUtils.calculateRay
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
