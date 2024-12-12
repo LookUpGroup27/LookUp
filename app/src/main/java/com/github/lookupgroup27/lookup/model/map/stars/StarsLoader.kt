@@ -27,32 +27,11 @@ class StarsLoader(private val context: Context, private val repository: StarData
       Star(
           context = context,
           position = floatArrayOf(starData.x.toFloat(), starData.y.toFloat(), starData.z.toFloat()),
-          color =
-              starData.spectralClass?.let { getColorForSpectralClass(it) }
-                  ?: floatArrayOf(1.0f, 1.0f, 1.0f), // Default to white if no spectral class
+          color = floatArrayOf(1.0f, 1.0f, 1.0f), // Default
           size = 0.3f, // Use default size
           segments = CircleRenderer.DEFAULT_SEGMENTS, // Default segments value for rendering
           vertexShaderCode = "TODO_VERTEX_SHADER",
           fragmentShaderCode = "TODO_FRAGMENT_SHADER")
-    }
-  }
-
-  /**
-   * Determines the color of a star based on its spectral class.
-   *
-   * @param spectralClass The spectral class of the star.
-   * @return A float array representing the RGB color of the star.
-   */
-  private fun getColorForSpectralClass(spectralClass: String): FloatArray {
-    return when (spectralClass.firstOrNull()) {
-      'O' -> floatArrayOf(0.6f, 0.7f, 1.0f) // Blue
-      'B' -> floatArrayOf(0.7f, 0.8f, 1.0f) // Light Blue
-      'A' -> floatArrayOf(0.9f, 0.9f, 1.0f) // White-blue
-      'F' -> floatArrayOf(1.0f, 1.0f, 0.8f) // White
-      'G' -> floatArrayOf(1.0f, 1.0f, 0.6f) // Yellow-white
-      'K' -> floatArrayOf(1.0f, 0.8f, 0.5f) // Orange
-      'M' -> floatArrayOf(1.0f, 0.5f, 0.5f) // Red
-      else -> floatArrayOf(1.0f, 1.0f, 1.0f) // Default to white
     }
   }
 }

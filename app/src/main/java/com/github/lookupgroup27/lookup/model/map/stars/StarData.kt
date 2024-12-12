@@ -11,7 +11,6 @@ package com.github.lookupgroup27.lookup.model.map.stars
  * @param y Cartesian y-coordinate of the star.
  * @param z Cartesian z-coordinate of the star.
  * @param magnitude Apparent visual magnitude.
- * @param spectralClass Spectral type of the star.
  */
 data class StarData(
     val name: String?,
@@ -22,5 +21,4 @@ data class StarData(
     var y: Double,
     var z: Double,
     val magnitude: Double,
-    val spectralClass: String?
 )
