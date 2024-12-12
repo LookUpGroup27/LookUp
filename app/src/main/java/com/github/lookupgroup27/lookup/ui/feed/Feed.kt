@@ -61,7 +61,9 @@ fun FeedScreen(
     profileViewModel: ProfileViewModel,
     initialNearbyPosts: List<Post>? = null
 ) {
-  profileViewModel.fetchUserProfile()
+  // Fetch user profile
+  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
@@ -111,48 +113,6 @@ fun FeedScreen(
         postRatings[post.uid] = initialRating.toMutableList()
       }
     }
-  }
-
-  // Helper function to update user profile ratings
-  fun updateProfileRatings(
-      currentProfile: UserProfile?,
-      postUid: String,
-      starsCount: Int,
-      username: String,
-      bio: String,
-      email: String
-  ): UserProfile {
-    val updatedRatings =
-        currentProfile?.ratings?.toMutableMap()?.apply { this[postUid] = starsCount }
-            ?: mutableMapOf(postUid to starsCount)
-
-    return currentProfile?.copy(
-        username = username, bio = bio, email = email, ratings = updatedRatings)
-        ?: UserProfile(username = username, bio = bio, email = email, ratings = updatedRatings)
-  }
-
-  // Helper function to calculate post updates
-  fun calculatePostUpdates(
-      post: Post,
-      userEmail: String,
-      starsCount: Int,
-      oldStarCounts: Int
-  ): Post {
-    val isReturningUser = post.ratedBy.contains(userEmail)
-    val newStarsCount =
-        if (isReturningUser) {
-          post.starsCount - oldStarCounts + starsCount
-        } else {
-          post.starsCount + starsCount
-        }
-    val newUsersNumber = if (isReturningUser) post.usersNumber else post.usersNumber + 1
-    val newAvg = newStarsCount.toDouble() / newUsersNumber
-
-    return post.copy(
-        averageStars = newAvg,
-        starsCount = newStarsCount,
-        usersNumber = newUsersNumber,
-        ratedBy = if (!isReturningUser) post.ratedBy + userEmail else post.ratedBy)
   }
 
   // Background Box with gradient overlay using drawBehind for efficiency.
@@ -226,10 +186,10 @@ fun FeedScreen(
                               PostItem(
                                   post = post,
                                   starStates =
-                                      postRatings[post.uid] ?: mutableListOf(false, false, false),
+                                      postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
                                   onRatingChanged = { newRating ->
                                     val oldPostRatings =
-                                        postRatings[post.uid] ?: mutableListOf(false, false, false)
+                                        postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
                                     val oldStarCounts = oldPostRatings.count { it }
                                     postRatings[post.uid] = newRating.toList()
                                     val starsCount = newRating.count { it }
@@ -237,13 +197,21 @@ fun FeedScreen(
                                     // Update user profile ratings
                                     val newProfile =
                                         updateProfileRatings(
-                                            profile, post.uid, starsCount, username, bio, email)
+                                            currentProfile = profile,
+                                            postUid = post.uid,
+                                            starsCount = starsCount,
+                                            username = username,
+                                            bio = bio,
+                                            email = email)
                                     profileViewModel.updateUserProfile(newProfile)
 
                                     // Update post details
                                     val updatedPost =
                                         calculatePostUpdates(
-                                            post, userEmail, starsCount, oldStarCounts)
+                                            post = post,
+                                            userEmail = userEmail,
+                                            starsCount = starsCount,
+                                            oldStarCounts = oldStarCounts)
                                     postsViewModel.updatePost(updatedPost)
                                   })
                             }
@@ -252,4 +220,59 @@ fun FeedScreen(
                   }
             }
       }
+}
+
+/**
+ * Updates the user's profile ratings.
+ *
+ * @param currentProfile The current user profile.
+ * @param postUid The unique identifier of the post being rated.
+ * @param starsCount The number of stars given to the post.
+ * @param username The user's username.
+ * @param bio The user's bio.
+ * @param email The user's email.
+ * @return An updated [UserProfile] with the new rating.
+ */
+fun updateProfileRatings(
+    currentProfile: UserProfile?,
+    postUid: String,
+    starsCount: Int,
+    username: String,
+    bio: String,
+    email: String
+): UserProfile {
+  val updatedRatings =
+      currentProfile?.ratings?.toMutableMap()?.apply { this[postUid] = starsCount }
+          ?: mutableMapOf(postUid to starsCount)
+
+  return currentProfile?.copy(
+      username = username, bio = bio, email = email, ratings = updatedRatings)
+      ?: UserProfile(username = username, bio = bio, email = email, ratings = updatedRatings)
+}
+
+/**
+ * Calculates the updated state of a post after a user rates it.
+ *
+ * @param post The original post.
+ * @param userEmail The email of the user rating the post.
+ * @param starsCount The number of stars the user has given.
+ * @param oldStarCounts The previous number of stars the user had given.
+ * @return An updated [Post] with recalculated ratings and user counts.
+ */
+fun calculatePostUpdates(post: Post, userEmail: String, starsCount: Int, oldStarCounts: Int): Post {
+  val isReturningUser = post.ratedBy.contains(userEmail)
+  val newStarsCount =
+      if (isReturningUser) {
+        post.starsCount - oldStarCounts + starsCount
+      } else {
+        post.starsCount + starsCount
+      }
+  val newUsersNumber = if (isReturningUser) post.usersNumber else post.usersNumber + 1
+  val newAvg = newStarsCount.toDouble() / newUsersNumber
+
+  return post.copy(
+      averageStars = newAvg,
+      starsCount = newStarsCount,
+      usersNumber = newUsersNumber,
+      ratedBy = if (!isReturningUser) post.ratedBy + userEmail else post.ratedBy)
 }
