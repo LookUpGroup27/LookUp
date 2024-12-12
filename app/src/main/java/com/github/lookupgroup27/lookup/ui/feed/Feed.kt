@@ -1,3 +1,4 @@
+// File: com/github/lookupgroup27/lookup/ui/feed/FeedScreen.kt
 package com.github.lookupgroup27.lookup.ui.feed
 
 import android.Manifest
@@ -5,7 +6,6 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,7 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -27,8 +27,9 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.feed.ProximityAndTimePostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
+import com.github.lookupgroup27.lookup.ui.feed.components.calculatePostUpdates
+import com.github.lookupgroup27.lookup.ui.feed.components.updateProfileRatings
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -62,8 +63,10 @@ fun FeedScreen(
     profileViewModel: ProfileViewModel,
     initialNearbyPosts: List<Post>? = null
 ) {
-  profileViewModel.fetchUserProfile()
-  val profile = profileViewModel.userProfile.value
+  // Fetch user profile
+  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+
+  val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
   val userEmail = user?.email ?: ""
@@ -114,124 +117,109 @@ fun FeedScreen(
     }
   }
 
-  // Background Box with gradient overlay.
-  Box(modifier = Modifier.fillMaxSize()) {
-    Image(
-        painter = painterResource(R.drawable.background_blurred),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize())
-
-    Box(
-        modifier =
-            Modifier.fillMaxSize()
-                .background(
+  // Background Box with gradient overlay using drawBehind for efficiency.
+  Box(
+      modifier =
+          Modifier.fillMaxSize().drawBehind {
+            drawRect(
+                brush =
                     Brush.verticalGradient(
-                        listOf(
-                            Color.Black.copy(alpha = 0.6f),
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.6f)))))
+                        colors =
+                            listOf(
+                                Color.Black.copy(alpha = 0.6f),
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.6f))))
+          }) {
+        Image(
+            painter = painterResource(R.drawable.background_blurred),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize())
 
-    Scaffold(
-        containerColor = Color.Transparent,
-        topBar = {
-          TopAppBar(
-              title = {
-                Text(
-                    text = stringResource(R.string.nearby_posts_title),
-                    style = MaterialTheme.typography.titleMedium.copy(color = Color.White))
-              },
-              colors =
-                  TopAppBarDefaults.smallTopAppBarColors(
-                      containerColor = Color.Black.copy(alpha = 0.5f)))
-        },
-        bottomBar = {
-          Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
-            BottomNavigationMenu(
-                onTabSelect = { destination -> navigationActions.navigateTo(destination) },
-                tabList = LIST_TOP_LEVEL_DESTINATION,
-                isUserLoggedIn = isUserLoggedIn,
-                selectedItem = Route.FEED)
-          }
-        },
-        modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))) { innerPadding
-          ->
-          Column(
-              modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
-                if (nearbyPosts.isEmpty()) {
-                  // Loading or empty state
-                  Box(
-                      modifier =
-                          Modifier.fillMaxSize()
-                              .testTag(stringResource(R.string.loading_indicator_test_tag)),
-                      contentAlignment = Alignment.Center) {
-                        if (!locationPermissionGranted) {
-                          Text(
-                              text = stringResource(R.string.location_permission_required),
-                              style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
-                        } else {
-                          CircularProgressIndicator(color = Color.White)
-                        }
-                      }
-                } else {
-                  LazyColumn(
-                      modifier = Modifier.fillMaxSize(),
-                      contentPadding = PaddingValues(vertical = 16.dp),
-                      verticalArrangement = Arrangement.spacedBy(30.dp)) {
-                        items(nearbyPosts) { post ->
-                          PostItem(
-                              post = post,
-                              starStates =
-                                  postRatings[post.uid] ?: mutableListOf(false, false, false),
-                              onRatingChanged = { newRating ->
-                                val oldPostRatings =
-                                    postRatings[post.uid] ?: mutableListOf(false, false, false)
-                                val oldStarCounts = oldPostRatings.count { it }
-                                postRatings[post.uid] = newRating.toList()
-                                val starsCount = newRating.count { it }
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+              TopAppBar(
+                  title = {
+                    Text(
+                        text = stringResource(R.string.nearby_posts_title),
+                        style = MaterialTheme.typography.titleMedium.copy(color = Color.White))
+                  },
+                  colors =
+                      TopAppBarDefaults.smallTopAppBarColors(
+                          containerColor = Color.Black.copy(alpha = 0.5f)))
+            },
+            bottomBar = {
+              Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
+                BottomNavigationMenu(
+                    onTabSelect = { destination -> navigationActions.navigateTo(destination) },
+                    tabList = LIST_TOP_LEVEL_DESTINATION,
+                    isUserLoggedIn = isUserLoggedIn,
+                    selectedItem = Route.FEED)
+              }
+            },
+            modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))) {
+                innerPadding ->
+              Column(
+                  modifier =
+                      Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
+                    if (nearbyPosts.isEmpty()) {
+                      // Loading or empty state
+                      Box(
+                          modifier =
+                              Modifier.fillMaxSize()
+                                  .testTag(stringResource(R.string.loading_indicator_test_tag)),
+                          contentAlignment = Alignment.Center) {
+                            if (!locationPermissionGranted) {
+                              Text(
+                                  text = stringResource(R.string.location_permission_required),
+                                  style =
+                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+                            } else {
+                              CircularProgressIndicator(color = Color.White)
+                            }
+                          }
+                    } else {
+                      LazyColumn(
+                          modifier = Modifier.fillMaxSize(),
+                          contentPadding = PaddingValues(vertical = 16.dp),
+                          verticalArrangement = Arrangement.spacedBy(30.dp)) {
+                            items(nearbyPosts) { post ->
+                              PostItem(
+                                  post = post,
+                                  starStates =
+                                      postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
+                                  onRatingChanged = { newRating ->
+                                    val oldPostRatings =
+                                        postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
+                                    val oldStarCounts = oldPostRatings.count { it }
+                                    postRatings[post.uid] = newRating.toList()
+                                    val starsCount = newRating.count { it }
 
-                                val updatedRatings = profile?.ratings?.toMutableMap()
-                                updatedRatings?.set(post.uid, starsCount)
-                                val newProfile: UserProfile =
-                                    profile?.copy(
-                                        username = username,
-                                        bio = bio,
-                                        email = email,
-                                        ratings = updatedRatings ?: emptyMap())
-                                        ?: UserProfile(
+                                    // Update user profile ratings using the utility function
+                                    val newProfile =
+                                        updateProfileRatings(
+                                            currentProfile = profile,
+                                            postUid = post.uid,
+                                            starsCount = starsCount,
                                             username = username,
                                             bio = bio,
-                                            email = email,
-                                            ratings = updatedRatings ?: emptyMap())
-                                profileViewModel.updateUserProfile(newProfile)
+                                            email = email)
+                                    profileViewModel.updateUserProfile(newProfile)
 
-                                val isReturningUser = post.ratedBy.contains(userEmail)
-                                val newStarsCount =
-                                    if (isReturningUser) {
-                                      post.starsCount - oldStarCounts + starsCount
-                                    } else {
-                                      post.starsCount + starsCount
-                                    }
-                                val newUsersNumber =
-                                    if (isReturningUser) post.usersNumber else post.usersNumber + 1
-                                val newAvg = newStarsCount.toDouble() / newUsersNumber
-
-                                postsViewModel.updatePost(
-                                    post.copy(
-                                        averageStars = newAvg,
-                                        starsCount = newStarsCount,
-                                        usersNumber = newUsersNumber,
-                                        ratedBy =
-                                            if (!isReturningUser) {
-                                              post.ratedBy + userEmail
-                                            } else {
-                                              post.ratedBy
-                                            }))
-                              })
-                        }
-                      }
-                }
-              }
-        }
-  }
+                                    // Update post details using the utility function
+                                    val updatedPost =
+                                        calculatePostUpdates(
+                                            post = post,
+                                            userEmail = userEmail,
+                                            starsCount = starsCount,
+                                            oldStarCounts = oldStarCounts)
+                                    postsViewModel.updatePost(updatedPost)
+                                  })
+                            }
+                          }
+                    }
+                  }
+            }
+      }
 }
