@@ -142,18 +142,27 @@ fun LookUpApp() {
       }
 
       composable(
-          route = "${Route.EDIT_IMAGE}/{imageUrl}/{timestamp}",
-          arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })) {
-              backStackEntry ->
-            val imageUrl = backStackEntry.arguments?.getString("imageUrl")
-            imageUrl?.let {
-              EditImageScreen(
-                  imageUrl = it,
-                  navigationActions = navigationActions,
-                  collectionViewModel = collectionViewModel,
-                  editImageViewModel = editImageViewModel,
-                  postsViewModel = postsViewModel)
-            }
+          route = "${Route.EDIT_IMAGE}/{postUri}/{postAverageStar}/{postRatedByNb}/{postUid}",
+          arguments =
+              listOf(
+                  navArgument("postUri") { type = NavType.StringType },
+                  navArgument("postAverageStar") { type = NavType.FloatType },
+                  navArgument("postRatedByNb") { type = NavType.IntType },
+                  navArgument("postUid") { type = NavType.StringType })) { backStackEntry ->
+            val postUri = backStackEntry.arguments?.getString("postUri") ?: ""
+            val postAverageStar = backStackEntry.arguments?.getFloat("postAverageStar") ?: 0.0f
+            val postRatedByNb = backStackEntry.arguments?.getInt("postRatedByNb") ?: 0
+            val postUid = backStackEntry.arguments?.getString("postUid") ?: ""
+
+            EditImageScreen(
+                postUri = postUri,
+                postAverageStar = postAverageStar.toDouble(),
+                postRatedByNb = postRatedByNb,
+                postUid = postUid,
+                editImageViewModel = editImageViewModel,
+                collectionViewModel = collectionViewModel,
+                postsViewModel = postsViewModel,
+                navigationActions = navigationActions)
           }
     }
 

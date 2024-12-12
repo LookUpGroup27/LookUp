@@ -61,7 +61,10 @@ class EditImageScreenTest {
   fun testBackgroundImageIsDisplayed() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -78,7 +81,10 @@ class EditImageScreenTest {
   fun testBackButtonIsDisplayedAndClickable() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -96,7 +102,10 @@ class EditImageScreenTest {
   fun testEditImageIsDisplayed() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -111,7 +120,10 @@ class EditImageScreenTest {
   fun testEditButtonsAreDisplayedAndClickable() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -130,7 +142,10 @@ class EditImageScreenTest {
 
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -147,7 +162,10 @@ class EditImageScreenTest {
 
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -165,7 +183,10 @@ class EditImageScreenTest {
   fun testStarIconIsDisplayed() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -180,7 +201,10 @@ class EditImageScreenTest {
   fun testAverageRatingIsDisplayed() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -195,7 +219,10 @@ class EditImageScreenTest {
   fun testUserIconIsDisplayed() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -210,7 +237,10 @@ class EditImageScreenTest {
   fun testRatedByNumberIsDisplayed() {
     composeTestRule.setContent {
       EditImageScreen(
-          imageUrl = "mock_image_url",
+          postUri = "mock_image_url",
+          postAverageStar = 0.0,
+          postRatedByNb = 0,
+          postUid = "mock_uid",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,

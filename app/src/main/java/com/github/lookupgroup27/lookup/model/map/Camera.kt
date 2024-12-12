@@ -6,7 +6,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.opengl.Matrix
 import android.util.Log
-import android.view.ScaleGestureDetector
 
 /**
  * Represents a camera for handling movement and projection in our OpenGL World.
@@ -21,21 +20,17 @@ import android.view.ScaleGestureDetector
  *
  * The positive Z-axis points upward, the positive X-axis points to the right, and the positive
  * Y-axis points into the screen.
+ *
+ * @param fov The field of view of the camera in degrees.
  */
-class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener {
+class Camera(private var fov: Float) : SensorEventListener {
 
   val modelMatrix = FloatArray(16)
   val viewMatrix = FloatArray(16)
   val projMatrix = FloatArray(16)
-  private var fov = DEFAULT_FOV
   private var aspectRatio = 16 / 9f
 
   companion object {
-    // FOV constants
-    const val MAX_FOV = 110f
-    const val DEFAULT_FOV = 45f
-    const val MIN_FOV = 1f
-
     // Near and far clipping plane constants
     const val NEAR = 0.1f
     const val FAR = 100f
@@ -48,9 +43,28 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
   }
 
   /** Update the projection matrix based on the aspect ratio of the screen. */
-  fun updateProjectionMatrix(ratio: Float) {
-    this.aspectRatio = ratio
+  private fun updateProjectionMatrix() {
     Matrix.perspectiveM(projMatrix, 0, fov, aspectRatio, NEAR, FAR)
+  }
+
+  /**
+   * Update the projection matrix based on the aspect ratio of the screen.
+   *
+   * @param ratio The new aspect ratio of the screen.
+   */
+  fun updateScreenRatio(ratio: Float) {
+    this.aspectRatio = ratio
+    updateProjectionMatrix()
+  }
+
+  /**
+   * Update the field of view of the camera.
+   *
+   * @param fov The new field of view in degrees.
+   */
+  fun updateFov(fov: Float) {
+    this.fov = fov
+    updateProjectionMatrix()
   }
 
   override fun onSensorChanged(event: SensorEvent?) {
@@ -66,7 +80,6 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
       Sensor.TYPE_ROTATION_VECTOR -> {
         when (accuracy) {
           SensorManager.SENSOR_STATUS_UNRELIABLE -> {
-            // TODO : Provide a warning about unreliable sensor data
             Log.w("SensorAccuracy", "Rotation vector sensor is unreliable")
           }
           SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {
@@ -78,21 +91,5 @@ class Camera : SensorEventListener, ScaleGestureDetector.OnScaleGestureListener 
         }
       }
     }
-  }
-
-  override fun onScale(detector: ScaleGestureDetector): Boolean {
-    val scaleFactor = detector.scaleFactor
-    fov = (fov / scaleFactor).coerceIn(MIN_FOV, MAX_FOV)
-    Matrix.perspectiveM(projMatrix, 0, fov, aspectRatio, NEAR, FAR)
-
-    return true
-  }
-
-  override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-    return true
-  }
-
-  override fun onScaleEnd(detector: ScaleGestureDetector) {
-    // No-op
   }
 }

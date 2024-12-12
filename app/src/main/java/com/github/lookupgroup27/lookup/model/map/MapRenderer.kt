@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
 import com.github.lookupgroup27.lookup.model.map.renderables.Object
+import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.utils.RayUtils.calculateRay
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -18,10 +19,13 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class MapRenderer : GLSurfaceView.Renderer {
+class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
   private lateinit var planets: List<Planet>
+  private lateinit var planet: Planet
+  private lateinit var moon: Moon
+
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
 
@@ -34,7 +38,7 @@ class MapRenderer : GLSurfaceView.Renderer {
   private val viewport = IntArray(4)
 
   /** The camera used to draw the shapes on the screen. */
-  val camera = Camera()
+  val camera = Camera(fov)
 
   /**
    * Called when the surface is created or recreated. Initializes OpenGL settings, loads textures,
@@ -95,7 +99,7 @@ class MapRenderer : GLSurfaceView.Renderer {
     viewport[3] = height
 
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
-    camera.updateProjectionMatrix(ratio) // Update camera projection matrix
+    camera.updateScreenRatio(ratio) // Update camera projection matrix
   }
 
   /** Initialize the objects in the scene. */
@@ -137,12 +141,23 @@ class MapRenderer : GLSurfaceView.Renderer {
 
     // Add planets to the renderable objects list
     renderableObjects.addAll(planets)
+    renderableObjects.addAll(stars)
+
+    // Planet
+    planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
+    // Moon
+    moon = Moon(context) // Create moon
   }
 
   /** Draws the objects in the scene. */
   private fun drawObjects() {
     // Renderable Objects
     renderableObjects.forEach { o -> o.draw(camera) }
+
+    // Planet
+    // planet.draw(camera)
+    // Moon
+    moon.draw(camera)
   }
 
   /** Updates the context used by the renderer. */

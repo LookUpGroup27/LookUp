@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup
 
+import android.Manifest
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
@@ -12,24 +13,21 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObject2
-import androidx.test.uiautomator.Until
+import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-
-private const val PERMISSION_DIALOG_TIMEOUT = 10_000L
 
 @RunWith(AndroidJUnit4::class)
 class End2EndTest {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
+
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
   @Test
   fun quizFlow() {
@@ -94,7 +92,6 @@ class End2EndTest {
 
   @Test
   fun navigationFlow() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     // Mock FirebaseAuth to simulate different login states
     val mockAuth = org.mockito.kotlin.mock<FirebaseAuth>()
     val isUserLoggedIn = mockAuth.currentUser != null // Check if a user is logged in
@@ -141,19 +138,6 @@ class End2EndTest {
 
     // Step 7: Navigate to Google Map from MenuScreen
     composeTestRule.onNodeWithText("Google Map").performClick()
-    composeTestRule.waitForIdle()
-
-    val allowButton: UiObject2? =
-        device.wait(Until.findObject(By.text("While using the app")), PERMISSION_DIALOG_TIMEOUT)
-
-    allowButton?.click()
-        ?: run {
-          if (composeTestRule.onNodeWithTag("googleMapScreen").isNotDisplayed()) {
-            throw AssertionError("Timeout while waiting for permission dialog")
-          }
-          // Permission dialog did not appear, but the screen is displayed
-        }
-
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
     composeTestRule.onNodeWithText("Menu").performClick()

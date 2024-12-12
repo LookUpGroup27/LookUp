@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Toast
+import com.github.lookupgroup27.lookup.ui.map.MapViewModel
 
 /**
  * Our GLSurfaceView for rendering the map.
@@ -40,6 +41,10 @@ class MapSurfaceView(context: Context, private val renderer: MapRenderer) : GLSu
   private fun showPlanetInfo(planetName: String) {
     Toast.makeText(context, "You clicked on $planetName!", Toast.LENGTH_SHORT).show()
     println("You clicked on $planetName!")
+    viewModel.mapRenderer.updateContext(context)
+    setRenderer(viewModel.mapRenderer)
+
+    scaleGestureDetector = ScaleGestureDetector(context, viewModel)
   }
 
   @SuppressLint("ClickableViewAccessibility")
