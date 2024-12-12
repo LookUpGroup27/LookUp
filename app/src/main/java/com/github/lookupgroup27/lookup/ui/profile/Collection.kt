@@ -124,6 +124,7 @@ fun CollectionScreen(
                                                       route = Route.EDIT_IMAGE,
                                                       postUid = post.uid,
                                                       postAverageStar = post.averageStars.toFloat(),
+                                                      postDescription = post.description,
                                                       postRatedByNb = post.ratedBy.size)
                                                 }
                                                 .background(

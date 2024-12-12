@@ -3,7 +3,10 @@ package com.github.lookupgroup27.lookup.ui.image
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
@@ -12,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -21,6 +27,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
@@ -51,6 +61,7 @@ fun EditImageScreen(
     postAverageStar: Double,
     postRatedByNb: Int,
     postUid: String,
+    postDescription: String,
     editImageViewModel: EditImageViewModel,
     collectionViewModel: CollectionViewModel,
     postsViewModel: PostsViewModel,
@@ -58,6 +69,9 @@ fun EditImageScreen(
 ) {
   val editImageState by editImageViewModel.editImageState.collectAsState()
   val context = LocalContext.current
+
+  var description by remember { mutableStateOf(postDescription) }
+  var isEditing by remember { mutableStateOf(false) }
 
   Box(
       modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -89,15 +103,63 @@ fun EditImageScreen(
             contentDescription = "Edit Image",
             modifier =
                 Modifier.fillMaxWidth()
-                    .align(BiasAlignment(0f, -0.5f)) // Center the image
+                    .align(BiasAlignment(0f, -0.5f))
                     .padding(16.dp)
                     .testTag("display_image"))
+
+        // Description box
+        Column(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(16.dp)
+                    .align(BiasAlignment(0f, 0.55f)) // Consistent alignment for both states
+            ) {
+              if (isEditing) {
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.White, fontWeight = FontWeight.Bold),
+                    placeholder = {
+                      Text(
+                          "Add the description",
+                          style = TextStyle(color = Color.White, fontStyle = FontStyle.Italic))
+                    },
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description", color = Color.White) },
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .background(Color.Gray.copy(alpha = 0.5f))
+                            .padding(8.dp)
+                            .testTag("edit_description_field"),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions =
+                        KeyboardActions(
+                            onDone = {
+                              postsViewModel.updateDescription(postUid, description)
+                              isEditing = false
+                            }))
+              } else {
+                Text(
+                    text = if (description.isEmpty()) "Add the description" else description,
+                    color = Color.White,
+                    style =
+                        if (description.isEmpty())
+                            TextStyle(color = Color.White, fontStyle = FontStyle.Italic)
+                        else TextStyle(fontWeight = FontWeight.Bold),
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .height(55.dp)
+                            .background(Color.Gray.copy(alpha = 0.5f))
+                            .padding(8.dp)
+                            .clickable { isEditing = true }
+                            .testTag("description_text"))
+              }
+            }
 
         // Edit buttons aligned to the bottom center
         Column(
             modifier =
                 Modifier.fillMaxWidth()
-                    .align(BiasAlignment(0f, 0.60f)) // Align to the bottom center of the Box
+                    .align(BiasAlignment(0f, 0.85f))
                     .padding(16.dp)
                     .testTag("edit_buttons_column"),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -109,7 +171,7 @@ fun EditImageScreen(
                     modifier = Modifier.testTag("star_collection").size(28.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Average Rating: ${postAverageStar}",
+                    text = "Average Rating: $postAverageStar",
                     color = Color.White,
                     modifier = Modifier.testTag("average_rating_collection"))
                 Spacer(modifier = Modifier.width(8.dp))
@@ -120,7 +182,7 @@ fun EditImageScreen(
                     modifier = Modifier.testTag("user_icon_collection"))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Rated by : ${postRatedByNb} users",
+                    text = "Rated by : $postRatedByNb users",
                     color = Color.White,
                     modifier = Modifier.testTag("rated_by_collection"))
               }

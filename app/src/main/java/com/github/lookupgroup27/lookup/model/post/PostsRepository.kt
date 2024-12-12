@@ -60,4 +60,18 @@ interface PostsRepository {
    * @param onFailure Callback function invoked with an exception if the operation fails.
    */
   fun updatePost(post: Post, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+
+  /**
+   * Updates the description of an existing post in the repository.
+   *
+   * @param postUid The UID of the post to update.
+   * @param onSuccess Callback function invoked when the operation is successful.
+   * @param onFailure Callback function invoked with an exception if the operation fails.
+   */
+  fun updateDescription(
+      postUid: String,
+      newDescription: String,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  )
 }

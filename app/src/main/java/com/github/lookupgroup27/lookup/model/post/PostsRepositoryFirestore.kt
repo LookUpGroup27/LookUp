@@ -123,4 +123,23 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
           onFailure(it)
         }
   }
+
+  override fun updateDescription(
+      postUid: String,
+      newDescription: String,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    collection
+        .document(postUid)
+        .update("description", newDescription)
+        .addOnSuccessListener {
+          Log.d(tag, "Description updated successfully")
+          onSuccess()
+        }
+        .addOnFailureListener {
+          Log.e(tag, "Error updating description", it)
+          onFailure(it)
+        }
+  }
 }
