@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.view.ScaleGestureDetector
 import androidx.activity.ComponentActivity
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -78,5 +81,58 @@ class MapViewModelTest {
 
     verify(mockActivity).getSystemService(Context.SENSOR_SERVICE)
     verify(mockSensorManager).unregisterListener(viewModel.mapRenderer.camera)
+  }
+
+  @Test
+  fun `updateFov works correctly on valid values`() {
+    // Test the value DEFAULT_FOV
+    viewModel.updateFov(MapViewModel.DEFAULT_FOV)
+    assertEquals(MapViewModel.DEFAULT_FOV, viewModel.fov)
+
+    // Test a range of valid values
+    val fovs = MapViewModel.MIN_FOV.toInt()..MapViewModel.MAX_FOV.toInt() step 10
+    for (fov in fovs) {
+      viewModel.updateFov(fov.toFloat())
+      assertEquals(fov.toFloat(), viewModel.fov)
+    }
+  }
+
+  @Test
+  fun `updateFov works correctly on invalid values`() {
+    // Test a range of invalid values
+    val fovs = listOf(MapViewModel.MIN_FOV.toInt() - 1, MapViewModel.MAX_FOV.toInt() + 1, 0)
+    val expectedFov = listOf(MapViewModel.MIN_FOV, MapViewModel.MAX_FOV, MapViewModel.MIN_FOV)
+    for (fov in fovs) {
+      viewModel.updateFov(fov.toFloat())
+      assertEquals(expectedFov[fovs.indexOf(fov)], viewModel.fov)
+    }
+  }
+
+  @Test
+  fun `onScale should update FOV based on scaleFactor`() {
+    val initialFov = MapViewModel.DEFAULT_FOV
+    val scaleFactor = 1.5f
+    val detector = mock(ScaleGestureDetector::class.java)
+    `when`(detector.scaleFactor).thenReturn(scaleFactor)
+
+    viewModel.onScale(detector)
+
+    val expectedFov =
+        (initialFov / scaleFactor).coerceIn(MapViewModel.MIN_FOV, MapViewModel.MAX_FOV)
+    assert(expectedFov == viewModel.fov)
+  }
+
+  @Test
+  fun `onScaleBegin should always return true`() {
+    val detector = mock(ScaleGestureDetector::class.java)
+    val result = viewModel.onScaleBegin(detector)
+    assertTrue(result)
+  }
+
+  @Test
+  fun `onScaleEnd should perform no operation`() {
+    val detector = mock(ScaleGestureDetector::class.java)
+    viewModel.onScaleEnd(detector)
+    verifyNoInteractions(detector)
   }
 }

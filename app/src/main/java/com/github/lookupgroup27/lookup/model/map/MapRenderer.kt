@@ -6,6 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
+import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -21,10 +22,13 @@ import javax.microedition.khronos.opengles.GL10
 class MapRenderer(
     private val context: Context,
     private val starDataRepository: StarDataRepository,
-    private val planetsRepository: PlanetsRepository
+    private val planetsRepository: PlanetsRepository,
+    fov: Float
 ) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
+  private lateinit var moon: Moon
+
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
   private lateinit var renderablePlanets: List<Planet>
@@ -33,7 +37,7 @@ class MapRenderer(
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
   /** The camera used to draw the shapes on the screen. */
-  val camera = Camera()
+  val camera = Camera(fov)
 
   /**
    * Called when the surface is created or recreated. Initializes OpenGL settings, loads textures,
@@ -94,14 +98,14 @@ class MapRenderer(
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
     GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
-    camera.updateProjectionMatrix(ratio) // Update camera projection matrix
+    camera.updateScreenRatio(ratio) // Update camera projection matrix
   }
 
   /** Initialize the objects in the scene. */
   private fun initializeObjects() {
-
     renderableStars = starsLoader.loadStars()
     renderablePlanets = planetsRepository.mapToRenderablePlanets(context)
+    moon = Moon(context) // Create moon
   }
 
   /** Draws the objects in the scene. */
@@ -110,5 +114,8 @@ class MapRenderer(
     renderableStars.forEach { o -> o.draw(camera) }
 
     renderablePlanets.forEach { o -> o.draw(camera) }
+
+    moon.draw(camera)
   }
+
 }
