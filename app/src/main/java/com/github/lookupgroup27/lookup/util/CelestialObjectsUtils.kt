@@ -1,47 +1,128 @@
 package com.github.lookupgroup27.lookup.utils
 
-import java.util.Calendar
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import kotlin.math.*
-import net.fortuna.ical4j.model.TimeZone
+import kotlin.math.floor
 
 object CelestialObjectsUtils {
 
+  private val SCALING_FACTOR = 100
+
   /**
-   * Computes the local sidereal time based on longitude and the current time.
+   * Converts Right Ascension (RA) from hours to degrees.
    *
-   * @param longitude Observer's longitude in degrees.
-   * @return Sidereal time in degrees.
+   * Right Ascension is typically measured in hours, where 1 hour corresponds to 15 degrees of arc.
+   * This function performs the conversion by multiplying the RA value in hours by 15.
+   *
+   * @param raHours The Right Ascension value in hours. This is a floating-point number where:
+   *     - 1 hour = 15 degrees
+   *     - 0.1 hour = 1.5 degrees Example: 6.5 hours corresponds to 97.5 degrees.
+   *
+   * @return The Right Ascension value converted to degrees.
+   */
+  fun convertRaHoursToDegrees(raHours: Double): Double {
+    return raHours * 15.0
+  }
+
+  /**
+   * Computes the Local Sidereal Time (LST) at the given longitude for the current UTC time.
+   *
+   * Sidereal time is a measure of the Earth's rotation relative to distant stars rather than the
+   * Sun. Local Sidereal Time is useful in astronomical calculations such as determining which
+   * constellations are currently overhead at a given location.
+   *
+   * This function:
+   * 1. Retrieves the current UTC time.
+   * 2. Converts that time into a Julian Date (JD).
+   * 3. Computes the Greenwich Sidereal Time (GST) using standard astronomical formulas.
+   * 4. Adjusts GST for the given longitude to produce the Local Sidereal Time (LST).
+   *
+   * @param longitude The observer's longitude in degrees, where positive values are East and
+   *   negative values are West.
+   * @return The local sidereal time in degrees [0, 360).
    */
   fun computeSiderealTime(longitude: Double): Double {
-    val currentTimeMillis = System.currentTimeMillis()
-    val calendar =
-        Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply { timeInMillis = currentTimeMillis }
+    val now = ZonedDateTime.now(ZoneOffset.UTC)
+    val year = now.year
+    val month = now.monthValue
+    val day = now.dayOfMonth
+    val hour = now.hour
+    val minute = now.minute
+    val second = now.second
 
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH) + 1 // January is 0, so we add 1
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
-    val second = calendar.get(Calendar.SECOND)
+    // Calculate Julian Date
+    val jd = calculateJulianDate(year, month, day, hour, minute, second)
 
-    // Julian Date calculation
-    val jDay = day + (hour + minute / 60.0 + second / 3600.0) / 24.0
-    val jMonth = if (month > 2) month else month + 12
+    // Calculate GST
+    val gst = calculateGst(jd)
+    // Normalize GST
+    val gstCorrected = (gst + 360.0) % 360.0
+
+    // Calculate LST
+    val lst = (gstCorrected + longitude + 360) % 360.0
+    return lst
+  }
+
+  /**
+   * Converts a given Gregorian calendar date and time (UTC) into a Julian Date.
+   *
+   * The Julian Date is a continuous count of days and fractions of a day from the start of the
+   * Julian Period. It is commonly used in astronomical calculations for its simplicity.
+   *
+   * This function follows the standard algorithm for converting a Gregorian date to Julian Date:
+   *
+   * Steps:
+   * 1. If the month is January or February, treat them as the 13th or 14th month of the previous
+   *    year.
+   * 2. Compute the integral part and fractional day.
+   * 3. Apply corrections for the Gregorian calendar reform.
+   *
+   * @param year The year in UTC.
+   * @param month The month of the year (1-12).
+   * @param day The day of the month (1-31).
+   * @param hour The hour of the day (0-23).
+   * @param minute The minute of the hour (0-59).
+   * @param second The second of the minute (0-59).
+   * @return The Julian Date as a Double.
+   */
+  private fun calculateJulianDate(
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      minute: Int,
+      second: Int
+  ): Double {
     val jYear = if (month > 2) year else year - 1
+    val jMonth = if (month > 2) month else month + 12
+    val dayFraction = (hour + minute / 60.0 + second / 3600.0) / 24.0
 
     val a = floor(jYear / 100.0)
     val b = 2 - a + floor(a / 4.0)
-    val jd = floor(365.25 * (jYear + 4716)) + floor(30.6001 * (jMonth + 1)) + jDay + b - 1524.5
 
-    // Greenwich Sidereal Time (in degrees)
+    return floor(365.25 * (jYear + 4716)) + floor(30.6001 * (jMonth + 1)) + day + dayFraction + b -
+        1524.5
+  }
+
+  /**
+   * Calculates the Greenwich Sidereal Time (GST) for a given Julian Date.
+   *
+   * GST is the sidereal time at the Prime Meridian (0° longitude). It is computed from the Julian
+   * Date using a standard polynomial approximation defined in astronomical references.
+   *
+   * Formula: T = (JD - 2451545.0) / 36525 GST (in degrees) = 280.46061837
+   * + 360.98564736629 * (JD - 2451545.0)
+   * + 0.000387933 * T^2
+   * - T^3 / 38710000
+   *
+   * @param jd The Julian Date at the observation time.
+   * @return The Greenwich Sidereal Time in degrees (not normalized).
+   */
+  private fun calculateGst(jd: Double): Double {
     val t = (jd - 2451545.0) / 36525.0
-    val gst =
-        280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * t * t -
-            t * t * t / 38710000.0
-
-    // Local Sidereal Time (in degrees)
-    val lst = (gst + longitude + 360.0) % 360.0
-    return lst
+    return 280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * t * t -
+        (t * t * t / 38710000.0)
   }
 
   /**
@@ -50,41 +131,33 @@ object CelestialObjectsUtils {
    * @param ra Right Ascension in degrees.
    * @param dec Declination in degrees.
    * @param latitude Observer's latitude in degrees.
-   * @param longitude Observer's longitude in degrees.
    * @param localSiderealTime The local sidereal time in degrees.
    * @return A pair representing azimuth and altitude in degrees.
    */
   fun convertToHorizonCoordinates(
-      ra: Double,
-      dec: Double,
-      latitude: Double,
-      localSiderealTime: Double
+      ra: Double, // Right Ascension in degrees
+      dec: Double, // Declination in degrees
+      latitude: Double, // Observer's latitude in degrees
+      localSiderealTime: Double // Local Sidereal Time in degrees
   ): Pair<Double, Double> {
+    // Step 1: Compute the Hour Angle (HA)
+    val hourAngle =
+        ((localSiderealTime - ra + 360.0) % 360.0).let { if (it > 180) it - 360 else it }
 
-    // Calculate hour angle in degrees
-    val hourAngle = (localSiderealTime - ra + 360) % 360
+    // Step 2: Convert all angles to radians
+    val haRad = Math.toRadians(hourAngle)
+    val decRad = Math.toRadians(dec)
+    val latRad = Math.toRadians(latitude)
 
-    // Convert to radians where needed and calculate altitude directly
-    val altitude =
-        Math.toDegrees(
-            asin(
-                Math.sin(Math.toRadians(dec)) * Math.sin(Math.toRadians(latitude)) +
-                    Math.cos(Math.toRadians(dec)) *
-                        Math.cos(Math.toRadians(latitude)) *
-                        Math.cos(Math.toRadians(hourAngle))))
+    // Step 3: Compute Altitude (Alt)
+    val sinAlt = sin(decRad) * sin(latRad) + cos(decRad) * cos(latRad) * cos(haRad)
+    val altRad = asin(sinAlt) // Altitude in radians
+    val altitude = Math.toDegrees(altRad)
 
-    // Calculate azimuth using trigonometric functions, directly using degrees to radians conversion
-    var azimuth =
-        Math.toDegrees(
-            atan2(
-                -Math.cos(Math.toRadians(dec)) * Math.sin(Math.toRadians(hourAngle)),
-                Math.sin(Math.toRadians(dec)) -
-                    Math.sin(Math.toRadians(altitude)) * Math.sin(Math.toRadians(latitude))))
-
-    // Ensure azimuth is in the range [0, 360)
-    if (azimuth < 0) {
-      azimuth += 360.0
-    }
+    // Step 4: Compute Azimuth (Az)
+    val sinAz = -sin(haRad) * cos(decRad)
+    val cosAz = (sin(decRad) - sin(latRad) * sinAlt) / (cos(latRad) * cos(altRad))
+    val azimuth = Math.toDegrees(atan2(sinAz, cosAz)).let { if (it < 0) it + 360 else it }
 
     return Pair(azimuth, altitude)
   }
@@ -94,20 +167,18 @@ object CelestialObjectsUtils {
    *
    * @param azimuth Azimuth in degrees.
    * @param altitude Altitude in degrees.
-   * @param distance The distance to the celestial object in parsecs.
    * @return A Triple representing x, y, and z coordinates.
    */
   fun convertToCartesian(
       azimuth: Double,
       altitude: Double,
-      distance: Double
   ): Triple<Float, Float, Float> {
     val azRad = Math.toRadians(azimuth)
     val altRad = Math.toRadians(altitude)
 
-    val x = (distance * cos(altRad) * cos(azRad)).toFloat()
-    val y = (distance * cos(altRad) * sin(azRad)).toFloat()
-    val z = (distance * sin(altRad)).toFloat()
+    val x = (SCALING_FACTOR * cos(altRad) * sin(azRad)).toFloat()
+    val y = (SCALING_FACTOR * cos(altRad) * cos(azRad)).toFloat()
+    val z = (SCALING_FACTOR * sin(altRad)).toFloat()
 
     return Triple(x, y, z)
   }
