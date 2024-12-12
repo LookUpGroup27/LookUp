@@ -45,10 +45,13 @@ class CalendarUseCase {
         val rrule = component.getProperty<RRule>(Property.RRULE)
 
         if (rrule != null) {
-          val recurringEvents = handleRecurringEvents(component, period, startDate.date, endDate)
+          val recurrenceSet = component.calculateRecurrenceSet(period)
+          val recurrenceDates = recurrenceSet.map { it.start }
+          val recurringEvents = createEventInstances(component, recurrenceDates, endDate)
           allEvents.addAll(recurringEvents)
         } else if (startDate.date.before(end) && endDate.after(start)) {
-          val nonRecurringEvents = handleNonRecurringEvents(component, startDate.date, endDate)
+          val nonRecurringDates = listOf(startDate.date)
+          val nonRecurringEvents = createEventInstances(component, nonRecurringDates, endDate)
           allEvents.addAll(nonRecurringEvents)
         } else {
           Log.d("CalendarUseCase", "Event does not meet conditions for handling.")
@@ -61,82 +64,54 @@ class CalendarUseCase {
   }
 
   /**
-   * Handles recurring events by calculating their recurrence set within a given period.
+   * Creates event instances for each start date and handles multi-day events.
    *
-   * @param component The VEvent component representing the event.
-   * @param period The period during which events are extracted.
-   * @param eventStartDate The event's start date.
-   * @param eventEndDate The event's end date.
-   * @return A list of recurring VEvent instances.
+   * @param component The original VEvent component.
+   * @param startDates A list of start dates for the event occurrences.
+   * @param originalEndDate The original end date of the event.
+   * @return A list of VEvent instances.
    */
-  private fun handleRecurringEvents(
+  private fun createEventInstances(
       component: VEvent,
-      period: Period,
-      eventStartDate: Date,
-      eventEndDate: Date
+      startDates: List<Date>,
+      originalEndDate: Date
   ): List<VEvent> {
     val events = mutableListOf<VEvent>()
-    val recurrenceSet = component.calculateRecurrenceSet(period)
 
-    for (recurrence in recurrenceSet) {
+    for (startDate in startDates) {
       val eventInstance = component.copy() as VEvent
-      eventInstance.getProperty<DtStart>(Property.DTSTART)?.date = recurrence.start
+      eventInstance.getProperty<DtStart>(Property.DTSTART)?.date = startDate
 
-      if (!eventEndDate.after(recurrence.start)) {
+      val endDate = if (originalEndDate.after(startDate)) originalEndDate else startDate
+      if (endDate.after(startDate)) {
+        var current = startDate
+
+        while (current.before(endDate)) {
+          // Add the event instance for the current day
+          val multiDayEventInstance = component.copy() as VEvent
+          multiDayEventInstance.getProperty<DtStart>(Property.DTSTART)?.date =
+              DateTime(current.time)
+          events.add(multiDayEventInstance)
+
+          // Move to the next day
+          val calendarInstance =
+              JavaCalendar.getInstance().apply {
+                time = current
+                add(JavaCalendar.DATE, 1)
+              }
+          current = DateTime(calendarInstance.time)
+
+          // **Breaking Condition**: Stop if current time is beyond the event's end time
+          if (current.time >= originalEndDate.time) {
+            Log.d(
+                "CalendarUseCase",
+                "Breaking loop as current time (${current.time}) >= eventEndDate (${originalEndDate.time})")
+            break
+          }
+        }
+      } else {
         events.add(eventInstance)
-        continue
       }
-
-      var current = recurrence.start
-      while (current.before(eventEndDate)) {
-        val multiDayEventInstance = eventInstance.copy() as VEvent
-        multiDayEventInstance.getProperty<DtStart>(Property.DTSTART)?.date = DateTime(current.time)
-        events.add(multiDayEventInstance)
-
-        val calendarInstance =
-            JavaCalendar.getInstance().apply {
-              time = current
-              add(JavaCalendar.DATE, 1)
-            }
-        current = DateTime(calendarInstance.time)
-      }
-    }
-
-    return events
-  }
-
-  /**
-   * Handles non-recurring events by generating a list of event instances for each day the event
-   * spans.
-   *
-   * @param component The VEvent component representing the event.
-   * @param eventStartDate The event's start date.
-   * @param eventEndDate The event's end date.
-   * @return A list of VEvent instances for each day of the event.
-   */
-  private fun handleNonRecurringEvents(
-      component: VEvent,
-      eventStartDate: Date,
-      eventEndDate: Date
-  ): List<VEvent> {
-    val events = mutableListOf<VEvent>()
-
-    if (eventEndDate.after(eventStartDate)) {
-      var current = eventStartDate
-      while (current.before(eventEndDate)) {
-        val eventInstance = component.copy() as VEvent
-        eventInstance.getProperty<DtStart>(Property.DTSTART)?.date = DateTime(current.time)
-        events.add(eventInstance)
-
-        val calendarInstance =
-            JavaCalendar.getInstance().apply {
-              time = current
-              add(JavaCalendar.DATE, 1)
-            }
-        current = DateTime(calendarInstance.time)
-      }
-    } else {
-      events.add(component)
     }
 
     return events
