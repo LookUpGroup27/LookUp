@@ -1,9 +1,13 @@
 package com.github.lookupgroup27.lookup.ui.image
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
 import com.github.lookupgroup27.lookup.model.image.EditImageRepository
@@ -298,5 +302,52 @@ class EditImageScreenTest {
 
     // Verify that the edit field appears
     composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
+  }
+
+  @Test
+  fun testOnDoneKeyboardActionUpdatesDescriptionAndExitsEditingMode() {
+    val testPostUid = "mock_uid"
+    val initialDescription = "mock_description"
+    val updatedDescription = "updated_description"
+
+    composeTestRule.setContent {
+      EditImageScreen(
+          postUri = "mock_image_url",
+          postAverageStar = 4.5,
+          postRatedByNb = 20,
+          postUid = testPostUid,
+          postDescription = initialDescription,
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    // Click on the description text to enter editing mode
+    composeTestRule.onNodeWithTag("description_text").performClick()
+
+    // Verify the edit field appears
+    composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
+
+    // Input a new description (resetting any previous value first)
+    composeTestRule.onNodeWithTag("edit_description_field").performTextClearance()
+    composeTestRule.onNodeWithTag("edit_description_field").performTextInput(updatedDescription)
+
+    // Simulate the "Done" action
+    composeTestRule.onNodeWithTag("edit_description_field").performImeAction()
+
+    // Verify that `updateDescription` is called with correct arguments
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(testPostUid),
+            org.mockito.kotlin.eq(updatedDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    // Verify that the description text displays the updated description
+    composeTestRule.onNodeWithTag("description_text").assertTextEquals(updatedDescription)
+
+    // Verify that the editing mode has exited
+    composeTestRule.onNodeWithTag("edit_description_field").assertDoesNotExist()
   }
 }
