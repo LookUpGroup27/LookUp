@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -128,6 +129,7 @@ fun EditImageScreen(
               ActionButton(
                   text = "Delete Image",
                   onClick = {
+                    postsViewModel.deletePost(postUid)
                     editImageViewModel.deleteImage(postUri)
                     navigationActions.navigateTo(Screen.COLLECTION)
                   },
@@ -152,7 +154,6 @@ fun EditImageScreen(
           }
           is EditImageState.Deleted -> {
             collectionViewModel.updateImages()
-            postsViewModel.deletePost(postUid)
             LaunchedEffect(editImageState) {
               Toast.makeText(context, "Image deleted successfully.", Toast.LENGTH_SHORT).show()
               editImageViewModel.resetState()
