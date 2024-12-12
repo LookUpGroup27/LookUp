@@ -10,7 +10,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import com.github.lookupgroup27.lookup.model.calendar.MockIcalRepository
+import com.github.lookupgroup27.lookup.model.calendar.MockCalendarRepository
 import com.github.lookupgroup27.lookup.ui.calendar.components.EventItem
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import java.text.SimpleDateFormat
@@ -48,7 +48,7 @@ class CalendarKtTest {
         """
             .trimIndent()
 
-    val mockIcalRepository = MockIcalRepository(mockIcalData)
+    val mockIcalRepository = MockCalendarRepository(mockIcalData)
     calendarViewModel = CalendarViewModel(mockIcalRepository)
 
     val event = VEvent(DateTime("20251001T120000Z"), "Test Event v2")
