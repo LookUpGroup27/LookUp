@@ -1,10 +1,12 @@
 package com.github.lookupgroup27.lookup.ui.map
 
+import PlanetsRepository
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import androidx.activity.ComponentActivity
+import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -24,9 +26,13 @@ class MapViewModelTest {
 
   @Mock private lateinit var mockSensor: Sensor
 
+  @Mock private val mockContext: Context = mock()
+  @Mock private val mockStarDataRepository: StarDataRepository = mock()
+  @Mock private val mockPlanetsRepository: PlanetsRepository = mock()
+
   @Before
   fun setUp() {
-    viewModel = MapViewModel()
+    viewModel = MapViewModel(mockContext, mockStarDataRepository, mockPlanetsRepository)
 
     // Mock system service retrieval
     whenever(mockActivity.getSystemService(Context.SENSOR_SERVICE)).thenReturn(mockSensorManager)
