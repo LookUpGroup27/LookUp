@@ -13,8 +13,12 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
+import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -26,8 +30,12 @@ class MockCollectionRepository : CollectionRepository {
     onSuccess()
   }
 
-  override suspend fun getUserImageUrls(): List<String> {
-    return listOf("https://example.com/image1.jpg", "https://example.com/image2.jpg")
+  override fun getUserPosts(onSuccess: (List<Post>?) -> Unit, onFailure: (Exception) -> Unit) {
+    onSuccess(
+        listOf(
+            Post(uid = "p1"),
+            Post(uid = "p2"),
+        ))
   }
 }
 
@@ -101,7 +109,12 @@ class CollectionScreenTest {
             onSuccess()
           }
 
-          override suspend fun getUserImageUrls(): List<String> = emptyList()
+          override fun getUserPosts(
+              onSuccess: (List<Post>?) -> Unit,
+              onFailure: (Exception) -> Unit
+          ) {
+            onSuccess(emptyList())
+          }
         }
 
     val viewModel = CollectionViewModel(emptyRepository)
@@ -166,4 +179,64 @@ class CollectionScreenTest {
   private fun mockNavigationActions() =
       NavigationActions(
           navController = NavHostController(ApplicationProvider.getApplicationContext()))
+
+  @Test
+  fun testImageAreClickable() {
+    val testPost =
+        Post(
+            uid = "p1",
+            uri = "https://example.com/image.jpg",
+            averageStars = 4.8,
+            ratedBy = listOf("user1", "user2", "user3"))
+
+    var navigatedToEdit = false
+    val mockNavigationActions =
+        object :
+            NavigationActions(
+                navController = NavHostController(ApplicationProvider.getApplicationContext())) {
+          override fun navigateTo(screen: String) {
+            if (screen == Screen.PROFILE) {
+              navigatedToEdit = true
+            }
+          }
+
+          override fun navigateToWithPostInfo(
+              encodedUri: String,
+              postAverageStar: Float,
+              postRatedByNb: Int,
+              postUid: String,
+              route: String
+          ) {
+            if (route == Route.EDIT_IMAGE &&
+                postUid == testPost.uid &&
+                postAverageStar == testPost.averageStars.toFloat() &&
+                postRatedByNb == testPost.ratedBy.size &&
+                encodedUri == URLEncoder.encode(testPost.uri, StandardCharsets.UTF_8.toString())) {
+              navigatedToEdit = true
+            }
+          }
+        }
+    val mockRepository =
+        object : CollectionRepository {
+          override fun init(onSuccess: () -> Unit) {
+            onSuccess()
+          }
+
+          override fun getUserPosts(
+              onSuccess: (List<Post>?) -> Unit,
+              onFailure: (Exception) -> Unit
+          ) {
+            onSuccess(listOf(testPost))
+          }
+        }
+
+    val viewModel = CollectionViewModel(mockRepository)
+
+    composeTestRule.setContent {
+      CollectionScreen(navigationActions = mockNavigationActions, viewModel = viewModel)
+    }
+
+    composeTestRule.onNodeWithTag("image_box_0_0").performClick()
+    assertTrue(navigatedToEdit)
+  }
 }

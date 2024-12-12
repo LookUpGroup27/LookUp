@@ -141,4 +141,15 @@ open class NavigationActions(
       restoreState = true
     }
   }
+
+  /** Navigate to a screen with a specific post information. */
+  open fun navigateToWithPostInfo(
+      encodedUri: String,
+      postAverageStar: Float,
+      postRatedByNb: Int,
+      postUid: String,
+      route: String
+  ) {
+    navController.navigate("${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid")
+  }
 }

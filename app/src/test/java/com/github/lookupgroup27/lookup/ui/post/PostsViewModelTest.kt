@@ -140,11 +140,11 @@ class PostsViewModelTest {
   /**
    * Tests that `deletePost` invokes the repository's `deletePost` method for the matching post URI.
    * - Populates the ViewModel with a list of posts.
-   * - Calls `deletePost` with a specific URI.
+   * - Calls `deletePost` with a specific UID.
    * - Verifies that the repository's `deletePost` method was invoked with the correct UID.
    */
   @Test
-  fun `test deletePost calls repository deletePost for matching post URI`() = runBlocking {
+  fun `test deletePost calls repository deletePost for matching post uid`() = runBlocking {
     val postList =
         listOf(
             testPost,
@@ -176,11 +176,9 @@ class PostsViewModelTest {
         .whenever(postsRepository)
         .deletePost(org.mockito.kotlin.eq("1"), org.mockito.kotlin.any(), org.mockito.kotlin.any())
 
-    // Invoke deletePost with the matching URI
+    // Invoke deletePost with the matching UID
     postsViewModel.deletePost(
-        post = "testUri",
-        onSuccess = { successCalled = true },
-        onFailure = { failureCalled = true })
+        postUid = "1", onSuccess = { successCalled = true }, onFailure = { failureCalled = true })
 
     // Verify repository's deletePost was called with the correct UID
     verify(postsRepository)
