@@ -37,7 +37,8 @@ fun MapView(
     updateProfile: (UserProfile?, MutableMap<String, Int>?) -> Unit,
     profile: UserProfile?,
     updatePost: (Post, Double, Int, Int, List<String>) -> Unit,
-    postRatings: MutableMap<String, List<Boolean>>
+    postRatings: MutableMap<String, List<Boolean>>,
+    highlightedPost: SelectedPostMarker?
 ) {
 
   var mapProperties by remember {
@@ -77,6 +78,15 @@ fun MapView(
     }
   }
 
+  LaunchedEffect(highlightedPost) {
+    highlightedPost?.let { post ->
+      // Zoom to highlighted marker position with zoom level 15f
+      val latLng = LatLng(post.latitude, post.longitude)
+      val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+      cameraPositionState.animate(cameraUpdate)
+    }
+  }
+
   GoogleMap(
       modifier = Modifier.fillMaxSize().padding(padding),
       properties = mapProperties,
@@ -84,10 +94,14 @@ fun MapView(
       cameraPositionState = cameraPositionState) {
         // Add markers for each post
         posts.forEach { post ->
+          val isHighlighted = highlightedPost?.postId == post.uid
           Log.d(
               "MapView",
               "Adding marker at (${post.latitude}, ${post.longitude}) for URI: ${post.uri}")
-          AddMapMarker(post) { clickedPost -> selectedPost = clickedPost }
+          AddMapMarker(
+              post,
+              onMarkerClick = { clickedPost -> selectedPost = clickedPost },
+              isHighlighted = isHighlighted)
         }
 
         // Display the ImagePreviewDialog when a post is selected

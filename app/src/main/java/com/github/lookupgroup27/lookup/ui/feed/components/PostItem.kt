@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.feed.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,9 +36,11 @@ fun PostItem(
     post: Post,
     starStates: List<Boolean>,
     onRatingChanged: (List<Boolean>) -> Unit,
+    onAddressClick: (Post) -> Unit = {},
     color: Color = Color.Black,
     textForUsername: String = post.username,
-    showAverage: Boolean = true
+    showAverage: Boolean = true,
+    showAddress: Boolean = true
 ) {
 
   val address = remember { mutableStateOf("Loading address...") }
@@ -61,15 +64,17 @@ fun PostItem(
                 Modifier.padding(start = 4.dp)
                     .testTag("UsernameTag_${post.username}") // Tagging username for testing
             )
-        // Display the address at the top of each post item
-        Text(
-            text = address.value,
-            style = MaterialTheme.typography.bodySmall.copy(color = Color.Blue),
-            modifier =
-                Modifier.padding(start = 4.dp)
-                    .testTag("AddressTag_${post.uid}"), // Tagging address for testing
-        )
-
+        if (showAddress) {
+          // Display the address at the top of each post item
+          Text(
+              text = address.value,
+              style = MaterialTheme.typography.bodySmall.copy(color = Color.Blue),
+              modifier =
+                  Modifier.padding(start = 4.dp)
+                      .testTag("AddressTag_${post.uid}") // Tagging address for testing
+                      .clickable { onAddressClick(post) } // Clickable address to show on map
+              )
+        }
         // Display image using the dynamically fetched URI
         Image(
             painter = rememberAsyncImagePainter(post.uri), // Coil loads image from URI
