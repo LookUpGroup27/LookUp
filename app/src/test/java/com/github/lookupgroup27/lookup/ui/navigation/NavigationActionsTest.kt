@@ -98,4 +98,18 @@ class NavigationActionsTest {
     // Assert
     verify(navHostController).navigate("${Route.IMAGE_REVIEW}/$imageUri/$timestamp")
   }
+
+  @Test
+  fun navigateToMapWithPost_setsCorrectRoute() {
+    val expectedRoute = "${Route.GOOGLE_MAP}/testId/48.8566/2.3522/false"
+    val optionsCaptor = argumentCaptor<NavOptionsBuilder.() -> Unit>()
+
+    navigationActions.navigateToMapWithPost("testId", 48.8566, 2.3522, false)
+
+    verify(navHostController).navigate(eq(expectedRoute), optionsCaptor.capture())
+
+    val navOptionsBuilder = NavOptionsBuilder().apply(optionsCaptor.firstValue)
+    assertThat(navOptionsBuilder.launchSingleTop, `is`(true))
+    assertThat(navOptionsBuilder.restoreState, `is`(true))
+  }
 }

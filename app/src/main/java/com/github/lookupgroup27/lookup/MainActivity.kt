@@ -20,6 +20,7 @@ import com.github.lookupgroup27.lookup.ui.calendar.CalendarScreen
 import com.github.lookupgroup27.lookup.ui.calendar.CalendarViewModel
 import com.github.lookupgroup27.lookup.ui.feed.FeedScreen
 import com.github.lookupgroup27.lookup.ui.googlemap.GoogleMapScreen
+import com.github.lookupgroup27.lookup.ui.googlemap.components.SelectedPostMarker
 import com.github.lookupgroup27.lookup.ui.image.CameraCapture
 import com.github.lookupgroup27.lookup.ui.image.EditImageScreen
 import com.github.lookupgroup27.lookup.ui.image.EditImageViewModel
@@ -116,8 +117,49 @@ fun LookUpApp() {
       composable(Screen.MENU) { MenuScreen(navigationActions, avatarViewModel) }
       composable(Screen.PROFILE) { ProfileScreen(navigationActions, avatarViewModel) }
       composable(Screen.CALENDAR) { CalendarScreen(calendarViewModel, navigationActions) }
+      composable(
+          route = "${Route.GOOGLE_MAP}/{postId}/{lat}/{lon}/{autoCenter}",
+          arguments =
+              listOf(
+                  navArgument("postId") {
+                    type = NavType.StringType
+                    nullable = true
+                  },
+                  navArgument("lat") {
+                    type = NavType.FloatType
+                    defaultValue = 0f
+                  },
+                  navArgument("lon") {
+                    type = NavType.FloatType
+                    defaultValue = 0f
+                  },
+                  navArgument("autoCenter") {
+                    type = NavType.BoolType
+                    defaultValue = true
+                  })) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId")
+            val lat = backStackEntry.arguments?.getFloat("lat")?.toDouble() ?: 0.0
+            val lon = backStackEntry.arguments?.getFloat("lon")?.toDouble() ?: 0.0
+            val autoCenter = backStackEntry.arguments?.getBoolean("autoCenter") ?: true
+
+            val selectedMarker =
+                if (postId != null) {
+                  SelectedPostMarker(postId, lat, lon)
+                } else null
+
+            GoogleMapScreen(
+                navigationActions = navigationActions,
+                postsViewModel = postsViewModel,
+                profileViewModel = profileViewModel,
+                selectedPostMarker = selectedMarker,
+                initialAutoCenterEnabled = autoCenter)
+          }
+
       composable(Screen.GOOGLE_MAP) {
-        GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+        GoogleMapScreen(
+            navigationActions = navigationActions,
+            postsViewModel = postsViewModel,
+            profileViewModel = profileViewModel)
       }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
     }

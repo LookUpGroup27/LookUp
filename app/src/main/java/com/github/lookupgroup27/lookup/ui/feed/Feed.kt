@@ -29,6 +29,7 @@ import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
+import com.github.lookupgroup27.lookup.ui.googlemap.components.SelectedPostMarker
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -178,6 +179,15 @@ fun FeedScreen(
                                     } else {
                                       post.ratedBy
                                     }))
+                      },
+                      onAddressClick = { clickedPost ->
+                        val selectedMarker =
+                            SelectedPostMarker(
+                                postId = clickedPost.uid,
+                                latitude = clickedPost.latitude,
+                                longitude = clickedPost.longitude)
+                        navigationActions.navigateToMapWithPost(
+                            post.uid, post.latitude, post.longitude, false)
                       })
                   Spacer(modifier = Modifier.height(20.dp))
                 }
