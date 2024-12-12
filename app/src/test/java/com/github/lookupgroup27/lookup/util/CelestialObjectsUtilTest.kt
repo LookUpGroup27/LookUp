@@ -88,20 +88,15 @@ class CelestialObjectsUtilsTest {
   fun `test convertToCartesian for known azimuth and altitude`() {
     val azimuth = 45.0 // Azimuth in degrees
     val altitude = 30.0 // Altitude in degrees
-    val distance = 1.0 // Radius of celestial sphere
 
-    val (x, y, z) =
-        CelestialObjectsUtils.convertToCartesian(
-            azimuth = azimuth, altitude = altitude, distance = distance)
+    val (x, y, z) = CelestialObjectsUtils.convertToCartesian(azimuth = azimuth, altitude = altitude)
 
     // Calculated expected values manually for testing
-    val expectedX =
-        (distance * Math.cos(Math.toRadians(altitude)) * Math.cos(Math.toRadians(azimuth)))
-            .toFloat()
     val expectedY =
-        (distance * Math.cos(Math.toRadians(altitude)) * Math.sin(Math.toRadians(azimuth)))
-            .toFloat()
-    val expectedZ = (distance * Math.sin(Math.toRadians(altitude))).toFloat()
+        (100 * Math.cos(Math.toRadians(altitude)) * Math.cos(Math.toRadians(azimuth))).toFloat()
+    val expectedX =
+        (100 * Math.cos(Math.toRadians(altitude)) * Math.sin(Math.toRadians(azimuth))).toFloat()
+    val expectedZ = (100 * Math.sin(Math.toRadians(altitude))).toFloat()
 
     assertEquals(expectedX, x, 0.01f)
     assertEquals(expectedY, y, 0.01f)
