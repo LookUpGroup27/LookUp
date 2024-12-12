@@ -6,8 +6,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
-import com.github.lookupgroup27.lookup.model.location.LocationProvider
-import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -20,21 +18,19 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class MapRenderer : GLSurfaceView.Renderer {
+class MapRenderer(
+    private val context: Context,
+    private val starDataRepository: StarDataRepository,
+    private val planetsRepository: PlanetsRepository
+) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
-  private lateinit var planet: Planet
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
-  private lateinit var locationProvider: LocationProvider
-  //private lateinit var planets: List<Planet>
+  private lateinit var renderablePlanets: List<Planet>
+  private lateinit var renderableStars: List<Star>
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
-
-  private lateinit var context: Context
-  private val renderableObjects = mutableListOf<Star>() // List of stars to render
-  private lateinit var starDataRepository: StarDataRepository // Repository for star data
-  //private lateinit var planetsRepository: PlanetsRepository
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera()
@@ -50,13 +46,9 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f) // Set the background color
     GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
-    locationProvider = LocationProviderSingleton.getInstance(context)
-
-    starDataRepository = StarDataRepository(context, locationProvider = locationProvider)
-    starDataRepository.loadStarsFromCSV("hyg_stars.csv")
-
-    //planetsRepository = PlanetsRepository(locationProvider = locationProvider)
-    //planetsRepository.updatePlanetsData()
+    starDataRepository.updateStarPositions()
+    starsLoader = StarsLoader(context, starDataRepository)
+    planetsRepository.updatePlanetsData()
 
     // Initialize TextureManager
     textureManager = TextureManager(context)
@@ -87,6 +79,7 @@ class MapRenderer : GLSurfaceView.Renderer {
     GLES20.glDepthMask(true)
 
     // Draw the objects in the scene
+
     drawObjects()
   }
 
@@ -107,32 +100,15 @@ class MapRenderer : GLSurfaceView.Renderer {
   /** Initialize the objects in the scene. */
   private fun initializeObjects() {
 
-    starsLoader = StarsLoader(context, starDataRepository)
-    val stars = starsLoader.loadStars()
-    if (stars.isEmpty()) {
-      println("Warning: No stars loaded for rendering.")
-    } else {
-      println("Loaded stars and their positions:")
-      stars.forEachIndexed { index, star ->
-        println("Star $index position: ${star.position.joinToString(", ")}")
-      }
-    }
-
-    renderableObjects.addAll(stars)
-
-    //planets = planetsRepository.mapToRenderablePlanets(context)
+    renderableStars = starsLoader.loadStars()
+    renderablePlanets = planetsRepository.mapToRenderablePlanets(context)
   }
 
   /** Draws the objects in the scene. */
   private fun drawObjects() {
     // Renderable Objects
-    renderableObjects.forEach { o -> o.draw(camera) }
+    renderableStars.forEach { o -> o.draw(camera) }
 
-    //planets.forEach { o -> o.draw(camera) }
-  }
-
-  /** Updates the context used by the renderer. */
-  fun updateContext(context: Context) {
-    this.context = context
+    renderablePlanets.forEach { o -> o.draw(camera) }
   }
 }

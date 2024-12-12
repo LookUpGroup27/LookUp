@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.map
 
+import PlanetsRepository
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -7,11 +8,19 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.map.MapRenderer
+import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 
 /** The ViewModel for the map screen. */
-class MapViewModel : ViewModel() {
-  val mapRenderer = MapRenderer()
+class MapViewModel(
+    context: Context,
+    starDataRepository: StarDataRepository,
+    planetsRepository: PlanetsRepository
+) : ViewModel() {
+
+  val mapRenderer = MapRenderer(context, starDataRepository, planetsRepository)
 
   /**
    * Locks the screen orientation to portrait mode.
@@ -53,5 +62,24 @@ class MapViewModel : ViewModel() {
   fun unregisterSensorListener(activity: ComponentActivity) {
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     sensorManager.unregisterListener(mapRenderer.camera)
+  }
+
+  /** Companion object that provides a Factory for [MapViewModel]. */
+  companion object {
+    fun createFactory(context: Context): ViewModelProvider.Factory =
+        object : ViewModelProvider.Factory {
+          @Suppress("UNCHECKED_CAST")
+          override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
+            // Initialize repositories
+            val locationProvider = LocationProviderSingleton.getInstance(context)
+
+            val starDataRepository = StarDataRepository(context, locationProvider)
+            val planetsRepository = PlanetsRepository(locationProvider)
+
+            // Return MapViewModel instance
+            return MapViewModel(context, starDataRepository, planetsRepository) as T
+          }
+        }
   }
 }

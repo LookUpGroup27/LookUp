@@ -21,7 +21,6 @@ class MapSurfaceView(context: Context, renderer: MapRenderer) : GLSurfaceView(co
     setEGLContextClientVersion(2)
 
     // Set the provided renderer for drawing on the GLSurfaceView
-    renderer.updateContext(context)
     setRenderer(renderer)
 
     scaleGestureDetector = ScaleGestureDetector(context, renderer.camera)
