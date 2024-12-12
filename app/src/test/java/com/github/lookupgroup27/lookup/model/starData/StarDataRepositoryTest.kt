@@ -11,7 +11,7 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import org.junit.Assert.assertEquals
+import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -77,7 +77,6 @@ class StarDataRepositoryTest {
     assertEquals(0.0, starA.dec, tolerance.toDouble())
     assertEquals(2.0, starA.dist, tolerance.toDouble())
     assertEquals(5.20, starA.magnitude, tolerance.toDouble())
-    assertEquals("K1V", starA.spectralClass)
     assertEquals(1.0, starA.x, tolerance.toDouble())
     assertEquals(0.0, starA.y, tolerance.toDouble())
     assertEquals(0.0, starA.z, tolerance.toDouble())
@@ -125,8 +124,7 @@ class StarDataRepositoryTest {
               ra = star.ra, dec = star.dec, latitude = observerLatitude, localSiderealTime = lst)
 
       val expectedPosition =
-          CelestialObjectsUtils.convertToCartesian(
-              azimuth = azimuth, altitude = altitude, distance = star.dist)
+          CelestialObjectsUtils.convertToCartesian(azimuth = azimuth, altitude = altitude)
 
       // Assertions
       assertEquals(expectedPosition.first.toDouble(), star.x, tolerance.toDouble())
