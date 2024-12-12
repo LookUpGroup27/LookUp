@@ -1,7 +1,12 @@
 package com.github.lookupgroup27.lookup.model.calendar
 
-class MockIcalRepository(private val mockData: String?) : IcalRepository {
-  override suspend fun fetchIcalData(url: String): String? {
+/**
+ * Mock implementation of CalendarRepository for testing purposes.
+ *
+ * @property mockData The mock data to return when fetching calendar data.
+ */
+class MockCalendarRepository(private val mockData: String?) : CalendarRepository {
+  override suspend fun getData(): String? {
     return mockData
   }
 }
