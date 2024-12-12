@@ -52,7 +52,7 @@ class PlanetsRepositoryTest {
 
     // Option 1: Limit the planets list to only Mars
     repository.planets.clear()
-    repository.planets.add(PlanetData("Mars", "499"))
+    repository.planets.add(PlanetData("Mars", "499", textureId = 0))
   }
 
   @After
@@ -63,6 +63,8 @@ class PlanetsRepositoryTest {
   @Test
   fun `test updatePlanetsData updates planetary positions`() {
     // Prepare mock response for Mars
+    val soe = "$$" + "SOE"
+    val eoe = "$$" + "EOE"
     val mockApiResponseMars =
         """
             {
@@ -100,10 +102,10 @@ class PlanetsRepositoryTest {
         Output format   : CSV
         Output units    : KM-S
            
-        \${'$'}\${'$'}SOE
-        Date/Time (UTC), R.A._(deg), DEC_(deg)
-        2021-Oct-02 00:00:00.0000, 25.0, -10.0
-        \${'$'}\${'$'}EOE
+           
+        $soe
+        2021-Oct-02 00:00:00.00000 * 25.0 -10.0
+        $eoe
         *******************************************************************************
                   "
             }
@@ -131,6 +133,7 @@ class PlanetsRepositoryTest {
 
     val expectedRa = 25.0
     val expectedDec = -10.0
+
     if (mars != null) {
       assertEquals(expectedRa, mars.ra, tolerance)
     }
