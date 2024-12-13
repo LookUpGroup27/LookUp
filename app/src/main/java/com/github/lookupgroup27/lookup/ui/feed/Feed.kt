@@ -162,7 +162,7 @@ fun FeedScreen(
                         val isReturningUser = post.ratedBy.contains(userEmail)
                         val newStarsCount =
                             if (starsCount == 0) {
-                              post.starsCount
+                              post.starsCount - oldStarCounts
                             } else if (isReturningUser) post.starsCount - oldStarCounts + starsCount
                             else post.starsCount + starsCount
                         val newRatedBy =

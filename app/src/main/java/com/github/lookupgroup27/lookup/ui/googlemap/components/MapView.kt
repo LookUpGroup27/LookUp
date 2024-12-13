@@ -103,7 +103,7 @@ fun MapView(
                 val isReturningUser = it.ratedBy.contains(userEmail)
                 val newStarsCount =
                     if (starsCount == 0) {
-                      it.starsCount
+                      it.starsCount - oldStarCounts
                     } else if (isReturningUser) it.starsCount - oldStarCounts + starsCount
                     else it.starsCount + starsCount
                 val newRatedBy =
