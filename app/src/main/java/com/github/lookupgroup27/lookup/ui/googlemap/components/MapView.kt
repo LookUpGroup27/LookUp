@@ -68,15 +68,6 @@ fun MapView(
     }
   }
 
-  LaunchedEffect(profile, posts) {
-    posts.forEach { post ->
-      val starsCount = postRatings[post.uid]?.count { it } ?: 0
-      val usersNumber = postRatings[post.uid]?.size ?: 0
-      val avg = if (usersNumber == 0) 0.0 else starsCount.toDouble() / usersNumber
-      updatePost(post, avg, starsCount, usersNumber, post.ratedBy)
-    }
-  }
-
   GoogleMap(
       modifier = Modifier.fillMaxSize().padding(padding),
       properties = mapProperties,
@@ -111,16 +102,21 @@ fun MapView(
 
                 val isReturningUser = it.ratedBy.contains(userEmail)
                 val newStarsCount =
-                    if (isReturningUser) it.starsCount - oldStarCounts + starsCount
+                    if (starsCount == 0) {
+                      it.starsCount
+                    } else if (isReturningUser) it.starsCount - oldStarCounts + starsCount
                     else it.starsCount + starsCount
-                val newUsersNumber = if (isReturningUser) it.usersNumber else it.usersNumber + 1
-                val newAvg = newStarsCount.toDouble() / newUsersNumber
                 val newRatedBy =
-                    if (!isReturningUser) {
+                    if (starsCount == 0) {
+                      it.ratedBy.filter { x -> x != userEmail }
+                    } else if (!isReturningUser) {
                       it.ratedBy + userEmail
                     } else {
                       it.ratedBy
                     }
+                val newUsersNumber = newRatedBy.size
+                val newAvg = newStarsCount.toDouble() / newUsersNumber
+
                 updatePost(it, newAvg, newStarsCount, newUsersNumber, newRatedBy)
               })
         }

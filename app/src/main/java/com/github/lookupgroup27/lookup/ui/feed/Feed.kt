@@ -161,23 +161,29 @@ fun FeedScreen(
 
                         val isReturningUser = post.ratedBy.contains(userEmail)
                         val newStarsCount =
-                            if (isReturningUser) post.starsCount - oldStarCounts + starsCount
+                            if (starsCount == 0) {
+                              post.starsCount
+                            } else if (isReturningUser) post.starsCount - oldStarCounts + starsCount
                             else post.starsCount + starsCount
-                        val newUsersNumber =
-                            if (isReturningUser) post.usersNumber else post.usersNumber + 1
-                        val newAvg = newStarsCount.toDouble() / newUsersNumber
+                        val newRatedBy =
+                            if (starsCount == 0) {
+                              post.ratedBy.filter { x -> x != userEmail }
+                            } else if (!isReturningUser) {
+                              post.ratedBy + userEmail
+                            } else {
+                              post.ratedBy
+                            }
+                        val newUsersNumber = post.ratedBy.size
+                        val newAvg =
+                            if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber
+                            else 0.0
 
                         postsViewModel.updatePost(
                             post.copy(
                                 averageStars = newAvg,
                                 starsCount = newStarsCount,
                                 usersNumber = newUsersNumber,
-                                ratedBy =
-                                    if (!isReturningUser) {
-                                      post.ratedBy + userEmail
-                                    } else {
-                                      post.ratedBy
-                                    }))
+                                ratedBy = newRatedBy))
                       })
                   Spacer(modifier = Modifier.height(20.dp))
                 }
