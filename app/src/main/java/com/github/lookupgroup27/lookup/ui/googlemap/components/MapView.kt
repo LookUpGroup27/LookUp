@@ -115,7 +115,8 @@ fun MapView(
                       it.ratedBy
                     }
                 val newUsersNumber = newRatedBy.size
-                val newAvg = newStarsCount.toDouble() / newUsersNumber
+                val newAvg = if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber
+                else 0.0
 
                 updatePost(it, newAvg, newStarsCount, newUsersNumber, newRatedBy)
               })
