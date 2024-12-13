@@ -43,8 +43,8 @@ class CollectionRepositoryFirestore(
    */
   override fun getUserPosts(onSuccess: (List<Post>?) -> Unit, onFailure: (Exception) -> Unit) {
 
-    val username = auth.currentUser?.displayName
-    if (username == null) {
+    val userMail = auth.currentUser?.email
+    if (userMail == null) {
       onFailure(Exception("User is not authenticated."))
       return
     }
@@ -61,11 +61,12 @@ class CollectionRepositoryFirestore(
                 .map { post ->
                   Log.d(tag, "${post.id} => ${post.data}")
                   val data = post.data ?: return@map null
-                  if (data["username"] as String == username) {
+                  if (data["userMail"] as String == userMail) {
                     Post(
                         data["uid"] as String,
                         data["uri"] as String,
                         data["username"] as String,
+                        data["userMail"] as String,
                         (data["starsCount"] as? Long)?.toInt() ?: 0,
                         (data["averageStars"] as? Double) ?: 0.0,
                         data["latitude"] as Double,
