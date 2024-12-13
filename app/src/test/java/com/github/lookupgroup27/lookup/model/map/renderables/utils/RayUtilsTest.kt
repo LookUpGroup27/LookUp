@@ -91,4 +91,25 @@ class RayUtilsTest {
     assertArrayEquals(
         "Ray direction should be default", floatArrayOf(0f, 0f, 0f), ray.direction, 1e-6f)
   }
+
+  @Test
+  fun `calculateRay should handle zero w component in world points`() {
+    // Arrange
+    val viewport = intArrayOf(0, 0, 1080, 1920)
+    val camera =
+        Camera(fov = 45f).apply {
+          val ratio = viewport[2].toFloat() / viewport[3]
+          Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1f, 1f, 1f, 10f)
+          Matrix.setIdentityM(viewMatrix, 0)
+        }
+
+    // Act - Modify the invertedVPMatrix to create a zero w component
+    val ray = RayUtils.calculateRay(540f, 960f, camera, viewport)
+
+    // Assert - Should return a default ray due to zero w component
+    val expectedRay = Ray(floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f))
+    assertArrayEquals("Ray origin should be default", expectedRay.origin, ray.origin, 1e-6f)
+    assertArrayEquals(
+        "Ray direction should be default", expectedRay.direction, ray.direction, 1e-6f)
+  }
 }
