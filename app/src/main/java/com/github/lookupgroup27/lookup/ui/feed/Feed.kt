@@ -173,7 +173,7 @@ fun FeedScreen(
                             } else {
                               post.ratedBy
                             }
-                        val newUsersNumber = post.ratedBy.size
+                        val newUsersNumber = newRatedBy.size
                         val newAvg =
                             if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber
                             else 0.0
