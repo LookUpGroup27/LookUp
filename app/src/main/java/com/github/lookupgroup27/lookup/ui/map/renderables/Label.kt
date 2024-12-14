@@ -18,8 +18,16 @@ import java.nio.FloatBuffer
  * @param context The application context
  * @param text The text to display on the label
  * @param pos The position of the label TODO Implement this in others OpenGL classes
+ * @param size The size of the label
+ * @param objectSize The size of the object to label
  */
-class Label(context: Context, text: String, var pos: Position, size: Float) {
+class Label(
+  context: Context,
+  text: String,
+  var pos: Position,
+  size: Float,
+  objectSize: Float
+) {
   private val shaderProgram: ShaderProgram
   private val textureId: Int
   private val vertexBuffer: FloatBuffer
@@ -36,18 +44,10 @@ class Label(context: Context, text: String, var pos: Position, size: Float) {
     // These coordinates represent a quad that fills the screen
     val vertices =
       floatArrayOf(
-        -size,
-        -size,
-        0f, // Bottom left
-        size,
-        -size,
-        0f, // Bottom right
-        -size,
-        size,
-        0f, // Top left
-        size,
-        size,
-        0f // Top right
+        -size, -size - objectSize - size, 0f, // Bottom left
+        size, -size - objectSize - size, 0f, // Bottom right
+        -size, size - objectSize - size, 0f, // Top left
+        size, size - objectSize - size, 0f // Top right
       )
     vertexBuffer = vertices.toBuffer()
 
