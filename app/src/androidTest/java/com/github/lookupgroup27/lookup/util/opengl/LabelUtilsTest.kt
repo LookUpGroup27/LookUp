@@ -18,7 +18,7 @@ class LabelUtilsTest {
 
     assertNotNull("Bitmap should not be null", bitmap)
     assertEquals("Bitmap width should be 256", 256, bitmap.width)
-    assertEquals("Bitmap height should be 128", 128, bitmap.height)
+    assertEquals("Bitmap height should be 256", 256, bitmap.height)
   }
 
   /** Tests that the bitmap contains non-transparent pixels. */
