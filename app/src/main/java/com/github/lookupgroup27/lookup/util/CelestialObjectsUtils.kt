@@ -26,6 +26,21 @@ object CelestialObjectsUtils {
   }
 
   /**
+   * Calculates the Julian Day Number for a given date.
+   *
+   * @param year The year.
+   * @param month The month (1-12).
+   * @param day The day of the month.
+   * @return Julian Day Number as a Double.
+   */
+  fun getJulianDay(year: Int, month: Int, day: Int): Double {
+    val a = ((14 - month) / 12)
+    val y = year + 4800 - a
+    val m = month + 12 * a - 3
+    return day + ((153 * m + 2) / 5) + 365 * y + (y / 4) - (y / 100) + (y / 400) - 32045.5
+  }
+
+  /**
    * Computes the Local Sidereal Time (LST) at the given longitude for the current UTC time.
    *
    * Sidereal time is a measure of the Earth's rotation relative to distant stars rather than the
