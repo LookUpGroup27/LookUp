@@ -22,9 +22,9 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  * @property name The name of the planet (e.g., "Earth"). Defaults to "Planet".
  * @property position The planet's position in 3D space, represented as a float array [x, y, z].
  * @property textureId The resource ID of the texture applied to the planet's surface.
- * @property numBands The number of latitude bands used for tessellating the sphere. Higher values
+ * @param numBands The number of latitude bands used for tessellating the sphere. Higher values
  *   create smoother spheres.
- * @property stepsPerBand The number of longitude steps per latitude band. Higher values improve
+ * @param stepsPerBand The number of longitude steps per latitude band. Higher values improve
  *   rendering fidelity.
  */
 open class Planet(
