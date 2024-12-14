@@ -114,30 +114,54 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
 
     planets =
         listOf(
-            Planet(context, "Mercury", floatArrayOf(0.0f, 0.0f, -3.0f), R.drawable.mercury_texture)
-                .apply { setScale(0.2f) },
-            Planet(context, "Venus", floatArrayOf(1.0f, 0.0f, -5.0f), R.drawable.venus_texture)
-                .apply { setScale(0.3f) },
-            Planet(context, "Earth", floatArrayOf(2.0f, 0.0f, -7.0f), R.drawable.earth_texture)
-                .apply { setScale(0.4f) },
-            Planet(context, "Mars", floatArrayOf(3.0f, 0.0f, -10.0f), R.drawable.mars_texture)
-                .apply { setScale(0.35f) },
             Planet(
-                    context,
-                    "Jupiter",
-                    floatArrayOf(-2.0f, 2.0f, -15.0f),
-                    R.drawable.jupiter_texture)
-                .apply { setScale(0.8f) },
-            Planet(context, "Saturn", floatArrayOf(-3.0f, -1.0f, -20.0f), R.drawable.saturn_texture)
-                .apply { setScale(0.7f) },
-            Planet(context, "Uranus", floatArrayOf(4.0f, 3.0f, -25.0f), R.drawable.uranus_texture)
-                .apply { setScale(0.5f) },
+                context,
+                "Mercury",
+                floatArrayOf(0.0f, 0.0f, -3.0f),
+                R.drawable.mercury_texture,
+                scale = 0.2f),
             Planet(
-                    context,
-                    "Neptune",
-                    floatArrayOf(-4.0f, 1.5f, -30.0f),
-                    R.drawable.neptune_texture)
-                .apply { setScale(0.5f) })
+                context,
+                "Venus",
+                floatArrayOf(1.0f, 0.0f, -5.0f),
+                R.drawable.venus_texture,
+                scale = 0.3f),
+            Planet(
+                context,
+                "Earth",
+                floatArrayOf(2.0f, 0.0f, -7.0f),
+                R.drawable.earth_texture,
+                scale = 0.4f),
+            Planet(
+                context,
+                "Mars",
+                floatArrayOf(3.0f, 0.0f, -10.0f),
+                R.drawable.mars_texture,
+                scale = 0.35f),
+            Planet(
+                context,
+                "Jupiter",
+                floatArrayOf(-2.0f, 2.0f, -15.0f),
+                R.drawable.jupiter_texture,
+                scale = 0.8f),
+            Planet(
+                context,
+                "Saturn",
+                floatArrayOf(-3.0f, -1.0f, -20.0f),
+                R.drawable.saturn_texture,
+                scale = 0.7f),
+            Planet(
+                context,
+                "Uranus",
+                floatArrayOf(4.0f, 3.0f, -25.0f),
+                R.drawable.uranus_texture,
+                scale = 0.5f),
+            Planet(
+                context,
+                "Neptune",
+                floatArrayOf(-4.0f, 1.5f, -30.0f),
+                R.drawable.neptune_texture,
+                scale = 0.5f))
 
     // Add planets to the renderable objects list
     renderableObjects.addAll(planets)

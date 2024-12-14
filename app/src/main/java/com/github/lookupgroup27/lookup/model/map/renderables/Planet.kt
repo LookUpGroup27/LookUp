@@ -16,14 +16,17 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  * - Support for custom textures, colors, and scaling.
  * - Integration with OpenGL shaders for rendering.
  *
+ * @param numBands The number of latitude bands used for tessellating the sphere. Higher values
+ *   create smoother spheres.
+ * @param stepsPerBand The number of longitude steps per latitude band. Higher values improve
+ *   rendering fidelity.
  * @property context The Android context used for resource access.
  * @property name The name of the planet (e.g., "Earth"). Defaults to "Planet".
  * @property position The planet's position in 3D space, represented as a float array [x, y, z].
  * @property textureId The resource ID of the texture applied to the planet's surface.
- * @property numBands The number of latitude bands used for tessellating the sphere. Higher values
- *   create smoother spheres.
- * @property stepsPerBand The number of longitude steps per latitude band. Higher values improve
- *   rendering fidelity.
+ * @property vertexShaderCode The custom vertex shader code used for rendering the planet.
+ * @property fragmentShaderCode The custom fragment shader code used for rendering the planet.
+ * @property scale The scaling factor applied to the planet's geometry. Defaults to 0.3.
  */
 open class Planet(
     private val context: Context,
@@ -33,7 +36,8 @@ open class Planet(
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
     private val vertexShaderCode: String = "",
-    private val fragmentShaderCode: String = ""
+    private val fragmentShaderCode: String = "",
+    private val scale: Float = 0.3f
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
@@ -41,7 +45,7 @@ open class Planet(
   // Make textureHandle protected so it can be accessed by subclasses
   protected var textureHandle: Int = 0
 
-  private var scale: Float = 0.3f
+  // private var scale: Float = 0.3f
   private var textureManager: TextureManager
 
   /** Initializes the planet's geometry, shaders, and texture. */
@@ -64,15 +68,6 @@ open class Planet(
 
     // Load new texture
     textureHandle = textureManager.loadTexture(textureId)
-  }
-
-  /**
-   * Updates the scale of the planet, allowing customization of its size in the rendered scene.
-   *
-   * @param newScale The new scale factor.
-   */
-  fun setScale(newScale: Float) {
-    scale = newScale
   }
 
   /**
