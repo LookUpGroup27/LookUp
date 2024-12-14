@@ -3,6 +3,8 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 import android.content.Context
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
+import com.github.lookupgroup27.lookup.ui.map.renderables.Label
+import com.github.lookupgroup27.lookup.util.opengl.Position
 
 /**
  * Represents a star in 3D space using the CircleRenderer for rendering.
@@ -24,6 +26,7 @@ class Star(
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val circleRenderer = CircleRenderer(context, segments, 1.0f, color.copyOf(4))
+  private val label = Label(context, "Star", Position(position[0], position[1], position[2]), 0.1f, size)
 
   init {
     // Initialize shaders and buffers once, no textures needed
@@ -32,6 +35,7 @@ class Star(
   }
 
   override fun draw(camera: Camera) {
+    label.draw(camera)
     // Model-View-Projection (MVP) Matrix
     val mvpMatrix = FloatArray(16)
     val modelMatrix = FloatArray(16)

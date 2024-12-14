@@ -4,6 +4,8 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
+import com.github.lookupgroup27.lookup.ui.map.renderables.Label
+import com.github.lookupgroup27.lookup.util.opengl.Position
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 
 /**
@@ -27,7 +29,7 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  */
 open class Planet(
     private val context: Context,
-    private val name: String? = "Planet",
+    private val name: String = "Planet",
     private val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
     protected var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
@@ -37,12 +39,13 @@ open class Planet(
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
-
   // Make textureHandle protected so it can be accessed by subclasses
   protected var textureHandle: Int = 0
 
   private var scale: Float = 0.3f
+
   private var textureManager: TextureManager
+  private val label = Label(context, name, Position(position[0], position[1], position[2]), 0.1f, scale)
 
   /** Initializes the planet's geometry, shaders, and texture. */
   init {
@@ -81,6 +84,7 @@ open class Planet(
    * @param camera The camera used for rendering the scene.
    */
   override fun draw(camera: Camera) {
+    label.draw(camera)
     val modelMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
     val viewMatrix = FloatArray(16)
