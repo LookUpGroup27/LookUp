@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
 import com.github.lookupgroup27.lookup.model.map.renderables.Moon
@@ -198,7 +199,7 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
    */
   fun getIntersectedPlanetName(screenX: Float, screenY: Float): String? {
     if (viewport[2] == 0 || viewport[3] == 0) {
-      println("Viewport dimensions are invalid: ${viewport.joinToString()}")
+      Log.d("Viewport dimensions", "Viewport dimensions are invalid: ${viewport.joinToString()}")
       return null
     }
 
