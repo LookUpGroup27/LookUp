@@ -2,6 +2,7 @@ import android.content.Context
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.map.planets.PlanetData
+import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
 import java.io.IOException
@@ -40,6 +41,7 @@ class PlanetsRepository(
     // texture.
     planets.addAll(
         listOf(
+            PlanetData("Moon", "301", textureId = R.drawable.full_moon),
             PlanetData("Mercury", "199", textureId = R.drawable.planet_texture),
             PlanetData("Venus", "299", textureId = R.drawable.planet_texture),
             PlanetData("Mars", "499", textureId = R.drawable.planet_texture),
@@ -104,12 +106,19 @@ class PlanetsRepository(
     // Transform each PlanetData into a Planet, providing positions as a float array
     return planets.map { planetData ->
       val position = planetData.cartesian
-      Planet(
-          context = context,
-          name = planetData.name,
-          position = floatArrayOf(position.first, position.second, position.third),
-          textureId = planetData.textureId // Resource ID for the planet’s texture
-          )
+
+      if (planetData.name == "Moon") {
+        Moon(
+            context = context,
+            position = floatArrayOf(position.first, position.second, position.third))
+      } else {
+        Planet(
+            context = context,
+            name = planetData.name,
+            position = floatArrayOf(position.first, position.second, position.third),
+            textureId = planetData.textureId // Resource ID for the planet’s texture
+            )
+      }
     }
   }
 
