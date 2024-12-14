@@ -6,7 +6,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
-import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
@@ -27,8 +26,6 @@ class MapRenderer(
 ) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
-  private lateinit var moon: Moon
-
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
   private lateinit var renderablePlanets: List<Planet>
@@ -103,9 +100,9 @@ class MapRenderer(
 
   /** Initialize the objects in the scene. */
   private fun initializeObjects() {
+
     renderableStars = starsLoader.loadStars()
     renderablePlanets = planetsRepository.mapToRenderablePlanets(context)
-    moon = Moon(context) // Create moon
   }
 
   /** Draws the objects in the scene. */
@@ -114,7 +111,5 @@ class MapRenderer(
     renderableStars.forEach { o -> o.draw(camera) }
 
     renderablePlanets.forEach { o -> o.draw(camera) }
-
-    moon.draw(camera)
   }
 }
