@@ -39,8 +39,8 @@ class PlanetTest {
             context = context, // Replace with a mock or test context
             name = "TestPlanet",
             position = floatArrayOf(0f, 0f, -5f),
-            textureId = R.drawable.planet_texture)
-    planet.setScale(1f) // Set scale as the radius of the sphere
+            textureId = R.drawable.planet_texture,
+            scale = 1f)
 
     val rayOrigin = floatArrayOf(0f, 0f, 0f)
     val rayDirection = floatArrayOf(0f, 0f, -1f) // Directly toward the planet
@@ -60,8 +60,8 @@ class PlanetTest {
             context = context,
             name = "TestPlanet",
             position = floatArrayOf(5f, 5f, -5f),
-            textureId = R.drawable.planet_texture)
-    planet.setScale(1f)
+            textureId = R.drawable.planet_texture,
+            scale = 1f)
 
     val rayOrigin = floatArrayOf(0f, 0f, 0f)
     val rayDirection = floatArrayOf(0f, 0f, -1f) // Directed away from the planet's position
@@ -81,8 +81,8 @@ class PlanetTest {
             context = context,
             name = "TestPlanet",
             position = floatArrayOf(1f, 0f, -5f),
-            textureId = R.drawable.planet_texture)
-    planet.setScale(1f)
+            textureId = R.drawable.planet_texture,
+            scale = 1f)
 
     val rayOrigin = floatArrayOf(0f, 0f, 0f)
     val rayDirection = floatArrayOf(1f, 0f, -5f)
@@ -114,8 +114,8 @@ class PlanetTest {
             context = context,
             name = "TestPlanet",
             position = floatArrayOf(0f, 0f, -5f),
-            textureId = R.drawable.planet_texture)
-    planet.setScale(1f)
+            textureId = R.drawable.planet_texture,
+            scale = 1f)
 
     val rayOrigin = floatArrayOf(0f, 0f, -5f) // Inside the sphere
     val rayDirection = floatArrayOf(0f, 0f, -1f)
