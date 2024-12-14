@@ -32,8 +32,8 @@ open class Planet(
     protected var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
-    private val vertexShaderCode: String = "",
-    private val fragmentShaderCode: String = ""
+    vertexShaderCode: String = "",
+    fragmentShaderCode: String = ""
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
@@ -63,15 +63,6 @@ open class Planet(
 
     // Load new texture
     textureHandle = textureManager.loadTexture(textureId)
-  }
-
-  /**
-   * Updates the scale of the planet, allowing customization of its size in the rendered scene.
-   *
-   * @param newScale The new scale factor.
-   */
-  fun setScale(newScale: Float) {
-    scale = newScale
   }
 
   /**
