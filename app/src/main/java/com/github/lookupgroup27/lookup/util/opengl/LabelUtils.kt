@@ -27,7 +27,7 @@ object LabelUtils {
     val y = height / 2f - (paint.descent() + paint.ascent()) / 2
 
     val canvas = Canvas(bitmap)
-    canvas.drawColor(android.graphics.Color.BLACK) // Background color
+    canvas.drawColor(android.graphics.Color.TRANSPARENT) // Background color
     canvas.drawText(text, x, y, paint)
 
     return bitmap

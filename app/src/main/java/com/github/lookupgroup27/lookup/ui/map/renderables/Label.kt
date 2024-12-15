@@ -88,6 +88,8 @@ class Label(
    * @param camera The camera used to render the label
    */
   fun draw(camera: Camera) {
+    GLES20.glEnable(GLES20.GL_BLEND)
+    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
     shaderProgram.use() // FIXME: Remove this one line method ?
 
     // Get attribute and uniform locations
@@ -167,5 +169,7 @@ class Label(
 
     // Draw the text
     GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+
+    GLES20.glDisable(GLES20.GL_BLEND)
   }
 }
