@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.model.map.renderables.utils
 
 import android.opengl.Matrix
+import android.util.Log
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.model.map.Ray
 
@@ -17,7 +18,7 @@ object RayUtils {
   fun calculateRay(screenX: Float, screenY: Float, camera: Camera, viewport: IntArray): Ray {
     // Validate viewport dimensions
     if (viewport[2] <= 0 || viewport[3] <= 0) {
-      println("Viewport dimensions are invalid: ${viewport.joinToString()}")
+      Log.d("RayUtils", "Viewport dimensions are invalid: ${viewport.joinToString()}")
       return Ray(floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f))
     }
 
@@ -33,7 +34,7 @@ object RayUtils {
     val vpMatrix = FloatArray(16)
     Matrix.multiplyMM(vpMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
     if (!Matrix.invertM(invertedVPMatrix, 0, vpMatrix, 0)) {
-      println("Matrix inversion failed")
+      Log.d("RayUtils", "Matrix inversion failed")
       return Ray(floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f))
     }
 
@@ -48,7 +49,7 @@ object RayUtils {
 
     // Guard against division by zero
     if (worldNearPoint[3] == 0f || worldFarPoint[3] == 0f) {
-      println("Invalid w component in world points")
+      Log.d("RayUtils", "Invalid w component in world points")
       return Ray(floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f))
     }
 
@@ -72,7 +73,7 @@ object RayUtils {
                     .toDouble())
             .toFloat()
     if (magnitude == 0f) {
-      println("Ray direction magnitude is zero")
+      Log.d("RayUtils", "Ray direction magnitude is zero")
       return Ray(floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f))
     }
 

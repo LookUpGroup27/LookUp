@@ -108,10 +108,7 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
     // Stars
     starsLoader = StarsLoader(starDataRepository)
     val stars = starsLoader.loadStars(context, "hyg_stars.csv")
-    if (stars.isEmpty()) {
-      println("Warning: No stars loaded for rendering.")
-    }
-    // renderableObjects.addAll(stars)
+    if (stars.isEmpty()) Log.d("MapRenderer", "No stars loaded for rendering.")
 
     planets =
         listOf(
