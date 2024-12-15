@@ -128,6 +128,7 @@ fun ImageReviewScreen(
                   Post(
                       uid = postsViewModel.generateNewUid(),
                       uri = downloadUrl,
+                      userMail = FirebaseAuth.getInstance().currentUser?.email ?: "Anonymous",
                       username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
                       latitude = currentLocation.latitude,
                       longitude = currentLocation.longitude,
