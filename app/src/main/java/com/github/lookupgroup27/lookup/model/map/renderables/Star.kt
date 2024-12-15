@@ -17,11 +17,9 @@ class Star(
     val context: Context,
     val position: FloatArray,
     val color: FloatArray,
-    val size: Float = 0.3f,
-    val segments: Int = CircleRenderer.DEFAULT_SEGMENTS,
-    val vertexShaderCode: String,
-    val fragmentShaderCode: String
-) : Object(vertexShaderCode, fragmentShaderCode) {
+    val size: Float = 0.5f,
+    val segments: Int = CircleRenderer.DEFAULT_SEGMENTS
+) : Object() {
 
   private val circleRenderer = CircleRenderer(context, segments, 1.0f, color.copyOf(4))
 

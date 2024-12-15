@@ -6,10 +6,17 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class HttpIcalRepository(private val client: OkHttpClient) : IcalRepository {
+/**
+ * Implementation of CalendarRepository that fetches calendar data from a URL.
+ *
+ * @param client OkHttpClient instance for HTTP requests.
+ * @param url The URL from which calendar data is fetched.
+ */
+class CalendarRepositoryFirestore(private val client: OkHttpClient, private val url: String) :
+    CalendarRepository {
 
   @Throws(IOException::class)
-  override suspend fun fetchIcalData(url: String): String? =
+  override suspend fun getData(): String? =
       withContext(Dispatchers.IO) {
         try {
           val request = Request.Builder().url(url).build()
@@ -23,7 +30,6 @@ class HttpIcalRepository(private val client: OkHttpClient) : IcalRepository {
 
           return@withContext responseBody
         } catch (e: IllegalArgumentException) {
-
           return@withContext null
         }
       }

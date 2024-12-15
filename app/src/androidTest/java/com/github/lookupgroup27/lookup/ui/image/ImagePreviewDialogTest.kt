@@ -26,6 +26,7 @@ class ImagePreviewDialogTest {
           "1",
           "testUri",
           "testUsername",
+          "testMail",
           10,
           2.5,
           0.0,
