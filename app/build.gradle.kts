@@ -165,6 +165,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.testing)
     implementation(libs.test.core.ktx)
+    implementation (libs.androidx.constraintlayout.compose)
 
     //Camera
     implementation (libs.androidx.camera.camera2)
