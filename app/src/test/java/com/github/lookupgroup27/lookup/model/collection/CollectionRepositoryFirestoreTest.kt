@@ -139,6 +139,7 @@ class CollectionRepositoryFirestoreTest {
             "uri" to "uri1",
             "username" to "user1",
             "latitude" to 1.0,
+            "userMail" to "test@example.com",
             "longitude" to 1.0,
             "timestamp" to 1000L)
     val post2 =
@@ -146,6 +147,7 @@ class CollectionRepositoryFirestoreTest {
             "uid" to "2",
             "uri" to "uri2",
             "username" to "user2",
+            "userMail" to "test2@example.com",
             "latitude" to 2.0,
             "longitude" to 2.0,
             "timestamp" to 2000L)
