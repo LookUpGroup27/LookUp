@@ -21,7 +21,6 @@ class Star(
     val segments: Int = CircleRenderer.DEFAULT_SEGMENTS
 ) : Object() {
 
-
   private val circleRenderer = CircleRenderer(context, segments, 1.0f, color.copyOf(4))
 
   init {

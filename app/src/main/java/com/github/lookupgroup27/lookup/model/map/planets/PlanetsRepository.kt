@@ -49,7 +49,6 @@ class PlanetsRepository(
             PlanetData("Saturn", "699", textureId = R.drawable.saturn_texture),
             PlanetData("Uranus", "799", textureId = R.drawable.uranus_texture),
             PlanetData("Neptune", "899", textureId = R.drawable.neptune_texture)))
-
   }
 
   /**

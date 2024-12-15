@@ -38,12 +38,10 @@ open class Planet(
     private val scale: Float = 0.3f
 ) : Object() {
 
-
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
 
   // Make textureHandle protected so it can be accessed by subclasses
   protected var textureHandle: Int = 0
-
 
   private var textureManager: TextureManager
 

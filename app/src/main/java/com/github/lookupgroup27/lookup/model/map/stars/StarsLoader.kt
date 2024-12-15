@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.model.loader
 
 import android.content.Context
-import com.github.lookupgroup27.lookup.model.map.renderables.CircleRenderer
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 
@@ -28,8 +27,7 @@ class StarsLoader(private val context: Context, private val repository: StarData
           context = context,
           position = floatArrayOf(starData.x.toFloat(), starData.y.toFloat(), starData.z.toFloat()),
           color = floatArrayOf(1.0f, 1.0f, 1.0f),
-          size = 0.2f
-          )
+          size = 0.2f)
     }
   }
 }
