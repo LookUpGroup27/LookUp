@@ -6,10 +6,10 @@ import android.opengl.GLUtils
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
 import com.github.lookupgroup27.lookup.util.opengl.BufferUtils.toBuffer
-import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.LabelUtils
 import com.github.lookupgroup27.lookup.util.opengl.Position
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
+import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 import java.nio.FloatBuffer
 
 /**
@@ -21,13 +21,7 @@ import java.nio.FloatBuffer
  * @param size The size of the label
  * @param objectSize The size of the object to label
  */
-class Label(
-  context: Context,
-  text: String,
-  var pos: Position,
-  size: Float,
-  objectSize: Float
-) {
+class Label(context: Context, text: String, var pos: Position, size: Float, objectSize: Float) {
   private val shaderProgram: ShaderProgram
   private val textureId: Int
   private val vertexBuffer: FloatBuffer
@@ -43,26 +37,34 @@ class Label(
     // Define vertices for a quad that will display the label
     // These coordinates represent a quad that fills the screen
     val vertices =
-      floatArrayOf(
-        -size, -size - objectSize - size, 0f, // Bottom left
-        size, -size - objectSize - size, 0f, // Bottom right
-        -size, size - objectSize - size, 0f, // Top left
-        size, size - objectSize - size, 0f // Top right
-      )
+        floatArrayOf(
+            -size,
+            -size - objectSize - size,
+            0f, // Bottom left
+            size,
+            -size - objectSize - size,
+            0f, // Bottom right
+            -size,
+            size - objectSize - size,
+            0f, // Top left
+            size,
+            size - objectSize - size,
+            0f // Top right
+            )
     vertexBuffer = vertices.toBuffer()
 
     // Define texture coordinates
     val texCoords =
-      floatArrayOf(
-        0f,
-        1f, // Bottom left
-        1f,
-        1f, // Bottom right
-        0f,
-        0f, // Top left
-        1f,
-        0f // Top right
-      )
+        floatArrayOf(
+            0f,
+            1f, // Bottom left
+            1f,
+            1f, // Bottom right
+            0f,
+            0f, // Top left
+            1f,
+            0f // Top right
+            )
     texCoordBuffer = texCoords.toBuffer()
 
     // Initialize Label texture
@@ -122,7 +124,8 @@ class Label(
     val lookY = -camera.viewMatrix[6]
     val lookZ = -camera.viewMatrix[10]
 
-    // Create billboard rotation (this is the vector compared to the object that points up for the text
+    // Create billboard rotation (this is the vector compared to the object that points up for the
+    // text
     // Example we take a text Hello, we have:
     // ↑ Hello
     val upX = camera.viewMatrix[1]

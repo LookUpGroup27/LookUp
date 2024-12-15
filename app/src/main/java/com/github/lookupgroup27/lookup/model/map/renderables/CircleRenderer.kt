@@ -7,8 +7,8 @@ import com.github.lookupgroup27.lookup.model.map.renderables.utils.GeometryUtils
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
-import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
+import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 
 /**
  * Renderer for creating circular 2D objects in an OpenGL environment.

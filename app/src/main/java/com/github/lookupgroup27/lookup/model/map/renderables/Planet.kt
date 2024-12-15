@@ -18,14 +18,14 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  * - Support for custom textures, colors, and scaling.
  * - Integration with OpenGL shaders for rendering.
  *
- * @property context The Android context used for resource access.
- * @property name The name of the planet (e.g., "Earth"). Defaults to "Planet".
- * @property position The planet's position in 3D space, represented as a float array [x, y, z].
- * @property textureId The resource ID of the texture applied to the planet's surface.
  * @param numBands The number of latitude bands used for tessellating the sphere. Higher values
  *   create smoother spheres.
  * @param stepsPerBand The number of longitude steps per latitude band. Higher values improve
  *   rendering fidelity.
+ * @property context The Android context used for resource access.
+ * @property name The name of the planet (e.g., "Earth"). Defaults to "Planet".
+ * @property position The planet's position in 3D space, represented as a float array [x, y, z].
+ * @property textureId The resource ID of the texture applied to the planet's surface.
  */
 open class Planet(
     private val context: Context,
@@ -45,7 +45,8 @@ open class Planet(
   private var scale: Float = 0.3f
 
   private var textureManager: TextureManager
-  private val label = Label(context, name, Position(position[0], position[1], position[2]), 0.1f, scale)
+  private val label =
+      Label(context, name, Position(position[0], position[1], position[2]), 0.1f, scale)
 
   /** Initializes the planet's geometry, shaders, and texture. */
   init {

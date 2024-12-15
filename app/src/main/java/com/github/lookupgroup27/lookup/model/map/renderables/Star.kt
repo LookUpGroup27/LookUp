@@ -26,7 +26,8 @@ class Star(
 ) : Object(vertexShaderCode, fragmentShaderCode) {
 
   private val circleRenderer = CircleRenderer(context, segments, 1.0f, color.copyOf(4))
-  private val label = Label(context, "Star", Position(position[0], position[1], position[2]), 0.1f, size)
+  private val label =
+      Label(context, "Star", Position(position[0], position[1], position[2]), 0.1f, size)
 
   init {
     // Initialize shaders and buffers once, no textures needed
