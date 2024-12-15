@@ -27,11 +27,9 @@ class StarsLoader(private val context: Context, private val repository: StarData
       Star(
           context = context,
           position = floatArrayOf(starData.x.toFloat(), starData.y.toFloat(), starData.z.toFloat()),
-          color = floatArrayOf(1.0f, 1.0f, 1.0f), // Default
-          size = 0.3f, // Use default size
-          segments = CircleRenderer.DEFAULT_SEGMENTS, // Default segments value for rendering
-          vertexShaderCode = "TODO_VERTEX_SHADER",
-          fragmentShaderCode = "TODO_FRAGMENT_SHADER")
+          color = floatArrayOf(1.0f, 1.0f, 1.0f),
+          size = 0.2f
+          )
     }
   }
 }
