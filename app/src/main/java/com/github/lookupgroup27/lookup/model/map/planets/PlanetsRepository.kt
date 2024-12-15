@@ -42,13 +42,14 @@ class PlanetsRepository(
     planets.addAll(
         listOf(
             PlanetData("Moon", "301", textureId = R.drawable.full_moon),
-            PlanetData("Mercury", "199", textureId = R.drawable.planet_texture),
-            PlanetData("Venus", "299", textureId = R.drawable.planet_texture),
-            PlanetData("Mars", "499", textureId = R.drawable.planet_texture),
-            PlanetData("Jupiter", "599", textureId = R.drawable.planet_texture),
-            PlanetData("Saturn", "699", textureId = R.drawable.planet_texture),
-            PlanetData("Uranus", "799", textureId = R.drawable.planet_texture),
-            PlanetData("Neptune", "899", textureId = R.drawable.planet_texture)))
+            PlanetData("Mercury", "199", textureId = R.drawable.mercury_texture),
+            PlanetData("Venus", "299", textureId = R.drawable.venus_texture),
+            PlanetData("Mars", "499", textureId = R.drawable.mars_texture),
+            PlanetData("Jupiter", "599", textureId = R.drawable.jupiter_texture),
+            PlanetData("Saturn", "699", textureId = R.drawable.saturn_texture),
+            PlanetData("Uranus", "799", textureId = R.drawable.uranus_texture),
+            PlanetData("Neptune", "899", textureId = R.drawable.neptune_texture)))
+
   }
 
   /**
