@@ -17,7 +17,7 @@ class Star(
     val context: Context,
     val position: FloatArray,
     val color: FloatArray,
-    val size: Float = 0.3f,
+    val size: Float = 0.5f,
     val segments: Int = CircleRenderer.DEFAULT_SEGMENTS
 ) : Object() {
 

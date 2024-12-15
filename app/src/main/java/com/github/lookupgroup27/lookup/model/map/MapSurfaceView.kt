@@ -25,8 +25,6 @@ class MapSurfaceView(context: Context, private val viewModel: MapViewModel) :
     // Create an OpenGL ES 2.0 context
     setEGLContextClientVersion(2)
 
-    // Set the provided renderer for drawing on the GLSurfaceView
-    viewModel.mapRenderer.updateContext(context)
     setRenderer(viewModel.mapRenderer)
     scaleGestureDetector = ScaleGestureDetector(context, viewModel)
 

@@ -69,18 +69,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LookUpApp() {
+  val context = LocalContext.current
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
-      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
+      viewModel(factory = QuizViewModel.provideFactory(context = context))
   val imageViewModel: ImageViewModel = viewModel(factory = ImageViewModel.Factory)
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
-  val mapViewModel: MapViewModel = viewModel()
+  val mapViewModel: MapViewModel =
+      viewModel(factory = MapViewModel.createFactory(context = context))
   val passwordResetViewModel: PasswordResetViewModel =
       viewModel(factory = PasswordResetViewModel.Factory)
   val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
