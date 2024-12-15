@@ -68,6 +68,15 @@ fun MapView(
     }
   }
 
+  LaunchedEffect(profile, posts) {
+    posts.forEach { post ->
+      val starsCount = postRatings[post.uid]?.count { it } ?: 0
+      val usersNumber = post.ratedBy.size
+      val avg = if (usersNumber == 0) 0.0 else starsCount.toDouble() / usersNumber
+      updatePost(post, avg, starsCount, usersNumber, post.ratedBy)
+    }
+  }
+
   GoogleMap(
       modifier = Modifier.fillMaxSize().padding(padding),
       properties = mapProperties,
@@ -115,8 +124,8 @@ fun MapView(
                       it.ratedBy
                     }
                 val newUsersNumber = newRatedBy.size
-                val newAvg = if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber
-                else 0.0
+                val newAvg =
+                    if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber else 0.0
 
                 updatePost(it, newAvg, newStarsCount, newUsersNumber, newRatedBy)
               })
