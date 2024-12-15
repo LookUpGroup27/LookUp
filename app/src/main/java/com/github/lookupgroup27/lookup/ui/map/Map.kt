@@ -49,7 +49,9 @@ import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
+import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 import com.google.firebase.auth.FirebaseAuth
+import components.BackgroundImage
 
 private const val LOCATION_PERMISSION_REQUEST_CODE: Int = 1001
 
@@ -66,15 +68,15 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
 
   var hasLocationPermission by remember { mutableStateOf(false) }
   val locationProvider = LocationProviderSingleton.getInstance(context)
+  var refreshKey by remember { mutableStateOf(0) }
 
-  LaunchedEffect(Unit) {
+  LaunchedEffect(refreshKey) {
     hasLocationPermission =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
     if (hasLocationPermission) {
       locationProvider.requestLocationUpdates()
     } else {
-      // Request permission
       ActivityCompat.requestPermissions(
           context as Activity,
           arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -84,6 +86,7 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
           .show()
     }
   }
+
   if (locationProvider.currentLocation.value != null) {
     DisposableEffect(Unit) {
       val originalOrientation =
@@ -150,11 +153,33 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
                 }
           }
         } else {
-
           Box(
-              modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen_loading"),
+              modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen"),
               contentAlignment = Alignment.Center) {
-                Text("Loading map...", modifier = Modifier.testTag("map_screen"))
+                BackgroundImage(
+                    painterResId = R.drawable.background_blurred,
+                    contentDescription = stringResource(R.string.background_description),
+                    testTag = "background_test_tag")
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center) {
+                      Text(
+                          text = "Unable to load map.",
+                          fontSize = 18.sp,
+                          color = Color.White,
+                          fontWeight = FontWeight.Bold,
+                          modifier =
+                              Modifier.padding(bottom = 16.dp).testTag("map_screen_error_text"))
+                      Button(
+                          onClick = { refreshKey++ },
+                          colors =
+                              androidx.compose.material3.ButtonDefaults.buttonColors(
+                                  containerColor = DarkPurple, contentColor = Color.White),
+                          modifier = Modifier.testTag("refresh_button")) {
+                            Text("Refresh")
+                          }
+                    }
               }
         }
       }
