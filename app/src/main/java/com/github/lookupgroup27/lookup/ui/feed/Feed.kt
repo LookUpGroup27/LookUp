@@ -23,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.model.feed.ProximityAndTimePostFetcher
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
@@ -74,14 +73,13 @@ fun FeedScreen(
 
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-  val proximityAndTimePostFetcher = remember {
-    ProximityAndTimePostFetcher(postsViewModel, context)
-  }
+
+  postsViewModel.setContext(context)
 
   var locationPermissionGranted by remember { mutableStateOf(false) }
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
-          ?: proximityAndTimePostFetcher.nearbyPosts.collectAsState())
+          ?: postsViewModel.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.username != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
@@ -100,7 +98,7 @@ fun FeedScreen(
       while (locationProvider.currentLocation.value == null) {
         delay(500)
       }
-      proximityAndTimePostFetcher.fetchSortedPosts()
+      postsViewModel.fetchSortedPosts()
     }
   }
 
