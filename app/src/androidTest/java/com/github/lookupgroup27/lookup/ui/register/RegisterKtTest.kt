@@ -11,7 +11,9 @@ import org.junit.Rule
 import org.junit.Test
 
 class MockRegisterRepository : RegisterRepository {
-  override suspend fun registerUser(email: String, password: String) {}
+  override suspend fun registerUser(email: String, password: String, username: String) {
+    // Mock implementation, does nothing.
+  }
 }
 
 class RegisterKtTest {
@@ -41,6 +43,14 @@ class RegisterKtTest {
       RegisterScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
     composeTestRule.onNodeWithTag("screen_title").assertIsDisplayed()
+  }
+
+  @Test
+  fun usernameField_isDisplayed() {
+    composeTestRule.setContent {
+      RegisterScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
+    }
+    composeTestRule.onNodeWithTag("username_field").assertIsDisplayed()
   }
 
   @Test
