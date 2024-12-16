@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.model.feed
+package com.github.lookupgroup27.lookup.ui.post
 
 import android.content.Context
 import android.location.Location
@@ -7,7 +7,6 @@ import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
-import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,7 +34,6 @@ class ProximityAndTimePostFetcherTest {
 
   private lateinit var postsRepositoryFirestore: PostsRepositoryFirestore
   private lateinit var postsViewModel: PostsViewModel
-  private lateinit var proximityAndTimePostFetcher: ProximityAndTimePostFetcher
   private lateinit var context: Context
   private lateinit var locationProvider: TestLocationProvider
   private lateinit var postsRepository: PostsRepository
@@ -54,8 +52,6 @@ class ProximityAndTimePostFetcherTest {
     `when`(mockFirestore.collection(any())).thenReturn(mockCollectionReference)
     postsRepositoryFirestore = PostsRepositoryFirestore(mockFirestore)
     postsViewModel = PostsViewModel(postsRepositoryFirestore)
-
-    proximityAndTimePostFetcher = ProximityAndTimePostFetcher(postsViewModel, context)
     locationProvider = TestLocationProvider()
   }
 
@@ -70,13 +66,13 @@ class ProximityAndTimePostFetcherTest {
     locationProvider.setLocation(null, null)
 
     // Call the function
-    proximityAndTimePostFetcher.fetchSortedPosts()
+    postsViewModel.fetchSortedPosts()
 
     // Wait for any asynchronous updates
     testScheduler.advanceUntilIdle()
 
     // Assert that no nearby posts are returned when location is null
-    assertTrue(proximityAndTimePostFetcher.nearbyPosts.value.isEmpty())
+    assertTrue(postsViewModel.nearbyPosts.value.isEmpty())
   }
 
   @Test
@@ -90,13 +86,13 @@ class ProximityAndTimePostFetcherTest {
     }
 
     // Fetch posts
-    proximityAndTimePostFetcher.fetchSortedPosts()
+    postsViewModel.fetchSortedPosts()
 
     // Wait for asynchronous updates
     testScheduler.advanceUntilIdle()
 
     // Assert that no nearby posts are returned when there are no posts in the repository
-    assertTrue(proximityAndTimePostFetcher.nearbyPosts.value.isEmpty())
+    assertTrue(postsViewModel.nearbyPosts.value.isEmpty())
   }
 
   /** TestLocationProvider allows for manual setting of location values. */
