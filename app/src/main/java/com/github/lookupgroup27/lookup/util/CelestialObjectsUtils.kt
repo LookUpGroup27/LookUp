@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.utils
+package com.github.lookupgroup27.lookup.util
 
 import java.time.ZoneOffset
 import java.time.ZonedDateTime

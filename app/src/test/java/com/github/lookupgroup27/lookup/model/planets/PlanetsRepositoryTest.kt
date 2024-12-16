@@ -3,6 +3,7 @@ import android.location.Location
 import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.map.planets.PlanetData
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import com.google.firebase.FirebaseApp
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull

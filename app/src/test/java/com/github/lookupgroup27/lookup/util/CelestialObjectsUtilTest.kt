@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.utils
+package com.github.lookupgroup27.lookup.util
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
