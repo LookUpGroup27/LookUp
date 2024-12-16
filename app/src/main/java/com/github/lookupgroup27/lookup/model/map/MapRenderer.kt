@@ -61,7 +61,7 @@ class MapRenderer(
     textureManager = TextureManager(context)
 
     // Initialize the SkyBox
-    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
+    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox)
     skyBox = SkyBox(context)
 
     // Initialize the objects in the scene
