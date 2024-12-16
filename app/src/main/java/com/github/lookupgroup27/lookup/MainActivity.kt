@@ -144,17 +144,20 @@ fun LookUpApp() {
       }
 
       composable(
-          route = "${Route.EDIT_IMAGE}/{postUri}/{postAverageStar}/{postRatedByNb}/{postUid}",
+          route =
+              "${Route.EDIT_IMAGE}/{postUri}/{postAverageStar}/{postRatedByNb}/{postUid}/{postDescription}",
           arguments =
               listOf(
                   navArgument("postUri") { type = NavType.StringType },
                   navArgument("postAverageStar") { type = NavType.FloatType },
                   navArgument("postRatedByNb") { type = NavType.IntType },
-                  navArgument("postUid") { type = NavType.StringType })) { backStackEntry ->
+                  navArgument("postUid") { type = NavType.StringType },
+                  navArgument("postDescription") { type = NavType.StringType })) { backStackEntry ->
             val postUri = backStackEntry.arguments?.getString("postUri") ?: ""
             val postAverageStar = backStackEntry.arguments?.getFloat("postAverageStar") ?: 0.0f
             val postRatedByNb = backStackEntry.arguments?.getInt("postRatedByNb") ?: 0
             val postUid = backStackEntry.arguments?.getString("postUid") ?: ""
+            val postDescription = backStackEntry.arguments?.getString("postDescription") ?: ""
 
             EditImageScreen(
                 postUri = postUri,
@@ -164,6 +167,7 @@ fun LookUpApp() {
                 editImageViewModel = editImageViewModel,
                 collectionViewModel = collectionViewModel,
                 postsViewModel = postsViewModel,
+                postDescription = postDescription,
                 navigationActions = navigationActions)
           }
     }
