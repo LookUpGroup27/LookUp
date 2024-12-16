@@ -64,6 +64,7 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
                       data["uid"] as String,
                       data["uri"] as String,
                       data["username"] as String,
+                      data["userMail"] as String,
                       (data["starsCount"] as? Long)?.toInt() ?: 0,
                       (data["averageStars"] as? Double) ?: 0.0,
                       data["latitude"] as Double,

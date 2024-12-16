@@ -2,6 +2,7 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.content.Context
 import com.github.lookupgroup27.lookup.R
+import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -55,7 +56,7 @@ class Moon(
       val day = calendar.get(Calendar.DAY_OF_MONTH)
 
       // Simplified lunar phase calculation (Astronomical algorithms)
-      val julianDay = getJulianDay(year, month + 1, day)
+      val julianDay = CelestialObjectsUtils.getJulianDay(year, month + 1, day)
       val lunationNumber = (julianDay - 2451550.1) / 29.530588853
       val moonPhase = lunationNumber - lunationNumber.toInt()
 
@@ -71,21 +72,6 @@ class Moon(
         moonPhase < 0.9375 -> R.drawable.waning_crescent
         else -> R.drawable.new_moon
       }
-    }
-
-    /**
-     * Calculates the Julian Day Number for a given date.
-     *
-     * @param year The year.
-     * @param month The month (1-12).
-     * @param day The day of the month.
-     * @return Julian Day Number as a Double.
-     */
-    private fun getJulianDay(year: Int, month: Int, day: Int): Double {
-      val a = ((14 - month) / 12)
-      val y = year + 4800 - a
-      val m = month + 12 * a - 3
-      return day + ((153 * m + 2) / 5) + 365 * y + (y / 4) - (y / 100) + (y / 400) - 32045.5
     }
   }
 }

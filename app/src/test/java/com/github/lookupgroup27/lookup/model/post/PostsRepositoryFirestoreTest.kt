@@ -55,6 +55,7 @@ class PostsRepositoryFirestoreTest {
           "1",
           "testUri",
           "testUsername",
+          "testMail",
           10,
           2.5,
           0.0,
@@ -150,6 +151,7 @@ class PostsRepositoryFirestoreTest {
             "uid" to "1",
             "uri" to "uri1",
             "username" to "user1",
+            "userMail" to "test@example.com",
             "latitude" to 1.0,
             "longitude" to 1.0,
             "timestamp" to 1000L)
@@ -158,6 +160,7 @@ class PostsRepositoryFirestoreTest {
             "uid" to "2",
             "uri" to "uri2",
             "username" to "user2",
+            "userMail" to "test2@example.com",
             "latitude" to 2.0,
             "longitude" to 2.0,
             "timestamp" to 2000L)
