@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.register
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollTo
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.model.register.RegisterRepository
@@ -82,7 +83,7 @@ class RegisterKtTest {
     composeTestRule.setContent {
       RegisterScreen(viewModel = createMockViewModel(), navigationActions = mockNavigationActions())
     }
-    composeTestRule.onNodeWithTag("register_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("register_button").performScrollTo().assertIsDisplayed()
   }
 
   @Test
