@@ -43,6 +43,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
+import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 
 /**
  * Composable function to display the Edit Image Screen.
@@ -136,6 +137,7 @@ fun EditImageScreen(
             // Title for the Description Box
             Text(
                 text = "Description",
+                modifier = Modifier.padding(horizontal = 8.dp),
                 style =
                     TextStyle(
                         color = Color.White,
@@ -155,7 +157,7 @@ fun EditImageScreen(
                   modifier =
                       Modifier.fillMaxWidth()
                           .clip(RoundedCornerShape(12.dp))
-                          .background(Color.Gray.copy(alpha = 0.5f))
+                          .background(DarkPurple.copy(alpha = 0.5f))
                           .padding(8.dp)
                           .testTag("edit_description_field"),
                   keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -200,7 +202,7 @@ fun EditImageScreen(
                       Modifier.fillMaxWidth()
                           .clip(RoundedCornerShape(12.dp))
                           .height(55.dp)
-                          .background(Color.Gray.copy(alpha = 0.5f))
+                          .background(DarkPurple.copy(alpha = 0.5f))
                           .padding(8.dp)
                           .clickable { isEditing = true }
                           .testTag("description_text"))
