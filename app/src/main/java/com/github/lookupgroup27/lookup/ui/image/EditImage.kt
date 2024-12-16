@@ -151,7 +151,7 @@ fun EditImageScreen(
                   },
                   value = description,
                   onValueChange = { description = it },
-                  label = { Text("Description", color = Color.White) },
+                  label = {},
                   modifier =
                       Modifier.fillMaxWidth()
                           .clip(RoundedCornerShape(12.dp))
