@@ -7,8 +7,6 @@ import kotlin.math.floor
 
 object CelestialObjectsUtils {
 
-  private val SCALING_FACTOR = 100
-
   /**
    * Converts Right Ascension (RA) from hours to degrees.
    *
@@ -191,9 +189,9 @@ object CelestialObjectsUtils {
     val azRad = Math.toRadians(azimuth)
     val altRad = Math.toRadians(altitude)
 
-    val x = (SCALING_FACTOR * cos(altRad) * sin(azRad)).toFloat()
-    val y = (SCALING_FACTOR * cos(altRad) * cos(azRad)).toFloat()
-    val z = (SCALING_FACTOR * sin(altRad)).toFloat()
+    val x = (cos(altRad) * sin(azRad)).toFloat()
+    val y = (cos(altRad) * cos(azRad)).toFloat()
+    val z = (sin(altRad)).toFloat()
 
     return Triple(x, y, z)
   }
