@@ -49,7 +49,6 @@ open class Planet(
   private var rotationAngle: Float = 0f // Current rotation angle in degrees
   private val rotationSpeed: Float = 50f // Rotation speed in degrees per second (constant for all)
 
-
   /** Initializes the planet's geometry, shaders, and texture. */
   init {
     sphereRenderer.initializeBuffers()
@@ -73,9 +72,8 @@ open class Planet(
   }
 
   /**
-   * Updates the rotation of the planet.
-   * This method should be called once per frame, and the deltaTime parameter should be passed
-   * to calculate the incremental rotation based on the speed.
+   * Updates the rotation of the planet. This method should be called once per frame, and the
+   * deltaTime parameter should be passed to calculate the incremental rotation based on the speed.
    *
    * @param deltaTime Time elapsed since the last frame, in seconds.
    */
@@ -104,7 +102,6 @@ open class Planet(
 
     // Apply rotation transformation
     Matrix.rotateM(modelMatrix, 0, rotationAngle, 0f, 1f, 0f) // Rotate around the Y-axis
-
 
     // Combine model, view, and projection matrices in correct order
     val viewModelMatrix = FloatArray(16)
