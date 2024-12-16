@@ -1,9 +1,14 @@
 package com.github.lookupgroup27.lookup.ui.image
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.lookupgroup27.lookup.model.collection.CollectionRepository
 import com.github.lookupgroup27.lookup.model.image.EditImageRepository
@@ -17,7 +22,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 /**
@@ -65,6 +73,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -85,6 +94,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -106,6 +116,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -124,6 +135,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -146,6 +158,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -166,6 +179,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -187,6 +201,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -205,6 +220,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -223,6 +239,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -241,6 +258,7 @@ class EditImageScreenTest {
           postAverageStar = 0.0,
           postRatedByNb = 0,
           postUid = "mock_uid",
+          postDescription = "mock_description",
           editImageViewModel = editImageViewModel,
           collectionViewModel = collectionViewModel,
           navigationActions = mockNavigationActions,
@@ -248,5 +266,149 @@ class EditImageScreenTest {
     }
 
     composeTestRule.onNodeWithTag("rated_by_collection").assertIsDisplayed()
+  }
+
+  @Test
+  fun testDescriptionBoxIsDisplayed() {
+    composeTestRule.setContent {
+      EditImageScreen(
+          postUri = "mock_image_url",
+          postAverageStar = 4.5,
+          postRatedByNb = 20,
+          postUid = "mock_uid",
+          postDescription = "mock_description",
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    composeTestRule.onNodeWithTag("description_text").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEditFieldAppearsOnClick() {
+    composeTestRule.setContent {
+      EditImageScreen(
+          postUri = "mock_image_url",
+          postAverageStar = 4.5,
+          postRatedByNb = 20,
+          postUid = "mock_uid",
+          postDescription = "mock_description",
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    // Simulate clicking the description box
+    composeTestRule.onNodeWithTag("description_text").performClick()
+
+    // Verify that the edit field appears
+    composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
+  }
+
+  @Test
+  fun testOnDoneKeyboardActionDisplaysConfirmationDialogAndSavesDescription() {
+    val testPostUid = "mock_uid"
+    val initialDescription = "mock_description"
+    val updatedDescription = "updated_description"
+
+    composeTestRule.setContent {
+      EditImageScreen(
+          postUri = "mock_image_url",
+          postAverageStar = 4.5,
+          postRatedByNb = 20,
+          postUid = testPostUid,
+          postDescription = initialDescription,
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    // Click on the description text to enter editing mode
+    composeTestRule.onNodeWithTag("description_text").performClick()
+
+    // Verify the edit field appears
+    composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
+
+    // Input a new description (resetting any previous value first)
+    composeTestRule.onNodeWithTag("edit_description_field").performTextClearance()
+    composeTestRule.onNodeWithTag("edit_description_field").performTextInput(updatedDescription)
+
+    // Simulate the "Done" action
+    composeTestRule.onNodeWithTag("edit_description_field").performImeAction()
+
+    // Verify that the confirmation dialog appears
+    composeTestRule.onNodeWithText("Save Changes?").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Do you want to save the new description?").assertIsDisplayed()
+
+    // Click on the "Save" button in the dialog
+    composeTestRule.onNodeWithText("Save").performClick()
+
+    // Verify that `updateDescription` is called with correct arguments
+    verify(postsRepository).updateDescription(eq(testPostUid), eq(updatedDescription), any(), any())
+
+    // Verify that the description text displays the updated description
+    composeTestRule.onNodeWithTag("description_text").assertTextEquals(updatedDescription)
+
+    // Verify that the editing mode has exited
+    composeTestRule.onNodeWithTag("edit_description_field").assertDoesNotExist()
+
+    // Ensure the confirmation dialog is dismissed
+    composeTestRule.onNodeWithText("Save Changes?").assertDoesNotExist()
+  }
+
+  @Test
+  fun testOnDoneKeyboardActionDisplaysConfirmationDialogAndDiscardsDescription() {
+    val testPostUid = "mock_uid"
+    val initialDescription = "mock_description"
+    val updatedDescription = "updated_description"
+
+    composeTestRule.setContent {
+      EditImageScreen(
+          postUri = "mock_image_url",
+          postAverageStar = 4.5,
+          postRatedByNb = 20,
+          postUid = testPostUid,
+          postDescription = initialDescription,
+          editImageViewModel = editImageViewModel,
+          collectionViewModel = collectionViewModel,
+          navigationActions = mockNavigationActions,
+          postsViewModel = postsViewModel)
+    }
+
+    // Click on the description text to enter editing mode
+    composeTestRule.onNodeWithTag("description_text").performClick()
+
+    // Verify the edit field appears
+    composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
+
+    // Input a new description (resetting any previous value first)
+    composeTestRule.onNodeWithTag("edit_description_field").performTextClearance()
+    composeTestRule.onNodeWithTag("edit_description_field").performTextInput(updatedDescription)
+
+    // Simulate the "Done" action
+    composeTestRule.onNodeWithTag("edit_description_field").performImeAction()
+
+    // Verify that the confirmation dialog appears
+    composeTestRule.onNodeWithText("Save Changes?").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Do you want to save the new description?").assertIsDisplayed()
+
+    // Click on the "Discard" button in the dialog
+    composeTestRule.onNodeWithText("Discard").performClick()
+
+    // Verify that `updateDescription` is NOT called
+    verify(postsRepository, times(0)).updateDescription(any(), any(), any(), any())
+
+    // Verify that the description text displays the initial description
+    composeTestRule.onNodeWithTag("description_text").assertTextEquals(initialDescription)
+
+    // Verify that the editing mode has exited
+    composeTestRule.onNodeWithTag("edit_description_field").assertDoesNotExist()
+
+    // Ensure the confirmation dialog is dismissed
+    composeTestRule.onNodeWithText("Save Changes?").assertDoesNotExist()
   }
 }

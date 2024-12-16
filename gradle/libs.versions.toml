@@ -6,6 +6,7 @@ cameraCamera2 = "1.1.0"
 cameraExtensions = "1.0.0-alpha31"
 coilCompose = "2.2.2"
 
+constraintlayoutCompose = "1.1.0"
 firebaseStorage = "20.2.0"
 coilComposeVersion = "2.1.0"
 coreTesting = "2.1.0"
@@ -93,6 +94,7 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraExtensions" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraExtensions" }
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }

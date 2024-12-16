@@ -130,6 +130,26 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     repository.updatePost(post, onSuccess, onFailure)
   }
 
+  /**
+   * Updates the description of an existing post in the repository.
+   *
+   * @param postUid The UID of the modified post.
+   * @param onSuccess Callback executed on successful update.
+   * @param onFailure Callback executed on update failure.
+   */
+  fun updateDescription(
+      postUid: String,
+      newDescription: String,
+      onSuccess: () -> Unit = {},
+      onFailure: (Exception) -> Unit = {}
+  ) {
+    try {
+      repository.updateDescription(postUid, newDescription, onSuccess, onFailure)
+    } catch (exception: Exception) {
+      onFailure(exception)
+    }
+  }
+
   companion object {
     /**
      * Factory for creating instances of [PostsViewModel].
