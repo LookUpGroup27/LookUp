@@ -66,7 +66,7 @@ class ColorBuffer {
         COLORS_PER_VERTEX,
         GLES20.GL_UNSIGNED_BYTE,
         true, // Normalize the values to [0, 1]
-        COLORS_PER_VERTEX * Int.SIZE_BYTES,
+        0,
         colorBuffer)
   }
 
