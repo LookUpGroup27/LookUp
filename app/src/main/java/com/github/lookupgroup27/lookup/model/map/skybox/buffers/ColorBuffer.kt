@@ -42,7 +42,7 @@ class ColorBuffer {
    */
   fun addColor(a: Int, r: Int, g: Int, b: Int) {
     val color =
-        ((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF)
+        ((a and 0xFF) shl 24) or ((b and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (r and 0xFF)
     colorBuffer?.put(color)
   }
 
