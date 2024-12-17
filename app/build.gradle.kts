@@ -165,6 +165,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.testing)
     implementation(libs.test.core.ktx)
+    implementation (libs.androidx.constraintlayout.compose)
 
     //Camera
     implementation (libs.androidx.camera.camera2)
@@ -250,6 +251,15 @@ dependencies {
 
     // Networking with OkHttp
     implementation(libs.okhttp)
+    implementation("com.squareup.okhttp3:mockwebserver:4.9.1")
+
+    //Hamcrest
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
+
+    // Espresso
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
 
     // Calendar
     implementation(libs.ical4j)

@@ -33,7 +33,7 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 open class Planet(
     private val context: Context,
     val name: String = "Planet",
-    private val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
+    val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
     protected var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,

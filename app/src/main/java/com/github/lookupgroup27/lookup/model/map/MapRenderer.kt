@@ -1,17 +1,17 @@
 package com.github.lookupgroup27.lookup.model.map
 
+import PlanetsRepository
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.loader.StarsLoader
-import com.github.lookupgroup27.lookup.model.map.renderables.Moon
-import com.github.lookupgroup27.lookup.model.map.renderables.Object
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
+import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.renderables.utils.RayUtils.calculateRay
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
-import com.github.lookupgroup27.lookup.model.stars.StarDataRepository
+import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -20,21 +20,22 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
+class MapRenderer(
+    private val context: Context,
+    private val starDataRepository: StarDataRepository,
+    private val planetsRepository: PlanetsRepository,
+    fov: Float
+) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
-  private lateinit var planets: List<Planet>
-  private lateinit var planet: Planet
-  private lateinit var moon: Moon
-
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
+  private lateinit var renderablePlanets: List<Planet>
+  private lateinit var renderableStars: List<Star>
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
-  private lateinit var context: Context
   private val renderableObjects = mutableListOf<Object>() // List of objects to render
-  private val starDataRepository = StarDataRepository() // Repository for star data
 
   private val viewport = IntArray(4)
 
@@ -52,11 +53,15 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f) // Set the background color
     GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
+    starDataRepository.updateStarPositions()
+    starsLoader = StarsLoader(context, starDataRepository)
+    planetsRepository.updatePlanetsData()
+
     // Initialize TextureManager
     textureManager = TextureManager(context)
 
     // Initialize the SkyBox
-    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
+    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox)
     skyBox = SkyBox(context)
 
     // Initialize the objects in the scene
@@ -77,10 +82,11 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
     // Bind the texture and render the SkyBox
     GLES20.glDepthMask(false)
     textureManager.bindTexture(skyBoxTextureHandle)
-    skyBox.draw(camera)
+    // skyBox.draw(camera) commented out until the texture is changed to see stars
     GLES20.glDepthMask(true)
 
     // Draw the objects in the scene
+
     drawObjects()
   }
 
@@ -105,86 +111,15 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
 
   /** Initialize the objects in the scene. */
   private fun initializeObjects() {
-    // Stars
-    starsLoader = StarsLoader(starDataRepository)
-    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
-    if (stars.isEmpty()) Log.d("MapRenderer", "No stars loaded for rendering.")
-
-    planets =
-        listOf(
-            Planet(
-                context,
-                "Mercury",
-                floatArrayOf(0.0f, 0.0f, -3.0f),
-                R.drawable.mercury_texture,
-                scale = 0.2f),
-            Planet(
-                context,
-                "Venus",
-                floatArrayOf(1.0f, 0.0f, -5.0f),
-                R.drawable.venus_texture,
-                scale = 0.3f),
-            Planet(
-                context,
-                "Earth",
-                floatArrayOf(2.0f, 0.0f, -7.0f),
-                R.drawable.earth_texture,
-                scale = 0.4f),
-            Planet(
-                context,
-                "Mars",
-                floatArrayOf(3.0f, 0.0f, -10.0f),
-                R.drawable.mars_texture,
-                scale = 0.35f),
-            Planet(
-                context,
-                "Jupiter",
-                floatArrayOf(-2.0f, 2.0f, -15.0f),
-                R.drawable.jupiter_texture,
-                scale = 0.8f),
-            Planet(
-                context,
-                "Saturn",
-                floatArrayOf(-3.0f, -1.0f, -20.0f),
-                R.drawable.saturn_texture,
-                scale = 0.7f),
-            Planet(
-                context,
-                "Uranus",
-                floatArrayOf(4.0f, 3.0f, -25.0f),
-                R.drawable.uranus_texture,
-                scale = 0.5f),
-            Planet(
-                context,
-                "Neptune",
-                floatArrayOf(-4.0f, 1.5f, -30.0f),
-                R.drawable.neptune_texture,
-                scale = 0.5f))
-
-    // Add planets to the renderable objects list
-    renderableObjects.addAll(planets)
-    renderableObjects.addAll(stars)
-
-    // Planet
-    planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
-    // Moon
-    moon = Moon(context) // Create moon
+    renderableStars = starsLoader.loadStars()
+    renderablePlanets = planetsRepository.mapToRenderablePlanets(context)
   }
 
   /** Draws the objects in the scene. */
   private fun drawObjects() {
     // Renderable Objects
-    renderableObjects.forEach { o -> o.draw(camera) }
-
-    // Planet
-    // planet.draw(camera)
-    // Moon
-    moon.draw(camera)
-  }
-
-  /** Updates the context used by the renderer. */
-  fun updateContext(context: Context) {
-    this.context = context
+    renderableStars.forEach { o -> o.draw(camera) }
+    renderablePlanets.forEach { o -> o.draw(camera) }
   }
 
   /**
@@ -201,7 +136,7 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
     }
 
     val ray = calculateRay(screenX, screenY, camera, viewport)
-    for (planet in planets) {
+    for (planet in renderablePlanets) {
       if (planet.checkHit(ray.origin, ray.direction)) {
         return planet.name
       }
