@@ -173,8 +173,22 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   }
 
   /**
-   * Fetches nearby posts with images based on the user's current location and the time they were
-   * posted. Filters and sorts posts by distance and time, limiting results to the 3 closest posts.
+   * Fetches and updates the list of nearby posts based on the user's current location.
+   *
+   * This method:
+   * - Retrieves the user's current location from the [LocationProvider].
+   * - Collects the latest list of posts from the [allPosts] flow.
+   * - Uses the helper function [getSortedNearbyPosts] to calculate distances, sort posts by
+   *   proximity (ascending), and by timestamp (descending).
+   * - Updates the [_nearbyPosts] flow with the 10 closest posts.
+   *
+   * If the user's location is null, the method logs an error and returns without updating posts. If
+   * the list of posts is empty, the method logs a warning and does not update the flow.
+   *
+   * **Coroutines**:
+   * - Runs on a background thread using `Dispatchers.IO` to ensure non-blocking operation.
+   *
+   * @see getSortedNearbyPosts for the sorting and filtering logic.
    */
   fun fetchSortedPosts() {
     val userLocation = locationProvider?.currentLocation?.value
@@ -189,28 +203,7 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         if (posts.isNotEmpty()) {
           // Map each post to a pair of (post, distance) from the user
           val sortedNearbyPosts =
-              posts
-                  .mapNotNull { post ->
-                    // Calculate the distance from the user's location to each post's location
-                    val distance =
-                        LocationUtils.calculateDistance(
-                            userLocation.latitude,
-                            userLocation.longitude,
-                            post.latitude,
-                            post.longitude)
-
-                    // Pair each post with its distance from the user
-                    post to distance
-                  }
-                  // Sort first by distance (ascending), then by timestamp (descending)
-                  .sortedWith(
-                      compareBy<Pair<Post, Double>> { it.second } // Sort by distance
-                          .thenByDescending { it.first.timestamp } // Sort by timestamp
-                      )
-                  // Take the 3 closest posts for now
-                  .take(10)
-                  // Extract only the post objects from the pairs
-                  .map { it.first }
+              getSortedNearbyPosts(posts, userLocation.latitude, userLocation.longitude)
 
           // Update _nearbyPosts with the sorted list of nearby posts
           _nearbyPosts.update { sortedNearbyPosts }
@@ -219,6 +212,42 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         }
       }
     }
+  }
+
+  /**
+   * Sorts and filters a list of posts based on their distance from the user's location and the time
+   * they were posted.
+   *
+   * This function:
+   * - Calculates the distance from the user's current location to each post's location.
+   * - Sorts posts by distance in ascending order (closest posts first).
+   * - If two posts have the same distance, sorts them by timestamp in descending order (most recent
+   *   posts first).
+   * - Limits the result to the 10 closest posts.
+   *
+   * @param posts The list of [Post] objects to sort and filter.
+   * @param userLatitude The latitude of the user's current location.
+   * @param userLongitude The longitude of the user's current location.
+   * @return A sorted list of [Post] objects containing the 10 closest posts.
+   */
+  internal fun getSortedNearbyPosts(
+      posts: List<Post>,
+      userLatitude: Double,
+      userLongitude: Double
+  ): List<Post> {
+    return posts
+        .mapNotNull { post ->
+          val distance =
+              LocationUtils.calculateDistance(
+                  userLatitude, userLongitude, post.latitude, post.longitude)
+          post to distance // Pair each post with its calculated distance
+        }
+        .sortedWith(
+            compareBy<Pair<Post, Double>> { it.second } // Sort by distance (ascending)
+                .thenByDescending { it.first.timestamp } // Then sort by timestamp (descending)
+            )
+        .take(10) // Take the 10 closest posts
+        .map { it.first } // Extract only the posts
   }
 
   companion object {
