@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -25,9 +26,10 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
+/** Unit tests for sorting functionality in the PostsViewModel. */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class ProximityAndTimePostFetcherTest {
+class PostsViewModelSortingTest {
 
   @Mock private lateinit var mockFirestore: FirebaseFirestore
   @Mock private lateinit var mockCollectionReference: CollectionReference
@@ -93,6 +95,26 @@ class ProximityAndTimePostFetcherTest {
 
     // Assert that no nearby posts are returned when there are no posts in the repository
     assertTrue(postsViewModel.nearbyPosts.value.isEmpty())
+  }
+
+  @Test
+  fun `getSortedNearbyPosts sorts posts correctly`() {
+    // Arrange
+    val post1 = Post("Post 1", latitude = 37.7750, longitude = -122.4195, timestamp = 1000)
+    val post2 = Post("Post 2", latitude = 37.7755, longitude = -122.4190, timestamp = 2000)
+    val post3 = Post("Post 3", latitude = 37.7760, longitude = -122.4185, timestamp = 3000)
+    val posts = listOf(post3, post2, post1)
+
+    val userLatitude = 37.7749
+    val userLongitude = -122.4194
+
+    // Act
+    val sortedPosts = postsViewModel.getSortedNearbyPosts(posts, userLatitude, userLongitude)
+
+    // Assert
+    assertEquals(post1, sortedPosts[0]) // Closest post
+    assertEquals(post2, sortedPosts[1]) // Second closest
+    assertEquals(post3, sortedPosts[2]) // Third closest
   }
 
   /** TestLocationProvider allows for manual setting of location values. */
