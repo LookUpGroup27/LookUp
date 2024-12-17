@@ -70,8 +70,10 @@ class MapRenderer(
 
   private var lastFrameTime: Long = System.currentTimeMillis()
 
-  private fun computeDeltaTime(): Float {
-    val currentTime = System.currentTimeMillis()
+  var timeProvider: () -> Long = { System.currentTimeMillis() } // Default time provider
+
+  fun computeDeltaTime(): Float {
+    val currentTime = timeProvider()
     val deltaTime = (currentTime - lastFrameTime) / 1000f
     lastFrameTime = currentTime
     return deltaTime
