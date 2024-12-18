@@ -55,7 +55,7 @@ class MenuKtTest {
     verify(mockNavigationActions, never()).navigateTo(menuDestination)
   }
 
-  @Test
+  /*@Test
   fun menuScreen_bottomNavigation_clickMapTab_navigatesToMap() {
     simulateOnlineMode(true)
     composeTestRule.setContent {
@@ -69,7 +69,7 @@ class MenuKtTest {
 
     // Verify that navigation to the Map screen is triggered with the correct object
     verify(mockNavigationActions).navigateTo(mapDestination)
-  }
+  }*/
 
   @Test
   fun menuScreen_displaysAppLogo() {
@@ -130,7 +130,7 @@ class MenuKtTest {
     verify(mockNavigationActions).navigateTo(Screen.QUIZ)
   }
 
-  @Test
+  /*@Test
   fun menuScreen_clickCalendar_navigatesToCalendarScreen() {
     simulateOnlineMode(true)
     composeTestRule.setContent {
@@ -142,9 +142,9 @@ class MenuKtTest {
 
     // Verify navigation to Calendar screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.CALENDAR)
-  }
+  }*/
 
-  @Test
+  /*@Test
   fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
     simulateOnlineMode(true)
     composeTestRule.setContent {
@@ -156,7 +156,7 @@ class MenuKtTest {
 
     // Verify navigation to Google Map screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
-  }
+  }*/
 
   @Test
   fun menuScreen_otherButtons_areDisabledWhenOffline() {

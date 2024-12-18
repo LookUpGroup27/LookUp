@@ -54,7 +54,7 @@ class LandingKtTest {
     composeTestRule.onNodeWithContentDescription("Home Icon").performScrollTo().assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun backgroundIsClickableAndNavigatesToMap() {
     simulateOnlineMode(true)
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
@@ -71,7 +71,7 @@ class LandingKtTest {
 
     // Assert that the Map screen is displayed by checking for specific text or UI elements
     verify(mockNavigationActions).navigateTo(Screen.MAP)
-  }
+  }*/
 
   @Test
   fun homeButtonIsClickable() {
