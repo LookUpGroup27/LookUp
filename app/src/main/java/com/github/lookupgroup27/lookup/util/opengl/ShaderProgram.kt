@@ -35,9 +35,11 @@ class ShaderProgram(vertexShaderCode: String, fragmentShaderCode: String) {
     val compileStatus = IntArray(1)
     GLES20.glGetShaderiv(shaderId, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
     if (compileStatus[0] == 0) {
-      Log.e(TAG, "Error compiling shader: ${GLES20.glGetShaderInfoLog(shaderId)}")
+      val errorLog = GLES20.glGetShaderInfoLog(shaderId)
+      Log.e(TAG, "Error compiling shader: $errorLog")
+      Log.e(TAG, "Shader source code: $shaderCode") // Print out the actual shader code
       GLES20.glDeleteShader(shaderId)
-      throw RuntimeException("Shader compilation failed")
+      throw RuntimeException("Shader compilation failed: $errorLog")
     }
     return shaderId
   }
