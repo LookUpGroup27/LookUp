@@ -5,10 +5,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
-import com.github.lookupgroup27.lookup.util.NetworkUtils
+import com.github.lookupgroup27.lookup.ui.utils.TestNetworkUtils.simulateOnlineMode
 import com.google.firebase.auth.FirebaseAuth
-import io.mockk.every
-import io.mockk.mockkObject
 import org.junit.*
 import org.mockito.kotlin.*
 
@@ -59,6 +57,7 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_bottomNavigation_clickMapTab_navigatesToMap() {
+    simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
     }
@@ -133,6 +132,7 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_clickCalendar_navigatesToCalendarScreen() {
+    simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
     }
@@ -146,6 +146,7 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
+    simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
     }
@@ -160,8 +161,7 @@ class MenuKtTest {
   @Test
   fun menuScreen_otherButtons_areDisabledWhenOffline() {
     // Simulate offline mode
-    mockkObject(NetworkUtils)
-    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+    simulateOnlineMode(false)
 
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)

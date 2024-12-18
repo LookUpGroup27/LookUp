@@ -14,9 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
-import com.github.lookupgroup27.lookup.util.NetworkUtils
-import io.mockk.every
-import io.mockk.mockkObject
+import com.github.lookupgroup27.lookup.ui.utils.TestNetworkUtils.simulateOnlineMode
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -58,6 +56,7 @@ class LandingKtTest {
 
   @Test
   fun backgroundIsClickableAndNavigatesToMap() {
+    simulateOnlineMode(true)
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
 
     // Verify that the background image is displayed and clickable
@@ -124,8 +123,7 @@ class LandingKtTest {
   @Test
   fun testBackgroundClickDoesNotNavigateToMapWhenOffline() {
     // Simulate offline mode
-    mockkObject(NetworkUtils)
-    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+    simulateOnlineMode(false)
 
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
 
