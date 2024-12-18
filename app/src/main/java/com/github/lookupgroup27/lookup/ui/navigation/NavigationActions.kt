@@ -1,17 +1,21 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.github.lookupgroup27.lookup.R
 
 object Route {
   const val AUTH = "Auth"
   const val LANDING = "Landing"
-  const val MAP = "Map"
+  const val SKY_MAP = "SkyMap"
   const val CALENDAR = "Calendar"
   const val GOOGLE_MAP = "Google Map"
   const val QUIZ = "Quiz"
@@ -33,7 +37,7 @@ object Route {
 object Screen {
   const val AUTH = "Auth Screen"
   const val LANDING = "Landing Screen"
-  const val MAP = "Map Screen"
+  const val SKY_MAP = "Sky Map Screen"
   const val CALENDAR = "Calendar Screen"
   const val GOOGLE_MAP = "Google Map Screen"
   const val QUIZ = "Quiz Screen"
@@ -52,16 +56,23 @@ object Screen {
   const val EDIT_IMAGE = "Edit Image"
 }
 
-data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
+data class TopLevelDestination(
+  val route: String,
+  val iconVector: ImageVector? = null,  // For ImageVector icons
+  val iconResource: Int? = null,        // For PainterResource drawable icons
+  val textId: String
+)
+
+
 
 object TopLevelDestinations {
-  val MENU = TopLevelDestination(route = Route.MENU, icon = Icons.Outlined.Menu, textId = "Menu")
-  val MAP = TopLevelDestination(route = Route.MAP, icon = Icons.Outlined.Place, textId = "Map")
-  val FEED = TopLevelDestination(route = Route.FEED, icon = Icons.Outlined.List, textId = "Feed")
+  val MENU = TopLevelDestination(route = Route.MENU, iconVector = Icons.Outlined.Menu, textId = "Menu")
+  val SKY_MAP = TopLevelDestination(route = Route.SKY_MAP, iconResource = R.drawable.skymap_icon, textId = "Sky Map")
+  val FEED = TopLevelDestination(route = Route.FEED, iconVector = Icons.Outlined.List, textId = "Feed")
 }
 
 val LIST_TOP_LEVEL_DESTINATION =
-    listOf(TopLevelDestinations.MENU, TopLevelDestinations.MAP, TopLevelDestinations.FEED)
+    listOf(TopLevelDestinations.MENU, TopLevelDestinations.SKY_MAP, TopLevelDestinations.FEED)
 
 open class NavigationActions(
     private val navController: NavHostController,
