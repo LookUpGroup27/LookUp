@@ -35,7 +35,7 @@ open class Planet(
     protected var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
-    private val scale: Float = 0.3f
+    private val scale: Float = 0.02f
 ) : Object() {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)

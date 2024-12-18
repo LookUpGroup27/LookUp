@@ -30,7 +30,8 @@ class Moon(
         position = position,
         textureId = getCurrentMoonPhaseTextureId(),
         numBands = numBands,
-        stepsPerBand = stepsPerBand) {
+        stepsPerBand = stepsPerBand,
+        scale = 0.05f) {
   /** Companion object containing moon phase calculation and texture mapping logic. */
   companion object {
     /**
