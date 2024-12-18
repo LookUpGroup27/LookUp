@@ -2,7 +2,7 @@ package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.content.Context
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
+import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
 import java.util.Calendar
 import java.util.TimeZone
 

@@ -1,8 +1,7 @@
-package com.github.lookupgroup27.lookup.model.loader
+package com.github.lookupgroup27.lookup.model.map.stars
 
 import android.content.Context
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
-import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 
 /**
  * Converts star data into renderable objects for OpenGL rendering.
@@ -27,7 +26,7 @@ class StarsLoader(private val context: Context, private val repository: StarData
           context = context,
           position = floatArrayOf(starData.x.toFloat(), starData.y.toFloat(), starData.z.toFloat()),
           color = floatArrayOf(1.0f, 1.0f, 1.0f),
-          size = 0.2f)
+          size = 0.002f)
     }
   }
 }
