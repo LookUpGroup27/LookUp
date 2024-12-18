@@ -80,7 +80,7 @@ fun FeedScreen(
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: postsViewModel.nearbyPosts.collectAsState())
-  val nearbyPosts = unfilteredPosts.filter { it.username != userEmail }
+  val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
@@ -162,17 +162,38 @@ fun FeedScreen(
                     if (nearbyPosts.isEmpty()) {
                       // Loading or empty state
                       Box(
-                          modifier =
-                              Modifier.fillMaxSize()
-                                  .testTag(stringResource(R.string.loading_indicator_test_tag)),
+                          modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
                             if (!locationPermissionGranted) {
                               Text(
                                   text = stringResource(R.string.location_permission_required),
                                   style =
                                       MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+                            } else if (locationProvider.currentLocation.value == null) {
+                              CircularProgressIndicator(
+                                  color = Color.White) // Still fetching location
                             } else {
-                              CircularProgressIndicator(color = Color.White)
+                              Column(
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                  verticalArrangement = Arrangement.Center) {
+                                    // Add PNG image above the message
+                                    Image(
+                                        painter = painterResource(R.drawable.no_images_placeholder),
+                                        contentDescription =
+                                            stringResource(R.string.feed_no_images_available),
+                                        modifier =
+                                            Modifier.size(180.dp).testTag("no_images_placeholder"))
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Display "No images available" message
+                                    Text(
+                                        text = stringResource(R.string.feed_no_images_available),
+                                        modifier = Modifier.testTag("feed_no_images_available"),
+                                        style =
+                                            MaterialTheme.typography.bodyLarge.copy(
+                                                color = Color.White))
+                                  }
                             }
                           }
                     } else {
