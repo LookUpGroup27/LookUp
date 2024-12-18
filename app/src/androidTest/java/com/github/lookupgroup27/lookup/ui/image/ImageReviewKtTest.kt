@@ -105,7 +105,7 @@ class ImageReviewTest {
           collectionViewModel,
           timestamp = 123456789L)
     }
-      composeTestRule.onNodeWithTag("description_title").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("description_title").assertIsDisplayed()
     // Initially, the description field is displayed in read-only mode
     composeTestRule.onNodeWithTag("description_text").assertIsDisplayed().performClick()
 
@@ -200,22 +200,19 @@ class ImageReviewTest {
     composeTestRule.onNodeWithTag("background_image").assertIsDisplayed()
   }
 
-    @Test
-    fun testTitleIsDisplayed() {
-        composeTestRule.setContent {
-            ImageReviewScreen(
-                navigationActions = mockNavigationActions,
-                imageFile = fakeFile,
-                imageViewModel,
-                postsViewModel,
-                collectionViewModel,
-                timestamp = 123456789L
-            )
-        }
-
-        // Verify that the title "Post Your Picture" is displayed
-        composeTestRule.onNodeWithTag("post_picture_title").assertIsDisplayed()
+  @Test
+  fun testTitleIsDisplayed() {
+    composeTestRule.setContent {
+      ImageReviewScreen(
+          navigationActions = mockNavigationActions,
+          imageFile = fakeFile,
+          imageViewModel,
+          postsViewModel,
+          collectionViewModel,
+          timestamp = 123456789L)
     }
+
+    // Verify that the title "Post Your Picture" is displayed
+    composeTestRule.onNodeWithTag("post_picture_title").assertIsDisplayed()
+  }
 }
-
-

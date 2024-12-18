@@ -98,7 +98,8 @@ fun ImageReviewScreen(
                   modifier =
                       Modifier.fillMaxWidth()
                           .padding(16.dp)
-                          .align(Alignment.CenterHorizontally).testTag("post_picture_title"), // Center the title
+                          .align(Alignment.CenterHorizontally)
+                          .testTag("post_picture_title"), // Center the title
                   textAlign = TextAlign.Center)
 
               Spacer(modifier = Modifier.height(10.dp))
@@ -124,7 +125,10 @@ fun ImageReviewScreen(
 
                     Text(
                         text = "Description",
-                        modifier = Modifier.padding(horizontal = 8.dp).align(Alignment.Start).testTag("description_title"),
+                        modifier =
+                            Modifier.padding(horizontal = 8.dp)
+                                .align(Alignment.Start)
+                                .testTag("description_title"),
                         style =
                             TextStyle(
                                 color = Color.White,
