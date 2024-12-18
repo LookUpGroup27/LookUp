@@ -37,8 +37,8 @@ class NavigationActionsTest {
   @Test
   fun navigateToCallsController() {
     // Test navigating to top-level destinations
-    navigationActions.navigateTo(TopLevelDestinations.MAP)
-    verify(navHostController).navigate(eq(Route.MAP), any<NavOptionsBuilder.() -> Unit>())
+    navigationActions.navigateTo(TopLevelDestinations.SKY_MAP)
+    verify(navHostController).navigate(eq(Route.SKY_MAP), any<NavOptionsBuilder.() -> Unit>())
 
     navigationActions.navigateTo(TopLevelDestinations.MENU)
     verify(navHostController).navigate(eq(Route.MENU), any<NavOptionsBuilder.() -> Unit>())
@@ -70,7 +70,7 @@ class NavigationActionsTest {
   @Test
   fun topLevelDestinationsListIsCorrect() {
     val expectedList =
-        listOf(TopLevelDestinations.MENU, TopLevelDestinations.MAP, TopLevelDestinations.FEED)
+        listOf(TopLevelDestinations.MENU, TopLevelDestinations.SKY_MAP, TopLevelDestinations.FEED)
     assertThat(LIST_TOP_LEVEL_DESTINATION, `is`(expectedList))
   }
 
@@ -78,8 +78,8 @@ class NavigationActionsTest {
   fun navigateToTopLevelDestinationSetsCorrectOptions() {
     val optionsCaptor = argumentCaptor<NavOptionsBuilder.() -> Unit>()
 
-    navigationActions.navigateTo(TopLevelDestinations.MAP)
-    verify(navHostController).navigate(eq(Route.MAP), optionsCaptor.capture())
+    navigationActions.navigateTo(TopLevelDestinations.SKY_MAP)
+    verify(navHostController).navigate(eq(Route.SKY_MAP), optionsCaptor.capture())
 
     val navOptionsBuilder = NavOptionsBuilder().apply(optionsCaptor.firstValue)
     assertThat(navOptionsBuilder.launchSingleTop, `is`(true))

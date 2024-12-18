@@ -61,9 +61,9 @@ class MenuKtTest {
     }
 
     // Click on the Map tab
-    composeTestRule.onNodeWithTag("Map").performClick()
+    composeTestRule.onNodeWithTag("Sky Map").performClick()
 
-    val mapDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Map" }
+    val mapDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Sky Map" }
 
     // Verify that navigation to the Map screen is triggered with the correct object
     verify(mockNavigationActions).navigateTo(mapDestination)
