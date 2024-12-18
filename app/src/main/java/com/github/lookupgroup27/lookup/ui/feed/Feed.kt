@@ -213,6 +213,10 @@ fun FeedScreen(
                                             starsCount = starsCount,
                                             oldStarCounts = oldStarCounts)
                                     postsViewModel.updatePost(updatedPost)
+                                  },
+                                  onImageClick = { imageUrl, username, description ->
+                                    navigationActions.navigateToFullScreen(
+                                        imageUrl, username, description)
                                   })
                             }
                           }
