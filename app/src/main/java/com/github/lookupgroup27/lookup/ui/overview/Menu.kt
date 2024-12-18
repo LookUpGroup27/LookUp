@@ -127,7 +127,7 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                     onClick = { navigationActions.navigateTo(Screen.PLANET_SELECTION) },
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
-                          text = "Planet Selection",
+                          text = "Planets",
                           style = MaterialTheme.typography.headlineSmall,
                           fontWeight = FontWeight.Bold)
                     }
