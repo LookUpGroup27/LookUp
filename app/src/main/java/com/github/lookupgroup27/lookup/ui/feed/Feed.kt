@@ -177,7 +177,7 @@ fun FeedScreen(
                                 CircularProgressIndicator(color = Color.White) // Still fetching location
                             } else {
                                 Text(
-                                    text = "No_images_available",
+                                    text = stringResource(R.string.feed_no_images_available),
                                     modifier = Modifier.testTag("feed_no_images_available"),
                                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
                                 )
