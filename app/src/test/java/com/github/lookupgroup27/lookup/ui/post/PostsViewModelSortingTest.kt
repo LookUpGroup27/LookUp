@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.model.feed
+package com.github.lookupgroup27.lookup.ui.post
 
 import android.content.Context
 import android.location.Location
@@ -7,7 +7,6 @@ import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
-import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -26,16 +26,16 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
+/** Unit tests for sorting functionality in the PostsViewModel. */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class ProximityAndTimePostFetcherTest {
+class PostsViewModelSortingTest {
 
   @Mock private lateinit var mockFirestore: FirebaseFirestore
   @Mock private lateinit var mockCollectionReference: CollectionReference
 
   private lateinit var postsRepositoryFirestore: PostsRepositoryFirestore
   private lateinit var postsViewModel: PostsViewModel
-  private lateinit var proximityAndTimePostFetcher: ProximityAndTimePostFetcher
   private lateinit var context: Context
   private lateinit var locationProvider: TestLocationProvider
   private lateinit var postsRepository: PostsRepository
@@ -54,8 +54,6 @@ class ProximityAndTimePostFetcherTest {
     `when`(mockFirestore.collection(any())).thenReturn(mockCollectionReference)
     postsRepositoryFirestore = PostsRepositoryFirestore(mockFirestore)
     postsViewModel = PostsViewModel(postsRepositoryFirestore)
-
-    proximityAndTimePostFetcher = ProximityAndTimePostFetcher(postsViewModel, context)
     locationProvider = TestLocationProvider()
   }
 
@@ -70,13 +68,13 @@ class ProximityAndTimePostFetcherTest {
     locationProvider.setLocation(null, null)
 
     // Call the function
-    proximityAndTimePostFetcher.fetchSortedPosts()
+    postsViewModel.fetchSortedPosts()
 
     // Wait for any asynchronous updates
     testScheduler.advanceUntilIdle()
 
     // Assert that no nearby posts are returned when location is null
-    assertTrue(proximityAndTimePostFetcher.nearbyPosts.value.isEmpty())
+    assertTrue(postsViewModel.nearbyPosts.value.isEmpty())
   }
 
   @Test
@@ -90,13 +88,33 @@ class ProximityAndTimePostFetcherTest {
     }
 
     // Fetch posts
-    proximityAndTimePostFetcher.fetchSortedPosts()
+    postsViewModel.fetchSortedPosts()
 
     // Wait for asynchronous updates
     testScheduler.advanceUntilIdle()
 
     // Assert that no nearby posts are returned when there are no posts in the repository
-    assertTrue(proximityAndTimePostFetcher.nearbyPosts.value.isEmpty())
+    assertTrue(postsViewModel.nearbyPosts.value.isEmpty())
+  }
+
+  @Test
+  fun `getSortedNearbyPosts sorts posts correctly`() {
+    // Arrange
+    val post1 = Post("Post 1", latitude = 37.7750, longitude = -122.4195, timestamp = 1000)
+    val post2 = Post("Post 2", latitude = 37.7755, longitude = -122.4190, timestamp = 2000)
+    val post3 = Post("Post 3", latitude = 37.7760, longitude = -122.4185, timestamp = 3000)
+    val posts = listOf(post3, post2, post1)
+
+    val userLatitude = 37.7749
+    val userLongitude = -122.4194
+
+    // Act
+    val sortedPosts = postsViewModel.getSortedNearbyPosts(posts, userLatitude, userLongitude)
+
+    // Assert
+    assertEquals(post1, sortedPosts[0]) // Closest post
+    assertEquals(post2, sortedPosts[1]) // Second closest
+    assertEquals(post3, sortedPosts[2]) // Third closest
   }
 
   /** TestLocationProvider allows for manual setting of location values. */
