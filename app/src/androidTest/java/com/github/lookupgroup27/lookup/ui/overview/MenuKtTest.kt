@@ -55,22 +55,6 @@ class MenuKtTest {
     verify(mockNavigationActions, never()).navigateTo(menuDestination)
   }
 
-  /*@Test
-  fun menuScreen_bottomNavigation_clickMapTab_navigatesToMap() {
-    simulateOnlineMode(true)
-    composeTestRule.setContent {
-      MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
-    }
-
-    // Click on the Map tab
-    composeTestRule.onNodeWithTag("Map").performClick()
-
-    val mapDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Map" }
-
-    // Verify that navigation to the Map screen is triggered with the correct object
-    verify(mockNavigationActions).navigateTo(mapDestination)
-  }*/
-
   @Test
   fun menuScreen_displaysAppLogo() {
     composeTestRule.setContent {
@@ -129,34 +113,6 @@ class MenuKtTest {
     // Verify navigation to Quiz screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.QUIZ)
   }
-
-  /*@Test
-  fun menuScreen_clickCalendar_navigatesToCalendarScreen() {
-    simulateOnlineMode(true)
-    composeTestRule.setContent {
-      MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
-    }
-
-    // Perform click on "Calendar" button
-    composeTestRule.onNodeWithText("Calendar").performClick()
-
-    // Verify navigation to Calendar screen is triggered
-    verify(mockNavigationActions).navigateTo(Screen.CALENDAR)
-  }*/
-
-  /*@Test
-  fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
-    simulateOnlineMode(true)
-    composeTestRule.setContent {
-      MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
-    }
-
-    // Perform click on "Google Map" button
-    composeTestRule.onNodeWithText("Google Map").performClick()
-
-    // Verify navigation to Google Map screen is triggered
-    verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
-  }*/
 
   @Test
   fun menuScreen_otherButtons_areDisabledWhenOffline() {

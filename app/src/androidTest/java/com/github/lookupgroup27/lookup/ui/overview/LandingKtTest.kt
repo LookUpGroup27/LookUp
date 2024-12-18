@@ -53,26 +53,6 @@ class LandingKtTest {
     // Ensure Home Icon is displayed and clickable
     composeTestRule.onNodeWithContentDescription("Home Icon").performScrollTo().assertIsDisplayed()
   }
-
-  /*@Test
-  fun backgroundIsClickableAndNavigatesToMap() {
-    simulateOnlineMode(true)
-    composeTestRule.setContent { LandingScreen(mockNavigationActions) }
-
-    // Verify that the background image is displayed and clickable
-    composeTestRule.onNodeWithContentDescription("Background").assertIsDisplayed()
-    composeTestRule.onNodeWithContentDescription("Background").assertHasClickAction()
-
-    // Perform click action on the background image
-    composeTestRule.onNodeWithContentDescription("Background").performClick()
-
-    // Wait for the UI to settle after the click
-    composeTestRule.waitForIdle()
-
-    // Assert that the Map screen is displayed by checking for specific text or UI elements
-    verify(mockNavigationActions).navigateTo(Screen.MAP)
-  }*/
-
   @Test
   fun homeButtonIsClickable() {
     composeTestRule.setContent { LandingScreen(mockNavigationActions) }
