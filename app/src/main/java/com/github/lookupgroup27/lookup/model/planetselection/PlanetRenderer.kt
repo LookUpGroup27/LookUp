@@ -22,11 +22,11 @@ class PlanetRenderer(private val context: Context, private var planetData: Plane
 
   private lateinit var planet: Planet
 
-  private var isFirstRender = true
-
   val camera = Camera(fov = 100f) // Field of View can be adjusted
 
   private var pendingTextureId: Int? = null
+
+  private var lastFrameTime: Long = System.currentTimeMillis()
 
   override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
     try {
@@ -62,6 +62,14 @@ class PlanetRenderer(private val context: Context, private var planetData: Plane
       planet.updateTexture(it) // Update texture safely on the GL thread
       pendingTextureId = null // Reset the flag
     }
+
+    // Calculate delta time
+    val currentTime = System.currentTimeMillis()
+    val deltaTime = (currentTime - lastFrameTime) / 1000f
+    lastFrameTime = currentTime
+
+    // Update rotation and draw the planet
+    planet.updateRotation(deltaTime)
 
     // Apply the custom matrix to override planet position
     planet.draw(camera, selectionMatrix)
