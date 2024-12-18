@@ -175,13 +175,31 @@ fun FeedScreen(
                               CircularProgressIndicator(
                                   color = Color.White) // Still fetching location
                             } else {
-                              Text(
-                                  text = stringResource(R.string.feed_no_images_available),
-                                  modifier = Modifier.testTag("feed_no_images_available"),
-                                  style =
-                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    // Add PNG image above the message
+                                    Image(
+                                        painter = painterResource(R.drawable.no_images_placeholder),
+                                        contentDescription = stringResource(R.string.feed_no_images_available),
+                                        modifier = Modifier
+                                            .size(180.dp)
+                                            .testTag("no_images_placeholder")
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Display "No images available" message
+                                    Text(
+                                        text = stringResource(R.string.feed_no_images_available),
+                                        modifier = Modifier.testTag("feed_no_images_available"),
+                                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
+                                    )
+                                }
                             }
-                          }
+
+                      }
                     } else {
                       LazyColumn(
                           modifier = Modifier.fillMaxSize(),
