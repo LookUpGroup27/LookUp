@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
+import android.net.Uri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Menu
@@ -28,6 +29,7 @@ object Route {
   const val LOGIN = "Login"
   const val REGISTER = "Register"
   const val EDIT_IMAGE = "EditImage"
+  const val FULLSCREEN_IMAGE = "fullScreenImage"
 }
 
 object Screen {
@@ -50,6 +52,7 @@ object Screen {
   const val LOGIN = "Login Screen"
   const val REGISTER = "Register Screen"
   const val EDIT_IMAGE = "Edit Image"
+  const val FULLSCREEN_IMAGE = "fullScreenImage Screen"
 }
 
 data class TopLevelDestination(val route: String, val icon: ImageVector, val textId: String)
@@ -133,5 +136,14 @@ open class NavigationActions(
   ) {
     navController.navigate(
         "${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid/$postDescription")
+  }
+
+  fun navigateToFullScreen(imageUrl: String, username: String, description: String) {
+    val encodedImageUrl = Uri.encode(imageUrl)
+    val encodedUsername = Uri.encode(username)
+    val encodedDescription = Uri.encode(description)
+
+    navController.navigate(
+        "${Route.FULLSCREEN_IMAGE}/$encodedImageUrl/$encodedUsername/$encodedDescription")
   }
 }
