@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -67,12 +68,15 @@ fun PlanetSelectionScreen(
               PlanetSelectionRow(
                   planets = planets, onPlanetSelected = { viewModel.selectPlanet(it) })
 
+              Spacer(modifier = Modifier.height(40.dp))
+
               // Middle: Planet name
               Text(
                   text = selectedPlanet.name,
                   color = White,
-                  fontSize = 24.sp,
-                  modifier = Modifier.padding(16.dp))
+                  fontSize = 50.sp,
+                  fontWeight = FontWeight.Light,
+                  modifier = Modifier.padding(20.dp))
 
               // Bottom: Planet renderer
               Box(
