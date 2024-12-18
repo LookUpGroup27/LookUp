@@ -45,6 +45,10 @@ open class Planet(
 
   private var textureManager: TextureManager
 
+  // New properties for rotation
+  private var rotationAngle: Float = 0f // Current rotation angle in degrees
+  private val rotationSpeed: Float = 50f // Rotation speed in degrees per second (constant for all)
+
   /** Initializes the planet's geometry, shaders, and texture. */
   init {
     sphereRenderer.initializeBuffers()
@@ -65,6 +69,16 @@ open class Planet(
 
     // Load new texture
     textureHandle = textureManager.loadTexture(textureId)
+  }
+
+  /**
+   * Updates the rotation of the planet. This method should be called once per frame, and the
+   * deltaTime parameter should be passed to calculate the incremental rotation based on the speed.
+   *
+   * @param deltaTime Time elapsed since the last frame, in seconds.
+   */
+  fun updateRotation(deltaTime: Float) {
+    rotationAngle = (rotationAngle + rotationSpeed * deltaTime) % 360f
   }
 
   /**
@@ -89,6 +103,11 @@ open class Planet(
     val mvpMatrix = FloatArray(16)
 
     // Combine matrices: Projection * View * Model
+
+    // Apply rotation transformation
+    Matrix.rotateM(modelMatrix, 0, rotationAngle, 0f, 1f, 0f) // Rotate around the Y-axis
+
+    // Combine model, view, and projection matrices in correct order
     val viewModelMatrix = FloatArray(16)
     Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
     Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewModelMatrix, 0)

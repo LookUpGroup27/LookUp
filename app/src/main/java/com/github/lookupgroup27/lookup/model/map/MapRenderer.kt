@@ -66,6 +66,17 @@ class MapRenderer(
     initializeObjects()
   }
 
+  private var lastFrameTime: Long = System.currentTimeMillis()
+
+  var timeProvider: () -> Long = { System.currentTimeMillis() } // Default time provider
+
+  fun computeDeltaTime(): Float {
+    val currentTime = timeProvider()
+    val deltaTime = (currentTime - lastFrameTime) / 1000f
+    lastFrameTime = currentTime
+    return deltaTime
+  }
+
   /**
    * Called to redraw the frame. Clears the screen, updates the camera view, and renders objects in
    * the scene.
@@ -83,8 +94,12 @@ class MapRenderer(
     // skyBox.draw(camera) commented out until the texture is changed to see stars
     GLES20.glDepthMask(true)
 
-    // Draw the objects in the scene
+    val deltaTime = computeDeltaTime()
 
+    // Update planet rotations
+    renderablePlanets.forEach { it.updateRotation(deltaTime) }
+
+    // Draw the objects in the scene
     drawObjects()
   }
 

@@ -26,7 +26,6 @@ class StarsLoader(private val context: Context, private val repository: StarData
       Star(
           context = context,
           position = floatArrayOf(starData.x.toFloat(), starData.y.toFloat(), starData.z.toFloat()),
-          color = floatArrayOf(1.0f, 1.0f, 1.0f),
           size = 0.2f)
     }
   }
