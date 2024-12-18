@@ -139,17 +139,32 @@ class FeedScreenTest {
 
     locationProvider = LocationProvider(context, mutableStateOf(null))
 
-    composeTestRule.setContent {
-      FeedScreen(
-          postsViewModel = postsViewModel,
-          navigationActions = navigationActions,
-          profileViewModel = profileViewModel,
-          initialNearbyPosts = testPosts)
-    }
   }
 
-  @Test
+    /**
+     * Helper function to set up the FeedScreen with the given list of nearby posts.
+     *
+     * @param initialNearbyPosts The list of posts to display initially on the feed screen.
+     *
+     * This function simplifies test setup by allowing each test to specify the initial state
+     * of the feed. It handles the rendering of the FeedScreen with the specified posts and ensures
+     * a consistent setup across all tests.
+     */
+    private fun setFeedScreenContent(initialNearbyPosts: List<Post>) {
+        composeTestRule.setContent {
+            FeedScreen(
+                postsViewModel = postsViewModel,
+                navigationActions = navigationActions,
+                profileViewModel = profileViewModel,
+                initialNearbyPosts = initialNearbyPosts
+            )
+        }
+    }
+
+
+    @Test
   fun testFeedScreenDisplaysNearbyPosts() {
+        setFeedScreenContent(testPosts)
 
     // Assert each post item is displayed
     composeTestRule.onNodeWithTag("PostItem_2").assertExists()
@@ -163,12 +178,14 @@ class FeedScreenTest {
 
   @Test
   fun testFeedExcludesLoggedInUserPosts() {
+      setFeedScreenContent(testPosts)
     // Assert that the post by the logged-in user  is not displayed
     composeTestRule.onNodeWithTag("PostItem_1").assertDoesNotExist()
   }
 
   @Test
   fun testBottomNavigationMenuIsDisplayed() {
+      setFeedScreenContent(testPosts)
 
     // Verify the bottom navigation menu is displayed
     composeTestRule
@@ -179,6 +196,7 @@ class FeedScreenTest {
 
   @Test
   fun testStarClickDisplaysAverageRating() {
+      setFeedScreenContent(testPosts)
     // Perform click on the first star icon of a post with uid "1"
     composeTestRule
         .onNodeWithTag("Star_2_2")
@@ -191,6 +209,7 @@ class FeedScreenTest {
 
   @Test
   fun testStarClickCallsUpdatePost() {
+      setFeedScreenContent(testPosts)
     // Perform click on the first star of post with uid "1"
     composeTestRule.onNodeWithTag("Star_2_2").performClick()
     postsViewModel.updatePost(testPost)
@@ -211,6 +230,7 @@ class FeedScreenTest {
 
   @Test
   fun testNavigationToFeedBlockedForLoggedOutUser() {
+      setFeedScreenContent(testPosts)
     // Mock the user as not logged in
     mockAuth = org.mockito.kotlin.mock()
     whenever(mockAuth.currentUser).thenReturn(null)
@@ -224,6 +244,7 @@ class FeedScreenTest {
 
   @Test
   fun testAddressIsDisplayed() {
+      setFeedScreenContent(testPosts)
     // Verify that the address is displayed for each post
     composeTestRule.onNodeWithTag("AddressTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("AddressTag_5").assertDoesNotExist()
@@ -231,6 +252,7 @@ class FeedScreenTest {
 
   @Test
   fun testDescriptionIsDisplayed() {
+      setFeedScreenContent(testPosts)
     // Verify that the description is displayed for each post
     composeTestRule.onNodeWithTag("DescriptionTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("DescriptionTag_5").assertDoesNotExist()
