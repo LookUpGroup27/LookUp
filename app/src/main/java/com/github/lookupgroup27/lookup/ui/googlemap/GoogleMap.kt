@@ -33,7 +33,6 @@ import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 import com.google.firebase.auth.FirebaseAuth
 
-private const val LOCATION_PERMISSION_REQUEST_CODE: Int = 1001
 private const val NUMBER_OF_STARS: Int = 3
 
 /**
@@ -42,6 +41,8 @@ private const val NUMBER_OF_STARS: Int = 3
  * @param navigationActions Actions to navigate to different screens.
  * @param postsViewModel ViewModel to fetch posts.
  * @param profileViewModel ViewModel to fetch user profile.
+ * @param testNoLoc use for test purpose: it simulates the case before user grants location
+ *   permission
  */
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -65,7 +66,7 @@ fun GoogleMapScreen(
 
   profileViewModel.fetchUserProfile()
   val profile = profileViewModel.userProfile.value
-  val user = FirebaseAuth.getInstance().currentUser
+  val user = auth.currentUser
   val userEmail = user?.email ?: ""
   val username by remember { mutableStateOf(profile?.username ?: "") }
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
