@@ -53,9 +53,9 @@ class MapKtTest {
   @Test
   fun mapScreen_bottomNavigation_clickMapTab_doesNotNavigateToMap() {
     // Click on the "Map" tab
-    composeTestRule.onNodeWithTag("Map").performClick()
+    composeTestRule.onNodeWithTag("Sky Map").performClick()
 
-    val mapDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Map" }
+    val mapDestination = LIST_TOP_LEVEL_DESTINATION.first { it.textId == "Sky Map" }
 
     // Verify that navigation to the Map screen does NOT occur
     verify(mockNavigationActions, never()).navigateTo(mapDestination)

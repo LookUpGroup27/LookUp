@@ -66,7 +66,7 @@ class LandingKtTest {
     composeTestRule.waitForIdle()
 
     // Assert that the Map screen is displayed by checking for specific text or UI elements
-    verify(mockNavigationActions).navigateTo(Screen.MAP)
+    verify(mockNavigationActions).navigateTo(Screen.SKY_MAP)
   }
 
   @Test

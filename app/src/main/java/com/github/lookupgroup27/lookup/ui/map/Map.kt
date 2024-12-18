@@ -111,7 +111,7 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
             onTabSelect = { destination -> navigationActions.navigateTo(destination) },
             tabList = LIST_TOP_LEVEL_DESTINATION,
             isUserLoggedIn = isUserLoggedIn,
-            selectedItem = Route.MAP)
+            selectedItem = Route.SKY_MAP)
       }) { innerPadding ->
         if (locationProvider.currentLocation.value != null) {
           Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen")) {
