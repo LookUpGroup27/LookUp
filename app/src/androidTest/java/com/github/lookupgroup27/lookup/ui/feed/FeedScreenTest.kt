@@ -330,5 +330,6 @@ class FeedScreenTest {
         .onNodeWithTag("enable_location_button")
         .assertExists() // Verify button is displayed
     composeTestRule.onNodeWithText("Enable Location").assertExists() // Verify button text
+    composeTestRule.onNodeWithTag("enable_location_button").performClick()
   }
 }

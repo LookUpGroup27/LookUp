@@ -92,7 +92,7 @@ fun FeedScreen(
   val permissionLauncher =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         locationPermissionGranted = isGranted
-        if (isGranted) {
+        if (isGranted && !testNoLoca) {
           locationProvider.requestLocationUpdates()
           proximityAndTimePostFetcher.fetchSortedPosts()
         } else {
