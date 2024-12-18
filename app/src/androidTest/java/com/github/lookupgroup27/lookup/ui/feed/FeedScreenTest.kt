@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -158,13 +159,14 @@ class FeedScreenTest {
    * feed. It handles the rendering of the FeedScreen with the specified posts and ensures a
    * consistent setup across all tests.
    */
-  private fun setFeedScreenContent(initialNearbyPosts: List<Post>) {
+  private fun setFeedScreenContent(initialNearbyPosts: List<Post>, testNoLoca: Boolean = false) {
     composeTestRule.setContent {
       FeedScreen(
           postsViewModel = postsViewModel,
           navigationActions = navigationActions,
           profileViewModel = profileViewModel,
-          initialNearbyPosts = initialNearbyPosts)
+          initialNearbyPosts = initialNearbyPosts,
+          testNoLoca = testNoLoca)
     }
   }
 
@@ -319,5 +321,14 @@ class FeedScreenTest {
 
     // Assert: Placeholder image is displayed
     composeTestRule.onNodeWithTag("no_images_placeholder").assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun testEnableLocationButtonIsDisplayed() {
+    setFeedScreenContent(emptyList(), true)
+    composeTestRule
+        .onNodeWithTag("enable_location_button")
+        .assertExists() // Verify button is displayed
+    composeTestRule.onNodeWithText("Enable Location").assertExists() // Verify button text
   }
 }

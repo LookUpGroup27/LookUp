@@ -3,7 +3,10 @@ package com.github.lookupgroup27.lookup.ui.feed
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,7 +62,8 @@ fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
     profileViewModel: ProfileViewModel,
-    initialNearbyPosts: List<Post>? = null
+    initialNearbyPosts: List<Post>? = null,
+    testNoLoca: Boolean = false
 ) {
   // Fetch user profile
   LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
@@ -74,35 +78,51 @@ fun FeedScreen(
 
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-  val proximityAndTimePostFetcher = remember {
-    ProximityAndTimePostFetcher(postsViewModel, context)
+  val proximityAndTimePostFetcher by remember {
+    mutableStateOf(ProximityAndTimePostFetcher(postsViewModel, context))
   }
 
-  var locationPermissionGranted by remember { mutableStateOf(false) }
+  var locationPermissionGranted by remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
+
+  // Permission request launcher
+  val permissionLauncher =
+      rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        locationPermissionGranted = isGranted
+        if (isGranted) {
+          locationProvider.requestLocationUpdates()
+          proximityAndTimePostFetcher.fetchSortedPosts()
+        } else {
+          Toast.makeText(
+                  context,
+                  "Location permission is required. Please enable it in the app settings.",
+                  Toast.LENGTH_LONG)
+              .show()
+        }
+      }
+
+  // Trigger location updates when permission is granted
+  LaunchedEffect(locationPermissionGranted) {
+    if (locationPermissionGranted) {
+      locationProvider.requestLocationUpdates()
+
+      while (locationProvider.currentLocation.value == null) {
+        delay(500) // Retry every 500ms
+      }
+
+      proximityAndTimePostFetcher.fetchSortedPosts()
+    }
+  }
+
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: proximityAndTimePostFetcher.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
-
-  // Check for location permissions and fetch posts when granted.
-  LaunchedEffect(Unit) {
-    locationPermissionGranted =
-        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED
-
-    if (!locationPermissionGranted) {
-      Toast.makeText(
-              context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG)
-          .show()
-    } else {
-      while (locationProvider.currentLocation.value == null) {
-        delay(500)
-      }
-      proximityAndTimePostFetcher.fetchSortedPosts()
-    }
-  }
 
   // Initialize post ratings based on the user profile.
   LaunchedEffect(nearbyPosts, profile) {
@@ -166,11 +186,21 @@ fun FeedScreen(
                       Box(
                           modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
-                            if (!locationPermissionGranted) {
-                              Text(
-                                  text = stringResource(R.string.location_permission_required),
-                                  style =
-                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+                            if (testNoLoca || !locationPermissionGranted) {
+                              Log.d("FeedScreen", "Location permission not granted")
+
+                              // Show permission request button
+                              Button(
+                                  onClick = {
+                                    permissionLauncher.launch(
+                                        Manifest.permission.ACCESS_FINE_LOCATION)
+                                  },
+                                  modifier = Modifier.testTag("enable_location_button"),
+                                  colors =
+                                      ButtonDefaults.buttonColors(
+                                          MaterialTheme.colorScheme.primary)) {
+                                    Text("Enable Location")
+                                  }
                             } else if (locationProvider.currentLocation.value == null) {
                               CircularProgressIndicator(
                                   color = Color.White) // Still fetching location
