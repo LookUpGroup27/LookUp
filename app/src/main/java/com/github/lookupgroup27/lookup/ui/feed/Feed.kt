@@ -173,11 +173,17 @@ fun FeedScreen(
                                   text = stringResource(R.string.location_permission_required),
                                   style =
                                       MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+                            } else if (locationProvider.currentLocation.value == null) {
+                                CircularProgressIndicator(color = Color.White) // Still fetching location
                             } else {
-                              CircularProgressIndicator(color = Color.White)
+                                Text(
+                                    text = "No_images_available",
+                                    modifier = Modifier.testTag("feed_no_images_available"),
+                                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
+                                )
                             }
-                          }
-                    } else {
+                      }
+                    }else {
                       LazyColumn(
                           modifier = Modifier.fillMaxSize(),
                           contentPadding = PaddingValues(vertical = 16.dp),
