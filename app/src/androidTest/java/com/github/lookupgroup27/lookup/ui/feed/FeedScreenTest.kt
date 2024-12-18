@@ -11,7 +11,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
+import com.github.lookupgroup27.lookup.TestLocationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
+import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
@@ -22,6 +24,8 @@ import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -257,4 +261,27 @@ class FeedScreenTest {
     composeTestRule.onNodeWithTag("DescriptionTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("DescriptionTag_5").assertDoesNotExist()
   }
+
+    @Test
+    fun testFeedDisplaysNoImagesMessageWhenPostsAreEmpty() {
+        // Arrange: Mock location provider and permissions
+        val testLocationProvider = TestLocationProvider()
+        testLocationProvider.setLocation(37.7749, -122.4194) // Mocked location
+
+        mockkObject(LocationProviderSingleton)
+        every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
+
+
+        // Act: Render the FeedScreen with no posts
+        setFeedScreenContent(emptyList())
+
+        // Wait for the location to emit
+        composeTestRule.waitForIdle()
+
+        // Assert: "No images available" message is displayed
+        composeTestRule
+            .onNodeWithTag("feed_no_images_available")
+            .assertExists()
+            .assertIsDisplayed()
+    }
 }
