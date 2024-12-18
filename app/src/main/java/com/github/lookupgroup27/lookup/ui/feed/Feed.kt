@@ -64,8 +64,7 @@ fun FeedScreen(
     initialNearbyPosts: List<Post>? = null,
     testNoLoca: Boolean = false
 ) {
-  val localContext by remember { mutableStateOf(LocalContext) }
-  val context = localContext.current
+  val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
   val proximityAndTimePostFetcher by remember {
     mutableStateOf(ProximityAndTimePostFetcher(postsViewModel, context))
