@@ -164,9 +164,7 @@ fun FeedScreen(
                     if (nearbyPosts.isEmpty()) {
                       // Loading or empty state
                       Box(
-                          modifier =
-                              Modifier.fillMaxSize()
-                                  .testTag("loading_indicator_test_tag"),
+                          modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
                             if (!locationPermissionGranted) {
                               Text(
@@ -174,16 +172,17 @@ fun FeedScreen(
                                   style =
                                       MaterialTheme.typography.bodyLarge.copy(color = Color.White))
                             } else if (locationProvider.currentLocation.value == null) {
-                                CircularProgressIndicator(color = Color.White) // Still fetching location
+                              CircularProgressIndicator(
+                                  color = Color.White) // Still fetching location
                             } else {
-                                Text(
-                                    text = stringResource(R.string.feed_no_images_available),
-                                    modifier = Modifier.testTag("feed_no_images_available"),
-                                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
-                                )
+                              Text(
+                                  text = stringResource(R.string.feed_no_images_available),
+                                  modifier = Modifier.testTag("feed_no_images_available"),
+                                  style =
+                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
                             }
-                      }
-                    }else {
+                          }
+                    } else {
                       LazyColumn(
                           modifier = Modifier.fillMaxSize(),
                           contentPadding = PaddingValues(vertical = 16.dp),
