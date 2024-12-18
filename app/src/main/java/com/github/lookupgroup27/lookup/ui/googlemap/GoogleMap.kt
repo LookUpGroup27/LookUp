@@ -143,7 +143,8 @@ fun GoogleMapScreen(
               Image(
                   painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
                   contentDescription = "Background",
-                  modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp),
+                  modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp)
+                      .testTag("background_image"),
                   contentScale = ContentScale.Crop)
 
               Button(
