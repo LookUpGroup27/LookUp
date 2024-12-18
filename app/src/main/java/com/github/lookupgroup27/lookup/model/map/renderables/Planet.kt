@@ -72,25 +72,25 @@ open class Planet(
    *
    * @param camera The camera used for rendering the scene.
    */
-  override fun draw(camera: Camera) {
+  fun draw(camera: Camera, transformMatrix: FloatArray? = null) {
     val modelMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
-    val viewMatrix = FloatArray(16)
-    val projMatrix = FloatArray(16)
 
-    // Copy camera matrices to avoid modification
-    System.arraycopy(camera.viewMatrix, 0, viewMatrix, 0, 16)
-    System.arraycopy(camera.projMatrix, 0, projMatrix, 0, 16)
+    // Apply the provided transform matrix or use the default planet position
+    if (transformMatrix != null) {
+      System.arraycopy(transformMatrix, 0, modelMatrix, 0, 16)
+    } else {
+      Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
+      Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
+    }
 
-    // Apply object transformations
-    Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
-    Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
+    val viewMatrix = camera.viewMatrix
+    val projMatrix = camera.projMatrix
+    val mvpMatrix = FloatArray(16)
 
-    // Combine model, view, and projection matrices in correct order
+    // Combine matrices: Projection * View * Model
     val viewModelMatrix = FloatArray(16)
     Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-
-    val mvpMatrix = FloatArray(16)
     Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewModelMatrix, 0)
 
     // Pass final MVP matrix to the renderer
@@ -106,6 +106,11 @@ open class Planet(
     // Render the sphere
     sphereRenderer.drawSphere()
     sphereRenderer.unbindShaderAttributes()
+  }
+
+  fun updateTexture(newTextureId: Int) {
+    textureId = newTextureId
+    loadTexture() // Reload the texture using the new ID
   }
 
   /**
