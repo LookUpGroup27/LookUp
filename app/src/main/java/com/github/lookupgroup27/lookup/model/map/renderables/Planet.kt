@@ -32,7 +32,7 @@ open class Planet(
     private val context: Context,
     val name: String? = "Planet",
     val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
-    protected var textureId: Int,
+    var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
     private val scale: Float = 0.3f
