@@ -48,7 +48,8 @@ private const val NUMBER_OF_STARS: Int = 3
 fun GoogleMapScreen(
     navigationActions: NavigationActions,
     postsViewModel: PostsViewModel = viewModel(),
-    profileViewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    testNoLoca: Boolean = false
 ) {
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
@@ -138,7 +139,7 @@ fun GoogleMapScreen(
       content = { padding ->
         Column {
           // Check and request permission
-          if (!hasLocationPermission) {
+          if (!hasLocationPermission || testNoLoca) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
               Image(
                   painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
