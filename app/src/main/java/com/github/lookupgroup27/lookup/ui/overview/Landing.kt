@@ -36,7 +36,7 @@ fun LandingScreen(navigationActions: NavigationActions) {
   BoxWithConstraints(
       modifier =
           Modifier.fillMaxSize().testTag("LandingScreen").clickable {
-            navigationActions.navigateTo(Screen.MAP)
+            navigationActions.navigateTo(Screen.SKY_MAP)
           }) {
         // Background Image
         BackgroundImage(
