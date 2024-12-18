@@ -27,6 +27,10 @@ class Label(context: Context, text: String, var pos: Position, size: Float, obje
   private val vertexBuffer: FloatBuffer
   private val texCoordBuffer: FloatBuffer
 
+  companion object {
+    private const val PADDING = 0.025f
+  }
+
   init {
     // Initialize shader program
     val vertexShaderCode = readShader(context, "label_vertex_shader.glsl")
@@ -39,16 +43,16 @@ class Label(context: Context, text: String, var pos: Position, size: Float, obje
     val vertices =
         floatArrayOf(
             -size,
-            -size - objectSize - size,
+            -size - objectSize - PADDING,
             0f, // Bottom left
             size,
-            -size - objectSize - size,
+            -size - objectSize - PADDING,
             0f, // Bottom right
             -size,
-            size - objectSize - size,
+            size - objectSize - PADDING,
             0f, // Top left
             size,
-            size - objectSize - size,
+            size - objectSize - PADDING,
             0f // Top right
             )
     vertexBuffer = vertices.toBuffer()
