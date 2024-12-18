@@ -297,26 +297,22 @@ class FeedScreenTest {
     composeTestRule.onNodeWithTag("loading_indicator_test_tag").assertExists().assertIsDisplayed()
   }
 
-    @Test
-    fun testFeedDisplaysNoImagesMessageWithPlaceholderImage() {
-        // Arrange: Mock location provider and permissions
-        val testLocationProvider = TestLocationProvider()
-        testLocationProvider.setLocation(37.7749, -122.4194) // Mocked location
+  @Test
+  fun testFeedDisplaysNoImagesMessageWithPlaceholderImage() {
+    // Arrange: Mock location provider and permissions
+    val testLocationProvider = TestLocationProvider()
+    testLocationProvider.setLocation(37.7749, -122.4194) // Mocked location
 
-        mockkObject(LocationProviderSingleton)
-        every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
+    mockkObject(LocationProviderSingleton)
+    every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
 
-        // Act: Render the FeedScreen with no posts
-        setFeedScreenContent(emptyList())
+    // Act: Render the FeedScreen with no posts
+    setFeedScreenContent(emptyList())
 
-        // Wait for any updates to complete
-        composeTestRule.waitForIdle()
+    // Wait for any updates to complete
+    composeTestRule.waitForIdle()
 
-        // Assert: Placeholder image is displayed
-        composeTestRule
-            .onNodeWithTag("no_images_placeholder")
-            .assertExists()
-            .assertIsDisplayed()
-    }
-
+    // Assert: Placeholder image is displayed
+    composeTestRule.onNodeWithTag("no_images_placeholder").assertExists().assertIsDisplayed()
+  }
 }
