@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -13,12 +14,16 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.util.NetworkUtils
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 
 @RunWith(AndroidJUnit4::class)
@@ -114,6 +119,27 @@ class LandingKtTest {
 
     // Reset orientation to portrait after the test
     resetOrientation()
+  }
+
+  @Test
+  fun testBackgroundClickDoesNotNavigateToMapWhenOffline() {
+    // Simulate offline mode
+    mockkObject(NetworkUtils)
+    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+
+    composeTestRule.setContent { LandingScreen(mockNavigationActions) }
+
+    // Verify the background is clickable
+    composeTestRule.onNodeWithTag("LandingScreen").assertHasClickAction()
+
+    // Perform a click action on the background
+    composeTestRule.onNodeWithTag("LandingScreen").performClick()
+
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
+
+    // Verify that navigation to the Sky Map is never triggered
+    verify(mockNavigationActions, never()).navigateTo(Screen.MAP)
   }
 
   private fun setLandscapeOrientation() {

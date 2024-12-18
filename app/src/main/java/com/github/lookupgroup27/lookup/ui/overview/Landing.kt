@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,10 +13,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,16 +31,24 @@ import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.util.NetworkUtils
 import components.BackgroundImage
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
+
+  val context = LocalContext.current
+  val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
+
   // Background container with clickable modifier to navigate to Map screen
   BoxWithConstraints(
       modifier =
           Modifier.fillMaxSize().testTag("LandingScreen").clickable {
-            navigationActions.navigateTo(Screen.MAP)
+            if (isOnline.value) navigationActions.navigateTo(Screen.MAP)
+            else
+                Toast.makeText(context, "You're not connected to the internet", Toast.LENGTH_SHORT)
+                    .show()
           }) {
         // Background Image
         BackgroundImage(
