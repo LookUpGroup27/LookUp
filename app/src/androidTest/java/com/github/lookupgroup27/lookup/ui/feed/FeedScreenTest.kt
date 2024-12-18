@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -138,7 +139,10 @@ class FeedScreenTest {
     `when`(navigationActions.currentRoute()).thenReturn(Screen.FEED)
 
     locationProvider = LocationProvider(context, mutableStateOf(null))
+  }
 
+  @Test
+  fun testFeedScreenDisplaysNearbyPosts() {
     composeTestRule.setContent {
       FeedScreen(
           postsViewModel = postsViewModel,
@@ -146,10 +150,6 @@ class FeedScreenTest {
           profileViewModel = profileViewModel,
           initialNearbyPosts = testPosts)
     }
-  }
-
-  @Test
-  fun testFeedScreenDisplaysNearbyPosts() {
 
     // Assert each post item is displayed
     composeTestRule.onNodeWithTag("PostItem_2").assertExists()
@@ -163,12 +163,27 @@ class FeedScreenTest {
 
   @Test
   fun testFeedExcludesLoggedInUserPosts() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
+
     // Assert that the post by the logged-in user  is not displayed
     composeTestRule.onNodeWithTag("PostItem_1").assertDoesNotExist()
   }
 
   @Test
   fun testBottomNavigationMenuIsDisplayed() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
 
     // Verify the bottom navigation menu is displayed
     composeTestRule
@@ -179,6 +194,14 @@ class FeedScreenTest {
 
   @Test
   fun testStarClickDisplaysAverageRating() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
+
     // Perform click on the first star icon of a post with uid "1"
     composeTestRule
         .onNodeWithTag("Star_2_2")
@@ -191,6 +214,14 @@ class FeedScreenTest {
 
   @Test
   fun testStarClickCallsUpdatePost() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
+
     // Perform click on the first star of post with uid "1"
     composeTestRule.onNodeWithTag("Star_2_2").performClick()
     postsViewModel.updatePost(testPost)
@@ -211,6 +242,14 @@ class FeedScreenTest {
 
   @Test
   fun testNavigationToFeedBlockedForLoggedOutUser() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
+
     // Mock the user as not logged in
     mockAuth = org.mockito.kotlin.mock()
     whenever(mockAuth.currentUser).thenReturn(null)
@@ -224,6 +263,14 @@ class FeedScreenTest {
 
   @Test
   fun testAddressIsDisplayed() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
+
     // Verify that the address is displayed for each post
     composeTestRule.onNodeWithTag("AddressTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("AddressTag_5").assertDoesNotExist()
@@ -231,8 +278,28 @@ class FeedScreenTest {
 
   @Test
   fun testDescriptionIsDisplayed() {
+    composeTestRule.setContent {
+      FeedScreen(
+          postsViewModel = postsViewModel,
+          navigationActions = navigationActions,
+          profileViewModel = profileViewModel,
+          initialNearbyPosts = testPosts)
+    }
+
     // Verify that the description is displayed for each post
     composeTestRule.onNodeWithTag("DescriptionTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("DescriptionTag_5").assertDoesNotExist()
+  }
+
+  @Test
+  fun testEnableLocationButtonIsDisplayed() {
+    composeTestRule.setContent {
+      FeedScreen(postsViewModel, navigationActions, profileViewModel, testNoLoca = true)
+    }
+
+    composeTestRule
+        .onNodeWithTag("enable_location_button")
+        .assertExists() // Verify button is displayed
+    composeTestRule.onNodeWithText("Enable Location").assertExists() // Verify button text
   }
 }

@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,10 +61,49 @@ fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
     profileViewModel: ProfileViewModel,
-    initialNearbyPosts: List<Post>? = null
+    initialNearbyPosts: List<Post>? = null,
+    testNoLoca: Boolean = false
 ) {
-  // Fetch user profile
-  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+  val localContext by remember { mutableStateOf(LocalContext) }
+  val context = localContext.current
+  val locationProvider = LocationProviderSingleton.getInstance(context)
+  val proximityAndTimePostFetcher by remember {
+    mutableStateOf(ProximityAndTimePostFetcher(postsViewModel, context))
+  }
+  var locationPermissionGranted by remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
+
+  // Permission request launcher
+  val permissionLauncher =
+      rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        locationPermissionGranted = isGranted
+        if (isGranted) {
+          locationProvider.requestLocationUpdates()
+          proximityAndTimePostFetcher.fetchSortedPosts()
+        } else {
+          Toast.makeText(
+                  context,
+                  "Location permission is required. Please enable it in the app settings.",
+                  Toast.LENGTH_LONG)
+              .show()
+        }
+      }
+
+  // Trigger location updates when permission is granted
+  LaunchedEffect(locationPermissionGranted) {
+    if (locationPermissionGranted) {
+      locationProvider.requestLocationUpdates()
+
+      while (locationProvider.currentLocation.value == null) {
+        delay(500) // Retry every 500ms
+      }
+
+      proximityAndTimePostFetcher.fetchSortedPosts()
+    }
+  }
 
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
@@ -71,14 +112,6 @@ fun FeedScreen(
   val username by remember { mutableStateOf(profile?.username ?: "") }
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
   val email by remember { mutableStateOf(userEmail) }
-
-  val context = LocalContext.current
-  val locationProvider = LocationProviderSingleton.getInstance(context)
-  val proximityAndTimePostFetcher = remember {
-    ProximityAndTimePostFetcher(postsViewModel, context)
-  }
-
-  var locationPermissionGranted by remember { mutableStateOf(false) }
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: proximityAndTimePostFetcher.nearbyPosts.collectAsState())
@@ -86,25 +119,7 @@ fun FeedScreen(
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
-  // Check for location permissions and fetch posts when granted.
-  LaunchedEffect(Unit) {
-    locationPermissionGranted =
-        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED
-
-    if (!locationPermissionGranted) {
-      Toast.makeText(
-              context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG)
-          .show()
-    } else {
-      while (locationProvider.currentLocation.value == null) {
-        delay(500)
-      }
-      proximityAndTimePostFetcher.fetchSortedPosts()
-    }
-  }
-
-  // Initialize post ratings based on the user profile.
+  // Initialize post ratings based on the user profile
   LaunchedEffect(nearbyPosts, profile) {
     nearbyPosts.forEach { post ->
       if (!postRatings.containsKey(post.uid)) {
@@ -115,7 +130,6 @@ fun FeedScreen(
     }
   }
 
-  // Background Box with gradient overlay using drawBehind for efficiency.
   Box(
       modifier =
           Modifier.fillMaxSize().drawBehind {
@@ -156,67 +170,66 @@ fun FeedScreen(
                     selectedItem = Route.FEED)
               }
             },
-            modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))) {
-                innerPadding ->
+            modifier = Modifier.testTag("feed_screen")) { innerPadding ->
               Column(
                   modifier =
                       Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
                     if (nearbyPosts.isEmpty()) {
-                      // Loading or empty state
-                      Box(
-                          modifier =
-                              Modifier.fillMaxSize()
-                                  .testTag(stringResource(R.string.loading_indicator_test_tag)),
-                          contentAlignment = Alignment.Center) {
-                            if (!locationPermissionGranted) {
-                              Text(
-                                  text = stringResource(R.string.location_permission_required),
-                                  style =
-                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
-                            } else {
-                              CircularProgressIndicator(color = Color.White)
-                            }
-                          }
-                    } else {
-                      LazyColumn(
-                          modifier = Modifier.fillMaxSize(),
-                          contentPadding = PaddingValues(vertical = 16.dp),
-                          verticalArrangement = Arrangement.spacedBy(30.dp)) {
-                            items(nearbyPosts) { post ->
-                              PostItem(
-                                  post = post,
-                                  starStates =
-                                      postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
-                                  onRatingChanged = { newRating ->
-                                    val oldPostRatings =
-                                        postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
-                                    val oldStarCounts = oldPostRatings.count { it }
-                                    postRatings[post.uid] = newRating.toList()
-                                    val starsCount = newRating.count { it }
-
-                                    // Update user profile ratings
-                                    val newProfile =
-                                        updateProfileRatings(
-                                            currentProfile = profile,
-                                            postUid = post.uid,
-                                            starsCount = starsCount,
-                                            username = username,
-                                            bio = bio,
-                                            email = email)
-                                    profileViewModel.updateUserProfile(newProfile)
-
-                                    // Update post details
-                                    val updatedPost =
-                                        calculatePostUpdates(
-                                            post = post,
-                                            userEmail = userEmail,
-                                            starsCount = starsCount,
-                                            oldStarCounts = oldStarCounts)
-                                    postsViewModel.updatePost(updatedPost)
-                                  })
-                            }
-                          }
+                      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        if (!locationPermissionGranted || testNoLoca) {
+                          // Show permission request button
+                          Button(
+                              onClick = {
+                                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                              },
+                              modifier = Modifier.testTag("enable_location_button"),
+                              colors =
+                                  ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)) {
+                                Text("Enable Location")
+                              }
+                        } else {
+                          CircularProgressIndicator(color = Color.White)
+                        }
+                      }
                     }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(30.dp)) {
+                          items(nearbyPosts) { post ->
+                            PostItem(
+                                post = post,
+                                starStates =
+                                    postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
+                                onRatingChanged = { newRating ->
+                                  val oldPostRatings =
+                                      postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
+                                  val oldStarCounts = oldPostRatings.count { it }
+                                  postRatings[post.uid] = newRating.toList()
+                                  val starsCount = newRating.count { it }
+
+                                  // Update user profile ratings
+                                  val newProfile =
+                                      updateProfileRatings(
+                                          currentProfile = profile,
+                                          postUid = post.uid,
+                                          starsCount = starsCount,
+                                          username = username,
+                                          bio = bio,
+                                          email = email)
+                                  profileViewModel.updateUserProfile(newProfile)
+
+                                  // Update post details
+                                  val updatedPost =
+                                      calculatePostUpdates(
+                                          post = post,
+                                          userEmail = userEmail,
+                                          starsCount = starsCount,
+                                          oldStarCounts = oldStarCounts)
+                                  postsViewModel.updatePost(updatedPost)
+                                })
+                          }
+                        }
                   }
             }
       }
