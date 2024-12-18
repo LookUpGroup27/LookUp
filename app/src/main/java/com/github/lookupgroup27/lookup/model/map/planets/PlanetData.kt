@@ -15,5 +15,6 @@ data class PlanetData(
     var ra: Double = 0.0, // Right Ascension in degrees
     var dec: Double = 0.0, // Declination in degrees
     var cartesian: Triple<Float, Float, Float> = Triple(0.0f, 0.0f, 0.0f), // Cartesian coordinates
-    val textureId: Int
+    val textureId: Int,
+    val iconRes: Int = 0 // New field for the button icon
 )
