@@ -96,8 +96,8 @@ fun LookUpApp() {
       composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
     }
 
-    navigation(startDestination = Screen.MAP, route = Route.MAP) {
-      composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
+    navigation(startDestination = Screen.SKY_MAP, route = Route.SKY_MAP) {
+      composable(Screen.SKY_MAP) { MapScreen(navigationActions, mapViewModel) }
     }
 
     navigation(

@@ -121,7 +121,7 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
 
     // Step 5: Navigate to MapScreen from MenuScreen
-    composeTestRule.onNodeWithText("Map").performClick()
+    composeTestRule.onNodeWithText("Sky Map").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("map_screen").assertIsDisplayed()
     composeTestRule.onNodeWithTag(TopLevelDestinations.MENU.textId).performClick()
