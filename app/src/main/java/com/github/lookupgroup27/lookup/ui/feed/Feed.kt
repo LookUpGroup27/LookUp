@@ -166,7 +166,7 @@ fun FeedScreen(
                       Box(
                           modifier =
                               Modifier.fillMaxSize()
-                                  .testTag(stringResource(R.string.loading_indicator_test_tag)),
+                                  .testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
                             if (!locationPermissionGranted) {
                               Text(
