@@ -25,6 +25,7 @@ import com.google.maps.android.compose.*
  * @param profile The user's profile
  * @param updatePost Function to update a post
  * @param postRatings The ratings for each post
+ * @param highlightedPost The highlighted post
  */
 @Composable
 fun MapView(
@@ -72,9 +73,8 @@ fun MapView(
   LaunchedEffect(profile, posts) {
     posts.forEach { post ->
       val starsCount = postRatings[post.uid]?.count { it } ?: 0
-      val usersNumber = postRatings[post.uid]?.size ?: 0
-      val avg = if (usersNumber == 0) 0.0 else starsCount.toDouble() / usersNumber
-      updatePost(post, avg, starsCount, usersNumber, post.ratedBy)
+      val avg = if (post.usersNumber == 0) 0.0 else starsCount.toDouble() / post.usersNumber
+      updatePost(post, avg, starsCount, post.usersNumber, post.ratedBy)
     }
   }
 

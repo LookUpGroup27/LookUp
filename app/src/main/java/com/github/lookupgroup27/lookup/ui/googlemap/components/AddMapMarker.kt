@@ -12,6 +12,7 @@ import com.google.maps.android.compose.MarkerState
  *
  * @param post The post to add a marker for
  * @param onMarkerClick The callback to be called when the marker is clicked
+ * @param isHighlighted Whether the marker should be highlighted
  */
 @Composable
 fun AddMapMarker(post: Post, onMarkerClick: (Post) -> Unit, isHighlighted: Boolean = false) {

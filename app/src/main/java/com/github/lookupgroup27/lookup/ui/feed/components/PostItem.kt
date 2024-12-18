@@ -27,9 +27,11 @@ import org.json.JSONObject
  * @param post The post data, including image URI and username
  * @param starStates The list of star states for the post
  * @param onRatingChanged The callback to be invoked when the rating is changed
+ * @param onAddressClick The callback to be invoked when the address is clicked
  * @param color The color to use for the username and average rating
  * @param textForUsername The text to display for the username
  * @param showAverage Whether to display the average rating
+ * @param showAddress Whether to display the address
  */
 @Composable
 fun PostItem(

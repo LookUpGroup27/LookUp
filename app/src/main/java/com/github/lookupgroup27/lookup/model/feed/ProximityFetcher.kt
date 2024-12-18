@@ -65,7 +65,7 @@ class ProximityAndTimePostFetcher(private val postsViewModel: PostsViewModel, co
                           .thenByDescending { it.first.timestamp } // Sort by timestamp
                       )
                   // Take the 3 closest posts for now
-                  .take(30)
+                  .take(3)
                   // Extract only the post objects from the pairs
                   .map { it.first }
 

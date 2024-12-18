@@ -131,6 +131,7 @@ fun ImageReviewScreen(
                       username = FirebaseAuth.getInstance().currentUser?.displayName ?: "Anonymous",
                       latitude = currentLocation.latitude,
                       longitude = currentLocation.longitude,
+                      usersNumber = 0,
                       timestamp = currentTimestamp)
               // Add the post to PostsViewModel
               postsViewModel.addPost(newPost)

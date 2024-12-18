@@ -32,6 +32,8 @@ private const val NUMBER_OF_STARS: Int = 3
  * @param navigationActions Actions to navigate to different screens.
  * @param postsViewModel ViewModel to fetch posts.
  * @param profileViewModel ViewModel to fetch user profile.
+ * @param selectedPostMarker The selected post marker.
+ * @param initialAutoCenterEnabled Whether auto-centering is enabled.
  */
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
