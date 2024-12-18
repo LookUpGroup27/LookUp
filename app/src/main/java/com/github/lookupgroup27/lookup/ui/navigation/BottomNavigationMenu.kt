@@ -1,8 +1,10 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -12,13 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun BottomNavigationMenu(
@@ -35,20 +35,20 @@ fun BottomNavigationMenu(
         tabList.forEach { tab ->
           NavigationBarItem(
               icon = {
-                  // Load the correct icon based on the type (ImageVector or Painter)
-                  when {
-                      tab.iconVector != null -> Icon(
+                // Load the correct icon based on the type (ImageVector or Painter)
+                when {
+                  tab.iconVector != null ->
+                      Icon(
                           imageVector = tab.iconVector,
                           contentDescription = null,
-                          tint = Color.White
-                      )
-                      tab.iconResource != null -> Image(
+                          tint = Color.White)
+                  tab.iconResource != null ->
+                      Image(
                           painter = painterResource(id = tab.iconResource),
                           contentDescription = null,
                           modifier = Modifier.size(34.dp),
-                          colorFilter = ColorFilter.tint(Color.White)
-                      )
-                  }
+                          colorFilter = ColorFilter.tint(Color.White))
+                }
               },
               label = { Text(text = tab.textId, color = Color.White) },
               selected = tab.route == selectedItem,
