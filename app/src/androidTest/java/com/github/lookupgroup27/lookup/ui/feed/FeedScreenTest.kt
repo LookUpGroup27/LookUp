@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.feed
 import android.Manifest
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
+import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.TestLocationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
@@ -284,4 +286,27 @@ class FeedScreenTest {
             .assertExists()
             .assertIsDisplayed()
     }
+
+    @Test
+    fun testFeedDisplaysLoadingIndicatorWhenLocationIsNull() {
+        // Arrange: Mock location provider and permissions
+        val testLocationProvider = TestLocationProvider()
+        testLocationProvider.setLocation(null, null) // No location emitted
+
+        mockkObject(LocationProviderSingleton)
+        every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
+
+        // Act: Render the FeedScreen
+        setFeedScreenContent(emptyList())
+
+        // Wait for the composition to stabilize
+        composeTestRule.waitForIdle()
+
+        // Assert: Loading indicator (CircularProgressIndicator) is displayed
+        composeTestRule
+            .onNodeWithTag("loading_indicator_test_tag")
+            .assertExists()
+            .assertIsDisplayed()
+    }
+
 }
