@@ -64,10 +64,11 @@ class FeedScreenTest {
   // Mock posts
   val testPosts =
       listOf(
-          Post(
+          Post( // Post created by the logged-in user
               uid = "1",
               uri = "http://example.com/1.jpg",
-              username = testUserProfile.email, // Post created by the logged-in user
+              username = testUserProfile.email,
+              userMail = testUserProfile.email,
               latitude = 37.7749, // San Francisco
               longitude = -122.4194,
               description = "This is a test description"),
@@ -75,13 +76,15 @@ class FeedScreenTest {
               uid = "2",
               uri = "http://example.com/2.jpg",
               username = "User2", // Post created by another user
+              userMail = "User2",
               latitude = 34.0522, // Los Angeles
               longitude = -118.2437,
               description = "This is another test description"),
           Post(
               uid = "3",
               uri = "http://example.com/3.jpg",
-              username = "User3", // Another user's post
+              username = "User3",
+              userMail = "User3", // Another user's post
               latitude = 36.7783, // Fresno (closer to SF)
               longitude = -119.4179,
               description = "This is yet another test description"),
@@ -89,6 +92,7 @@ class FeedScreenTest {
               uid = "4",
               uri = "User4",
               username = "user4@example.com", // Another user's post
+              userMail = "User4",
               latitude = 40.7128, // New York City (farther from SF than LA or Fresno)
               longitude = -74.0060,
               description = "This is a test description"),
@@ -96,6 +100,7 @@ class FeedScreenTest {
               uid = "5",
               uri = "User5",
               username = "user5@example.com", // Another user's post
+              userMail = "User5",
               latitude = -33.8688, // Sydney, Australia (farthest from SF)
               longitude = 151.2093,
               description = "This is a test description"))
