@@ -48,34 +48,44 @@ class PlanetsRepository(
                 "Mercury",
                 "199",
                 textureId = R.drawable.mercury_texture,
-                iconRes = R.drawable.mercury_icon),
+                iconRes = R.drawable.mercury_icon,
+                funFact = "Mercury’s surface has ice on it !"),
             PlanetData(
                 "Venus",
                 "299",
                 textureId = R.drawable.venus_texture,
-                iconRes = R.drawable.venus_icon),
+                iconRes = R.drawable.venus_icon,
+                funFact = "A day is longer than a year on Venus !"),
             PlanetData(
-                "Mars", "499", textureId = R.drawable.mars_texture, iconRes = R.drawable.mars_icon),
+                "Mars",
+                "499",
+                textureId = R.drawable.mars_texture,
+                iconRes = R.drawable.mars_icon,
+                funFact = "Mars has the largest volcano in the solar system !"),
             PlanetData(
                 "Jupiter",
                 "599",
                 textureId = R.drawable.jupiter_texture,
-                iconRes = R.drawable.jupiter_icon),
+                iconRes = R.drawable.jupiter_icon,
+                funFact = "Jupiter is a great comet catcher !"),
             PlanetData(
                 "Saturn",
                 "699",
                 textureId = R.drawable.saturn_texture,
-                iconRes = R.drawable.saturn_icon),
+                iconRes = R.drawable.saturn_icon,
+                funFact = "Saturn's rings are 90% water !"),
             PlanetData(
                 "Uranus",
                 "799",
                 textureId = R.drawable.uranus_texture,
-                iconRes = R.drawable.uranus_icon),
+                iconRes = R.drawable.uranus_icon,
+                funFact = "You can't stand on Uranus !"),
             PlanetData(
                 "Neptune",
                 "899",
                 textureId = R.drawable.neptune_texture,
-                iconRes = R.drawable.neptune_icon)))
+                iconRes = R.drawable.neptune_icon,
+                funFact = "Neptune has supersonic winds !")))
   }
 
   /**
@@ -143,8 +153,8 @@ class PlanetsRepository(
             context = context,
             name = planetData.name,
             position = floatArrayOf(position.first, position.second, position.third),
-            textureId = planetData.textureId // Resource ID for the planet’s texture
-            )
+            textureId = planetData.textureId, // Resource ID for the planet’s texture
+            funFact = planetData.funFact)
       }
     }
   }
