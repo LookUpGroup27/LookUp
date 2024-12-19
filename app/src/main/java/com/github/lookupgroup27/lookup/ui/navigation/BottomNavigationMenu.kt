@@ -65,7 +65,7 @@ fun BottomNavigationMenu(
                             context, "You need to log in to access the feed.", Toast.LENGTH_LONG)
                         .show()
                   }
-                  tab.route == Route.SKY_MAP && !isOnline.value -> {
+                  (tab.route == Route.FEED || tab.route == Route.SKY_MAP) && !isOnline.value -> {
                     toastHelper.showNoInternetToast()
                   }
                   selectedItem != tab.route -> {
