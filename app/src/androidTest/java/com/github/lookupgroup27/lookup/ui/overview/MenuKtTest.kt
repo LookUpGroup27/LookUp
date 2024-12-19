@@ -221,4 +221,30 @@ class MenuKtTest {
     // Verify no navigation occurred
     verify(mockNavigationActions, never()).navigateTo(Screen.GOOGLE_MAP)
   }
+
+  @Test
+  fun menuScreen_showsToastWhenClickingCalendarOffline() {
+    // Mock the toast helper
+    val mockToastHelper = mock<ToastHelper>()
+
+    // Simulate offline mode
+    simulateOnlineMode(false)
+
+    composeTestRule.setContent {
+      MenuScreen(
+        navigationActions = mockNavigationActions,
+        avatarViewModel = mockAvatarViewModel,
+        toastHelper = mockToastHelper
+      )
+    }
+
+    // Click the Calendar button
+    composeTestRule.onNodeWithText("Calendar").performClick()
+
+    // Verify toast was shown
+    verify(mockToastHelper).showNoInternetToast()
+
+    // Verify no navigation occurred
+    verify(mockNavigationActions, never()).navigateTo(Screen.CALENDAR)
+  }
 }
