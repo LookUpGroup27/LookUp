@@ -32,14 +32,16 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.util.NetworkUtils
+import com.github.lookupgroup27.lookup.util.ToastHelper
 import components.BackgroundImage
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun LandingScreen(navigationActions: NavigationActions) {
+fun LandingScreen(navigationActions: NavigationActions,toastHelper: ToastHelper = ToastHelper(LocalContext.current)) {
 
   val context = LocalContext.current
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
+
 
   // Background container with clickable modifier to navigate to Map screen
   BoxWithConstraints(
@@ -47,8 +49,7 @@ fun LandingScreen(navigationActions: NavigationActions) {
           Modifier.fillMaxSize().testTag("LandingScreen").clickable {
             if (isOnline.value) navigationActions.navigateTo(Screen.SKY_MAP)
             else
-                Toast.makeText(context, "You're not connected to the internet", Toast.LENGTH_SHORT)
-                    .show()
+                toastHelper.showNoInternetToast()
           }) {
         // Background Image
         BackgroundImage(

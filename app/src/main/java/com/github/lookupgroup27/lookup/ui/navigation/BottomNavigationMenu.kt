@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.util.NetworkUtils
+import com.github.lookupgroup27.lookup.util.ToastHelper
 
 @Composable
 fun BottomNavigationMenu(
@@ -30,6 +31,7 @@ fun BottomNavigationMenu(
     isUserLoggedIn: Boolean,
     selectedItem: String
 ) {
+    val  toastHelper: ToastHelper = ToastHelper(LocalContext.current)
   val context = LocalContext.current
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
   NavigationBar(
@@ -64,9 +66,7 @@ fun BottomNavigationMenu(
                         .show()
                   }
                   tab.route == Route.SKY_MAP && !isOnline.value -> {
-                    Toast.makeText(
-                            context, "You're not connected to the internet.", Toast.LENGTH_LONG)
-                        .show()
+                      toastHelper.showNoInternetToast()
                   }
                   selectedItem != tab.route -> {
                     onTabSelect(tab)
