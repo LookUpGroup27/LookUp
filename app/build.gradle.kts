@@ -45,8 +45,6 @@ android {
             useSupportLibrary = true
         }
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
-        testInstrumentationRunnerArguments["clearPackageData"] = "true"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
@@ -112,8 +110,6 @@ android {
     }
 
     testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        animationsDisabled = true  // Disable animations during tests
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
@@ -245,9 +241,6 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.core.testing)
     androidTestImplementation(libs.androidx.uiautomator)
-    androidTestImplementation("androidx.test:runner:1.5.2")
-    androidTestImplementation("androidx.test:rules:1.5.0")
-    androidTestUtil("androidx.test:orchestrator:1.4.2")
 
     // Kaspresso Allure
     androidTestImplementation(libs.kaspresso.allure.support)

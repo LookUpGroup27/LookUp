@@ -2,7 +2,6 @@ package com.github.lookupgroup27.lookup
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
@@ -14,13 +13,11 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.action.ViewActions.swipeDown
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -250,10 +247,7 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("profile_button").performClick()
     composeTestRule.waitForIdle()
 
-    // Wait for auth screen and verify it's displayed
-    composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithTag("auth_screen").fetchSemanticsNodes().size == 1
-    }
+    composeTestRule.onNodeWithTag("auth_screen").assertIsDisplayed()
 
     // Click login and verify fields
     composeTestRule.onNodeWithText("Login").performScrollTo().performClick()
@@ -280,55 +274,31 @@ class End2EndTest {
     composeTestRule.waitForIdle()
     Thread.sleep(3000) // Give time for Firebase auth and navigation
 
-    // Try to verify profile screen multiple times
-    var profileScreenFound = false
-    repeat(3) { attempt ->
-      try {
-        composeTestRule.waitUntil(timeoutMillis = 5000) {
-          composeTestRule.onAllNodesWithTag("profile_screen").fetchSemanticsNodes().isNotEmpty()
-        }
-        composeTestRule.onNodeWithTag("profile_screen").assertIsDisplayed()
-        profileScreenFound = true
-      } catch (e: Exception) {
-        Log.e("TEST", "Failed to find profile screen on attempt ${attempt + 1}: ${e.message}")
-        if (attempt == 2) {
-          composeTestRule.onRoot().printToLog("SCREEN_STATE")
-        }
-        Thread.sleep(1000)
-      }
-    }
+    composeTestRule.onNodeWithTag("profile_screen").assertIsDisplayed()
 
-    if (!profileScreenFound) {
-      throw AssertionError("Profile screen not found after multiple attempts")
-    }
-
-    // Step 3: Navigate to Google Map
+    // Step 2: Navigate to Google Map
     composeTestRule.onNodeWithText("Menu").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
     composeTestRule.onNodeWithText("Google Map").performClick()
     composeTestRule.waitForIdle()
 
-    // Wait for map screen to load
-    composeTestRule.waitUntil(timeoutMillis = 10000) {
-      composeTestRule.onAllNodesWithTag("googleMapScreen").fetchSemanticsNodes().size == 1
-    }
+    Thread.sleep(3000) // Give time for map screen to load
+    composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
 
-    // Step 5: Click take picture FAB
+    // Step 3: Click take picture FAB
     composeTestRule.onNodeWithTag("fab_take_picture").performClick()
     composeTestRule.waitForIdle()
 
-    // Step 6: Wait for camera screen and take picture
-    composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithTag("camera_capture").fetchSemanticsNodes().size == 1
-    }
+    // Step 4: Wait for camera screen and take picture
+    composeTestRule.onNodeWithTag("camera_capture").assertIsDisplayed()
     composeTestRule.onNodeWithTag("take_picture_button").performClick()
     composeTestRule.waitForIdle()
+    Thread.sleep(3000) // Give time for image capture
 
-    // Step 7: Handle the image review screen
-    composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithTag("image_review").fetchSemanticsNodes().size == 1
-    }
+    // Step 5: Handle the image review screen
+    composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
+    composeTestRule.waitForIdle()
 
     // Click to add description
     composeTestRule.onNodeWithTag("description_text").performClick()
@@ -343,11 +313,9 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     // Give time for the upload and post creation
-    Thread.sleep(3000)
+    Thread.sleep(5000)
 
-    // Step 7: Verify we're back on map screen
-    composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithTag("googleMapScreen").fetchSemanticsNodes().size == 1
-    }
+    // Step 6: Verify we're back on map screen
+    composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
   }
 }

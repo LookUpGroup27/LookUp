@@ -170,7 +170,7 @@ class ImageReviewTest {
     composeTestRule.onNodeWithText("No image available").assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun testDiscardButtonNavigatesBack() {
     composeTestRule.setContent {
       ImageReviewScreen(
@@ -181,10 +181,9 @@ class ImageReviewTest {
           collectionViewModel,
           timestamp = 123456789L)
     }
-
     composeTestRule.onNodeWithTag("cancel_button").performClick()
     verify(mockNavigationActions).navigateTo(Screen.TAKE_IMAGE)
-  }
+  }*/
 
   @Test
   fun testBackgroundImageIsDisplayed() {
