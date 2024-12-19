@@ -47,33 +47,33 @@ fun PlanetSelectionScreen(
 
   Scaffold(
       topBar = {
-        IconButton(
-            onClick = { navigationActions.navigateTo(Screen.MENU) },
-            modifier = Modifier.padding(16.dp).testTag("go_back_button")) {
-              Icon(
-                  imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                  contentDescription = "Back",
-                  tint = Color.White)
-            }
+        Column(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+          IconButton(
+              onClick = { navigationActions.navigateTo(Screen.MENU) },
+              modifier = Modifier.padding(16.dp).testTag("go_back_button")) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White)
+              }
+
+          PlanetSelectionRow(planets = planets, onPlanetSelected = { viewModel.selectPlanet(it) })
+
+          Spacer(modifier = Modifier.height(50.dp))
+
+          Text(
+              text = selectedPlanet.name,
+              color = White,
+              fontSize = 50.sp,
+              fontWeight = FontWeight.Light,
+              modifier = Modifier.padding(20.dp).align(Alignment.CenterHorizontally))
+        }
       },
       content = {
         Column(
             modifier = Modifier.fillMaxSize().background(Color.Black),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally) {
-              Spacer(modifier = Modifier.height(70.dp))
-
-              PlanetSelectionRow(
-                  planets = planets, onPlanetSelected = { viewModel.selectPlanet(it) })
-
-              Spacer(modifier = Modifier.height(50.dp))
-
-              Text(
-                  text = selectedPlanet.name,
-                  color = White,
-                  fontSize = 50.sp,
-                  fontWeight = FontWeight.Light,
-                  modifier = Modifier.padding(20.dp))
 
               // Bottom: Planet renderer
               Box(
