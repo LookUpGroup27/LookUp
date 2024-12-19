@@ -5,7 +5,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.opengl.Matrix
-import android.util.Log
 
 /**
  * Represents a camera for handling movement and projection in our OpenGL World.
@@ -75,21 +74,5 @@ class Camera(private var fov: Float) : SensorEventListener {
     }
   }
 
-  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-    when (sensor?.type) {
-      Sensor.TYPE_ROTATION_VECTOR -> {
-        when (accuracy) {
-          SensorManager.SENSOR_STATUS_UNRELIABLE -> {
-            Log.w("SensorAccuracy", "Rotation vector sensor is unreliable")
-          }
-          SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {
-            Log.i("SensorAccuracy", "Rotation vector sensor accuracy is low")
-          }
-          SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {
-            Log.d("SensorAccuracy", "Rotation vector sensor accuracy is high")
-          }
-        }
-      }
-    }
-  }
+  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
 }
