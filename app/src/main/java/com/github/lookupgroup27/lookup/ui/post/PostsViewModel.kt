@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
@@ -26,8 +27,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,13 +48,20 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
 
   @SuppressLint("StaticFieldLeak") private var context: Context? = null
 
-  // Method to initialize context
-  fun setContext(context: Context) {
-    this.context = context
-  }
+    // LocationProvider instance to get user's current location
+    private lateinit var locationProvider : LocationProvider
 
-  // LocationProvider instance to get user's current location
-  private val locationProvider = context?.let { LocationProviderSingleton.getInstance(it) }
+    // Method to initialize context
+    fun setContext(context: Context) {
+        this.context = context
+        locationProvider = context.let { LocationProviderSingleton.getInstance(it) }
+        // Start monitoring
+        startLocationMonitoring()
+        // Start periodic fetching
+        startPeriodicPostFetching()
+    }
+
+
 
   // MutableStateFlow to hold the list of nearby posts
   private val _nearbyPosts = MutableStateFlow<List<Post>>(emptyList())
@@ -197,7 +203,7 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
    * @see getSortedNearbyPosts for the sorting and filtering logic.
    */
   fun fetchSortedPosts() {
-      val userLocation = locationProvider?.currentLocation?.value
+      val userLocation = locationProvider.currentLocation.value
       if (userLocation == null) {
           Log.e("ProximityPostFetcher", "User location is null; cannot fetch nearby posts.")
           return
