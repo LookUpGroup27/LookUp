@@ -2,6 +2,7 @@ package com.github.lookupgroup27.lookup.model.planetselection
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import com.github.lookupgroup27.lookup.model.map.planets.PlanetData
 
@@ -26,6 +27,11 @@ class PlanetSurfaceView(context: Context, private var planet: PlanetData) : GLSu
 
     // Render only when the content changes
     renderMode = RENDERMODE_CONTINUOUSLY
+
+    // Enable transparency
+    setZOrderOnTop(false)
+    setZOrderMediaOverlay(false)
+    holder.setFormat(PixelFormat.TRANSLUCENT)
   }
 
   /**

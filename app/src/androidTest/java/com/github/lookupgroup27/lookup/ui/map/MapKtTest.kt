@@ -5,8 +5,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.util.NetworkUtils
 import io.github.kakaocup.kakao.common.utilities.getResourceString
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import org.junit.*
 import org.mockito.kotlin.*
 
@@ -72,5 +76,20 @@ class MapKtTest {
     composeTestRule
         .onNodeWithTag(getResourceString(R.string.map_slider_test_tag))
         .assertIsDisplayed()
+  }
+
+  @Test
+  fun testNavigationToSkyMapBlockedForOfflineMode() {
+    // Simulate offline mode
+    mockkObject(NetworkUtils)
+    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+    // Simulate clicking the sky map tab in the bottom navigation
+    composeTestRule.onNodeWithTag("Sky Map").performClick()
+
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
+
+    // Verify that navigation to the Sky Map is never triggered
+    verify(mockNavigationActions, never()).navigateTo(Screen.SKY_MAP)
   }
 }

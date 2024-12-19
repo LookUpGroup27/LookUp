@@ -4,6 +4,8 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
+import com.github.lookupgroup27.lookup.ui.map.renderables.Label
+import com.github.lookupgroup27.lookup.util.opengl.Position
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 
 /**
@@ -30,7 +32,7 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  */
 open class Planet(
     private val context: Context,
-    val name: String? = "Planet",
+    val name: String = "Planet",
     val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
     var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
@@ -44,6 +46,8 @@ open class Planet(
   protected var textureHandle: Int = 0
 
   private var textureManager: TextureManager
+  private val label =
+      Label(context, name, Position(position[0], position[1], position[2]), 0.1f, scale)
 
   // New properties for rotation
   private var rotationAngle: Float = 0f // Current rotation angle in degrees
@@ -87,6 +91,7 @@ open class Planet(
    * @param camera The camera used for rendering the scene.
    */
   fun draw(camera: Camera, transformMatrix: FloatArray? = null) {
+    label.draw(camera)
     val modelMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
 

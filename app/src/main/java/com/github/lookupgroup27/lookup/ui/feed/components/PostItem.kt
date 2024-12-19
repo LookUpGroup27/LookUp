@@ -22,22 +22,22 @@ import okhttp3.*
 import org.json.JSONObject
 
 /**
- * Composable for displaying an individual post in the feed. Each post includes:
- * - The username of the user who created the post.
- * - The location (address) where the post was created, resolved dynamically from coordinates.
- * - An image loaded from a URI.
- * - A description of the post.
- * - A star rating system where users can rate the post.
+ * A single post item displayed in the feed.
  *
- * The post is displayed in a card with rounded corners and appropriate spacing.
+ * This composable shows the username, address (derived from latitude/longitude), image, post
+ * description, and rating controls (stars) for a single post. It also allows the user to click on
+ * the image to navigate to a full-screen view.
  *
- * @param post The post data, including image URI and username
- * @param starStates The list of star states for the post
- * @param onRatingChanged The callback to be invoked when the rating is changed
+ * @param post The [Post] data representing this item.
+ * @param starStates A list of boolean values representing whether each star is filled or not.
+ * @param onRatingChanged Callback invoked when the user changes the rating of the post.
+ * @param onImageClick Callback invoked when the user clicks on the post image. This function should
+ *   navigate to the full-screen image screen. It provides [imageUrl], [username], and [description]
+ *   parameters.
  * @param onAddressClick The callback to be invoked when the address is clicked
- * @param color The color to use for the username and average rating
- * @param textForUsername The text to display for the username
- * @param showAverage Whether to display the average rating
+ * @param color The text color for textual content.
+ * @param textForUsername The display text for the username (or user-related info).
+ * @param showAverage Flag indicating if the average rating should be displayed.
  * @param showAddress Whether to display the address
  */
 @Composable
@@ -46,6 +46,7 @@ fun PostItem(
     starStates: List<Boolean>,
     onRatingChanged: (List<Boolean>) -> Unit,
     onAddressClick: (Post) -> Unit = {},
+    onImageClick: (imageUrl: String, username: String, description: String) -> Unit,
     color: Color = Color.White,
     textForUsername: String = post.username,
     showAverage: Boolean = true,
@@ -81,11 +82,15 @@ fun PostItem(
                   modifier =
                       Modifier.testTag("AddressTag_${post.uid}").clickable { onAddressClick(post) })
 
-              // Image
+              // Image (Clickable)
               Image(
                   painter = rememberAsyncImagePainter(post.uri),
                   contentDescription = "Post Image for ${post.username}",
-                  modifier = Modifier.fillMaxWidth().height(250.dp).testTag("ImageTag_${post.uid}"),
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .height(250.dp)
+                          .clickable { onImageClick(post.uri, post.username, post.description) }
+                          .testTag("ImageTag_${post.uid}"),
                   contentScale = ContentScale.Crop)
 
               // Description
@@ -133,12 +138,12 @@ fun PostItem(
 }
 
 /**
- * Fetches the address corresponding to latitude and longitude using the Nominatim API.
+ * Fetch an address from given latitude and longitude using Nominatim API.
  *
- * @param lat Latitude of the location.
- * @param lon Longitude of the location.
- * @param client Optional OkHttpClient instance for making the API call.
- * @return The address as a string, or an error message if the address cannot be fetched.
+ * @param lat The latitude value.
+ * @param lon The longitude value.
+ * @param client The [OkHttpClient] used for network calls.
+ * @return The display name of the address, or an error message if unable to fetch.
  */
 suspend fun getAddressFromLatLngUsingNominatim(
     lat: Double,
