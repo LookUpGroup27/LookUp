@@ -67,16 +67,19 @@ fun FeedScreen(
         profileViewModel.fetchUserProfile()
     }
 
-  val profile by profileViewModel.userProfile.collectAsState()
-  val user = FirebaseAuth.getInstance().currentUser
-  val isUserLoggedIn = user != null
-  val userEmail = user?.email ?: ""
-  val username by remember { mutableStateOf(profile?.username ?: "") }
-  val bio by remember { mutableStateOf(profile?.bio ?: "") }
-  val email by remember { mutableStateOf(userEmail) }
+    // User-related state
+    val profile by profileViewModel.userProfile.collectAsState()
+    val user = FirebaseAuth.getInstance().currentUser
+    val isUserLoggedIn = user != null
+    val userEmail = user?.email ?: ""
+    val username by remember { mutableStateOf(profile?.username ?: "") }
+    val bio by remember { mutableStateOf(profile?.bio ?: "") }
+    val email by remember { mutableStateOf(userEmail) }
 
-  val context = LocalContext.current
-  val locationProvider = LocationProviderSingleton.getInstance(context)
+    // Location setup
+    val context = LocalContext.current
+    val locationProvider = LocationProviderSingleton.getInstance(context)
+    var locationPermissionGranted by remember { mutableStateOf(false) }
 
     // Initialize PostsViewModel with context
     LaunchedEffect(Unit) {
@@ -84,13 +87,11 @@ fun FeedScreen(
         postsViewModel.setContext(context)
     }
 
-  var locationPermissionGranted by remember { mutableStateOf(false) }
-  val unfilteredPosts by
-      (initialNearbyPosts?.let { mutableStateOf(it) }
-          ?: postsViewModel.nearbyPosts.collectAsState())
-  val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
-
-  val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
+    // Posts-related state
+    val unfilteredPosts by (initialNearbyPosts?.let { mutableStateOf(it) }
+        ?: postsViewModel.nearbyPosts.collectAsState())
+    val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
+    val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
   // Check for location permissions and fetch posts when granted.
   LaunchedEffect(Unit) {
