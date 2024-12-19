@@ -16,6 +16,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
@@ -253,6 +255,19 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         .take(10) // Take the 10 closest posts
         .map { it.first } // Extract only the posts
   }
+
+
+    private fun startLocationMonitoring() {
+        viewModelScope.launch {
+            while (true) {
+                val location = locationProvider?.currentLocation?.value
+                if (location != null) {
+                    fetchSortedPosts()
+                }
+                delay(1000L)
+            }
+        }
+    }
 
   companion object {
     /**
