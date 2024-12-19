@@ -6,7 +6,6 @@ import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -209,7 +208,7 @@ class PlanetsRepository(
     // Make the network request to Horizons API
     val request = Request.Builder().url(url).build()
     client.newCall(request).execute().use { response ->
-      if (!response.isSuccessful) throw IOException("API call failed with code ${response.code}")
+      if (!response.isSuccessful) return null
 
       val json = JSONObject(response.body?.string() ?: return null)
       val result = json.optString("result", null) ?: return null
@@ -230,9 +229,15 @@ class PlanetsRepository(
 
       // According to Horizons format, RA and Dec are typically in columns 4 and 5 (0-based index: 3
       // and 4)
-      if (columns.size >= 3) {
+      if (columns.size > 4) {
         val raDeg = columns[3].toDoubleOrNull() ?: return null
         val decDeg = columns[4].toDoubleOrNull() ?: return null
+        return Pair(raDeg, decDeg)
+      } else if (columns.size ==
+          4) { // Sometimes Horizons changes format which gives a size 4 array where Ra and Dec
+        // are placed in the two last columns
+        val raDeg = columns[2].toDoubleOrNull() ?: return null
+        val decDeg = columns[3].toDoubleOrNull() ?: return null
         return Pair(raDeg, decDeg)
       }
 
