@@ -32,7 +32,8 @@ class Moon(
         textureId = getCurrentMoonPhaseTextureId(),
         numBands = numBands,
         stepsPerBand = stepsPerBand,
-        scale = 0.05f) {
+        scale = 0.05f,
+        funFact = "The Moon is moving away from Earth !") {
   /** Companion object containing moon phase calculation and texture mapping logic. */
   companion object {
     /**
