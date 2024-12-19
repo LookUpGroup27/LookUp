@@ -24,8 +24,6 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  * @property name The name of the planet (e.g., "Earth"). Defaults to "Planet".
  * @property position The planet's position in 3D space, represented as a float array [x, y, z].
  * @property textureId The resource ID of the texture applied to the planet's surface.
- * @property vertexShaderCode The custom vertex shader code used for rendering the planet.
- * @property fragmentShaderCode The custom fragment shader code used for rendering the planet.
  * @property scale The scaling factor applied to the planet's geometry. Defaults to 0.3.
  */
 open class Planet(
