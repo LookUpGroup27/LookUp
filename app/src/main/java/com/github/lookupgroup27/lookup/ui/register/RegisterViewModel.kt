@@ -13,16 +13,15 @@ import kotlinx.coroutines.launch
  * ViewModel responsible for handling the registration logic and UI state.
  *
  * This ViewModel interacts with the [RegisterRepository] to perform registration operations. It
- * validates user inputs, updates the UI state accordingly, and handles success and error cases.
+ * validates user inputs (email, password, confirm password, and username), updates the UI state
+ * accordingly, and handles success/error cases.
  *
  * @property repository The repository handling user registration operations.
  */
 class RegisterViewModel(private val repository: RegisterRepository) : ViewModel() {
 
-  // MutableStateFlow to hold and update the UI state.
+  // Holds and updates the UI state.
   private val _uiState = MutableStateFlow(RegisterState())
-
-  // Exposed immutable StateFlow for observing UI state changes.
   val uiState: StateFlow<RegisterState> = _uiState
 
   private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
@@ -30,8 +29,6 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
   /**
    * Companion object providing a custom [ViewModelProvider.Factory] for creating
    * [RegisterViewModel] instances.
-   *
-   * This factory allows the ViewModel to be created with the necessary repository dependency.
    */
   companion object {
     val Factory: ViewModelProvider.Factory =
@@ -72,6 +69,15 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
     }
   }
 
+  /**
+   * Updates the username in the UI state and clears any related error messages.
+   *
+   * @param username The new username input by the user.
+   */
+  fun onUsernameChanged(username: String) {
+    _uiState.update { it.copy(username = username, usernameError = null, generalError = null) }
+  }
+
   /** Resets the UI state to its initial values, clearing all input fields and error messages. */
   fun clearFields() {
     _uiState.value = RegisterState()
@@ -87,6 +93,24 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
     return when {
       email.isBlank() -> "Email cannot be empty."
       !EMAIL_REGEX.matches(email) -> "Invalid email address."
+      else -> null
+    }
+  }
+
+  /**
+   * Validates the username input.
+   *
+   * This method ensures that the username is not empty and matches a certain pattern (alphanumeric
+   * and underscores are allowed). Adjust as needed for your app's requirements.
+   *
+   * @param username The username to validate.
+   * @return An error message if validation fails; null otherwise.
+   */
+  private fun validateUsername(username: String): String? {
+    return when {
+      username.isBlank() -> "Username cannot be empty."
+      !username.matches("^[A-Za-z0-9_]+$".toRegex()) ->
+          "Username can only contain letters, digits, and underscores."
       else -> null
     }
   }
@@ -124,9 +148,10 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
   /**
    * Initiates the user registration process.
    *
-   * This function performs input validation, updates the UI state with any errors, and proceeds to
-   * register the user if validation passes. It handles success and error cases, updating the UI
-   * state accordingly.
+   * This function:
+   * 1. Validates all user inputs (email, password, confirm password, username).
+   * 2. If validation passes, it attempts to register the user through the repository.
+   * 3. Handles success and various error conditions by updating the UI state accordingly.
    *
    * @param onSuccess Callback invoked when registration is successful.
    */
@@ -134,23 +159,29 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
     val email = _uiState.value.email.trim()
     val password = _uiState.value.password
     val confirmPassword = _uiState.value.confirmPassword
+    val username = _uiState.value.username.trim()
 
-    // Perform input validations and collect error messages.
+    // Perform input validations
     val emailError = validateEmail(email)
     val passwordError = validatePassword(password)
     val confirmPasswordError = validateConfirmPassword(password, confirmPassword)
+    val usernameError = validateUsername(username)
 
-    // Update the UI state with validation errors.
+    // Update the UI state with validation errors
     _uiState.update {
       it.copy(
           emailError = emailError,
           passwordError = passwordError,
           confirmPasswordError = confirmPasswordError,
+          usernameError = usernameError,
           generalError = null)
     }
 
     // If any validation errors exist, abort the registration process.
-    if (emailError != null || passwordError != null || confirmPasswordError != null) {
+    if (emailError != null ||
+        passwordError != null ||
+        confirmPasswordError != null ||
+        usernameError != null) {
       return
     }
 
@@ -160,20 +191,17 @@ class RegisterViewModel(private val repository: RegisterRepository) : ViewModel(
     // Launch a coroutine to perform the registration asynchronously.
     viewModelScope.launch {
       try {
-        // Attempt to register the user using the repository.
-        repository.registerUser(email, password)
-
-        // Registration successful; update the UI state and invoke the success callback.
+        // Attempt to register the user using the repository
+        repository.registerUser(email, password, username)
         _uiState.update { it.copy(isLoading = false) }
         onSuccess()
+      } catch (e: UsernameAlreadyExistsException) {
+        _uiState.update { it.copy(isLoading = false, usernameError = e.message) }
       } catch (e: UserAlreadyExistsException) {
-        // Specific error when the email is already in use.
         _uiState.update { it.copy(isLoading = false, generalError = e.message) }
       } catch (e: WeakPasswordException) {
-        // Specific error when the password is too weak.
         _uiState.update { it.copy(isLoading = false, passwordError = e.message) }
       } catch (e: Exception) {
-        // General error handling for any other exceptions.
         _uiState.update {
           it.copy(isLoading = false, generalError = e.message ?: "An unexpected error occurred.")
         }
