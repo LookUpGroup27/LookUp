@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.espresso.action.ViewActions.swipeDown
 import androidx.test.espresso.action.ViewActions.swipeUp
@@ -236,7 +237,7 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
   }
 
-  /*
+  @SuppressLint("CheckResult")
   @Test
   fun photoPostingFlow() {
 
@@ -246,15 +247,16 @@ class End2EndTest {
 
     composeTestRule.onNodeWithTag("profile_button").performClick()
     composeTestRule.waitForIdle()
-    // Thread.sleep(3000)
 
+    composeTestRule.waitUntil(timeoutMillis = 30000) {
+      composeTestRule.onAllNodesWithTag("auth_screen").fetchSemanticsNodes().size == 1
+    }
     composeTestRule.onNodeWithTag("auth_screen").assertIsDisplayed()
 
     // Click login and verify fields
     composeTestRule.onNodeWithText("Login").performScrollTo().performClick()
     composeTestRule.waitForIdle()
 
-    // Thread.sleep(2000)
     // Fill in login details with verification
     composeTestRule.onNodeWithTag("email_field").performScrollTo().apply {
       assertExists("Email field not found")
@@ -274,8 +276,10 @@ class End2EndTest {
 
     // Wait for login to complete and navigation to occur
     composeTestRule.waitForIdle()
-    // Thread.sleep(3000) // Give time for Firebase auth and navigation
 
+    composeTestRule.waitUntil(timeoutMillis = 30000) {
+      composeTestRule.onAllNodesWithTag("profile_screen").fetchSemanticsNodes().size == 1
+    }
     composeTestRule.onNodeWithTag("profile_screen").assertIsDisplayed()
 
     // Step 2: Navigate to Google Map
@@ -296,9 +300,11 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("camera_capture").assertIsDisplayed()
     composeTestRule.onNodeWithTag("take_picture_button").performClick()
     composeTestRule.waitForIdle()
-    // Thread.sleep(3000) // Give time for image capture
 
     // Step 5: Handle the image review screen
+    composeTestRule.waitUntil(timeoutMillis = 30000) {
+      composeTestRule.onAllNodesWithTag("image_review").fetchSemanticsNodes().size == 1
+    }
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
     composeTestRule.waitForIdle()
 
@@ -315,10 +321,11 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     // Give time for the upload and post creation
-    // Thread.sleep(5000)
+    composeTestRule.waitUntil(timeoutMillis = 30000) {
+      composeTestRule.onAllNodesWithTag("googleMapScreen").fetchSemanticsNodes().size == 1
+    }
 
     // Step 6: Verify we're back on map screen
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
-  }*/
-  // Commented out to see if the CI will pass
+  }
 }
