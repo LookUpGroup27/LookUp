@@ -38,6 +38,13 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   /** Holds the currently selected post. */
   val post = mutableStateOf<Post?>(null)
 
+    init {
+        repository.init {
+            auth?.addAuthStateListener(authListener)
+            getPosts() // to ensure posts are loaded initially
+        }
+    }
+
   @SuppressLint("StaticFieldLeak") private var context: Context? = null
 
   // Method to initialize context
@@ -85,9 +92,6 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     this.post.value = post
   }
 
-  init {
-    repository.init { auth?.addAuthStateListener(authListener) }
-  }
 
   /**
    * Generates a new unique identifier (UID) for a post.
