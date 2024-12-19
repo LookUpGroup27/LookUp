@@ -35,6 +35,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.VisibleForTesting
 
+/**
+ * ViewModel for managing posts and user interactions in the application.
+ *
+ * The `PostsViewModel` serves as the central hub for handling post-related data and logic, acting
+ * as the intermediary between the user interface (UI) and the [PostsRepository]. It facilitates a
+ * reactive flow of data to the UI using [StateFlow] and [mutableStateOf], ensuring that the
+ * application remains responsive and up-to-date.
+ *
+ * @constructor Creates a new instance of the `PostsViewModel` with the given [PostsRepository].
+ * @property repository The repository responsible for managing posts.
+ */
 class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
 
   /** Holds the currently selected post. */
