@@ -36,7 +36,7 @@ open class Planet(
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
     private val scale: Float = 0.02f,
-    private val rotationSpeed: Float = 50f
+    private val rotationSpeed: Float = 50f,
     val funFact: String = ""
 ) : Object() {
 
