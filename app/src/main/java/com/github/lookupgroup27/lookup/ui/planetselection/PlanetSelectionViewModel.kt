@@ -1,11 +1,11 @@
 package com.github.lookupgroup27.lookup.ui.planetselection
 
-import PlanetsRepository
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.map.planets.PlanetData
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
