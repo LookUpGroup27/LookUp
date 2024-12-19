@@ -130,6 +130,7 @@ fun GoogleMapScreen(
               hasLocationPermission,
               locationProvider.currentLocation.value,
               autoCenteringEnabled, // Pass the state
+              postsViewModel,
               allPosts,
               userEmail,
               updateProfile = { profile, updatedRatings ->
@@ -148,12 +149,15 @@ fun GoogleMapScreen(
               },
               profile = profile,
               updatePost = { post, newAvg, newStarsCount, newUsersNumber, newRatedBy ->
-                postsViewModel.updatePost(
+                val newPost =
                     post.copy(
                         averageStars = newAvg,
                         starsCount = newStarsCount,
                         usersNumber = newUsersNumber,
-                        ratedBy = newRatedBy))
+                        ratedBy = newRatedBy)
+
+                postsViewModel.selectPost(newPost)
+                postsViewModel.updatePost(newPost)
               },
               postRatings = postRatings)
         }

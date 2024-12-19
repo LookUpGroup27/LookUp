@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.image.ImagePreviewDialog
+import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -32,6 +33,7 @@ fun MapView(
     hasLocationPermission: Boolean,
     location: Location?,
     autoCenteringEnabled: Boolean,
+    postsViewModel: PostsViewModel,
     posts: List<Post>,
     userEmail: String,
     updateProfile: (UserProfile?, MutableMap<String, Int>?) -> Unit,
@@ -65,15 +67,6 @@ fun MapView(
       val latLng = LatLng(location.latitude, location.longitude)
       val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
       cameraPositionState.animate(cameraUpdate)
-    }
-  }
-
-  LaunchedEffect(profile, posts) {
-    posts.forEach { post ->
-      val starsCount = postRatings[post.uid]?.count { it } ?: 0
-      val usersNumber = post.ratedBy.size
-      val avg = if (usersNumber == 0) 0.0 else starsCount.toDouble() / usersNumber
-      updatePost(post, avg, starsCount, usersNumber, post.ratedBy)
     }
   }
 
@@ -128,6 +121,8 @@ fun MapView(
                     if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber else 0.0
 
                 updatePost(it, newAvg, newStarsCount, newUsersNumber, newRatedBy)
+
+                selectedPost = postsViewModel.post.value
               })
         }
       }
