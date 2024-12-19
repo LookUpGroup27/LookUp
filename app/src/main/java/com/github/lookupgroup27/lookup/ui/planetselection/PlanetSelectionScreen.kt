@@ -66,7 +66,10 @@ fun PlanetSelectionScreen(
               color = White,
               fontSize = 50.sp,
               fontWeight = FontWeight.Light,
-              modifier = Modifier.padding(20.dp).align(Alignment.CenterHorizontally))
+              modifier =
+                  Modifier.padding(20.dp)
+                      .align(Alignment.CenterHorizontally)
+                      .testTag("planet_name"))
         }
       },
       content = {
