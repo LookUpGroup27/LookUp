@@ -12,14 +12,18 @@ import com.google.maps.android.compose.MarkerState
  *
  * @param post The post to add a marker for
  * @param onMarkerClick The callback to be called when the marker is clicked
+ * @param isHighlighted Whether the marker should be highlighted
  */
 @Composable
-fun AddMapMarker(post: Post, onMarkerClick: (Post) -> Unit) {
+fun AddMapMarker(post: Post, onMarkerClick: (Post) -> Unit, isHighlighted: Boolean = false) {
   val latLng = LatLng(post.latitude, post.longitude)
   Marker(
       state = MarkerState(position = latLng),
       title = post.username,
-      icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
+      icon =
+          BitmapDescriptorFactory.defaultMarker(
+              if (isHighlighted) BitmapDescriptorFactory.HUE_RED
+              else BitmapDescriptorFactory.HUE_AZURE),
       onClick = {
         onMarkerClick(post)
         true

@@ -32,18 +32,24 @@ private const val NUMBER_OF_STARS: Int = 3
  * @param navigationActions Actions to navigate to different screens.
  * @param postsViewModel ViewModel to fetch posts.
  * @param profileViewModel ViewModel to fetch user profile.
+ * @param selectedPostMarker The selected post marker.
+ * @param initialAutoCenterEnabled Whether auto-centering is enabled.
  */
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun GoogleMapScreen(
     navigationActions: NavigationActions,
     postsViewModel: PostsViewModel = viewModel(),
-    profileViewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    selectedPostMarker: SelectedPostMarker? = null,
+    initialAutoCenterEnabled: Boolean = true
 ) {
   val context = LocalContext.current
   var hasLocationPermission by remember { mutableStateOf(false) }
   val locationProvider = LocationProviderSingleton.getInstance(context)
-  var autoCenteringEnabled by remember { mutableStateOf(true) } // New state for auto-centering
+  var autoCenteringEnabled by remember {
+    mutableStateOf(initialAutoCenterEnabled)
+  } // New state for auto-centering
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
 
@@ -57,6 +63,7 @@ fun GoogleMapScreen(
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
   val email by remember { mutableStateOf(userEmail) }
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
+  var highlightedPost by remember(selectedPostMarker) { mutableStateOf(selectedPostMarker) }
 
   LaunchedEffect(Unit) {
     hasLocationPermission =
@@ -90,6 +97,8 @@ fun GoogleMapScreen(
       }
     }
   }
+
+  LaunchedEffect(selectedPostMarker) { highlightedPost = selectedPostMarker }
 
   Scaffold(
       modifier = Modifier.testTag("googleMapScreen"),
@@ -155,7 +164,9 @@ fun GoogleMapScreen(
                         usersNumber = newUsersNumber,
                         ratedBy = newRatedBy))
               },
-              postRatings = postRatings)
+              postRatings = postRatings,
+              highlightedPost = highlightedPost,
+          )
         }
       })
 }

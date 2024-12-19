@@ -51,7 +51,8 @@ fun ImagePreviewDialog(
                           onRatingChanged = onRatingChanged,
                           color = Color.White,
                           textForUsername = "Posted by: $username",
-                          showAverage = false)
+                          showAverage = false,
+                          showAddress = false)
                       Spacer(modifier = Modifier.height(16.dp))
                       Button(onClick = onDismiss) { Text(text = "Close") }
                     }

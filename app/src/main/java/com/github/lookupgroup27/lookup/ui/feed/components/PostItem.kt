@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.feed.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -30,21 +31,25 @@ import org.json.JSONObject
  *
  * The post is displayed in a card with rounded corners and appropriate spacing.
  *
- * @param post The post data, including image URI, username, and description.
- * @param starStates The list of star states for the post (filled or not).
- * @param onRatingChanged Callback to handle changes in the rating.
- * @param color The color to use for the username and average rating text.
- * @param textForUsername The text to display for the username.
- * @param showAverage Whether to display the average rating.
+ * @param post The post data, including image URI and username
+ * @param starStates The list of star states for the post
+ * @param onRatingChanged The callback to be invoked when the rating is changed
+ * @param onAddressClick The callback to be invoked when the address is clicked
+ * @param color The color to use for the username and average rating
+ * @param textForUsername The text to display for the username
+ * @param showAverage Whether to display the average rating
+ * @param showAddress Whether to display the address
  */
 @Composable
 fun PostItem(
     post: Post,
     starStates: List<Boolean>,
     onRatingChanged: (List<Boolean>) -> Unit,
+    onAddressClick: (Post) -> Unit = {},
     color: Color = Color.White,
     textForUsername: String = post.username,
-    showAverage: Boolean = true
+    showAverage: Boolean = true,
+    showAddress: Boolean = true
 ) {
   val address = remember { mutableStateOf("Loading address...") }
   LaunchedEffect(post.latitude, post.longitude) {
@@ -73,7 +78,8 @@ fun PostItem(
                   style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray),
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
-                  modifier = Modifier.testTag("AddressTag_${post.uid}"))
+                  modifier =
+                      Modifier.testTag("AddressTag_${post.uid}").clickable { onAddressClick(post) })
 
               // Image
               Image(
