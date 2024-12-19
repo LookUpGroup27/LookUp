@@ -4,6 +4,8 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.Matrix
 import com.github.lookupgroup27.lookup.model.map.Camera
+import com.github.lookupgroup27.lookup.ui.map.renderables.Label
+import com.github.lookupgroup27.lookup.util.opengl.Position
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 
 /**
@@ -30,12 +32,12 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  */
 open class Planet(
     private val context: Context,
-    val name: String? = "Planet",
+    val name: String = "Planet",
     val position: FloatArray = floatArrayOf(0.0f, 0.0f, -2.0f),
-    protected var textureId: Int,
+    var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
-    private val scale: Float = 0.3f
+    private val scale: Float = 0.02f
 ) : Object() {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
@@ -44,6 +46,12 @@ open class Planet(
   protected var textureHandle: Int = 0
 
   private var textureManager: TextureManager
+  private val label =
+      Label(context, name, Position(position[0], position[1], position[2]), 0.1f, scale)
+
+  // New properties for rotation
+  private var rotationAngle: Float = 0f // Current rotation angle in degrees
+  private val rotationSpeed: Float = 50f // Rotation speed in degrees per second (constant for all)
 
   /** Initializes the planet's geometry, shaders, and texture. */
   init {
@@ -68,29 +76,45 @@ open class Planet(
   }
 
   /**
+   * Updates the rotation of the planet. This method should be called once per frame, and the
+   * deltaTime parameter should be passed to calculate the incremental rotation based on the speed.
+   *
+   * @param deltaTime Time elapsed since the last frame, in seconds.
+   */
+  fun updateRotation(deltaTime: Float) {
+    rotationAngle = (rotationAngle + rotationSpeed * deltaTime) % 360f
+  }
+
+  /**
    * Renders the planet using the provided camera.
    *
    * @param camera The camera used for rendering the scene.
    */
-  override fun draw(camera: Camera) {
+  fun draw(camera: Camera, transformMatrix: FloatArray? = null) {
+    label.draw(camera)
     val modelMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
-    val viewMatrix = FloatArray(16)
-    val projMatrix = FloatArray(16)
 
-    // Copy camera matrices to avoid modification
-    System.arraycopy(camera.viewMatrix, 0, viewMatrix, 0, 16)
-    System.arraycopy(camera.projMatrix, 0, projMatrix, 0, 16)
+    // Apply the provided transform matrix or use the default planet position
+    if (transformMatrix != null) {
+      System.arraycopy(transformMatrix, 0, modelMatrix, 0, 16)
+    } else {
+      Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
+      Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
+    }
 
-    // Apply object transformations
-    Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
-    Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
+    val viewMatrix = camera.viewMatrix
+    val projMatrix = camera.projMatrix
+    val mvpMatrix = FloatArray(16)
+
+    // Combine matrices: Projection * View * Model
+
+    // Apply rotation transformation
+    Matrix.rotateM(modelMatrix, 0, rotationAngle, 0f, 1f, 0f) // Rotate around the Y-axis
 
     // Combine model, view, and projection matrices in correct order
     val viewModelMatrix = FloatArray(16)
     Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-
-    val mvpMatrix = FloatArray(16)
     Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewModelMatrix, 0)
 
     // Pass final MVP matrix to the renderer
@@ -106,6 +130,11 @@ open class Planet(
     // Render the sphere
     sphereRenderer.drawSphere()
     sphereRenderer.unbindShaderAttributes()
+  }
+
+  fun updateTexture(newTextureId: Int) {
+    textureId = newTextureId
+    loadTexture() // Reload the texture using the new ID
   }
 
   /**

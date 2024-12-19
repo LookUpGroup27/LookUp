@@ -1,17 +1,17 @@
 package com.github.lookupgroup27.lookup.model.map
 
-import PlanetsRepository
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.model.loader.StarsLoader
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
 import com.github.lookupgroup27.lookup.model.map.renderables.utils.RayUtils.calculateRay
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
+import com.github.lookupgroup27.lookup.model.map.stars.StarsLoader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -34,8 +34,6 @@ class MapRenderer(
   private lateinit var renderableStars: List<Star>
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
-
-  private val renderableObjects = mutableListOf<Object>() // List of objects to render
 
   private val viewport = IntArray(4)
 
@@ -68,6 +66,17 @@ class MapRenderer(
     initializeObjects()
   }
 
+  private var lastFrameTime: Long = System.currentTimeMillis()
+
+  var timeProvider: () -> Long = { System.currentTimeMillis() } // Default time provider
+
+  fun computeDeltaTime(): Float {
+    val currentTime = timeProvider()
+    val deltaTime = (currentTime - lastFrameTime) / 1000f
+    lastFrameTime = currentTime
+    return deltaTime
+  }
+
   /**
    * Called to redraw the frame. Clears the screen, updates the camera view, and renders objects in
    * the scene.
@@ -82,11 +91,15 @@ class MapRenderer(
     // Bind the texture and render the SkyBox
     GLES20.glDepthMask(false)
     textureManager.bindTexture(skyBoxTextureHandle)
-    // skyBox.draw(camera) commented out until the texture is changed to see stars
+    skyBox.draw(camera)
     GLES20.glDepthMask(true)
 
-    // Draw the objects in the scene
+    val deltaTime = computeDeltaTime()
 
+    // Update planet rotations
+    renderablePlanets.forEach { it.updateRotation(deltaTime) }
+
+    // Draw the objects in the scene
     drawObjects()
   }
 
@@ -119,7 +132,7 @@ class MapRenderer(
   private fun drawObjects() {
     // Renderable Objects
     renderableStars.forEach { o -> o.draw(camera) }
-    renderablePlanets.forEach { o -> o.draw(camera) }
+    renderablePlanets.forEach { o -> o.draw(camera, null) }
   }
 
   /**

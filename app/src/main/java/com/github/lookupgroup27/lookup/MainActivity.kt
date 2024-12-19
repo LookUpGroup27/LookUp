@@ -34,6 +34,8 @@ import com.github.lookupgroup27.lookup.ui.overview.LandingScreen
 import com.github.lookupgroup27.lookup.ui.overview.MenuScreen
 import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetScreen
 import com.github.lookupgroup27.lookup.ui.passwordreset.PasswordResetViewModel
+import com.github.lookupgroup27.lookup.ui.planetselection.PlanetSelectionScreen
+import com.github.lookupgroup27.lookup.ui.planetselection.PlanetSelectionViewModel
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.CollectionScreen
 import com.github.lookupgroup27.lookup.ui.profile.CollectionViewModel
@@ -82,6 +84,8 @@ fun LookUpApp() {
       viewModel(factory = PasswordResetViewModel.Factory)
   val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
   val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
+  val planetSelectionViewModel: PlanetSelectionViewModel =
+      viewModel(factory = PlanetSelectionViewModel.createFactory(context))
 
   NavHost(navController = navController, startDestination = Route.LANDING) {
     navigation(
@@ -119,6 +123,9 @@ fun LookUpApp() {
         GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
       }
       composable(Screen.QUIZ) { QuizScreen(quizViewModel, navigationActions) }
+      composable(Screen.PLANET_SELECTION) {
+        PlanetSelectionScreen(planetSelectionViewModel, navigationActions)
+      }
     }
 
     navigation(startDestination = Screen.QUIZ, route = Route.QUIZ) {

@@ -1,12 +1,12 @@
 package com.github.lookupgroup27.lookup.ui.map
 
-import PlanetsRepository
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.view.ScaleGestureDetector
 import androidx.activity.ComponentActivity
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue

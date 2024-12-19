@@ -37,7 +37,7 @@ class ShaderProgram(vertexShaderCode: String, fragmentShaderCode: String) {
     if (compileStatus[0] == 0) {
       Log.e(TAG, "Error compiling shader: ${GLES20.glGetShaderInfoLog(shaderId)}")
       GLES20.glDeleteShader(shaderId)
-      throw RuntimeException("Shader compilation failed")
+      throw RuntimeException("Shader compilation failed:")
     }
     return shaderId
   }

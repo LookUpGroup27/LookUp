@@ -8,10 +8,12 @@ package com.github.lookupgroup27.lookup.model.register
  *
  * @property email The email input by the user.
  * @property password The password input by the user.
- * @property confirmPassword The confirmation password input by the user.
+ * @property confirmPassword The confirm password input by the user.
+ * @property username The username input by the user.
  * @property emailError Error message related to the email input, if any.
  * @property passwordError Error message related to the password input, if any.
  * @property confirmPasswordError Error message related to the confirm password input, if any.
+ * @property usernameError Error message related to the username input, if any.
  * @property generalError General error message not specific to any field.
  * @property isLoading Indicates whether a registration operation is in progress.
  */
@@ -19,9 +21,11 @@ data class RegisterState(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
+    val username: String = "",
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
+    val usernameError: String? = null,
     val generalError: String? = null,
     val isLoading: Boolean = false
 )

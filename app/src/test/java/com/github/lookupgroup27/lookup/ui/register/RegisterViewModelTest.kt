@@ -1,238 +1,309 @@
 package com.github.lookupgroup27.lookup.ui.register
 
-import com.github.lookupgroup27.lookup.model.register.RegisterRepository
-import com.github.lookupgroup27.lookup.model.register.UserAlreadyExistsException
-import com.github.lookupgroup27.lookup.model.register.WeakPasswordException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.github.lookupgroup27.lookup.model.register.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class RegisterViewModelTest {
-
-  private lateinit var viewModel: RegisterViewModel
-  private lateinit var mockRepository: MockRegisterRepository
-
-  private val testDispatcher = StandardTestDispatcher()
-
-  @Before
-  fun setUp() {
-    Dispatchers.setMain(testDispatcher)
-    mockRepository = MockRegisterRepository()
-    viewModel = RegisterViewModel(mockRepository)
-  }
-
-  @After
-  fun tearDown() {
-    Dispatchers.resetMain()
-  }
-
-  @Test
-  fun `onEmailChanged updates email state`() {
-    viewModel.onEmailChanged("test@example.com")
-    assertEquals("test@example.com", viewModel.uiState.value.email)
-  }
-
-  @Test
-  fun `onPasswordChanged updates password state`() {
-    viewModel.onPasswordChanged("Password123")
-    assertEquals("Password123", viewModel.uiState.value.password)
-  }
-
-  @Test
-  fun `onConfirmPasswordChanged updates confirmPassword state`() {
-    viewModel.onConfirmPasswordChanged("Password123")
-    assertEquals("Password123", viewModel.uiState.value.confirmPassword)
-  }
-
-  @Test
-  fun `clearFields resets state`() {
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password123")
-    viewModel.onConfirmPasswordChanged("Password123")
-    viewModel.clearFields()
-    assertEquals("", viewModel.uiState.value.email)
-    assertEquals("", viewModel.uiState.value.password)
-    assertEquals("", viewModel.uiState.value.confirmPassword)
-  }
-
-  // Validation Tests via Public Interface
-
-  @Test
-  fun `registerUser sets emailError when email is blank`() = runTest {
-    viewModel.onEmailChanged("")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password1")
-
-    viewModel.registerUser {}
-
-    assertEquals("Email cannot be empty.", viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.passwordError)
-    assertNull(viewModel.uiState.value.confirmPasswordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets emailError when email is invalid`() = runTest {
-    viewModel.onEmailChanged("invalid-email")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password1")
-
-    viewModel.registerUser {}
-
-    assertEquals("Invalid email address.", viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.passwordError)
-    assertNull(viewModel.uiState.value.confirmPasswordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets passwordError when password is too short`() = runTest {
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Pass1")
-    viewModel.onConfirmPasswordChanged("Pass1")
-
-    viewModel.registerUser {}
-
-    assertEquals("Password must be at least 8 characters.", viewModel.uiState.value.passwordError)
-    assertNull(viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.confirmPasswordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets passwordError when password lacks digit`() = runTest {
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password")
-    viewModel.onConfirmPasswordChanged("Password")
-
-    viewModel.registerUser {}
-
-    assertEquals(
-        "Password must include at least one number.", viewModel.uiState.value.passwordError)
-    assertNull(viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.confirmPasswordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets passwordError when password lacks uppercase letter`() = runTest {
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("password1")
-    viewModel.onConfirmPasswordChanged("password1")
-
-    viewModel.registerUser {}
-
-    assertEquals(
-        "Password must include at least one uppercase letter.",
-        viewModel.uiState.value.passwordError)
-    assertNull(viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.confirmPasswordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets confirmPasswordError when passwords do not match`() = runTest {
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password2")
-
-    viewModel.registerUser {}
-
-    assertEquals("Passwords do not match.", viewModel.uiState.value.confirmPasswordError)
-    assertNull(viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.passwordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser proceeds when inputs are valid`() = runTest {
-    var onSuccessCalled = false
-
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password1")
-
-    viewModel.registerUser { onSuccessCalled = true }
-
-    testScheduler.advanceUntilIdle()
-
-    assertTrue(onSuccessCalled)
-    assertNull(viewModel.uiState.value.emailError)
-    assertNull(viewModel.uiState.value.passwordError)
-    assertNull(viewModel.uiState.value.confirmPasswordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  // Error Handling Tests
-
-  @Test
-  fun `registerUser sets generalError when UserAlreadyExistsException is thrown`() = runTest {
-    mockRepository.shouldThrowUserAlreadyExistsException = true
-
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password1")
-
-    viewModel.registerUser {}
-
-    testScheduler.advanceUntilIdle()
-
-    assertEquals("An account with this email already exists.", viewModel.uiState.value.generalError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets passwordError when WeakPasswordException is thrown`() = runTest {
-    mockRepository.shouldThrowWeakPasswordException = true
-
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password1")
-
-    viewModel.registerUser {}
-
-    testScheduler.advanceUntilIdle()
-
-    assertEquals("Your password is too weak.", viewModel.uiState.value.passwordError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-
-  @Test
-  fun `registerUser sets generalError when unknown Exception is thrown`() = runTest {
-    mockRepository.shouldThrowGenericException = true
-
-    viewModel.onEmailChanged("test@example.com")
-    viewModel.onPasswordChanged("Password1")
-    viewModel.onConfirmPasswordChanged("Password1")
-
-    viewModel.registerUser {}
-
-    testScheduler.advanceUntilIdle()
-
-    assertEquals("An unexpected error occurred.", viewModel.uiState.value.generalError)
-    assertFalse(viewModel.uiState.value.isLoading)
-  }
-}
-
+/**
+ * A fake repository used for testing, allowing us to control the behavior of the registration
+ * process.
+ */
 class MockRegisterRepository : RegisterRepository {
+  var shouldThrowUsernameExistsException = false
   var shouldThrowUserAlreadyExistsException = false
   var shouldThrowWeakPasswordException = false
   var shouldThrowGenericException = false
 
-  override suspend fun registerUser(email: String, password: String) {
-    if (shouldThrowUserAlreadyExistsException) {
-      throw UserAlreadyExistsException("An account with this email already exists.")
+  override suspend fun registerUser(email: String, password: String, username: String) {
+    when {
+      shouldThrowUsernameExistsException ->
+          throw UsernameAlreadyExistsException("Username '$username' is already in use.")
+      shouldThrowUserAlreadyExistsException ->
+          throw UserAlreadyExistsException("An account with this email already exists.")
+      shouldThrowWeakPasswordException -> throw WeakPasswordException("Your password is too weak.")
+      shouldThrowGenericException ->
+          throw Exception("Registration failed due to an unexpected error.")
+      else -> {
+        // Success scenario: do nothing
+      }
     }
-    if (shouldThrowWeakPasswordException) {
-      throw WeakPasswordException("Your password is too weak.")
-    }
-    if (shouldThrowGenericException) {
-      throw Exception("An unexpected error occurred.")
-    }
+  }
+}
+
+@RunWith(JUnit4::class)
+class RegisterViewModelTest {
+
+  private val testDispatcher = StandardTestDispatcher()
+
+  private lateinit var viewModel: RegisterViewModel
+  private lateinit var fakeRepository: MockRegisterRepository
+
+  @Before
+  fun setup() {
+    // Set the main dispatcher for the tests.
+    Dispatchers.setMain(testDispatcher)
+
+    fakeRepository = MockRegisterRepository()
+    viewModel = RegisterViewModel(fakeRepository)
+  }
+
+  @After
+  fun teardown() {
+    // Reset the main dispatcher to the original state.
+    Dispatchers.resetMain()
+  }
+
+  @Test
+  fun `initial state is empty and not loading`() {
+    val state = viewModel.uiState.value
+    assertEquals("", state.email)
+    assertEquals("", state.password)
+    assertEquals("", state.confirmPassword)
+    assertEquals("", state.username)
+    assertFalse(state.isLoading)
+    assertNull(state.emailError)
+    assertNull(state.passwordError)
+    assertNull(state.confirmPasswordError)
+    assertNull(state.usernameError)
+    assertNull(state.generalError)
+  }
+
+  @Test
+  fun `onEmailChanged updates email and clears errors`() {
+    viewModel.onEmailChanged("test@example.com")
+    val state = viewModel.uiState.value
+    assertEquals("test@example.com", state.email)
+    assertNull(state.emailError)
+    assertNull(state.generalError)
+  }
+
+  @Test
+  fun `onPasswordChanged updates password and clears errors`() {
+    viewModel.onPasswordChanged("Password123")
+    val state = viewModel.uiState.value
+    assertEquals("Password123", state.password)
+    assertNull(state.passwordError)
+    assertNull(state.generalError)
+  }
+
+  @Test
+  fun `onConfirmPasswordChanged updates confirmPassword and clears errors`() {
+    viewModel.onConfirmPasswordChanged("Password123")
+    val state = viewModel.uiState.value
+    assertEquals("Password123", state.confirmPassword)
+    assertNull(state.confirmPasswordError)
+    assertNull(state.generalError)
+  }
+
+  @Test
+  fun `onUsernameChanged updates username and clears errors`() {
+    viewModel.onUsernameChanged("uniqueUsername")
+    val state = viewModel.uiState.value
+    assertEquals("uniqueUsername", state.username)
+    assertNull(state.usernameError)
+    assertNull(state.generalError)
+  }
+
+  @Test
+  fun `registerUser with valid inputs and success scenario updates state and calls onSuccess`() =
+      runTest {
+        viewModel.onUsernameChanged("uniqueUsername")
+        viewModel.onEmailChanged("test@example.com")
+        viewModel.onPasswordChanged("Password123")
+        viewModel.onConfirmPasswordChanged("Password123")
+
+        var successCalled = false
+        viewModel.registerUser { successCalled = true }
+
+        // Advance until all coroutines have finished
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isLoading)
+        assertTrue(successCalled)
+        assertNull(state.generalError)
+        assertNull(state.usernameError)
+        assertNull(state.emailError)
+        assertNull(state.passwordError)
+        assertNull(state.confirmPasswordError)
+      }
+
+  @Test
+  fun `registerUser shows validation error when username is empty`() = runTest {
+    // Username not entered
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("Password123")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Username cannot be empty.", state.usernameError)
+  }
+
+  @Test
+  fun `registerUser shows validation error when email is invalid`() = runTest {
+    viewModel.onUsernameChanged("uniqueUsername")
+    viewModel.onEmailChanged("invalidEmail")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("Password123")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Invalid email address.", state.emailError)
+  }
+
+  @Test
+  fun `registerUser shows validation error when passwords do not match`() = runTest {
+    viewModel.onUsernameChanged("uniqueUsername")
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("WrongPassword")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Passwords do not match.", state.confirmPasswordError)
+  }
+
+  @Test
+  fun `registerUser shows validation error when password is weak`() = runTest {
+    viewModel.onUsernameChanged("uniqueUsername")
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("pass") // too short
+    viewModel.onConfirmPasswordChanged("pass")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Password must be at least 8 characters.", state.passwordError)
+  }
+
+  @Test
+  fun `registerUser handles UsernameAlreadyExistsException`() = runTest {
+    fakeRepository.shouldThrowUsernameExistsException = true
+
+    viewModel.onUsernameChanged("takenUsername")
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("Password123")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Username 'takenUsername' is already in use.", state.usernameError)
+  }
+
+  @Test
+  fun `registerUser handles UserAlreadyExistsException`() = runTest {
+    fakeRepository.shouldThrowUserAlreadyExistsException = true
+
+    viewModel.onUsernameChanged("uniqueUsername")
+    viewModel.onEmailChanged("taken@example.com")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("Password123")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("An account with this email already exists.", state.generalError)
+  }
+
+  @Test
+  fun `registerUser handles WeakPasswordException`() = runTest {
+    fakeRepository.shouldThrowWeakPasswordException = true
+
+    viewModel.onUsernameChanged("uniqueUsername")
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("WeakPass1")
+    viewModel.onConfirmPasswordChanged("WeakPass1")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Your password is too weak.", state.passwordError)
+  }
+
+  @Test
+  fun `registerUser handles generic Exception`() = runTest {
+    fakeRepository.shouldThrowGenericException = true
+
+    viewModel.onUsernameChanged("uniqueUsername")
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("Password123")
+
+    var successCalled = false
+    viewModel.registerUser { successCalled = true }
+
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertFalse(state.isLoading)
+    assertFalse(successCalled)
+    assertEquals("Registration failed due to an unexpected error.", state.generalError)
+  }
+
+  @Test
+  fun `clearFields resets state`() = runTest {
+    viewModel.onUsernameChanged("testUser")
+    viewModel.onEmailChanged("test@example.com")
+    viewModel.onPasswordChanged("Password123")
+    viewModel.onConfirmPasswordChanged("Password123")
+
+    viewModel.clearFields()
+    val state = viewModel.uiState.value
+
+    assertEquals("", state.username)
+    assertEquals("", state.email)
+    assertEquals("", state.password)
+    assertEquals("", state.confirmPassword)
+    assertNull(state.usernameError)
+    assertNull(state.emailError)
+    assertNull(state.passwordError)
+    assertNull(state.confirmPasswordError)
+    assertNull(state.generalError)
   }
 }

@@ -126,4 +126,75 @@ class PlanetTest {
     // Assert
     assertTrue("Ray should intersect even when the origin is inside the sphere", intersects)
   }
+
+  @Test
+  fun `updateRotation should update rotationAngle based on deltaTime and rotationSpeed`() {
+    // Arrange
+    val planet =
+        Planet(
+            context = context,
+            name = "TestPlanet",
+            position = floatArrayOf(0f, 0f, -5f),
+            textureId = R.drawable.planet_texture,
+            scale = 1f)
+
+    val initialRotationAngle = 0f
+    val rotationSpeed = 30f // degrees per second
+    val deltaTime = 1f // 1 second
+
+    // Set rotationSpeed manually for testing (assuming rotationSpeed is accessible or made
+    // testable)
+    val rotationSpeedField = planet.javaClass.getDeclaredField("rotationSpeed")
+    rotationSpeedField.isAccessible = true
+    rotationSpeedField.setFloat(planet, rotationSpeed)
+
+    // Act
+    planet.updateRotation(deltaTime)
+
+    // Assert
+    val expectedRotationAngle = (initialRotationAngle + rotationSpeed * deltaTime) % 360f
+    val rotationAngleField = planet.javaClass.getDeclaredField("rotationAngle")
+    rotationAngleField.isAccessible = true
+    val actualRotationAngle = rotationAngleField.getFloat(planet)
+
+    assertTrue(
+        "Rotation angle should be updated correctly", actualRotationAngle == expectedRotationAngle)
+  }
+
+  @Test
+  fun `updateRotation should wrap rotationAngle around 360 degrees`() {
+    // Arrange
+    val planet =
+        Planet(
+            context = context,
+            name = "TestPlanet",
+            position = floatArrayOf(0f, 0f, -5f),
+            textureId = R.drawable.planet_texture,
+            scale = 1f)
+
+    val initialRotationAngle = 350f
+    val rotationSpeed = 30f // degrees per second
+    val deltaTime = 1f // 1 second
+
+    // Set rotationSpeed manually for testing
+    val rotationSpeedField = planet.javaClass.getDeclaredField("rotationSpeed")
+    rotationSpeedField.isAccessible = true
+    rotationSpeedField.setFloat(planet, rotationSpeed)
+
+    // Manually set the initial rotationAngle
+    val rotationAngleField = planet.javaClass.getDeclaredField("rotationAngle")
+    rotationAngleField.isAccessible = true
+    rotationAngleField.setFloat(planet, initialRotationAngle)
+
+    // Act
+    planet.updateRotation(deltaTime)
+
+    // Assert
+    val expectedRotationAngle = (initialRotationAngle + rotationSpeed * deltaTime) % 360f
+    val actualRotationAngle = rotationAngleField.getFloat(planet)
+
+    assertTrue(
+        "Rotation angle should wrap around correctly at 360 degrees",
+        actualRotationAngle == expectedRotationAngle)
+  }
 }
