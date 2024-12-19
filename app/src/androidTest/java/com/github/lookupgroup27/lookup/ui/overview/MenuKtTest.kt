@@ -94,7 +94,6 @@ class MenuKtTest {
     composeTestRule.onNodeWithTag("profile_button").assertIsDisplayed()
   }
 
-  /*
   @Test
   fun menuScreen_clickProfileButton_navigatesToCorrectPlace() {
     // Reset mocks and interactions
@@ -115,7 +114,7 @@ class MenuKtTest {
     } else {
       verify(mockNavigationActions).navigateTo(Screen.AUTH)
     }
-  }*/
+  }
 
   @Test
   fun menuScreen_clickQuizzes_navigatesToQuizScreen() {
