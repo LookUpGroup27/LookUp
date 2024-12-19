@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.feed
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -60,8 +61,11 @@ fun FeedScreen(
     profileViewModel: ProfileViewModel,
     initialNearbyPosts: List<Post>? = null
 ) {
-  // Fetch user profile
-  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+    // Fetch user profile
+    LaunchedEffect(Unit) {
+        Log.d("FeedScreen", "Fetching user profile")
+        profileViewModel.fetchUserProfile()
+    }
 
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
@@ -74,7 +78,11 @@ fun FeedScreen(
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
 
-  postsViewModel.setContext(context)
+    // Initialize PostsViewModel with context
+    LaunchedEffect(Unit) {
+        Log.d("FeedScreen", "Setting context in PostsViewModel")
+        postsViewModel.setContext(context)
+    }
 
   var locationPermissionGranted by remember { mutableStateOf(false) }
   val unfilteredPosts by
@@ -89,6 +97,7 @@ fun FeedScreen(
     locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
+      Log.d("FeedScreen", "Location permission granted: $locationPermissionGranted")
 
     if (!locationPermissionGranted) {
       Toast.makeText(
