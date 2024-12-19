@@ -41,6 +41,8 @@ private const val NUMBER_OF_STARS: Int = 3
  * @param navigationActions Actions to navigate to different screens.
  * @param postsViewModel ViewModel to fetch posts.
  * @param profileViewModel ViewModel to fetch user profile.
+ * @param selectedPostMarker The selected post marker.
+ * @param initialAutoCenterEnabled Whether auto-centering is enabled.
  * @param testNoLoc use for test purpose: it simulates the case before user grants location
  *   permission
  */
@@ -50,6 +52,8 @@ fun GoogleMapScreen(
     navigationActions: NavigationActions,
     postsViewModel: PostsViewModel = viewModel(),
     profileViewModel: ProfileViewModel = viewModel(),
+    selectedPostMarker: SelectedPostMarker? = null,
+    initialAutoCenterEnabled: Boolean = true,
     testNoLoca: Boolean = false
 ) {
   val context = LocalContext.current
@@ -59,7 +63,9 @@ fun GoogleMapScreen(
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED)
   }
-  var autoCenteringEnabled by remember { mutableStateOf(true) }
+  var autoCenteringEnabled by remember {
+    mutableStateOf(initialAutoCenterEnabled)
+  } // New state for auto-centering
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
   val allPosts by postsViewModel.allPosts.collectAsState()
@@ -72,6 +78,7 @@ fun GoogleMapScreen(
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
   val email by remember { mutableStateOf(userEmail) }
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
+  var highlightedPost by remember(selectedPostMarker) { mutableStateOf(selectedPostMarker) }
 
   // Permission request launcher
   val permissionLauncher =
@@ -111,6 +118,8 @@ fun GoogleMapScreen(
       }
     }
   }
+
+  LaunchedEffect(selectedPostMarker) { highlightedPost = selectedPostMarker }
 
   Scaffold(
       modifier = Modifier.testTag("googleMapScreen"),
@@ -193,7 +202,8 @@ fun GoogleMapScreen(
                           usersNumber = newUsersNumber,
                           ratedBy = newRatedBy))
                 },
-                postRatings = postRatings)
+                postRatings = postRatings,
+                highlightedPost = highlightedPost)
           }
         }
       })

@@ -30,6 +30,7 @@ import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
+import com.github.lookupgroup27.lookup.ui.googlemap.components.SelectedPostMarker
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -269,6 +270,15 @@ fun FeedScreen(
                                             starsCount = starsCount,
                                             oldStarCounts = oldStarCounts)
                                     postsViewModel.updatePost(updatedPost)
+                                  },
+                                  onAddressClick = { clickedPost ->
+                                    val selectedMarker =
+                                        SelectedPostMarker(
+                                            postId = clickedPost.uid,
+                                            latitude = clickedPost.latitude,
+                                            longitude = clickedPost.longitude)
+                                    navigationActions.navigateToMapWithPost(
+                                        post.uid, post.latitude, post.longitude, false)
                                   },
                                   onImageClick = { imageUrl, username, description ->
                                     navigationActions.navigateToFullScreen(

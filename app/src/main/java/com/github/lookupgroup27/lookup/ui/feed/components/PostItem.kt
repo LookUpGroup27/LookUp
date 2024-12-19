@@ -34,19 +34,23 @@ import org.json.JSONObject
  * @param onImageClick Callback invoked when the user clicks on the post image. This function should
  *   navigate to the full-screen image screen. It provides [imageUrl], [username], and [description]
  *   parameters.
+ * @param onAddressClick The callback to be invoked when the address is clicked
  * @param color The text color for textual content.
  * @param textForUsername The display text for the username (or user-related info).
  * @param showAverage Flag indicating if the average rating should be displayed.
+ * @param showAddress Whether to display the address
  */
 @Composable
 fun PostItem(
     post: Post,
     starStates: List<Boolean>,
     onRatingChanged: (List<Boolean>) -> Unit,
+    onAddressClick: (Post) -> Unit = {},
     onImageClick: (imageUrl: String, username: String, description: String) -> Unit,
     color: Color = Color.White,
     textForUsername: String = post.username,
-    showAverage: Boolean = true
+    showAverage: Boolean = true,
+    showAddress: Boolean = true
 ) {
   val address = remember { mutableStateOf("Loading address...") }
   LaunchedEffect(post.latitude, post.longitude) {
@@ -75,7 +79,8 @@ fun PostItem(
                   style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray),
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
-                  modifier = Modifier.testTag("AddressTag_${post.uid}"))
+                  modifier =
+                      Modifier.testTag("AddressTag_${post.uid}").clickable { onAddressClick(post) })
 
               // Image (Clickable)
               Image(

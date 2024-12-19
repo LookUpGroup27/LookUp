@@ -49,7 +49,8 @@ fun ImagePreviewDialog(
                       onImageClick = { _, _, _ -> }, // No-op for dialog preview
                       color = Color.White,
                       textForUsername = "Posted by: $username",
-                      showAverage = false)
+                      showAverage = false,
+                      showAddress = false)
                   Spacer(modifier = Modifier.height(16.dp))
                   Button(onClick = onDismiss) { Text(text = "Close") }
                 }

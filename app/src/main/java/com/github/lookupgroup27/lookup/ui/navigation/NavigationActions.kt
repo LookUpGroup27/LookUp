@@ -136,6 +136,26 @@ open class NavigationActions(
     navController.navigate("${route}/$image/$timestamp")
   }
 
+  /**
+   * Navigate to the map screen with the specified post ID, latitude, and longitude.
+   *
+   * @param postId The ID of the post to navigate to.
+   * @param lat The latitude of the post.
+   * @param lon The longitude of the post.
+   */
+  open fun navigateToMapWithPost(
+      postId: String,
+      lat: Double,
+      lon: Double,
+      autoCenter: Boolean = false
+  ) {
+    navController.navigate("${Route.GOOGLE_MAP}/$postId/$lat/$lon/$autoCenter") {
+      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+      launchSingleTop = true
+      restoreState = true
+    }
+  }
+
   /** Navigate to a screen with a specific post information. */
   open fun navigateToWithPostInfo(
       encodedUri: String,

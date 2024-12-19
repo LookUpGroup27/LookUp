@@ -184,7 +184,7 @@ class GoogleMapScreenTest {
   @Test
   fun testEnableLocationButtonIsDisplayed() {
     composeTestRule.setContent {
-      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel, true)
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel, testNoLoca = true)
     }
 
     // Verify the UI elements are displayed
