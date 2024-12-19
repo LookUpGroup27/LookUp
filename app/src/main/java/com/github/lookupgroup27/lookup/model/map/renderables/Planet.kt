@@ -86,7 +86,10 @@ open class Planet(
    */
   fun draw(camera: Camera, transformMatrix: FloatArray? = null) {
     val modelMatrix = FloatArray(16)
+    val billboardMatrix = FloatArray(16)
+    val mvpMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
+    Matrix.setIdentityM(billboardMatrix, 0)
 
     // Apply the provided transform matrix or use the default planet position
     if (transformMatrix != null) {
@@ -96,19 +99,53 @@ open class Planet(
       Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
     }
 
-    val viewMatrix = camera.viewMatrix
-    val projMatrix = camera.projMatrix
-    val mvpMatrix = FloatArray(16)
+    // Extract camera look direction from view matrix
+    val lookX = -camera.viewMatrix[2] // Third column of view matrix
+    val lookY = -camera.viewMatrix[6] // is the look direction
+    val lookZ = -camera.viewMatrix[10]
+
+    // Create billboard rotation
+    val upX = camera.viewMatrix[1] // Second column is up vector
+    val upY = camera.viewMatrix[5]
+    val upZ = camera.viewMatrix[9]
+
+    // Calculate right vector (cross product)
+    val rightX = upY * lookZ - upZ * lookY
+    val rightY = upZ * lookX - upX * lookZ
+    val rightZ = upX * lookY - upY * lookX
+
+    // Set billboard matrix
+    billboardMatrix[0] = rightX
+    billboardMatrix[1] = rightY
+    billboardMatrix[2] = rightZ
+    billboardMatrix[3] = 0f
+
+    billboardMatrix[4] = upX
+    billboardMatrix[5] = upY
+    billboardMatrix[6] = upZ
+    billboardMatrix[7] = 0f
+
+    billboardMatrix[8] = lookX
+    billboardMatrix[9] = lookY
+    billboardMatrix[10] = lookZ
+    billboardMatrix[11] = 0f
+
+    billboardMatrix[12] = 0f
+    billboardMatrix[13] = 0f
+    billboardMatrix[14] = 0f
+    billboardMatrix[15] = 1f
 
     // Combine matrices: Projection * View * Model
 
     // Apply rotation transformation
-    Matrix.rotateM(modelMatrix, 0, rotationAngle, 0f, 1f, 0f) // Rotate around the Y-axis
+    val rotatedMatrix = FloatArray(16)
+    Matrix.rotateM(billboardMatrix, 0, rotationAngle, 0f, 1f, 0f)
+    Matrix.multiplyMM(rotatedMatrix, 0, modelMatrix, 0, billboardMatrix, 0)
 
     // Combine model, view, and projection matrices in correct order
     val viewModelMatrix = FloatArray(16)
-    Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-    Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewModelMatrix, 0)
+    Matrix.multiplyMM(viewModelMatrix, 0, camera.viewMatrix, 0, rotatedMatrix, 0)
+    Matrix.multiplyMM(mvpMatrix, 0, camera.projMatrix, 0, viewModelMatrix, 0)
 
     // Pass final MVP matrix to the renderer
     sphereRenderer.bindShaderAttributes(mvpMatrix)
