@@ -93,7 +93,8 @@ fun FeedScreen(
     val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
     val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
-  // Check for location permissions and fetch posts when granted.
+
+    // Check for location permissions and fetch posts when granted.
   LaunchedEffect(Unit) {
     locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -123,134 +124,145 @@ fun FeedScreen(
     }
   }
 
-  // Background Box with gradient overlay using drawBehind for efficiency.
-  Box(
-      modifier =
-          Modifier.fillMaxSize().drawBehind {
-            drawRect(
-                brush =
-                    Brush.verticalGradient(
-                        colors =
-                            listOf(
-                                Color.Black.copy(alpha = 0.6f),
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.6f))))
-          }) {
+    // UI Structure
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .drawBehind {
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.6f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.6f)
+                        )
+                    )
+                )
+            }
+    ) {
         Image(
             painter = painterResource(R.drawable.background_blurred),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize())
+            modifier = Modifier.fillMaxSize()
+        )
 
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
-              TopAppBar(
-                  title = {
-                    Text(
-                        text = stringResource(R.string.nearby_posts_title),
-                        style = MaterialTheme.typography.titleMedium.copy(color = Color.White))
-                  },
-                  colors =
-                      TopAppBarDefaults.smallTopAppBarColors(
-                          containerColor = Color.Black.copy(alpha = 0.5f)))
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.nearby_posts_title),
+                            style = MaterialTheme.typography.titleMedium.copy(color = Color.White)
+                        )
+                    },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = Color.Black.copy(alpha = 0.5f)
+                    )
+                )
             },
             bottomBar = {
-              Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
-                BottomNavigationMenu(
-                    onTabSelect = { destination -> navigationActions.navigateTo(destination) },
-                    tabList = LIST_TOP_LEVEL_DESTINATION,
-                    isUserLoggedIn = isUserLoggedIn,
-                    selectedItem = Route.FEED)
-              }
+                Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
+                    BottomNavigationMenu(
+                        onTabSelect = { destination -> navigationActions.navigateTo(destination) },
+                        tabList = LIST_TOP_LEVEL_DESTINATION,
+                        isUserLoggedIn = isUserLoggedIn,
+                        selectedItem = Route.FEED
+                    )
+                }
             },
-            modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))) {
-                innerPadding ->
-              Column(
-                  modifier =
-                      Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
-                    if (nearbyPosts.isEmpty()) {
-                      // Loading or empty state
-                      Box(
-                          modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
-                          contentAlignment = Alignment.Center) {
-                            if (!locationPermissionGranted) {
-                              Text(
-                                  text = stringResource(R.string.location_permission_required),
-                                  style =
-                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
-                            } else if (locationProvider.currentLocation.value == null) {
-                              CircularProgressIndicator(
-                                  color = Color.White) // Still fetching location
-                            } else {
-                              Column(
-                                  horizontalAlignment = Alignment.CenterHorizontally,
-                                  verticalArrangement = Arrangement.Center) {
-                                    // Add PNG image above the message
+            modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 8.dp)
+            ) {
+                if (nearbyPosts.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag("loading_indicator_test_tag"),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        when {
+                            !locationPermissionGranted -> {
+                                Text(
+                                    text = stringResource(R.string.location_permission_required),
+                                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
+                                )
+                            }
+                            locationProvider.currentLocation.value == null -> {
+                                CircularProgressIndicator(color = Color.White)
+                            }
+                            else -> {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
                                     Image(
                                         painter = painterResource(R.drawable.no_images_placeholder),
-                                        contentDescription =
-                                            stringResource(R.string.feed_no_images_available),
-                                        modifier =
-                                            Modifier.size(180.dp).testTag("no_images_placeholder"))
-
+                                        contentDescription = stringResource(R.string.feed_no_images_available),
+                                        modifier = Modifier
+                                            .size(180.dp)
+                                            .testTag("no_images_placeholder")
+                                    )
                                     Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Display "No images available" message
                                     Text(
                                         text = stringResource(R.string.feed_no_images_available),
                                         modifier = Modifier.testTag("feed_no_images_available"),
-                                        style =
-                                            MaterialTheme.typography.bodyLarge.copy(
-                                                color = Color.White))
-                                  }
+                                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
+                                    )
+                                }
                             }
-                          }
-                    } else {
-                      LazyColumn(
-                          modifier = Modifier.fillMaxSize(),
-                          contentPadding = PaddingValues(vertical = 16.dp),
-                          verticalArrangement = Arrangement.spacedBy(30.dp)) {
-                            items(nearbyPosts) { post ->
-                              PostItem(
-                                  post = post,
-                                  starStates =
-                                      postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
-                                  onRatingChanged = { newRating ->
-                                    val oldPostRatings =
-                                        postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(30.dp)
+                    ) {
+                        items(nearbyPosts) { post ->
+                            PostItem(
+                                post = post,
+                                starStates = postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
+                                onRatingChanged = { newRating ->
+                                    val oldPostRatings = postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
                                     val oldStarCounts = oldPostRatings.count { it }
                                     postRatings[post.uid] = newRating.toList()
                                     val starsCount = newRating.count { it }
 
                                     // Update user profile ratings
-                                    val newProfile =
-                                        updateProfileRatings(
-                                            currentProfile = profile,
-                                            postUid = post.uid,
-                                            starsCount = starsCount,
-                                            username = username,
-                                            bio = bio,
-                                            email = email)
+                                    val newProfile = updateProfileRatings(
+                                        currentProfile = profile,
+                                        postUid = post.uid,
+                                        starsCount = starsCount,
+                                        username = username,
+                                        bio = bio,
+                                        email = email
+                                    )
                                     profileViewModel.updateUserProfile(newProfile)
 
                                     // Update post details
-                                    val updatedPost =
-                                        calculatePostUpdates(
-                                            post = post,
-                                            userEmail = userEmail,
-                                            starsCount = starsCount,
-                                            oldStarCounts = oldStarCounts)
+                                    val updatedPost = calculatePostUpdates(
+                                        post = post,
+                                        userEmail = userEmail,
+                                        starsCount = starsCount,
+                                        oldStarCounts = oldStarCounts
+                                    )
                                     postsViewModel.updatePost(updatedPost)
-                                  })
-                            }
-                          }
+                                }
+                            )
+                        }
                     }
-                  }
+                }
             }
-      }
+        }
+    }
 }
-
 /**
  * Updates the user's profile ratings.
  *
