@@ -50,13 +50,13 @@ fun CalendarScreen(
     calendarViewModel: CalendarViewModel = viewModel(),
     navigationActions: NavigationActions
 ) {
-    val context = LocalContext.current
-    // Lock the screen orientation to portrait mode.
-    DisposableEffect(Unit) {
-        val activity = context as? ComponentActivity
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
-    }
+  val context = LocalContext.current
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
 
   // State variables for selected date, search query, and visibility of the search dialog.
   var selectedDate by remember { mutableStateOf(Date()) }

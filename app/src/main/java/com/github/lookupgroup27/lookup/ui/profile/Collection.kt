@@ -48,14 +48,14 @@ fun CollectionScreen(
     viewModel: CollectionViewModel =
         androidx.lifecycle.viewmodel.compose.viewModel(factory = CollectionViewModel.Factory)
 ) {
-    val context = LocalContext.current
+  val context = LocalContext.current
 
-    // Lock the screen orientation to portrait mode.
-    DisposableEffect(Unit) {
-        val activity = context as? ComponentActivity
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
-    }
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
 
   val myPosts by viewModel.myPosts.collectAsState()
 
