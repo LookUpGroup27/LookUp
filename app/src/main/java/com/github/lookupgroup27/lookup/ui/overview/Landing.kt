@@ -28,15 +28,27 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import components.BackgroundImage
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.github.lookupgroup27.lookup.util.NetworkUtils
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LandingScreen(navigationActions: NavigationActions) {
+
+    val context = LocalContext.current
+    val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
+
   // Background container with clickable modifier to navigate to Map screen
   BoxWithConstraints(
       modifier =
           Modifier.fillMaxSize().testTag("LandingScreen").clickable {
-            navigationActions.navigateTo(Screen.SKY_MAP)
+              if (isOnline.value) navigationActions.navigateTo(Screen.SKY_MAP)
+              else
+                  Toast.makeText(context, "You're not connected to the internet", Toast.LENGTH_SHORT)
+                      .show()
           }) {
         // Background Image
         BackgroundImage(
