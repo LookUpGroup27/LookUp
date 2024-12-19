@@ -78,10 +78,8 @@ fun PostItem(
                   style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray),
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
-                  modifier = Modifier
-                      .testTag("AddressTag_${post.uid}")
-                      .clickable { onAddressClick(post) })
-
+                  modifier =
+                      Modifier.testTag("AddressTag_${post.uid}").clickable { onAddressClick(post) })
 
               // Image
               Image(

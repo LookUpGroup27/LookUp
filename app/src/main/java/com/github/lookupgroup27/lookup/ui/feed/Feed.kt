@@ -235,13 +235,13 @@ fun FeedScreen(
                                     postsViewModel.updatePost(updatedPost)
                                   },
                                   onAddressClick = { clickedPost ->
-                                      val selectedMarker =
-                                          SelectedPostMarker(
-                                              postId = clickedPost.uid,
-                                              latitude = clickedPost.latitude,
-                                              longitude = clickedPost.longitude)
-                                      navigationActions.navigateToMapWithPost(
-                                          post.uid, post.latitude, post.longitude, false)
+                                    val selectedMarker =
+                                        SelectedPostMarker(
+                                            postId = clickedPost.uid,
+                                            latitude = clickedPost.latitude,
+                                            longitude = clickedPost.longitude)
+                                    navigationActions.navigateToMapWithPost(
+                                        post.uid, post.latitude, post.longitude, false)
                                   })
                             }
                           }
