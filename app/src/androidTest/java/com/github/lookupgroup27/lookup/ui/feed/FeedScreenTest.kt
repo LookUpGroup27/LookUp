@@ -58,7 +58,7 @@ class FeedScreenTest {
   private lateinit var locationProvider: LocationProvider
   private val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
   private val userEmail = user?.email ?: ""
-    private val mockNavigationActions: NavigationActions = org.mockito.kotlin.mock()
+  private val mockNavigationActions: NavigationActions = org.mockito.kotlin.mock()
 
   // Mock the logged-in user's profile
   val testUserProfile =
@@ -335,19 +335,19 @@ class FeedScreenTest {
     composeTestRule.onNodeWithTag("enable_location_button").performClick()
   }
 
-    @Test
-    fun testNavigationToFeedBlockedForOfflineMode() {
-        setFeedScreenContent(emptyList())
-        // Simulate offline mode
-        mockkObject(NetworkUtils)
-        every { NetworkUtils.isNetworkAvailable(any()) } returns false
-        // Simulate clicking the sky map tab in the bottom navigation
-        composeTestRule.onNodeWithTag("Feed").performClick()
+  @Test
+  fun testNavigationToFeedBlockedForOfflineMode() {
+    setFeedScreenContent(emptyList())
+    // Simulate offline mode
+    mockkObject(NetworkUtils)
+    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+    // Simulate clicking the sky map tab in the bottom navigation
+    composeTestRule.onNodeWithTag("Feed").performClick()
 
-        // Wait for the UI to settle after the click
-        composeTestRule.waitForIdle()
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
 
-        // Verify that navigation to the Sky Map is never triggered
-        verify(mockNavigationActions, org.mockito.kotlin.never()).navigateTo(Screen.FEED)
-    }
+    // Verify that navigation to the Sky Map is never triggered
+    verify(mockNavigationActions, org.mockito.kotlin.never()).navigateTo(Screen.FEED)
+  }
 }
