@@ -29,7 +29,7 @@ class Star(
     circleRenderer.initializeBuffers()
   }
 
-  override fun draw(camera: Camera) {
+  fun draw(camera: Camera) {
     // Model-View-Projection (MVP) Matrix
     val mvpMatrix = FloatArray(16)
     val modelMatrix = FloatArray(16)

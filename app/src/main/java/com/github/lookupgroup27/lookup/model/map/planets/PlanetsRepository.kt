@@ -1,10 +1,11 @@
+package com.github.lookupgroup27.lookup.model.map.planets
+
 import android.content.Context
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
-import com.github.lookupgroup27.lookup.model.map.planets.PlanetData
 import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
-import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
+import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -41,14 +42,40 @@ class PlanetsRepository(
     // texture.
     planets.addAll(
         listOf(
-            PlanetData("Moon", "301", textureId = R.drawable.full_moon),
-            PlanetData("Mercury", "199", textureId = R.drawable.mercury_texture),
-            PlanetData("Venus", "299", textureId = R.drawable.venus_texture),
-            PlanetData("Mars", "499", textureId = R.drawable.mars_texture),
-            PlanetData("Jupiter", "599", textureId = R.drawable.jupiter_texture),
-            PlanetData("Saturn", "699", textureId = R.drawable.saturn_texture),
-            PlanetData("Uranus", "799", textureId = R.drawable.uranus_texture),
-            PlanetData("Neptune", "899", textureId = R.drawable.neptune_texture)))
+            PlanetData(
+                "Moon", "301", textureId = R.drawable.full_moon, iconRes = R.drawable.moon_icon),
+            PlanetData(
+                "Mercury",
+                "199",
+                textureId = R.drawable.mercury_texture,
+                iconRes = R.drawable.mercury_icon),
+            PlanetData(
+                "Venus",
+                "299",
+                textureId = R.drawable.venus_texture,
+                iconRes = R.drawable.venus_icon),
+            PlanetData(
+                "Mars", "499", textureId = R.drawable.mars_texture, iconRes = R.drawable.mars_icon),
+            PlanetData(
+                "Jupiter",
+                "599",
+                textureId = R.drawable.jupiter_texture,
+                iconRes = R.drawable.jupiter_icon),
+            PlanetData(
+                "Saturn",
+                "699",
+                textureId = R.drawable.saturn_texture,
+                iconRes = R.drawable.saturn_icon),
+            PlanetData(
+                "Uranus",
+                "799",
+                textureId = R.drawable.uranus_texture,
+                iconRes = R.drawable.uranus_icon),
+            PlanetData(
+                "Neptune",
+                "899",
+                textureId = R.drawable.neptune_texture,
+                iconRes = R.drawable.neptune_icon)))
   }
 
   /**

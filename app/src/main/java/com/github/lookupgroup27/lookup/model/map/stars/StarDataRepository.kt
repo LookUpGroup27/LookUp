@@ -2,7 +2,7 @@ package com.github.lookupgroup27.lookup.model.map.stars
 
 import android.content.Context
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
-import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
+import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
 
 /**
  * Repository class to manage star data, including:

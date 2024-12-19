@@ -28,6 +28,7 @@ object Route {
   const val LOGIN = "Login"
   const val REGISTER = "Register"
   const val EDIT_IMAGE = "EditImage"
+  const val PLANET_SELECTION = "PlanetSelection"
 }
 
 object Screen {
@@ -50,6 +51,7 @@ object Screen {
   const val LOGIN = "Login Screen"
   const val REGISTER = "Register Screen"
   const val EDIT_IMAGE = "Edit Image"
+  const val PLANET_SELECTION = "Planet Selection Screen"
 }
 
 data class TopLevelDestination(

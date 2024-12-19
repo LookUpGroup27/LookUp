@@ -1,4 +1,4 @@
-package com.github.lookupgroup27.lookup.utils
+package com.github.lookupgroup27.lookup.util
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -55,8 +55,7 @@ class CelestialObjectsUtilsTest {
    * Temporary test as computeSiderealTime changes values with time emporary test as
    * computeSiderealTime changes values with time
    */
-
-  /*@Test
+  /*@Test TODO : Remove this code ???
   fun `test convertToHorizonCoordinates with Stellarium data for Vega`() {
     // Given values derived from Stellarium
     val ra = 279.4380 // Right Ascension in degrees (converted from 18h 37m 45.2s)
@@ -93,10 +92,10 @@ class CelestialObjectsUtilsTest {
 
     // Calculated expected values manually for testing
     val expectedY =
-        (100 * Math.cos(Math.toRadians(altitude)) * Math.cos(Math.toRadians(azimuth))).toFloat()
+        (Math.cos(Math.toRadians(altitude)) * Math.cos(Math.toRadians(azimuth))).toFloat()
     val expectedX =
-        (100 * Math.cos(Math.toRadians(altitude)) * Math.sin(Math.toRadians(azimuth))).toFloat()
-    val expectedZ = (100 * Math.sin(Math.toRadians(altitude))).toFloat()
+        (Math.cos(Math.toRadians(altitude)) * Math.sin(Math.toRadians(azimuth))).toFloat()
+    val expectedZ = (Math.sin(Math.toRadians(altitude))).toFloat()
 
     assertEquals(expectedX, x, 0.01f)
     assertEquals(expectedY, y, 0.01f)
