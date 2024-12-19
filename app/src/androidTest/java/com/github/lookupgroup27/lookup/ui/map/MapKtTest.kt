@@ -79,7 +79,7 @@ class MapKtTest {
   }
 
   @Test
-  fun testNavigationToFeedBlockedForLoggedOutUser() {
+  fun testNavigationToSkyMapBlockedForOfflineMode() {
     // Simulate offline mode
     mockkObject(NetworkUtils)
     every { NetworkUtils.isNetworkAvailable(any()) } returns false
