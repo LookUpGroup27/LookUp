@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.feed
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -61,8 +62,12 @@ fun FeedScreen(
     initialNearbyPosts: List<Post>? = null
 ) {
   // Fetch user profile
-  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Fetching user profile")
+    profileViewModel.fetchUserProfile()
+  }
 
+  // User-related state
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
@@ -71,17 +76,22 @@ fun FeedScreen(
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
   val email by remember { mutableStateOf(userEmail) }
 
+  // Location setup
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-
-  postsViewModel.setContext(context)
-
   var locationPermissionGranted by remember { mutableStateOf(false) }
+
+  // Initialize PostsViewModel with context
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Setting context in PostsViewModel")
+    postsViewModel.setContext(context)
+  }
+
+  // Posts-related state
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: postsViewModel.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
-
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
   // Check for location permissions and fetch posts when granted.
@@ -89,6 +99,7 @@ fun FeedScreen(
     locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
+    Log.d("FeedScreen", "Location permission granted: $locationPermissionGranted")
 
     if (!locationPermissionGranted) {
       Toast.makeText(
@@ -113,7 +124,7 @@ fun FeedScreen(
     }
   }
 
-  // Background Box with gradient overlay using drawBehind for efficiency.
+  // UI Structure
   Box(
       modifier =
           Modifier.fillMaxSize().drawBehind {
@@ -160,40 +171,41 @@ fun FeedScreen(
                   modifier =
                       Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
                     if (nearbyPosts.isEmpty()) {
-                      // Loading or empty state
                       Box(
                           modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
-                            if (!locationPermissionGranted) {
-                              Text(
-                                  text = stringResource(R.string.location_permission_required),
-                                  style =
-                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
-                            } else if (locationProvider.currentLocation.value == null) {
-                              CircularProgressIndicator(
-                                  color = Color.White) // Still fetching location
-                            } else {
-                              Column(
-                                  horizontalAlignment = Alignment.CenterHorizontally,
-                                  verticalArrangement = Arrangement.Center) {
-                                    // Add PNG image above the message
-                                    Image(
-                                        painter = painterResource(R.drawable.no_images_placeholder),
-                                        contentDescription =
-                                            stringResource(R.string.feed_no_images_available),
-                                        modifier =
-                                            Modifier.size(180.dp).testTag("no_images_placeholder"))
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Display "No images available" message
-                                    Text(
-                                        text = stringResource(R.string.feed_no_images_available),
-                                        modifier = Modifier.testTag("feed_no_images_available"),
-                                        style =
-                                            MaterialTheme.typography.bodyLarge.copy(
-                                                color = Color.White))
-                                  }
+                            when {
+                              !locationPermissionGranted -> {
+                                Text(
+                                    text = stringResource(R.string.location_permission_required),
+                                    style =
+                                        MaterialTheme.typography.bodyLarge.copy(
+                                            color = Color.White))
+                              }
+                              locationProvider.currentLocation.value == null -> {
+                                CircularProgressIndicator(color = Color.White)
+                              }
+                              else -> {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center) {
+                                      Image(
+                                          painter =
+                                              painterResource(R.drawable.no_images_placeholder),
+                                          contentDescription =
+                                              stringResource(R.string.feed_no_images_available),
+                                          modifier =
+                                              Modifier.size(180.dp)
+                                                  .testTag("no_images_placeholder"))
+                                      Spacer(modifier = Modifier.height(16.dp))
+                                      Text(
+                                          text = stringResource(R.string.feed_no_images_available),
+                                          modifier = Modifier.testTag("feed_no_images_available"),
+                                          style =
+                                              MaterialTheme.typography.bodyLarge.copy(
+                                                  color = Color.White))
+                                    }
+                              }
                             }
                           }
                     } else {
@@ -240,7 +252,6 @@ fun FeedScreen(
             }
       }
 }
-
 /**
  * Updates the user's profile ratings.
  *
