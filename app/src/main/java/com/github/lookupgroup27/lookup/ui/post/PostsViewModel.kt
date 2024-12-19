@@ -27,11 +27,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
@@ -39,29 +39,27 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   /** Holds the currently selected post. */
   val post = mutableStateOf<Post?>(null)
 
-    init {
-        repository.init {
-            auth?.addAuthStateListener(authListener)
-            getPosts() // to ensure posts are loaded initially
-        }
+  init {
+    repository.init {
+      auth?.addAuthStateListener(authListener)
+      getPosts() // to ensure posts are loaded initially
     }
+  }
 
   @SuppressLint("StaticFieldLeak") private var context: Context? = null
 
-    // LocationProvider instance to get user's current location
-    private lateinit var locationProvider : LocationProvider
+  // LocationProvider instance to get user's current location
+  private lateinit var locationProvider: LocationProvider
 
-    // Method to initialize context
-    fun setContext(context: Context) {
-        this.context = context
-        locationProvider = context.let { LocationProviderSingleton.getInstance(it) }
-        // Start monitoring
-        startLocationMonitoring()
-        // Start periodic fetching
-        startPeriodicPostFetching()
-    }
-
-
+  // Method to initialize context
+  fun setContext(context: Context) {
+    this.context = context
+    locationProvider = context.let { LocationProviderSingleton.getInstance(it) }
+    // Start monitoring
+    startLocationMonitoring()
+    // Start periodic fetching
+    startPeriodicPostFetching()
+  }
 
   // MutableStateFlow to hold the list of nearby posts
   private val _nearbyPosts = MutableStateFlow<List<Post>>(emptyList())
@@ -99,7 +97,6 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   fun selectPost(post: Post) {
     this.post.value = post
   }
-
 
   /**
    * Generates a new unique identifier (UID) for a post.
@@ -203,26 +200,23 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
    * @see getSortedNearbyPosts for the sorting and filtering logic.
    */
   fun fetchSortedPosts() {
-      val userLocation = locationProvider.currentLocation.value
-      if (userLocation == null) {
-          Log.e("ProximityPostFetcher", "User location is null; cannot fetch nearby posts.")
-          return
-      }
+    val userLocation = locationProvider.currentLocation.value
+    if (userLocation == null) {
+      Log.e("ProximityPostFetcher", "User location is null; cannot fetch nearby posts.")
+      return
+    }
 
-      viewModelScope.launch {
-          allPosts.collect { posts ->
-              if (posts.isNotEmpty()) {
-                  val sortedNearbyPosts = getSortedNearbyPosts(
-                      posts,
-                      userLocation.latitude,
-                      userLocation.longitude
-                  )
-                  _nearbyPosts.update { sortedNearbyPosts }
-              } else {
-                  Log.e("fetchPosts", "Posts are empty.")
-              }
-          }
+    viewModelScope.launch {
+      allPosts.collect { posts ->
+        if (posts.isNotEmpty()) {
+          val sortedNearbyPosts =
+              getSortedNearbyPosts(posts, userLocation.latitude, userLocation.longitude)
+          _nearbyPosts.update { sortedNearbyPosts }
+        } else {
+          Log.e("fetchPosts", "Posts are empty.")
+        }
       }
+    }
   }
 
   /**
@@ -261,39 +255,36 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         .map { it.first } // Extract only the posts
   }
 
-
-    /**
-     * Starts monitoring location changes and triggers post updates accordingly.
-     * Uses viewModelScope to ensure proper coroutine lifecycle management.
-     */
-    private fun startLocationMonitoring() {
-        viewModelScope.launch {
-            while (true) {
-                val location = locationProvider?.currentLocation?.value
-                if (location != null) {
-                    fetchSortedPosts()
-                }
-                delay(1000L)
-            }
+  /**
+   * Starts monitoring location changes and triggers post updates accordingly. Uses viewModelScope
+   * to ensure proper coroutine lifecycle management.
+   */
+  private fun startLocationMonitoring() {
+    viewModelScope.launch {
+      while (true) {
+        val location = locationProvider?.currentLocation?.value
+        if (location != null) {
+          fetchSortedPosts()
         }
+        delay(1000L)
+      }
     }
+  }
 
-
-    /**
-     * Starts periodic fetching of posts to ensure data stays fresh.
-     * Runs in viewModelScope to ensure proper lifecycle management.
-     */
-    private fun startPeriodicPostFetching() {
-        viewModelScope.launch {
-            while (true) {
-                fetchSortedPosts()
-                delay(5000L)
-            }
-        }
+  /**
+   * Starts periodic fetching of posts to ensure data stays fresh. Runs in viewModelScope to ensure
+   * proper lifecycle management.
+   */
+  private fun startPeriodicPostFetching() {
+    viewModelScope.launch {
+      while (true) {
+        fetchSortedPosts()
+        delay(5000L)
+      }
     }
+  }
 
-
-    companion object {
+  companion object {
     /**
      * Factory for creating instances of [PostsViewModel].
      *

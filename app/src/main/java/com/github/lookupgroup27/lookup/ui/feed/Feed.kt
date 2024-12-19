@@ -61,45 +61,45 @@ fun FeedScreen(
     profileViewModel: ProfileViewModel,
     initialNearbyPosts: List<Post>? = null
 ) {
-    // Fetch user profile
-    LaunchedEffect(Unit) {
-        Log.d("FeedScreen", "Fetching user profile")
-        profileViewModel.fetchUserProfile()
-    }
+  // Fetch user profile
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Fetching user profile")
+    profileViewModel.fetchUserProfile()
+  }
 
-    // User-related state
-    val profile by profileViewModel.userProfile.collectAsState()
-    val user = FirebaseAuth.getInstance().currentUser
-    val isUserLoggedIn = user != null
-    val userEmail = user?.email ?: ""
-    val username by remember { mutableStateOf(profile?.username ?: "") }
-    val bio by remember { mutableStateOf(profile?.bio ?: "") }
-    val email by remember { mutableStateOf(userEmail) }
+  // User-related state
+  val profile by profileViewModel.userProfile.collectAsState()
+  val user = FirebaseAuth.getInstance().currentUser
+  val isUserLoggedIn = user != null
+  val userEmail = user?.email ?: ""
+  val username by remember { mutableStateOf(profile?.username ?: "") }
+  val bio by remember { mutableStateOf(profile?.bio ?: "") }
+  val email by remember { mutableStateOf(userEmail) }
 
-    // Location setup
-    val context = LocalContext.current
-    val locationProvider = LocationProviderSingleton.getInstance(context)
-    var locationPermissionGranted by remember { mutableStateOf(false) }
+  // Location setup
+  val context = LocalContext.current
+  val locationProvider = LocationProviderSingleton.getInstance(context)
+  var locationPermissionGranted by remember { mutableStateOf(false) }
 
-    // Initialize PostsViewModel with context
-    LaunchedEffect(Unit) {
-        Log.d("FeedScreen", "Setting context in PostsViewModel")
-        postsViewModel.setContext(context)
-    }
+  // Initialize PostsViewModel with context
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Setting context in PostsViewModel")
+    postsViewModel.setContext(context)
+  }
 
-    // Posts-related state
-    val unfilteredPosts by (initialNearbyPosts?.let { mutableStateOf(it) }
-        ?: postsViewModel.nearbyPosts.collectAsState())
-    val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
-    val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
+  // Posts-related state
+  val unfilteredPosts by
+      (initialNearbyPosts?.let { mutableStateOf(it) }
+          ?: postsViewModel.nearbyPosts.collectAsState())
+  val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
+  val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
-
-    // Check for location permissions and fetch posts when granted.
+  // Check for location permissions and fetch posts when granted.
   LaunchedEffect(Unit) {
     locationPermissionGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
-      Log.d("FeedScreen", "Location permission granted: $locationPermissionGranted")
+    Log.d("FeedScreen", "Location permission granted: $locationPermissionGranted")
 
     if (!locationPermissionGranted) {
       Toast.makeText(
@@ -124,144 +124,133 @@ fun FeedScreen(
     }
   }
 
-    // UI Structure
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .drawBehind {
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.6f),
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.6f)
-                        )
-                    )
-                )
-            }
-    ) {
+  // UI Structure
+  Box(
+      modifier =
+          Modifier.fillMaxSize().drawBehind {
+            drawRect(
+                brush =
+                    Brush.verticalGradient(
+                        colors =
+                            listOf(
+                                Color.Black.copy(alpha = 0.6f),
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.6f))))
+          }) {
         Image(
             painter = painterResource(R.drawable.background_blurred),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+            modifier = Modifier.fillMaxSize())
 
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.nearby_posts_title),
-                            style = MaterialTheme.typography.titleMedium.copy(color = Color.White)
-                        )
-                    },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
-                        containerColor = Color.Black.copy(alpha = 0.5f)
-                    )
-                )
+              TopAppBar(
+                  title = {
+                    Text(
+                        text = stringResource(R.string.nearby_posts_title),
+                        style = MaterialTheme.typography.titleMedium.copy(color = Color.White))
+                  },
+                  colors =
+                      TopAppBarDefaults.smallTopAppBarColors(
+                          containerColor = Color.Black.copy(alpha = 0.5f)))
             },
             bottomBar = {
-                Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
-                    BottomNavigationMenu(
-                        onTabSelect = { destination -> navigationActions.navigateTo(destination) },
-                        tabList = LIST_TOP_LEVEL_DESTINATION,
-                        isUserLoggedIn = isUserLoggedIn,
-                        selectedItem = Route.FEED
-                    )
-                }
+              Box(Modifier.testTag(stringResource(R.string.bottom_navigation_menu))) {
+                BottomNavigationMenu(
+                    onTabSelect = { destination -> navigationActions.navigateTo(destination) },
+                    tabList = LIST_TOP_LEVEL_DESTINATION,
+                    isUserLoggedIn = isUserLoggedIn,
+                    selectedItem = Route.FEED)
+              }
             },
-            modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-            ) {
-                if (nearbyPosts.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .testTag("loading_indicator_test_tag"),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        when {
-                            !locationPermissionGranted -> {
+            modifier = Modifier.testTag(stringResource(R.string.feed_screen_test_tag))) {
+                innerPadding ->
+              Column(
+                  modifier =
+                      Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
+                    if (nearbyPosts.isEmpty()) {
+                      Box(
+                          modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
+                          contentAlignment = Alignment.Center) {
+                            when {
+                              !locationPermissionGranted -> {
                                 Text(
                                     text = stringResource(R.string.location_permission_required),
-                                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
-                                )
-                            }
-                            locationProvider.currentLocation.value == null -> {
+                                    style =
+                                        MaterialTheme.typography.bodyLarge.copy(
+                                            color = Color.White))
+                              }
+                              locationProvider.currentLocation.value == null -> {
                                 CircularProgressIndicator(color = Color.White)
-                            }
-                            else -> {
+                              }
+                              else -> {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.no_images_placeholder),
-                                        contentDescription = stringResource(R.string.feed_no_images_available),
-                                        modifier = Modifier
-                                            .size(180.dp)
-                                            .testTag("no_images_placeholder")
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Text(
-                                        text = stringResource(R.string.feed_no_images_available),
-                                        modifier = Modifier.testTag("feed_no_images_available"),
-                                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
-                                    )
-                                }
+                                    verticalArrangement = Arrangement.Center) {
+                                      Image(
+                                          painter =
+                                              painterResource(R.drawable.no_images_placeholder),
+                                          contentDescription =
+                                              stringResource(R.string.feed_no_images_available),
+                                          modifier =
+                                              Modifier.size(180.dp)
+                                                  .testTag("no_images_placeholder"))
+                                      Spacer(modifier = Modifier.height(16.dp))
+                                      Text(
+                                          text = stringResource(R.string.feed_no_images_available),
+                                          modifier = Modifier.testTag("feed_no_images_available"),
+                                          style =
+                                              MaterialTheme.typography.bodyLarge.copy(
+                                                  color = Color.White))
+                                    }
+                              }
                             }
-                        }
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(30.dp)
-                    ) {
-                        items(nearbyPosts) { post ->
-                            PostItem(
-                                post = post,
-                                starStates = postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
-                                onRatingChanged = { newRating ->
-                                    val oldPostRatings = postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
+                          }
+                    } else {
+                      LazyColumn(
+                          modifier = Modifier.fillMaxSize(),
+                          contentPadding = PaddingValues(vertical = 16.dp),
+                          verticalArrangement = Arrangement.spacedBy(30.dp)) {
+                            items(nearbyPosts) { post ->
+                              PostItem(
+                                  post = post,
+                                  starStates =
+                                      postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
+                                  onRatingChanged = { newRating ->
+                                    val oldPostRatings =
+                                        postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
                                     val oldStarCounts = oldPostRatings.count { it }
                                     postRatings[post.uid] = newRating.toList()
                                     val starsCount = newRating.count { it }
 
                                     // Update user profile ratings
-                                    val newProfile = updateProfileRatings(
-                                        currentProfile = profile,
-                                        postUid = post.uid,
-                                        starsCount = starsCount,
-                                        username = username,
-                                        bio = bio,
-                                        email = email
-                                    )
+                                    val newProfile =
+                                        updateProfileRatings(
+                                            currentProfile = profile,
+                                            postUid = post.uid,
+                                            starsCount = starsCount,
+                                            username = username,
+                                            bio = bio,
+                                            email = email)
                                     profileViewModel.updateUserProfile(newProfile)
 
                                     // Update post details
-                                    val updatedPost = calculatePostUpdates(
-                                        post = post,
-                                        userEmail = userEmail,
-                                        starsCount = starsCount,
-                                        oldStarCounts = oldStarCounts
-                                    )
+                                    val updatedPost =
+                                        calculatePostUpdates(
+                                            post = post,
+                                            userEmail = userEmail,
+                                            starsCount = starsCount,
+                                            oldStarCounts = oldStarCounts)
                                     postsViewModel.updatePost(updatedPost)
-                                }
-                            )
-                        }
+                                  })
+                            }
+                          }
                     }
-                }
+                  }
             }
-        }
-    }
+      }
 }
 /**
  * Updates the user's profile ratings.
