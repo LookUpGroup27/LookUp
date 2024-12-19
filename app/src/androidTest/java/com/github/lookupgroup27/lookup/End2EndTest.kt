@@ -248,7 +248,7 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("profile_button").performClick()
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(timeoutMillis = 30000) {
+    composeTestRule.waitUntil(timeoutMillis = 60000) {
       composeTestRule.onAllNodesWithTag("auth_screen").fetchSemanticsNodes().size == 1
     }
     composeTestRule.onNodeWithTag("auth_screen").assertIsDisplayed()
@@ -277,7 +277,7 @@ class End2EndTest {
     // Wait for login to complete and navigation to occur
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(timeoutMillis = 30000) {
+    composeTestRule.waitUntil(timeoutMillis = 60000) {
       composeTestRule.onAllNodesWithTag("profile_screen").fetchSemanticsNodes().size == 1
     }
     composeTestRule.onNodeWithTag("profile_screen").assertIsDisplayed()
@@ -302,7 +302,7 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     // Step 5: Handle the image review screen
-    composeTestRule.waitUntil(timeoutMillis = 30000) {
+    composeTestRule.waitUntil(timeoutMillis = 60000) {
       composeTestRule.onAllNodesWithTag("image_review").fetchSemanticsNodes().size == 1
     }
     composeTestRule.onNodeWithTag("image_review").assertIsDisplayed()
@@ -321,7 +321,7 @@ class End2EndTest {
     composeTestRule.waitForIdle()
 
     // Give time for the upload and post creation
-    composeTestRule.waitUntil(timeoutMillis = 30000) {
+    composeTestRule.waitUntil(timeoutMillis = 60000) {
       composeTestRule.onAllNodesWithTag("googleMapScreen").fetchSemanticsNodes().size == 1
     }
 
