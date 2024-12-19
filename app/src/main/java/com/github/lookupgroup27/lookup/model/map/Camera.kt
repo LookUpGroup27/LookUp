@@ -74,5 +74,5 @@ class Camera(private var fov: Float) : SensorEventListener {
     }
   }
 
-  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
 }
