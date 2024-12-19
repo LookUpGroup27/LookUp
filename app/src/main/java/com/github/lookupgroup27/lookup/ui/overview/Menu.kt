@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +27,11 @@ import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel, toastHelper: ToastHelper = ToastHelper(LocalContext.current) ) {
+fun MenuScreen(
+    navigationActions: NavigationActions,
+    avatarViewModel: AvatarViewModel,
+    toastHelper: ToastHelper = ToastHelper(LocalContext.current)
+) {
 
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
@@ -115,8 +118,7 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                 Button(
                     onClick = {
                       if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
-                      else
-                          toastHelper.showNoInternetToast()
+                      else toastHelper.showNoInternetToast()
                     },
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
@@ -129,8 +131,7 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                 Button(
                     onClick = {
                       if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
-                      else
-                          toastHelper.showNoInternetToast()
+                      else toastHelper.showNoInternetToast()
                     },
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(

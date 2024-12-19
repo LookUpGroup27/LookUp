@@ -206,10 +206,9 @@ class MenuKtTest {
 
     composeTestRule.setContent {
       MenuScreen(
-        navigationActions = mockNavigationActions,
-        avatarViewModel = mockAvatarViewModel,
-        toastHelper = mockToastHelper
-      )
+          navigationActions = mockNavigationActions,
+          avatarViewModel = mockAvatarViewModel,
+          toastHelper = mockToastHelper)
     }
 
     // Click the Google Map button
@@ -232,10 +231,9 @@ class MenuKtTest {
 
     composeTestRule.setContent {
       MenuScreen(
-        navigationActions = mockNavigationActions,
-        avatarViewModel = mockAvatarViewModel,
-        toastHelper = mockToastHelper
-      )
+          navigationActions = mockNavigationActions,
+          avatarViewModel = mockAvatarViewModel,
+          toastHelper = mockToastHelper)
     }
 
     // Click the Calendar button
