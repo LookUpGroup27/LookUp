@@ -1,7 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -37,19 +36,20 @@ import components.BackgroundImage
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun LandingScreen(navigationActions: NavigationActions,toastHelper: ToastHelper = ToastHelper(LocalContext.current)) {
+fun LandingScreen(
+    navigationActions: NavigationActions,
+    toastHelper: ToastHelper = ToastHelper(LocalContext.current)
+) {
 
   val context = LocalContext.current
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
-
 
   // Background container with clickable modifier to navigate to Map screen
   BoxWithConstraints(
       modifier =
           Modifier.fillMaxSize().testTag("LandingScreen").clickable {
             if (isOnline.value) navigationActions.navigateTo(Screen.SKY_MAP)
-            else
-                toastHelper.showNoInternetToast()
+            else toastHelper.showNoInternetToast()
           }) {
         // Background Image
         BackgroundImage(

@@ -31,7 +31,7 @@ fun BottomNavigationMenu(
     isUserLoggedIn: Boolean,
     selectedItem: String
 ) {
-    val  toastHelper: ToastHelper = ToastHelper(LocalContext.current)
+  val toastHelper: ToastHelper = ToastHelper(LocalContext.current)
   val context = LocalContext.current
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
   NavigationBar(
@@ -66,7 +66,7 @@ fun BottomNavigationMenu(
                         .show()
                   }
                   tab.route == Route.SKY_MAP && !isOnline.value -> {
-                      toastHelper.showNoInternetToast()
+                    toastHelper.showNoInternetToast()
                   }
                   selectedItem != tab.route -> {
                     onTabSelect(tab)

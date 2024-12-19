@@ -153,9 +153,8 @@ class LandingKtTest {
 
     composeTestRule.setContent {
       LandingScreen(
-        navigationActions = mockNavigationActions,
-        toastHelper = mockToastHelper  // Pass the mock
-      )
+          navigationActions = mockNavigationActions, toastHelper = mockToastHelper // Pass the mock
+          )
     }
 
     // Click the background
