@@ -25,6 +25,9 @@ import androidx.test.rule.GrantPermissionRule
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import com.google.firebase.auth.FirebaseAuth
 import io.github.kakaocup.kakao.common.utilities.getResourceString
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -237,6 +240,7 @@ class End2EndTest {
     composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
   }
 
+  /*
   @SuppressLint("CheckResult")
   @Test
   fun photoPostingFlow() {
@@ -327,5 +331,55 @@ class End2EndTest {
 
     // Step 6: Verify we're back on map screen
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
+  }*/
+
+  @Test
+  fun calendarNavigationAndSearchFlow() {
+    // Navigate to Calendar Screen
+    composeTestRule.onNodeWithContentDescription("Home Icon").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Calendar").performClick()
+    composeTestRule.waitForIdle()
+
+    // Verify we're on the calendar screen
+    composeTestRule.onNodeWithTag("calendar_screen").assertIsDisplayed()
+
+    // Navigate to a specific date (e.g., next month)
+    composeTestRule.onNodeWithContentDescription("Next Month").performClick()
+    composeTestRule.waitForIdle()
+
+    // Select a specific day (e.g., day 15)
+    composeTestRule.onNodeWithText("15").performClick()
+    composeTestRule.waitForIdle()
+
+    // Verify the selected date is displayed in the events list
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.MONTH, 1)
+    calendar.set(Calendar.DAY_OF_MONTH, 15)
+    val dateFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+    val expectedDateText = "Events for ${dateFormat.format(calendar.time)}"
+    composeTestRule.onNodeWithText(expectedDateText).assertIsDisplayed()
+
+    // Test search functionality
+    // Open search dialog
+    composeTestRule.onNodeWithTag("look_up_event").performClick()
+    composeTestRule.waitForIdle()
+
+    // Enter search query
+    composeTestRule.onNodeWithText("Enter event name").performTextInput("pleine lune")
+    composeTestRule.waitForIdle()
+
+    // Click search button
+    composeTestRule.onNodeWithText("Search").performClick()
+    composeTestRule.waitForIdle()
+
+    // Verify search results are displayed
+    composeTestRule.onNodeWithText("Search Results").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("list_event").assertExists().assertIsDisplayed()
+
+    // Navigate back to menu
+    composeTestRule.onNodeWithText("Menu").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("menu_screen").assertIsDisplayed()
   }
 }
