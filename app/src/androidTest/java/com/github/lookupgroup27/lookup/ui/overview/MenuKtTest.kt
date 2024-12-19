@@ -5,9 +5,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
+import com.github.lookupgroup27.lookup.utils.TestNetworkUtils.simulateOnlineMode
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.*
 import org.mockito.kotlin.*
+
 
 class MenuKtTest {
 
@@ -56,6 +58,8 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_bottomNavigation_clickMapTab_navigatesToMap() {
+    //simulate online mode
+    simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
     }
@@ -130,6 +134,8 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_clickCalendar_navigatesToCalendarScreen() {
+    //simulate online mode
+    simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
     }
@@ -143,6 +149,8 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
+    //simulate online mode
+    simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
     }
@@ -166,4 +174,25 @@ class MenuKtTest {
     // Verify navigation to PlanetSelection screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.PLANET_SELECTION)
   }
-}
+
+  @Test
+  fun menuScreen_otherButtons_areDisabledWhenOffline() {
+    // Simulate offline mode
+    simulateOnlineMode(false)
+
+    composeTestRule.setContent {
+      MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
+    }
+    // Attempt to click the "Calendar" button and verify no navigation
+    composeTestRule.onNodeWithText("Calendar").performClick()
+
+    // Verify no navigation to the Calendar screen occurred
+    verify(mockNavigationActions, never()).navigateTo(Screen.CALENDAR)
+
+    // Attempt to click the "Google Map" button and verify no navigation
+    composeTestRule.onNodeWithText("Google Map").performClick()
+
+    // Verify no navigation to Google Map screen is triggered
+    verify(mockNavigationActions, never()).navigateTo(Screen.GOOGLE_MAP)
+
+  }   }
