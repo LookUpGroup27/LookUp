@@ -64,8 +64,6 @@ fun MapView(
     }
   }
 
-
-
   LaunchedEffect(highlightedPost) {
     highlightedPost?.let { post ->
       // Zoom to highlighted marker position with zoom level 15f
@@ -74,7 +72,6 @@ fun MapView(
       cameraPositionState.animate(cameraUpdate)
     }
   }
-
 
   GoogleMap(
       modifier = Modifier.fillMaxSize().padding(padding),

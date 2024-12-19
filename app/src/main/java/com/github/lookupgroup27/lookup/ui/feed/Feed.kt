@@ -159,7 +159,7 @@ fun FeedScreen(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize())
-      
+
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
@@ -329,29 +329,26 @@ fun updateProfileRatings(
  * @return An updated [Post] with recalculated ratings and user counts.
  */
 fun calculatePostUpdates(post: Post, userEmail: String, starsCount: Int, oldStarCounts: Int): Post {
-    val isReturningUser = post.ratedBy.contains(userEmail)
-    val newStarsCount =
-        if (starsCount == 0) {
-            post.starsCount - oldStarCounts
-        } else if (isReturningUser) post.starsCount - oldStarCounts + starsCount
-        else post.starsCount + starsCount
-    val newRatedBy =
-        if (starsCount == 0) {
-            post.ratedBy.filter { x -> x != userEmail }
-        } else if (!isReturningUser) {
-            post.ratedBy + userEmail
-        } else {
-            post.ratedBy
-        }
-    val newUsersNumber = newRatedBy.size
-    val newAvg =
-        if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber
-        else 0.0
+  val isReturningUser = post.ratedBy.contains(userEmail)
+  val newStarsCount =
+      if (starsCount == 0) {
+        post.starsCount - oldStarCounts
+      } else if (isReturningUser) post.starsCount - oldStarCounts + starsCount
+      else post.starsCount + starsCount
+  val newRatedBy =
+      if (starsCount == 0) {
+        post.ratedBy.filter { x -> x != userEmail }
+      } else if (!isReturningUser) {
+        post.ratedBy + userEmail
+      } else {
+        post.ratedBy
+      }
+  val newUsersNumber = newRatedBy.size
+  val newAvg = if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber else 0.0
 
-    return post.copy(
-            averageStars = newAvg,
-            starsCount = newStarsCount,
-            usersNumber = newUsersNumber,
-            ratedBy = newRatedBy)
+  return post.copy(
+      averageStars = newAvg,
+      starsCount = newStarsCount,
+      usersNumber = newUsersNumber,
+      ratedBy = newRatedBy)
 }
-

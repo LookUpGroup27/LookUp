@@ -10,8 +10,6 @@ import org.junit.*
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
 
 class ImagePreviewDialogTest {
 
@@ -147,8 +145,6 @@ class ImagePreviewDialogTest {
           post = testPost, username = "User1", onDismiss = {}, testStarStates, onRatingChanged = {})
     }
     // Perform click on the first star icon of a post with uid "1"
-    composeTestRule
-        .onNodeWithTag("Star_1_1")
-        .assertIsNotDisplayed() // Click on the first star
+    composeTestRule.onNodeWithTag("Star_1_1").assertIsNotDisplayed() // Click on the first star
   }
 }

@@ -170,7 +170,6 @@ fun GoogleMapScreen(
                 autoCenteringEnabled = autoCenteringEnabled,
                 onCenteringToggle = { autoCenteringEnabled = it })
 
-
             // Map view below the buttons
             MapView(
                 padding,

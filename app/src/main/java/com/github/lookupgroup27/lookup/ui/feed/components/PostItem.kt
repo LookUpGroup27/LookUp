@@ -101,40 +101,40 @@ fun PostItem(
                     style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
                     modifier = Modifier.testTag("DescriptionTag_${post.uid}"))
               }
-                if(showStars){
-              // Rating Row
-              Row(
-                  verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(4.dp),
-                  modifier = Modifier.fillMaxWidth()) {
-                    starStates.forEachIndexed { index, isFilled ->
-                      IconButton(
-                          onClick = {
-                            val newRating = starStates.mapIndexed { i, _ -> i <= index }
-                            onRatingChanged(newRating)
-                          },
-                          modifier =
-                              Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {
-                            Image(
-                                painter =
-                                    painterResource(
-                                        id =
-                                            if (isFilled) R.drawable.full_star2
-                                            else R.drawable.empty_star2),
-                                contentDescription = "Star")
-                          }
+              if (showStars) {
+                // Rating Row
+                Row(
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth()) {
+                      starStates.forEachIndexed { index, isFilled ->
+                        IconButton(
+                            onClick = {
+                              val newRating = starStates.mapIndexed { i, _ -> i <= index }
+                              onRatingChanged(newRating)
+                            },
+                            modifier =
+                                Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {
+                              Image(
+                                  painter =
+                                      painterResource(
+                                          id =
+                                              if (isFilled) R.drawable.full_star2
+                                              else R.drawable.empty_star2),
+                                  contentDescription = "Star")
+                            }
+                      }
+                      Spacer(modifier = Modifier.weight(1f))
+                      if (showAverage) {
+                        Text(
+                            text = "Avg: ${"%.1f".format(post.averageStars)}",
+                            style =
+                                MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Medium, color = color),
+                            modifier = Modifier.testTag("AverageRatingTag_${post.uid}"))
+                      }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    if (showAverage) {
-                      Text(
-                          text = "Avg: ${"%.1f".format(post.averageStars)}",
-                          style =
-                              MaterialTheme.typography.bodyMedium.copy(
-                                  fontWeight = FontWeight.Medium, color = color),
-                          modifier = Modifier.testTag("AverageRatingTag_${post.uid}"))
-                    }
-                  }
-                }
+              }
             }
       }
 }
