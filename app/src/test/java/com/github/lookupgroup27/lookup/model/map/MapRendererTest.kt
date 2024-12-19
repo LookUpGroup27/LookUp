@@ -1,7 +1,7 @@
 package com.github.lookupgroup27.lookup.model.map
 
-import PlanetsRepository
 import android.content.Context
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
 import org.junit.Assert.assertEquals
 import org.junit.Before
