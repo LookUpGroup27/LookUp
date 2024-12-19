@@ -37,6 +37,7 @@ fun PostItem(
     onRatingChanged: (List<Boolean>) -> Unit,
     color: Color = Color.Black,
     textForUsername: String = post.username,
+    showStars: Boolean = true,
     showAverage: Boolean = true
 ) {
 
@@ -88,36 +89,39 @@ fun PostItem(
                     .testTag("DescriptionTag_${post.uid}") // Tagging description for testing
             )
         // Star rating row
-        Row {
-          // Loop through each star
-          starStates.forEachIndexed { index, isFilled ->
-            IconButton(
-                onClick = {
-                  // Toggle stars up to the clicked index
-                  val newRating =
-                      starStates.mapIndexed { i, _ -> if (isFilled) i < index else i <= index }
-                  onRatingChanged(newRating)
-                },
-                modifier = Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {
-                  Image(
-                      painter =
-                          painterResource(
-                              id = if (isFilled) R.drawable.full_star else R.drawable.empty_star),
-                      contentDescription = "Star")
-                }
-          }
-          if (showAverage) {
-            // Display the average rating at the end of the row
-            Text(
-                text = "Average rating: ${"%.1f".format(post.averageStars)}",
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(start = 4.dp)
-                        .testTag("AverageRatingTag_${post.uid}"),
-                textAlign = TextAlign.End,
-                style =
-                    MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold, color = color))
+        if (showStars) {
+          Row {
+            // Loop through each star
+            starStates.forEachIndexed { index, isFilled ->
+              IconButton(
+                  onClick = {
+                    // Toggle stars up to the clicked index
+                    val newRating =
+                        starStates.mapIndexed { i, _ -> if (isFilled) i < index else i <= index }
+                    onRatingChanged(newRating)
+                  },
+                  modifier = Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {
+                    Image(
+                        painter =
+                            painterResource(
+                                id = if (isFilled) R.drawable.full_star else R.drawable.empty_star),
+                        contentDescription = "Star")
+                  }
+            }
+
+            if (showAverage) {
+              // Display the average rating at the end of the row
+              Text(
+                  text = "Average rating: ${"%.1f".format(post.averageStars)}",
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .padding(start = 4.dp)
+                          .testTag("AverageRatingTag_${post.uid}"),
+                  textAlign = TextAlign.End,
+                  style =
+                      MaterialTheme.typography.bodyMedium.copy(
+                          fontWeight = FontWeight.Bold, color = color))
+            }
           }
         }
       }

@@ -16,7 +16,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.googlemap.components.*
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
@@ -46,7 +45,6 @@ fun GoogleMapScreen(
   var autoCenteringEnabled by remember { mutableStateOf(true) } // New state for auto-centering
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
-
   val allPosts by postsViewModel.allPosts.collectAsState()
 
   profileViewModel.fetchUserProfile()
@@ -130,36 +128,7 @@ fun GoogleMapScreen(
               hasLocationPermission,
               locationProvider.currentLocation.value,
               autoCenteringEnabled, // Pass the state
-              postsViewModel,
-              allPosts,
-              userEmail,
-              updateProfile = { profile, updatedRatings ->
-                val newProfile: UserProfile =
-                    profile?.copy(
-                        username = username,
-                        bio = bio,
-                        email = email,
-                        ratings = updatedRatings ?: emptyMap())
-                        ?: UserProfile(
-                            username = username,
-                            bio = bio,
-                            email = email,
-                            ratings = updatedRatings ?: emptyMap())
-                profileViewModel.updateUserProfile(newProfile)
-              },
-              profile = profile,
-              updatePost = { post, newAvg, newStarsCount, newUsersNumber, newRatedBy ->
-                val newPost =
-                    post.copy(
-                        averageStars = newAvg,
-                        starsCount = newStarsCount,
-                        usersNumber = newUsersNumber,
-                        ratedBy = newRatedBy)
-
-                postsViewModel.selectPost(newPost)
-                postsViewModel.updatePost(newPost)
-              },
-              postRatings = postRatings)
+              allPosts)
         }
       })
 }
