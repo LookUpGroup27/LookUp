@@ -142,7 +142,7 @@ class MapRenderer(
    * @param screenY The y-coordinate of the touch event on the screen.
    * @return The name of the intersected planet, or null if no intersection occurred.
    */
-  fun getIntersectedPlanetName(screenX: Float, screenY: Float): String? {
+  fun getIntersectedPlanetFact(screenX: Float, screenY: Float): String? {
     if (viewport[2] == 0 || viewport[3] == 0) {
       Log.d("Viewport dimensions", "Viewport dimensions are invalid: ${viewport.joinToString()}")
       return null
@@ -151,7 +151,7 @@ class MapRenderer(
     val ray = calculateRay(screenX, screenY, camera, viewport)
     for (planet in renderablePlanets) {
       if (planet.checkHit(ray.origin, ray.direction)) {
-        return planet.name
+        return planet.funFact
       }
     }
     return null

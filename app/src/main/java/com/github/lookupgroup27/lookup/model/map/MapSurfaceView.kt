@@ -31,17 +31,17 @@ class MapSurfaceView(context: Context, private val viewModel: MapViewModel) :
     renderMode = RENDERMODE_CONTINUOUSLY
   }
 
-  private fun showPlanetInfo(planetName: String) {
-    Toast.makeText(context, "You clicked on $planetName!", Toast.LENGTH_SHORT).show()
+  private fun showPlanetInfo(planetFact: String) {
+    Toast.makeText(context, "Fun fact: $planetFact", Toast.LENGTH_SHORT).show()
   }
 
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
     scaleGestureDetector.onTouchEvent(event)
     if (event.action == MotionEvent.ACTION_DOWN) {
-      val planetName = viewModel.mapRenderer.getIntersectedPlanetName(event.x, event.y)
-      if (planetName != null) {
-        showPlanetInfo(planetName)
+      val planetFact = viewModel.mapRenderer.getIntersectedPlanetFact(event.x, event.y)
+      if (planetFact != null) {
+        showPlanetInfo(planetFact)
       } else {
         Log.d("On touch event", "No planet was clicked.")
       }
