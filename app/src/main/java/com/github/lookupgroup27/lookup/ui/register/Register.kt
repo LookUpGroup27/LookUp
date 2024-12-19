@@ -20,9 +20,9 @@ import com.github.lookupgroup27.lookup.ui.register.components.CustomOutlinedText
 /**
  * Composable function representing the registration screen.
  *
- * This screen allows users to create a new account by providing their email, password, and
- * confirming their password. It provides real-time validation feedback and handles the registration
- * process asynchronously.
+ * This screen allows users to create a new account by providing their username, email, password,
+ * and confirming their password. It provides real-time validation feedback and handles the
+ * registration process asynchronously.
  *
  * @param navigationActions The navigation actions used to navigate between screens.
  * @param viewModel The [RegisterViewModel] managing the registration logic.
@@ -36,15 +36,24 @@ fun RegisterScreen(
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsState()
 
-  // Main container for the screen content.
   Box(modifier = Modifier.fillMaxSize()) {
-    // Base authentication screen layout.
     AuthScreen(
         title = "Create Your Account",
         onBackClicked = {
           viewModel.clearFields()
           navigationActions.navigateTo(Screen.AUTH)
         }) {
+
+          // Username Input Field
+          CustomOutlinedTextField(
+              value = uiState.username,
+              onValueChange = viewModel::onUsernameChanged,
+              label = "Username",
+              errorMessage = uiState.usernameError,
+              testTag = "username_field")
+
+          Spacer(modifier = Modifier.height(16.dp))
+
           // Email Input Field
           CustomOutlinedTextField(
               value = uiState.email,

@@ -153,4 +153,17 @@ class MenuKtTest {
     // Verify navigation to Google Map screen is triggered
     verify(mockNavigationActions).navigateTo(Screen.GOOGLE_MAP)
   }
+
+  @Test
+  fun menuScreen_clickPlanets_navigatesToPlanetSelectionScreen() {
+    composeTestRule.setContent {
+      MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
+    }
+
+    // Perform click on "Planets" button
+    composeTestRule.onNodeWithText("Planets").performClick()
+
+    // Verify navigation to PlanetSelection screen is triggered
+    verify(mockNavigationActions).navigateTo(Screen.PLANET_SELECTION)
+  }
 }

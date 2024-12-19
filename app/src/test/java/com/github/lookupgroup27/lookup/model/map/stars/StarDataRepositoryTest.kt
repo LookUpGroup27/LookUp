@@ -5,7 +5,7 @@ import android.content.res.AssetManager
 import android.location.Location
 import androidx.test.core.app.ApplicationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
-import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
+import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
 import com.google.firebase.FirebaseApp
 import java.io.ByteArrayInputStream
 import java.io.InputStream

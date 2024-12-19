@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.ui.map
 
-import PlanetsRepository
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -15,12 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.map.MapRenderer
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
-
-// FOV constants
-const val DEFAULT_FOV = 45f
-const val MAX_FOV = DEFAULT_FOV + 40f
-const val MIN_FOV = DEFAULT_FOV - 40f
 
 /** The ViewModel for the map screen. */
 class MapViewModel(
