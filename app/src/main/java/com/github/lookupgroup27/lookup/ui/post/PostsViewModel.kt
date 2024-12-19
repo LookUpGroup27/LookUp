@@ -269,7 +269,18 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         }
     }
 
-  companion object {
+
+    private fun startPeriodicPostFetching() {
+        viewModelScope.launch {
+            while (true) {
+                fetchSortedPosts()
+                delay(5000L)
+            }
+        }
+    }
+
+
+    companion object {
     /**
      * Factory for creating instances of [PostsViewModel].
      *
