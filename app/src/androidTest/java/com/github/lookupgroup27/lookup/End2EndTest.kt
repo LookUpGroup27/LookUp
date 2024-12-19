@@ -246,6 +246,7 @@ class End2EndTest {
 
     composeTestRule.onNodeWithTag("profile_button").performClick()
     composeTestRule.waitForIdle()
+    Thread.sleep(3000)
 
     composeTestRule.onNodeWithTag("auth_screen").assertIsDisplayed()
 
@@ -253,6 +254,7 @@ class End2EndTest {
     composeTestRule.onNodeWithText("Login").performScrollTo().performClick()
     composeTestRule.waitForIdle()
 
+    Thread.sleep(2000)
     // Fill in login details with verification
     composeTestRule.onNodeWithTag("email_field").performScrollTo().apply {
       assertExists("Email field not found")
