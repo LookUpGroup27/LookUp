@@ -96,7 +96,7 @@ class Label(context: Context, text: String, var pos: Position, size: Float, obje
   fun draw(camera: Camera) {
     GLES20.glEnable(GLES20.GL_BLEND)
     GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-    shaderProgram.use() // FIXME: Remove this one line method ?
+    shaderProgram.use()
 
     // Get attribute and uniform locations
     val modelMatrixHandle = GLES20.glGetUniformLocation(shaderProgram.programId, "uModelMatrix")
