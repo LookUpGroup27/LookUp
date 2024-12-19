@@ -1,8 +1,9 @@
 package com.github.lookupgroup27.lookup.model.map.renderables
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
+import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -30,7 +31,8 @@ class Moon(
         position = position,
         textureId = getCurrentMoonPhaseTextureId(),
         numBands = numBands,
-        stepsPerBand = stepsPerBand) {
+        stepsPerBand = stepsPerBand,
+        scale = 0.05f) {
   /** Companion object containing moon phase calculation and texture mapping logic. */
   companion object {
     /**
@@ -49,7 +51,8 @@ class Moon(
      * @param calendar The calendar instance to calculate the moon phase from.
      * @return Resource ID for the moon phase texture.
      */
-    private fun getMoonPhaseTextureId(calendar: Calendar): Int {
+    @VisibleForTesting
+    fun getMoonPhaseTextureId(calendar: Calendar): Int {
       // Approximate lunar cycle calculation
       val year = calendar.get(Calendar.YEAR)
       val month = calendar.get(Calendar.MONTH)

@@ -1,10 +1,11 @@
+package com.github.lookupgroup27.lookup.model.map.planets
+
 import android.content.Context
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
-import com.github.lookupgroup27.lookup.model.map.planets.PlanetData
 import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
-import com.github.lookupgroup27.lookup.utils.CelestialObjectsUtils
+import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
