@@ -42,7 +42,7 @@ class SignInKtTest : TestCase() {
 
     // Scroll to make sure components are visible on smaller screens
     composeTestRule.onNodeWithTag("loginTitle").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to the Cosmos")
+    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Explore the Cosmos")
 
     composeTestRule.onNodeWithTag("loginButton").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").assertHasClickAction()
@@ -90,7 +90,7 @@ class SignInKtTest : TestCase() {
 
     // Scroll to each component and verify it is displayed
     composeTestRule.onNodeWithTag("loginTitle").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to the Cosmos")
+    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Explore the Cosmos")
     composeTestRule
         .onNodeWithTag("loginButton")
         .performScrollTo()

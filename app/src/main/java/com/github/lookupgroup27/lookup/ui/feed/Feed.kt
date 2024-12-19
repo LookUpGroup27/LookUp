@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -155,10 +156,10 @@ fun FeedScreen(
                                 Color.Black.copy(alpha = 0.6f))))
           }) {
         Image(
-            painter = painterResource(R.drawable.background_blurred),
+            painter = painterResource(R.drawable.landscape_background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize())
+            modifier = Modifier.fillMaxSize().blur(20.dp))
 
         Scaffold(
             containerColor = Color.Transparent,

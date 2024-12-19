@@ -8,6 +8,8 @@ import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,9 +34,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,9 +54,9 @@ import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
-import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
+import com.github.lookupgroup27.lookup.ui.theme.LightPurple
+import com.github.lookupgroup27.lookup.ui.theme.StarLightWhite
 import com.google.firebase.auth.FirebaseAuth
-import components.BackgroundImage
 
 private const val LOCATION_PERMISSION_REQUEST_CODE: Int = 1001
 
@@ -156,10 +161,11 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
           Box(
               modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("map_screen"),
               contentAlignment = Alignment.Center) {
-                BackgroundImage(
-                    painterResId = R.drawable.background_blurred,
+                Image(
+                    painter = painterResource(R.drawable.landscape_background),
                     contentDescription = stringResource(R.string.background_description),
-                    testTag = "background_test_tag")
+                    modifier = Modifier.fillMaxSize().testTag("background_test_tag").blur(20.dp),
+                    contentScale = ContentScale.Crop)
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -175,7 +181,8 @@ fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) 
                           onClick = { refreshKey++ },
                           colors =
                               androidx.compose.material3.ButtonDefaults.buttonColors(
-                                  containerColor = DarkPurple, contentColor = Color.White),
+                                  containerColor = LightPurple, contentColor = StarLightWhite),
+                          border = BorderStroke(0.7.dp, StarLightWhite),
                           modifier = Modifier.testTag("refresh_button")) {
                             Text("Refresh")
                           }
