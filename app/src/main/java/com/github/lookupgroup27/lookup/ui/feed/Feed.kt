@@ -82,14 +82,16 @@ fun FeedScreen(
   // Location setup
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-  val proximityAndTimePostFetcher by remember {
-    mutableStateOf(ProximityAndTimePostFetcher(postsViewModel, context))
-  }
-
   var locationPermissionGranted by remember {
     mutableStateOf(
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED)
+  }
+
+  // Initialize PostsViewModel with context
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Setting context in PostsViewModel")
+    postsViewModel.setContext(context)
   }
 
   // Permission request launcher
@@ -98,7 +100,7 @@ fun FeedScreen(
         locationPermissionGranted = isGranted
         if (isGranted && !testNoLoca) {
           locationProvider.requestLocationUpdates()
-          proximityAndTimePostFetcher.fetchSortedPosts()
+          postsViewModel.fetchSortedPosts()
         } else {
           Toast.makeText(
                   context,
@@ -114,7 +116,7 @@ fun FeedScreen(
       locationProvider.requestLocationUpdates()
 
       while (locationProvider.currentLocation.value == null) {
-        delay(500) // Retry every 500ms
+        delay(200) // Retry every 200ms
       }
       postsViewModel.fetchSortedPosts()
     }
@@ -122,7 +124,7 @@ fun FeedScreen(
 
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
-          ?: proximityAndTimePostFetcher.nearbyPosts.collectAsState())
+          ?: postsViewModel.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
@@ -192,18 +194,18 @@ fun FeedScreen(
                               (testNoLoca || !locationPermissionGranted) -> {
                                 Log.d("FeedScreen", "Location permission not granted")
 
-                              // Show permission request button
-                              Button(
-                                  onClick = {
-                                    permissionLauncher.launch(
-                                        Manifest.permission.ACCESS_FINE_LOCATION)
-                                  },
-                                  modifier = Modifier.testTag("enable_location_button"),
-                                  colors =
-                                      ButtonDefaults.buttonColors(
-                                          MaterialTheme.colorScheme.primary)) {
-                                    Text("Enable Location")
-                                  }
+                                // Show permission request button
+                                Button(
+                                    onClick = {
+                                      permissionLauncher.launch(
+                                          Manifest.permission.ACCESS_FINE_LOCATION)
+                                    },
+                                    modifier = Modifier.testTag("enable_location_button"),
+                                    colors =
+                                        ButtonDefaults.buttonColors(
+                                            MaterialTheme.colorScheme.primary)) {
+                                      Text("Enable Location")
+                                    }
                               }
                               locationProvider.currentLocation.value == null -> {
                                 CircularProgressIndicator(color = Color.White)
