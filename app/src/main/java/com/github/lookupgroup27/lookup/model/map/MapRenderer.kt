@@ -35,8 +35,6 @@ class MapRenderer(
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
-  private val renderableObjects = mutableListOf<Object>() // List of objects to render
-
   private val viewport = IntArray(4)
 
   /** The camera used to draw the shapes on the screen. */
@@ -134,7 +132,7 @@ class MapRenderer(
   private fun drawObjects() {
     // Renderable Objects
     renderableStars.forEach { o -> o.draw(camera) }
-    renderablePlanets.forEach { o -> o.draw(camera) }
+    renderablePlanets.forEach { o -> o.draw(camera, null) }
   }
 
   /**

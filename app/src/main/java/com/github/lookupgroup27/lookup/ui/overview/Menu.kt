@@ -122,6 +122,15 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                           style = MaterialTheme.typography.headlineSmall,
                           fontWeight = FontWeight.Bold)
                     }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { navigationActions.navigateTo(Screen.PLANET_SELECTION) },
+                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                      Text(
+                          text = "Planets",
+                          style = MaterialTheme.typography.headlineSmall,
+                          fontWeight = FontWeight.Bold)
+                    }
               }
         }
       }
