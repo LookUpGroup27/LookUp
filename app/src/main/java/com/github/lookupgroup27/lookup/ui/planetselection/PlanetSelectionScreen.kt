@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.planetselection
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,15 @@ fun PlanetSelectionScreen(
     viewModel: PlanetSelectionViewModel = viewModel(),
     navigationActions: NavigationActions
 ) {
+    val context = LocalContext.current
+
+    // Lock the screen orientation to portrait mode.
+    DisposableEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+    }
+
   val planets = viewModel.planets
   val selectedPlanet by viewModel.selectedPlanet.collectAsState()
 

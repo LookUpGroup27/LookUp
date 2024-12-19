@@ -2,9 +2,11 @@ package com.github.lookupgroup27.lookup.ui.feed
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -65,6 +67,14 @@ fun FeedScreen(
     initialNearbyPosts: List<Post>? = null,
     testNoLoca: Boolean = false
 ) {
+    val context = LocalContext.current
+    // Lock the screen orientation to portrait mode.
+    DisposableEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+    }
+
   // Fetch user profile
   LaunchedEffect(Unit) {
     Log.d("FeedScreen", "Fetching user profile")
@@ -81,7 +91,6 @@ fun FeedScreen(
   val email by remember { mutableStateOf(userEmail) }
 
   // Location setup
-  val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
   var locationPermissionGranted by remember {
     mutableStateOf(

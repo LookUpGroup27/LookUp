@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.profile
 
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +35,15 @@ import components.BackgroundImage
 
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
+    val context = LocalContext.current
+
+    // Lock the screen orientation to portrait mode.
+    DisposableEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+    }
+
   val configuration = LocalConfiguration.current
   val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
   val user = FirebaseAuth.getInstance().currentUser

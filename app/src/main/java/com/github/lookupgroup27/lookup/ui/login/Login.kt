@@ -1,9 +1,12 @@
 package com.github.lookupgroup27.lookup.ui.login
 
+import android.content.pm.ActivityInfo
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,6 +30,14 @@ import com.github.lookupgroup27.lookup.ui.register.components.CustomOutlinedText
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navigationActions: NavigationActions) {
   val context = LocalContext.current
+
+    // Lock the screen orientation to portrait mode.
+    DisposableEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+    }
+
   val uiState by viewModel.uiState.collectAsState()
 
   AuthScreen(

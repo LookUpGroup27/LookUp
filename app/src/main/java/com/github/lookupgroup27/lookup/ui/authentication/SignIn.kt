@@ -1,9 +1,11 @@
 package com.github.lookupgroup27.lookup.ui.authentication
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -56,6 +58,12 @@ import kotlinx.coroutines.tasks.await
 @Composable
 fun SignInScreen(navigationActions: NavigationActions) {
   val context = LocalContext.current
+
+    DisposableEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+    }
 
   val launcher =
       rememberFirebaseAuthLauncher(

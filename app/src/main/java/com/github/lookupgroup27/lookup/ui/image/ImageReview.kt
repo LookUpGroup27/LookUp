@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.image
 
+import android.content.pm.ActivityInfo
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +64,14 @@ fun ImageReviewScreen(
     timestamp: Long?
 ) {
   val context = LocalContext.current
+
+    // Lock the screen orientation to portrait mode.
+    DisposableEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+    }
+
   val locationProvider = LocationProviderSingleton.getInstance(context)
   val currentTimestamp = timestamp ?: System.currentTimeMillis() // Fallback to current time
 
