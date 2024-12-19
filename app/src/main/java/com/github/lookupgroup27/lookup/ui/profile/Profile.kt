@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
             isUserLoggedIn = isUserLoggedIn,
             selectedItem = navigationActions.currentRoute())
       }) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("profile_screen")) {
           // Background Image
           BackgroundImage(
               painterResId = R.drawable.background_blurred,
