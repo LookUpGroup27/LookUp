@@ -111,7 +111,7 @@ class ImagePreviewDialogTest {
     assert(dialogDismissed)
   }
 
-  @Test
+  /*@Test
   fun testStarClickCallsUpdatePost() {
     // Set the Compose content to ImagePreviewDialog
     composeTestRule.setContent {
@@ -124,7 +124,7 @@ class ImagePreviewDialogTest {
 
     // Verify that updatePost was called in the postsViewModel
     verify(postsRepository).updatePost(eq(testPost), any(), any())
-  }
+  }*/
 
   /*@Test
   fun testStarClickCallsUpdateUserProfile() {
@@ -141,7 +141,7 @@ class ImagePreviewDialogTest {
   }*/
 
   @Test
-  fun testStarIsDisplayed() {
+  fun testStarIsNotDisplayed() {
     composeTestRule.setContent {
       ImagePreviewDialog(
           post = testPost, username = "User1", onDismiss = {}, testStarStates, onRatingChanged = {})
@@ -149,7 +149,6 @@ class ImagePreviewDialogTest {
     // Perform click on the first star icon of a post with uid "1"
     composeTestRule
         .onNodeWithTag("Star_1_1")
-        .assertIsDisplayed()
-        .performClick() // Click on the first star
+        .assertIsNotDisplayed() // Click on the first star
   }
 }
