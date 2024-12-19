@@ -1,12 +1,13 @@
 package com.github.lookupgroup27.lookup.ui.planetselection
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import com.github.lookupgroup27.lookup.ui.planetselection.components.PlanetSelec
  * @param viewModel The ViewModel for the Planet Selection screen.
  * @param navigationActions The navigation actions to handle screen transitions.
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PlanetSelectionScreen(
     viewModel: PlanetSelectionViewModel = viewModel(),
@@ -43,34 +45,29 @@ fun PlanetSelectionScreen(
   // Reference to the PlanetSurfaceView to update it
   var planetSurfaceView by remember { mutableStateOf<PlanetSurfaceView?>(null) }
 
-  Surface(
-      modifier = Modifier.fillMaxSize(), color = Color.Black // Background color for the screen
-      ) {
+  Scaffold(
+      topBar = {
+        IconButton(
+            onClick = { navigationActions.navigateTo(Screen.MENU) },
+            modifier = Modifier.padding(16.dp).testTag("go_back_button")) {
+              Icon(
+                  imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                  contentDescription = "Back",
+                  tint = Color.White)
+            }
+      },
+      content = {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(Color.Black),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally) {
+              Spacer(modifier = Modifier.height(70.dp))
 
-              // Back Button
-              IconButton(
-                  onClick = { navigationActions.navigateTo(Screen.MENU) },
-                  modifier =
-                      Modifier.padding(16.dp)
-                          .align(Alignment.Start)
-                          .testTag("go_back_button_quiz")) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White)
-                  }
-
-              // Top: Horizontal planet selection
               PlanetSelectionRow(
                   planets = planets, onPlanetSelected = { viewModel.selectPlanet(it) })
 
-              Spacer(modifier = Modifier.height(40.dp))
+              Spacer(modifier = Modifier.height(50.dp))
 
-              // Middle: Planet name
               Text(
                   text = selectedPlanet.name,
                   color = White,
@@ -86,11 +83,11 @@ fun PlanetSelectionScreen(
                         factory = { context ->
                           PlanetSurfaceView(context, selectedPlanet).also { planetSurfaceView = it }
                         },
-                        modifier = Modifier.fillMaxSize())
+                        modifier = Modifier.size(600.dp))
                   }
 
               // LaunchedEffect to update the planet when selectedPlanet changes
               LaunchedEffect(selectedPlanet) { planetSurfaceView?.updatePlanet(selectedPlanet) }
             }
-      }
+      })
 }
