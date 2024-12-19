@@ -14,6 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.util.ToastHelper
 import com.github.lookupgroup27.lookup.utils.TestNetworkUtils.simulateOnlineMode
 import org.junit.After
 import org.junit.Before
@@ -139,6 +140,31 @@ class LandingKtTest {
     composeTestRule.waitForIdle()
 
     // Verify that navigation to the Sky Map is never triggered
+    verify(mockNavigationActions, never()).navigateTo(Screen.SKY_MAP)
+  }
+
+  @Test
+  fun landingScreen_showsToastWhenClickingBackground() {
+    // Mock the toast helper
+    val mockToastHelper = mock<ToastHelper>()
+
+    // Simulate offline mode
+    simulateOnlineMode(false)
+
+    composeTestRule.setContent {
+      LandingScreen(
+        navigationActions = mockNavigationActions,
+        toastHelper = mockToastHelper  // Pass the mock
+      )
+    }
+
+    // Click the background
+    composeTestRule.onNodeWithTag("LandingScreen").performClick()
+
+    // Verify toast was shown
+    verify(mockToastHelper).showNoInternetToast()
+
+    // Verify no navigation occurred
     verify(mockNavigationActions, never()).navigateTo(Screen.SKY_MAP)
   }
 
