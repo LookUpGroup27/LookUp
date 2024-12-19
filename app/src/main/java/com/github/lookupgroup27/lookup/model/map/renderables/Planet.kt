@@ -120,25 +120,18 @@ open class Planet(
     val rightZ = upX * lookY - upY * lookX
 
     // Set billboard matrix
-    billboardMatrix[0] = rightX
-    billboardMatrix[1] = rightY
-    billboardMatrix[2] = rightZ
-    billboardMatrix[3] = 0f
+    fun setMatrixRow(matrix: FloatArray, startIndex: Int, x: Float, y: Float, z: Float, w: Float) {
+      matrix[startIndex] = x
+      matrix[startIndex + 1] = y
+      matrix[startIndex + 2] = z
+      matrix[startIndex + 3] = w
+    }
 
-    billboardMatrix[4] = upX
-    billboardMatrix[5] = upY
-    billboardMatrix[6] = upZ
-    billboardMatrix[7] = 0f
-
-    billboardMatrix[8] = lookX
-    billboardMatrix[9] = lookY
-    billboardMatrix[10] = lookZ
-    billboardMatrix[11] = 0f
-
-    billboardMatrix[12] = 0f
-    billboardMatrix[13] = 0f
-    billboardMatrix[14] = 0f
-    billboardMatrix[15] = 1f
+    // Set billboard matrix
+    setMatrixRow(billboardMatrix, 0, rightX, rightY, rightZ, 0f)
+    setMatrixRow(billboardMatrix, 4, upX, upY, upZ, 0f)
+    setMatrixRow(billboardMatrix, 8, lookX, lookY, lookZ, 0f)
+    setMatrixRow(billboardMatrix, 12, 0f, 0f, 0f, 1f)
 
     // Combine matrices: Projection * View * Model
 
