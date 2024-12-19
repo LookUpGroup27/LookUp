@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,7 +61,8 @@ fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
     profileViewModel: ProfileViewModel,
-    initialNearbyPosts: List<Post>? = null
+    initialNearbyPosts: List<Post>? = null,
+    testNoLoca: Boolean = false
 ) {
   // Fetch user profile
   LaunchedEffect(Unit) {
@@ -79,7 +82,11 @@ fun FeedScreen(
   // Location setup
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
-  var locationPermissionGranted by remember { mutableStateOf(false) }
+  var locationPermissionGranted by remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
 
   // Initialize PostsViewModel with context
   LaunchedEffect(Unit) {
@@ -87,31 +94,40 @@ fun FeedScreen(
     postsViewModel.setContext(context)
   }
 
-  // Posts-related state
-  val unfilteredPosts by
-      (initialNearbyPosts?.let { mutableStateOf(it) }
-          ?: postsViewModel.nearbyPosts.collectAsState())
-  val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
-  val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
+  // Permission request launcher
+  val permissionLauncher =
+      rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        locationPermissionGranted = isGranted
+        if (isGranted && !testNoLoca) {
+          locationProvider.requestLocationUpdates()
+          postsViewModel.fetchSortedPosts()
+        } else {
+          Toast.makeText(
+                  context,
+                  "Location permission is required. Please enable it in the app settings.",
+                  Toast.LENGTH_LONG)
+              .show()
+        }
+      }
 
-  // Check for location permissions and fetch posts when granted.
-  LaunchedEffect(Unit) {
-    locationPermissionGranted =
-        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED
-    Log.d("FeedScreen", "Location permission granted: $locationPermissionGranted")
+  // Trigger location updates when permission is granted
+  LaunchedEffect(locationPermissionGranted) {
+    if (locationPermissionGranted) {
+      locationProvider.requestLocationUpdates()
 
-    if (!locationPermissionGranted) {
-      Toast.makeText(
-              context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG)
-          .show()
-    } else {
       while (locationProvider.currentLocation.value == null) {
-        delay(500)
+        delay(200) // Retry every 200ms
       }
       postsViewModel.fetchSortedPosts()
     }
   }
+
+  val unfilteredPosts by
+      (initialNearbyPosts?.let { mutableStateOf(it) }
+          ?: postsViewModel.nearbyPosts.collectAsState())
+  val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
+
+  val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
 
   // Initialize post ratings based on the user profile.
   LaunchedEffect(nearbyPosts, profile) {
@@ -175,12 +191,21 @@ fun FeedScreen(
                           modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
                             when {
-                              !locationPermissionGranted -> {
-                                Text(
-                                    text = stringResource(R.string.location_permission_required),
-                                    style =
-                                        MaterialTheme.typography.bodyLarge.copy(
-                                            color = Color.White))
+                              (testNoLoca || !locationPermissionGranted) -> {
+                                Log.d("FeedScreen", "Location permission not granted")
+
+                                // Show permission request button
+                                Button(
+                                    onClick = {
+                                      permissionLauncher.launch(
+                                          Manifest.permission.ACCESS_FINE_LOCATION)
+                                    },
+                                    modifier = Modifier.testTag("enable_location_button"),
+                                    colors =
+                                        ButtonDefaults.buttonColors(
+                                            MaterialTheme.colorScheme.primary)) {
+                                      Text("Enable Location")
+                                    }
                               }
                               locationProvider.currentLocation.value == null -> {
                                 CircularProgressIndicator(color = Color.White)
