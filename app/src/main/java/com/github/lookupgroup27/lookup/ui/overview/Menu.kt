@@ -21,6 +21,9 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.github.lookupgroup27.lookup.util.NetworkUtils
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -30,6 +33,10 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
   val isLoggedIn = auth.currentUser != null
 
   val userId = auth.currentUser?.uid.orEmpty()
+
+
+    val context = LocalContext.current
+    val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
 
   // Fetch the selected avatar for the logged-in user
   val selectedAvatar by avatarViewModel.selectedAvatar.collectAsState(initial = null)
@@ -104,8 +111,18 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                     }
                 Spacer(modifier = Modifier.height(8.dp))
 
+              // Blocked buttons when offline
                 Button(
-                    onClick = { navigationActions.navigateTo(Screen.CALENDAR) },
+                    onClick = {
+                        if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
+                        else
+                            Toast.makeText(
+                                context,
+                                "You're not connected to the internet",
+                                Toast.LENGTH_SHORT)
+                                .show()
+                    },
+                    enabled = isOnline.value,
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
                           text = "Calendar",
@@ -115,7 +132,16 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) },
+                    onClick = {
+                        if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
+                        else
+                            Toast.makeText(
+                                context,
+                                "You're not connected to the internet",
+                                Toast.LENGTH_SHORT)
+                                .show()
+                    },
+                    enabled = isOnline.value,
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
                           text = "Google Map",
