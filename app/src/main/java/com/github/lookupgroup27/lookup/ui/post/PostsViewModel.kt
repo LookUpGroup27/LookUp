@@ -262,6 +262,10 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   }
 
 
+    /**
+     * Starts monitoring location changes and triggers post updates accordingly.
+     * Uses viewModelScope to ensure proper coroutine lifecycle management.
+     */
     private fun startLocationMonitoring() {
         viewModelScope.launch {
             while (true) {
@@ -275,6 +279,10 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     }
 
 
+    /**
+     * Starts periodic fetching of posts to ensure data stays fresh.
+     * Runs in viewModelScope to ensure proper lifecycle management.
+     */
     private fun startPeriodicPostFetching() {
         viewModelScope.launch {
             while (true) {
