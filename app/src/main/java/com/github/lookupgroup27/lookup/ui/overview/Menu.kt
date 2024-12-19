@@ -1,6 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,10 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.github.lookupgroup27.lookup.util.NetworkUtils
-import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -34,9 +34,8 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
 
   val userId = auth.currentUser?.uid.orEmpty()
 
-
-    val context = LocalContext.current
-    val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
+  val context = LocalContext.current
+  val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
 
   // Fetch the selected avatar for the logged-in user
   val selectedAvatar by avatarViewModel.selectedAvatar.collectAsState(initial = null)
@@ -111,16 +110,16 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                     }
                 Spacer(modifier = Modifier.height(8.dp))
 
-              // Blocked buttons when offline
+                // Blocked buttons when offline
                 Button(
                     onClick = {
-                        if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
-                        else
-                            Toast.makeText(
-                                context,
-                                "You're not connected to the internet",
-                                Toast.LENGTH_SHORT)
-                                .show()
+                      if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
+                      else
+                          Toast.makeText(
+                                  context,
+                                  "You're not connected to the internet",
+                                  Toast.LENGTH_SHORT)
+                              .show()
                     },
                     enabled = isOnline.value,
                     modifier = Modifier.fillMaxWidth(0.6f)) {
@@ -133,13 +132,13 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
 
                 Button(
                     onClick = {
-                        if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
-                        else
-                            Toast.makeText(
-                                context,
-                                "You're not connected to the internet",
-                                Toast.LENGTH_SHORT)
-                                .show()
+                      if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
+                      else
+                          Toast.makeText(
+                                  context,
+                                  "You're not connected to the internet",
+                                  Toast.LENGTH_SHORT)
+                              .show()
                     },
                     enabled = isOnline.value,
                     modifier = Modifier.fillMaxWidth(0.6f)) {

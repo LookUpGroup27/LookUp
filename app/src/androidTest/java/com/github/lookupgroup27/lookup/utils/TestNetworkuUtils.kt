@@ -1,6 +1,5 @@
 package com.github.lookupgroup27.lookup.utils
 
-
 import com.github.lookupgroup27.lookup.util.NetworkUtils
 import io.mockk.every
 import io.mockk.mockkObject
@@ -13,15 +12,15 @@ import io.mockk.mockkObject
  */
 object TestNetworkUtils {
 
-    /**
-     * Simulates network connectivity state for tests.
-     *
-     * @param onlineState A boolean indicating the desired network connectivity state:
-     *     - `true` to simulate online mode
-     *     - `false` to simulate offline mode
-     */
-    fun simulateOnlineMode(onlineState: Boolean) {
-        mockkObject(NetworkUtils)
-        every { NetworkUtils.isNetworkAvailable(any()) } returns onlineState
-    }
+  /**
+   * Simulates network connectivity state for tests.
+   *
+   * @param onlineState A boolean indicating the desired network connectivity state:
+   *     - `true` to simulate online mode
+   *     - `false` to simulate offline mode
+   */
+  fun simulateOnlineMode(onlineState: Boolean) {
+    mockkObject(NetworkUtils)
+    every { NetworkUtils.isNetworkAvailable(any()) } returns onlineState
+  }
 }

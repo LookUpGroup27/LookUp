@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import org.junit.*
 import org.mockito.kotlin.*
 
-
 class MenuKtTest {
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -58,7 +57,7 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_bottomNavigation_clickMapTab_navigatesToMap() {
-    //simulate online mode
+    // simulate online mode
     simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
@@ -134,7 +133,7 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_clickCalendar_navigatesToCalendarScreen() {
-    //simulate online mode
+    // simulate online mode
     simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
@@ -149,7 +148,7 @@ class MenuKtTest {
 
   @Test
   fun menuScreen_clickGoogleMap_navigatesToGoogleMapScreen() {
-    //simulate online mode
+    // simulate online mode
     simulateOnlineMode(true)
     composeTestRule.setContent {
       MenuScreen(navigationActions = mockNavigationActions, mockAvatarViewModel)
@@ -194,5 +193,5 @@ class MenuKtTest {
 
     // Verify no navigation to Google Map screen is triggered
     verify(mockNavigationActions, never()).navigateTo(Screen.GOOGLE_MAP)
-
-  }   }
+  }
+}
