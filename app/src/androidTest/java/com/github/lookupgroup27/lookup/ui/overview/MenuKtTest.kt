@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
+import com.github.lookupgroup27.lookup.util.ToastHelper
 import com.github.lookupgroup27.lookup.utils.TestNetworkUtils.simulateOnlineMode
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.*
@@ -192,6 +193,32 @@ class MenuKtTest {
     composeTestRule.onNodeWithText("Google Map").performClick()
 
     // Verify no navigation to Google Map screen is triggered
+    verify(mockNavigationActions, never()).navigateTo(Screen.GOOGLE_MAP)
+  }
+
+  @Test
+  fun menuScreen_showsToastWhenClickingGoogleMapButtonOffline() {
+    // Mock the toast helper
+    val mockToastHelper = mock<ToastHelper>()
+
+    // Simulate offline mode
+    simulateOnlineMode(false)
+
+    composeTestRule.setContent {
+      MenuScreen(
+        navigationActions = mockNavigationActions,
+        avatarViewModel = mockAvatarViewModel,
+        toastHelper = mockToastHelper
+      )
+    }
+
+    // Click the Google Map button
+    composeTestRule.onNodeWithText("Google Map").performClick()
+
+    // Verify toast was shown
+    verify(mockToastHelper).showNoInternetToast()
+
+    // Verify no navigation occurred
     verify(mockNavigationActions, never()).navigateTo(Screen.GOOGLE_MAP)
   }
 }
