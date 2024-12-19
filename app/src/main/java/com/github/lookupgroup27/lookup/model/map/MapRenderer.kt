@@ -91,7 +91,7 @@ class MapRenderer(
     // Bind the texture and render the SkyBox
     GLES20.glDepthMask(false)
     textureManager.bindTexture(skyBoxTextureHandle)
-    // skyBox.draw(camera) commented out until the texture is changed to see stars
+    skyBox.draw(camera)
     GLES20.glDepthMask(true)
 
     val deltaTime = computeDeltaTime()
