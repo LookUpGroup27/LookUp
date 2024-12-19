@@ -1,5 +1,6 @@
 package com.github.lookupgroup27.lookup.ui.navigation
 
+import android.net.Uri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Menu
@@ -28,6 +29,7 @@ object Route {
   const val LOGIN = "Login"
   const val REGISTER = "Register"
   const val EDIT_IMAGE = "EditImage"
+  const val FULLSCREEN_IMAGE = "fullScreenImage"
   const val PLANET_SELECTION = "PlanetSelection"
 }
 
@@ -51,6 +53,7 @@ object Screen {
   const val LOGIN = "Login Screen"
   const val REGISTER = "Register Screen"
   const val EDIT_IMAGE = "Edit Image"
+  const val FULLSCREEN_IMAGE = "fullScreenImage Screen"
   const val PLANET_SELECTION = "Planet Selection Screen"
 }
 
@@ -133,6 +136,26 @@ open class NavigationActions(
     navController.navigate("${route}/$image/$timestamp")
   }
 
+  /**
+   * Navigate to the map screen with the specified post ID, latitude, and longitude.
+   *
+   * @param postId The ID of the post to navigate to.
+   * @param lat The latitude of the post.
+   * @param lon The longitude of the post.
+   */
+  open fun navigateToMapWithPost(
+      postId: String,
+      lat: Double,
+      lon: Double,
+      autoCenter: Boolean = false
+  ) {
+    navController.navigate("${Route.GOOGLE_MAP}/$postId/$lat/$lon/$autoCenter") {
+      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+      launchSingleTop = true
+      restoreState = true
+    }
+  }
+
   /** Navigate to a screen with a specific post information. */
   open fun navigateToWithPostInfo(
       encodedUri: String,
@@ -144,5 +167,14 @@ open class NavigationActions(
   ) {
     navController.navigate(
         "${route}/$encodedUri/$postAverageStar/$postRatedByNb/$postUid/$postDescription")
+  }
+
+  fun navigateToFullScreen(imageUrl: String, username: String, description: String) {
+    val encodedImageUrl = Uri.encode(imageUrl)
+    val encodedUsername = Uri.encode(username)
+    val encodedDescription = Uri.encode(description)
+
+    navController.navigate(
+        "${Route.FULLSCREEN_IMAGE}/$encodedImageUrl/$encodedUsername/$encodedDescription")
   }
 }

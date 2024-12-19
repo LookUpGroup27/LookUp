@@ -33,7 +33,8 @@ class Moon(
         numBands = numBands,
         stepsPerBand = stepsPerBand,
         scale = 0.05f,
-        rotationSpeed = 0.0f) {
+        rotationSpeed = 0.0f,
+        funFact = "The Moon is moving away from Earth !") {
   /** Companion object containing moon phase calculation and texture mapping logic. */
   companion object {
     /**

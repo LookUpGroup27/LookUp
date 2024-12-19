@@ -42,7 +42,6 @@ class CollectionRepositoryFirestore(
    * @return A list of image URLs associated with the user's email.
    */
   override fun getUserPosts(onSuccess: (List<Post>?) -> Unit, onFailure: (Exception) -> Unit) {
-
     val userMail = auth.currentUser?.email
     if (userMail == null) {
       onFailure(Exception("User is not authenticated."))
@@ -55,32 +54,38 @@ class CollectionRepositoryFirestore(
         onFailure(exception)
         return@addSnapshotListener
       }
+
       if (snapshot != null) {
-        val posts =
-            snapshot.documents
-                .map { post ->
-                  Log.d(tag, "${post.id} => ${post.data}")
-                  val data = post.data ?: return@map null
-                  if (data["userMail"] as String == userMail) {
-                    Post(
-                        data["uid"] as String,
-                        data["uri"] as String,
-                        data["username"] as String,
-                        data["userMail"] as String,
-                        (data["starsCount"] as? Long)?.toInt() ?: 0,
-                        (data["averageStars"] as? Double) ?: 0.0,
-                        data["latitude"] as Double,
-                        data["longitude"] as Double,
-                        (data["usersNumber"] as? Long)?.toInt() ?: 0,
-                        data["ratedBy"] as? List<String> ?: emptyList(),
-                        data["description"] as? String ?: "",
-                        (data["timestamp"] as? Long) ?: 0L)
-                  } else {
-                    null
-                  }
-                }
-                .filterNotNull()
-        onSuccess(posts)
+        try {
+          val posts =
+              snapshot.documents.mapNotNull { post ->
+                Log.d(tag, "${post.id} => ${post.data}")
+                val data = post.data ?: return@mapNotNull null
+
+                // Safely cast userMail and compare
+                val postUserMail = data["userMail"] as? String ?: return@mapNotNull null
+                if (postUserMail != userMail) return@mapNotNull null
+
+                // Safely retrieve all fields with null checks and default values
+                Post(
+                    uid = data["uid"] as? String ?: return@mapNotNull null,
+                    uri = data["uri"] as? String ?: return@mapNotNull null,
+                    username = data["username"] as? String ?: return@mapNotNull null,
+                    userMail = postUserMail,
+                    starsCount = (data["starsCount"] as? Long)?.toInt() ?: 0,
+                    averageStars = (data["averageStars"] as? Double) ?: 0.0,
+                    latitude = (data["latitude"] as? Double) ?: 0.0,
+                    longitude = (data["longitude"] as? Double) ?: 0.0,
+                    usersNumber = (data["usersNumber"] as? Long)?.toInt() ?: 0,
+                    ratedBy = (data["ratedBy"] as? List<String>) ?: emptyList(),
+                    description = data["description"] as? String ?: "",
+                    timestamp = (data["timestamp"] as? Long) ?: 0L)
+              }
+          onSuccess(posts)
+        } catch (e: Exception) {
+          Log.e(tag, "Error parsing posts", e)
+          onFailure(e)
+        }
       }
     }
   }

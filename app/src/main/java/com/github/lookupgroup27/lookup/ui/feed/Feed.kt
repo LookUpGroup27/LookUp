@@ -3,7 +3,10 @@ package com.github.lookupgroup27.lookup.ui.feed
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +30,7 @@ import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
+import com.github.lookupgroup27.lookup.ui.googlemap.components.SelectedPostMarker
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
@@ -58,11 +62,16 @@ fun FeedScreen(
     postsViewModel: PostsViewModel,
     navigationActions: NavigationActions,
     profileViewModel: ProfileViewModel,
-    initialNearbyPosts: List<Post>? = null
+    initialNearbyPosts: List<Post>? = null,
+    testNoLoca: Boolean = false
 ) {
   // Fetch user profile
-  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Fetching user profile")
+    profileViewModel.fetchUserProfile()
+  }
 
+  // User-related state
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
@@ -71,36 +80,55 @@ fun FeedScreen(
   val bio by remember { mutableStateOf(profile?.bio ?: "") }
   val email by remember { mutableStateOf(userEmail) }
 
+  // Location setup
   val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
+  var locationPermissionGranted by remember {
+    mutableStateOf(
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
+  }
 
-  postsViewModel.setContext(context)
+  // Initialize PostsViewModel with context
+  LaunchedEffect(Unit) {
+    Log.d("FeedScreen", "Setting context in PostsViewModel")
+    postsViewModel.setContext(context)
+  }
 
-  var locationPermissionGranted by remember { mutableStateOf(false) }
+  // Permission request launcher
+  val permissionLauncher =
+      rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        locationPermissionGranted = isGranted
+        if (isGranted && !testNoLoca) {
+          locationProvider.requestLocationUpdates()
+          postsViewModel.fetchSortedPosts()
+        } else {
+          Toast.makeText(
+                  context,
+                  "Location permission is required. Please enable it in the app settings.",
+                  Toast.LENGTH_LONG)
+              .show()
+        }
+      }
+
+  // Trigger location updates when permission is granted
+  LaunchedEffect(locationPermissionGranted) {
+    if (locationPermissionGranted) {
+      locationProvider.requestLocationUpdates()
+
+      while (locationProvider.currentLocation.value == null) {
+        delay(200) // Retry every 200ms
+      }
+      postsViewModel.fetchSortedPosts()
+    }
+  }
+
   val unfilteredPosts by
       (initialNearbyPosts?.let { mutableStateOf(it) }
           ?: postsViewModel.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
 
   val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
-
-  // Check for location permissions and fetch posts when granted.
-  LaunchedEffect(Unit) {
-    locationPermissionGranted =
-        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED
-
-    if (!locationPermissionGranted) {
-      Toast.makeText(
-              context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG)
-          .show()
-    } else {
-      while (locationProvider.currentLocation.value == null) {
-        delay(500)
-      }
-      postsViewModel.fetchSortedPosts()
-    }
-  }
 
   // Initialize post ratings based on the user profile.
   LaunchedEffect(nearbyPosts, profile) {
@@ -113,7 +141,7 @@ fun FeedScreen(
     }
   }
 
-  // Background Box with gradient overlay using drawBehind for efficiency.
+  // UI Structure
   Box(
       modifier =
           Modifier.fillMaxSize().drawBehind {
@@ -160,40 +188,50 @@ fun FeedScreen(
                   modifier =
                       Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp)) {
                     if (nearbyPosts.isEmpty()) {
-                      // Loading or empty state
                       Box(
                           modifier = Modifier.fillMaxSize().testTag("loading_indicator_test_tag"),
                           contentAlignment = Alignment.Center) {
-                            if (!locationPermissionGranted) {
-                              Text(
-                                  text = stringResource(R.string.location_permission_required),
-                                  style =
-                                      MaterialTheme.typography.bodyLarge.copy(color = Color.White))
-                            } else if (locationProvider.currentLocation.value == null) {
-                              CircularProgressIndicator(
-                                  color = Color.White) // Still fetching location
-                            } else {
-                              Column(
-                                  horizontalAlignment = Alignment.CenterHorizontally,
-                                  verticalArrangement = Arrangement.Center) {
-                                    // Add PNG image above the message
-                                    Image(
-                                        painter = painterResource(R.drawable.no_images_placeholder),
-                                        contentDescription =
-                                            stringResource(R.string.feed_no_images_available),
-                                        modifier =
-                                            Modifier.size(180.dp).testTag("no_images_placeholder"))
+                            when {
+                              (testNoLoca || !locationPermissionGranted) -> {
+                                Log.d("FeedScreen", "Location permission not granted")
 
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Display "No images available" message
-                                    Text(
-                                        text = stringResource(R.string.feed_no_images_available),
-                                        modifier = Modifier.testTag("feed_no_images_available"),
-                                        style =
-                                            MaterialTheme.typography.bodyLarge.copy(
-                                                color = Color.White))
-                                  }
+                                // Show permission request button
+                                Button(
+                                    onClick = {
+                                      permissionLauncher.launch(
+                                          Manifest.permission.ACCESS_FINE_LOCATION)
+                                    },
+                                    modifier = Modifier.testTag("enable_location_button"),
+                                    colors =
+                                        ButtonDefaults.buttonColors(
+                                            MaterialTheme.colorScheme.primary)) {
+                                      Text("Enable Location")
+                                    }
+                              }
+                              locationProvider.currentLocation.value == null -> {
+                                CircularProgressIndicator(color = Color.White)
+                              }
+                              else -> {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center) {
+                                      Image(
+                                          painter =
+                                              painterResource(R.drawable.no_images_placeholder),
+                                          contentDescription =
+                                              stringResource(R.string.feed_no_images_available),
+                                          modifier =
+                                              Modifier.size(180.dp)
+                                                  .testTag("no_images_placeholder"))
+                                      Spacer(modifier = Modifier.height(16.dp))
+                                      Text(
+                                          text = stringResource(R.string.feed_no_images_available),
+                                          modifier = Modifier.testTag("feed_no_images_available"),
+                                          style =
+                                              MaterialTheme.typography.bodyLarge.copy(
+                                                  color = Color.White))
+                                    }
+                              }
                             }
                           }
                     } else {
@@ -232,6 +270,19 @@ fun FeedScreen(
                                             starsCount = starsCount,
                                             oldStarCounts = oldStarCounts)
                                     postsViewModel.updatePost(updatedPost)
+                                  },
+                                  onAddressClick = { clickedPost ->
+                                    val selectedMarker =
+                                        SelectedPostMarker(
+                                            postId = clickedPost.uid,
+                                            latitude = clickedPost.latitude,
+                                            longitude = clickedPost.longitude)
+                                    navigationActions.navigateToMapWithPost(
+                                        post.uid, post.latitude, post.longitude, false)
+                                  },
+                                  onImageClick = { imageUrl, username, description ->
+                                    navigationActions.navigateToFullScreen(
+                                        imageUrl, username, description)
                                   })
                             }
                           }
@@ -240,7 +291,6 @@ fun FeedScreen(
             }
       }
 }
-
 /**
  * Updates the user's profile ratings.
  *

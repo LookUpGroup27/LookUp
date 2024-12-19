@@ -6,7 +6,6 @@ import com.github.lookupgroup27.lookup.model.location.LocationProvider
 import com.github.lookupgroup27.lookup.model.map.renderables.Moon
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.util.CelestialObjectsUtils
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -48,34 +47,44 @@ class PlanetsRepository(
                 "Mercury",
                 "199",
                 textureId = R.drawable.mercury_texture,
-                iconRes = R.drawable.mercury_icon),
+                iconRes = R.drawable.mercury_icon,
+                funFact = "Mercury’s surface has ice on it !"),
             PlanetData(
                 "Venus",
                 "299",
                 textureId = R.drawable.venus_texture,
-                iconRes = R.drawable.venus_icon),
+                iconRes = R.drawable.venus_icon,
+                funFact = "A day is longer than a year on Venus !"),
             PlanetData(
-                "Mars", "499", textureId = R.drawable.mars_texture, iconRes = R.drawable.mars_icon),
+                "Mars",
+                "499",
+                textureId = R.drawable.mars_texture,
+                iconRes = R.drawable.mars_icon,
+                funFact = "Mars has the largest volcano in the solar system !"),
             PlanetData(
                 "Jupiter",
                 "599",
                 textureId = R.drawable.jupiter_texture,
-                iconRes = R.drawable.jupiter_icon),
+                iconRes = R.drawable.jupiter_icon,
+                funFact = "Jupiter is a great comet catcher !"),
             PlanetData(
                 "Saturn",
                 "699",
                 textureId = R.drawable.saturn_texture,
-                iconRes = R.drawable.saturn_icon),
+                iconRes = R.drawable.saturn_icon,
+                funFact = "Saturn's rings are 90% water !"),
             PlanetData(
                 "Uranus",
                 "799",
                 textureId = R.drawable.uranus_texture,
-                iconRes = R.drawable.uranus_icon),
+                iconRes = R.drawable.uranus_icon,
+                funFact = "You can't stand on Uranus !"),
             PlanetData(
                 "Neptune",
                 "899",
                 textureId = R.drawable.neptune_texture,
-                iconRes = R.drawable.neptune_icon)))
+                iconRes = R.drawable.neptune_icon,
+                funFact = "Neptune has supersonic winds !")))
   }
 
   /**
@@ -143,8 +152,8 @@ class PlanetsRepository(
             context = context,
             name = planetData.name,
             position = floatArrayOf(position.first, position.second, position.third),
-            textureId = planetData.textureId // Resource ID for the planet’s texture
-            )
+            textureId = planetData.textureId, // Resource ID for the planet’s texture
+            funFact = planetData.funFact)
       }
     }
   }
@@ -209,7 +218,7 @@ class PlanetsRepository(
     // Make the network request to Horizons API
     val request = Request.Builder().url(url).build()
     client.newCall(request).execute().use { response ->
-      if (!response.isSuccessful) throw IOException("API call failed with code ${response.code}")
+      if (!response.isSuccessful) return null
 
       val json = JSONObject(response.body?.string() ?: return null)
       val result = json.optString("result", null) ?: return null
@@ -230,9 +239,15 @@ class PlanetsRepository(
 
       // According to Horizons format, RA and Dec are typically in columns 4 and 5 (0-based index: 3
       // and 4)
-      if (columns.size >= 3) {
+      if (columns.size > 4) {
         val raDeg = columns[3].toDoubleOrNull() ?: return null
         val decDeg = columns[4].toDoubleOrNull() ?: return null
+        return Pair(raDeg, decDeg)
+      } else if (columns.size ==
+          4) { // Sometimes Horizons changes format which gives a size 4 array where Ra and Dec
+        // are placed in the two last columns
+        val raDeg = columns[2].toDoubleOrNull() ?: return null
+        val decDeg = columns[3].toDoubleOrNull() ?: return null
         return Pair(raDeg, decDeg)
       }
 

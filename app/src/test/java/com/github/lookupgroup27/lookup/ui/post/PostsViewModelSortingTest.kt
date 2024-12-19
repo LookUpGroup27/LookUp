@@ -55,6 +55,9 @@ class PostsViewModelSortingTest {
     postsRepositoryFirestore = PostsRepositoryFirestore(mockFirestore)
     postsViewModel = PostsViewModel(postsRepositoryFirestore)
     locationProvider = TestLocationProvider()
+
+    // Initialize the ViewModel with context
+    postsViewModel.setContext(context)
   }
 
   @After
@@ -66,6 +69,9 @@ class PostsViewModelSortingTest {
   fun `fetchNearbyPostsWithImages returns empty list when location is null`() = runTest {
     // Simulate location as null
     locationProvider.setLocation(null, null)
+
+    // Set the locationProvider in ViewModel
+    postsViewModel.setLocationProviderForTesting(locationProvider)
 
     // Call the function
     postsViewModel.fetchSortedPosts()
@@ -81,6 +87,9 @@ class PostsViewModelSortingTest {
   fun `fetchNearbyPostsWithImages returns empty list when no posts are available`() = runTest {
     // Set a valid location
     locationProvider.setLocation(37.7749, -122.4194) // San Francisco coordinates
+
+    // Set the locationProvider in ViewModel
+    postsViewModel.setLocationProviderForTesting(locationProvider)
 
     // Simulate empty list of posts in the repository
     whenever(postsRepository.getPosts(any(), any())).thenAnswer {

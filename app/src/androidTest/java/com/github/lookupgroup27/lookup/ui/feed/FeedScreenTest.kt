@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -23,6 +24,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
+import com.github.lookupgroup27.lookup.util.NetworkUtils
 import com.google.firebase.auth.FirebaseAuth
 import io.mockk.every
 import io.mockk.mockkObject
@@ -56,6 +58,7 @@ class FeedScreenTest {
   private lateinit var locationProvider: LocationProvider
   private val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
   private val userEmail = user?.email ?: ""
+  private val mockNavigationActions: NavigationActions = org.mockito.kotlin.mock()
 
   // Mock the logged-in user's profile
   val testUserProfile =
@@ -158,13 +161,14 @@ class FeedScreenTest {
    * feed. It handles the rendering of the FeedScreen with the specified posts and ensures a
    * consistent setup across all tests.
    */
-  private fun setFeedScreenContent(initialNearbyPosts: List<Post>) {
+  private fun setFeedScreenContent(initialNearbyPosts: List<Post>, testNoLoca: Boolean = false) {
     composeTestRule.setContent {
       FeedScreen(
           postsViewModel = postsViewModel,
           navigationActions = navigationActions,
           profileViewModel = profileViewModel,
-          initialNearbyPosts = initialNearbyPosts)
+          initialNearbyPosts = initialNearbyPosts,
+          testNoLoca = testNoLoca)
     }
   }
 
@@ -319,5 +323,31 @@ class FeedScreenTest {
 
     // Assert: Placeholder image is displayed
     composeTestRule.onNodeWithTag("no_images_placeholder").assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun testEnableLocationButtonIsDisplayed() {
+    setFeedScreenContent(emptyList(), true)
+    composeTestRule
+        .onNodeWithTag("enable_location_button")
+        .assertExists() // Verify button is displayed
+    composeTestRule.onNodeWithText("Enable Location").assertExists() // Verify button text
+    composeTestRule.onNodeWithTag("enable_location_button").performClick()
+  }
+
+  @Test
+  fun testNavigationToFeedBlockedForOfflineMode() {
+    setFeedScreenContent(emptyList())
+    // Simulate offline mode
+    mockkObject(NetworkUtils)
+    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+    // Simulate clicking the sky map tab in the bottom navigation
+    composeTestRule.onNodeWithTag("Feed").performClick()
+
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
+
+    // Verify that navigation to the Sky Map is never triggered
+    verify(mockNavigationActions, org.mockito.kotlin.never()).navigateTo(Screen.FEED)
   }
 }
