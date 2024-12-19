@@ -197,27 +197,26 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
    * @see getSortedNearbyPosts for the sorting and filtering logic.
    */
   fun fetchSortedPosts() {
-    val userLocation = locationProvider?.currentLocation?.value
-    if (userLocation == null) {
-      Log.e("ProximityPostFetcher", "User location is null; cannot fetch nearby posts.")
-      return
-    }
-
-    // Launch a coroutine to collect and process posts
-    CoroutineScope(Dispatchers.IO).launch {
-      allPosts.collect { posts ->
-        if (posts.isNotEmpty()) {
-          // Map each post to a pair of (post, distance) from the user
-          val sortedNearbyPosts =
-              getSortedNearbyPosts(posts, userLocation.latitude, userLocation.longitude)
-
-          // Update _nearbyPosts with the sorted list of nearby posts
-          _nearbyPosts.update { sortedNearbyPosts }
-        } else {
-          Log.e("fetchPosts", "Posts are empty.")
-        }
+      val userLocation = locationProvider?.currentLocation?.value
+      if (userLocation == null) {
+          Log.e("ProximityPostFetcher", "User location is null; cannot fetch nearby posts.")
+          return
       }
-    }
+
+      viewModelScope.launch {
+          allPosts.collect { posts ->
+              if (posts.isNotEmpty()) {
+                  val sortedNearbyPosts = getSortedNearbyPosts(
+                      posts,
+                      userLocation.latitude,
+                      userLocation.longitude
+                  )
+                  _nearbyPosts.update { sortedNearbyPosts }
+              } else {
+                  Log.e("fetchPosts", "Posts are empty.")
+              }
+          }
+      }
   }
 
   /**
