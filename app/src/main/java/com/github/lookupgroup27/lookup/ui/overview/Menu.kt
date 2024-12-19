@@ -23,11 +23,12 @@ import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.github.lookupgroup27.lookup.util.NetworkUtils
+import com.github.lookupgroup27.lookup.util.ToastHelper
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
+fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel, toastHelper: ToastHelper = ToastHelper(LocalContext.current) ) {
 
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
@@ -115,13 +116,8 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                     onClick = {
                       if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
                       else
-                          Toast.makeText(
-                                  context,
-                                  "You're not connected to the internet",
-                                  Toast.LENGTH_SHORT)
-                              .show()
+                          toastHelper.showNoInternetToast()
                     },
-                    enabled = isOnline.value,
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
                           text = "Calendar",
@@ -134,13 +130,8 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                     onClick = {
                       if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
                       else
-                          Toast.makeText(
-                                  context,
-                                  "You're not connected to the internet",
-                                  Toast.LENGTH_SHORT)
-                              .show()
+                          toastHelper.showNoInternetToast()
                     },
-                    enabled = isOnline.value,
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
                           text = "Google Map",
