@@ -70,18 +70,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LookUpApp() {
+  val context = LocalContext.current
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
   val calendarViewModel: CalendarViewModel = viewModel(factory = CalendarViewModel.Factory)
   val quizViewModel: QuizViewModel =
-      viewModel(factory = QuizViewModel.provideFactory(context = LocalContext.current))
+      viewModel(factory = QuizViewModel.provideFactory(context = context))
   val imageViewModel: ImageViewModel = viewModel(factory = ImageViewModel.Factory)
   val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
   val collectionViewModel: CollectionViewModel = viewModel(factory = CollectionViewModel.Factory)
   val postsViewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory)
   val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
   val editImageViewModel: EditImageViewModel = viewModel(factory = EditImageViewModel.Factory)
-  val mapViewModel: MapViewModel = viewModel()
+  val mapViewModel: MapViewModel =
+      viewModel(factory = MapViewModel.createFactory(context = context))
   val passwordResetViewModel: PasswordResetViewModel =
       viewModel(factory = PasswordResetViewModel.Factory)
   val avatarViewModel: AvatarViewModel = viewModel(factory = AvatarViewModel.Factory)
@@ -99,8 +101,8 @@ fun LookUpApp() {
       composable(Screen.LOGIN) { LoginScreen(loginViewModel, navigationActions) }
       composable(Screen.REGISTER) { RegisterScreen(navigationActions, registerViewModel) }
     }
-    navigation(startDestination = Screen.MAP, route = Route.MAP) {
-      composable(Screen.MAP) { MapScreen(navigationActions, mapViewModel) }
+    navigation(startDestination = Screen.SKY_MAP, route = Route.SKY_MAP) {
+      composable(Screen.SKY_MAP) { MapScreen(navigationActions, mapViewModel) }
     }
     navigation(
         startDestination = Screen.LANDING,
@@ -184,17 +186,20 @@ fun LookUpApp() {
       }
 
       composable(
-          route = "${Route.EDIT_IMAGE}/{postUri}/{postAverageStar}/{postRatedByNb}/{postUid}",
+          route =
+              "${Route.EDIT_IMAGE}/{postUri}/{postAverageStar}/{postRatedByNb}/{postUid}/{postDescription}",
           arguments =
               listOf(
                   navArgument("postUri") { type = NavType.StringType },
                   navArgument("postAverageStar") { type = NavType.FloatType },
                   navArgument("postRatedByNb") { type = NavType.IntType },
-                  navArgument("postUid") { type = NavType.StringType })) { backStackEntry ->
+                  navArgument("postUid") { type = NavType.StringType },
+                  navArgument("postDescription") { type = NavType.StringType })) { backStackEntry ->
             val postUri = backStackEntry.arguments?.getString("postUri") ?: ""
             val postAverageStar = backStackEntry.arguments?.getFloat("postAverageStar") ?: 0.0f
             val postRatedByNb = backStackEntry.arguments?.getInt("postRatedByNb") ?: 0
             val postUid = backStackEntry.arguments?.getString("postUid") ?: ""
+            val postDescription = backStackEntry.arguments?.getString("postDescription") ?: ""
 
             EditImageScreen(
                 postUri = postUri,
@@ -204,6 +209,7 @@ fun LookUpApp() {
                 editImageViewModel = editImageViewModel,
                 collectionViewModel = collectionViewModel,
                 postsViewModel = postsViewModel,
+                postDescription = postDescription,
                 navigationActions = navigationActions)
           }
     }

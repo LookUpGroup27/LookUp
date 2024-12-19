@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.feed.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -11,7 +12,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.github.lookupgroup27.lookup.R
@@ -21,8 +22,14 @@ import okhttp3.*
 import org.json.JSONObject
 
 /**
- * Composable that displays an individual post, showing the user's image and username. The image is
- * loaded asynchronously using the post's URI.
+ * Composable for displaying an individual post in the feed. Each post includes:
+ * - The username of the user who created the post.
+ * - The location (address) where the post was created, resolved dynamically from coordinates.
+ * - An image loaded from a URI.
+ * - A description of the post.
+ * - A star rating system where users can rate the post.
+ *
+ * The post is displayed in a card with rounded corners and appropriate spacing.
  *
  * @param post The post data, including image URI and username
  * @param starStates The list of star states for the post
@@ -39,104 +46,107 @@ fun PostItem(
     starStates: List<Boolean>,
     onRatingChanged: (List<Boolean>) -> Unit,
     onAddressClick: (Post) -> Unit = {},
-    color: Color = Color.Black,
+    color: Color = Color.White,
     textForUsername: String = post.username,
     showAverage: Boolean = true,
     showAddress: Boolean = true
 ) {
-
   val address = remember { mutableStateOf("Loading address...") }
   LaunchedEffect(post.latitude, post.longitude) {
     address.value = getAddressFromLatLngUsingNominatim(post.latitude, post.longitude)
   }
 
-  Column(
+  Card(
+      shape = RoundedCornerShape(16.dp),
+      colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.5f)),
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(8.dp)
-              .testTag("PostItem_${post.uid}") // Unique tag per post item
-      ) {
-        // Display the username at the top of each post item
-        Text(
-            text = textForUsername,
-            style =
-                MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold, color = color),
-            modifier =
-                Modifier.padding(start = 4.dp)
-                    .testTag("UsernameTag_${post.username}") // Tagging username for testing
-            )
-        if (showAddress) {
-          // Display the address at the top of each post item
-          Text(
-              text = address.value,
-              style = MaterialTheme.typography.bodySmall.copy(color = Color.Blue),
-              modifier =
-                  Modifier.padding(start = 4.dp)
-                      .testTag("AddressTag_${post.uid}") // Tagging address for testing
-                      .clickable { onAddressClick(post) } // Clickable address to show on map
-              )
-        }
-        // Display image using the dynamically fetched URI
-        Image(
-            painter = rememberAsyncImagePainter(post.uri), // Coil loads image from URI
-            contentDescription = "Post Image for ${post.username}",
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(300.dp)
-                    .testTag("ImageTag_${post.uid}"), // Tagging image for testing
-            contentScale = ContentScale.Crop)
+          Modifier.fillMaxWidth().padding(horizontal = 4.dp).testTag("PostItem_${post.uid}")) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              // Username
+              Text(
+                  text = textForUsername,
+                  style =
+                      MaterialTheme.typography.titleSmall.copy(
+                          fontWeight = FontWeight.Bold, color = color),
+                  modifier = Modifier.testTag("UsernameTag_${post.username}"))
 
-        Text(
-            text = post.description,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier =
-                Modifier.padding(start = 4.dp)
-                    .testTag("DescriptionTag_${post.uid}") // Tagging description for testing
-            )
-        // Star rating row
-        Row {
-          // Loop through each star
-          starStates.forEachIndexed { index, isFilled ->
-            IconButton(
-                onClick = {
-                  // Toggle stars up to the clicked index
-                  val newRating =
-                      starStates.mapIndexed { i, _ -> if (isFilled) i < index else i <= index }
-                  onRatingChanged(newRating)
-                },
-                modifier = Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {
-                  Image(
-                      painter =
-                          painterResource(
-                              id = if (isFilled) R.drawable.full_star else R.drawable.empty_star),
-                      contentDescription = "Star")
-                }
-          }
-          if (showAverage) {
-            // Display the average rating at the end of the row
-            Text(
-                text = "Average rating: ${"%.1f".format(post.averageStars)}",
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(start = 4.dp)
-                        .testTag("AverageRatingTag_${post.uid}"),
-                textAlign = TextAlign.End,
-                style =
-                    MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold, color = color))
-          }
-        }
+              // Address
+              Text(
+                  text = address.value,
+                  style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray),
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                  modifier = Modifier
+                      .testTag("AddressTag_${post.uid}")
+                      .clickable { onAddressClick(post) })
+
+
+              // Image
+              Image(
+                  painter = rememberAsyncImagePainter(post.uri),
+                  contentDescription = "Post Image for ${post.username}",
+                  modifier = Modifier.fillMaxWidth().height(250.dp).testTag("ImageTag_${post.uid}"),
+                  contentScale = ContentScale.Crop)
+
+              // Description
+              if (post.description.isNotEmpty()) {
+                Text(
+                    text = post.description,
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+                    modifier = Modifier.testTag("DescriptionTag_${post.uid}"))
+              }
+
+              // Rating Row
+              Row(
+                  verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                  horizontalArrangement = Arrangement.spacedBy(4.dp),
+                  modifier = Modifier.fillMaxWidth()) {
+                    starStates.forEachIndexed { index, isFilled ->
+                      IconButton(
+                          onClick = {
+                            val newRating = starStates.mapIndexed { i, _ -> i <= index }
+                            onRatingChanged(newRating)
+                          },
+                          modifier =
+                              Modifier.size(36.dp).testTag("Star_${index + 1}_${post.uid}")) {
+                            Image(
+                                painter =
+                                    painterResource(
+                                        id =
+                                            if (isFilled) R.drawable.full_star2
+                                            else R.drawable.empty_star2),
+                                contentDescription = "Star")
+                          }
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (showAverage) {
+                      Text(
+                          text = "Avg: ${"%.1f".format(post.averageStars)}",
+                          style =
+                              MaterialTheme.typography.bodyMedium.copy(
+                                  fontWeight = FontWeight.Medium, color = color),
+                          modifier = Modifier.testTag("AverageRatingTag_${post.uid}"))
+                    }
+                  }
+            }
       }
 }
 
+/**
+ * Fetches the address corresponding to latitude and longitude using the Nominatim API.
+ *
+ * @param lat Latitude of the location.
+ * @param lon Longitude of the location.
+ * @param client Optional OkHttpClient instance for making the API call.
+ * @return The address as a string, or an error message if the address cannot be fetched.
+ */
 suspend fun getAddressFromLatLngUsingNominatim(
     lat: Double,
     lon: Double,
     client: OkHttpClient = OkHttpClient()
 ): String {
-
-  // Validate coordinates first
   if (lat < -90 || lat > 90) {
     return "Error fetching address: Invalid latitude: $lat"
   }
@@ -149,7 +159,6 @@ suspend fun getAddressFromLatLngUsingNominatim(
   return withContext(Dispatchers.IO) {
     try {
       val request = Request.Builder().url(url).addHeader("User-Agent", "lookup/1.0").build()
-
       val response = client.newCall(request).execute()
       if (response.isSuccessful) {
         val responseBody = response.body?.string()

@@ -4,6 +4,7 @@ import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import junit.framework.TestCase.fail
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
@@ -44,6 +45,7 @@ class PostsViewModelTest {
           "1",
           "testUri",
           "testUsername",
+          "testMail",
           10,
           2.5,
           0.0,
@@ -152,6 +154,7 @@ class PostsViewModelTest {
                 "2",
                 "otherUri",
                 "anotherUsername",
+                "testMail",
                 5,
                 4.0,
                 10.0,
@@ -187,5 +190,168 @@ class PostsViewModelTest {
     // Assert callbacks
     assertThat(successCalled, `is`(true))
     assertThat(failureCalled, `is`(false))
+  }
+
+  @Test
+  fun `test updateDescription calls repository with correct parameters`() {
+    val postUid = "1"
+    val newDescription = "Updated description"
+    var successCalled = false
+    var failureCalled = false
+
+    // Mock repository behavior for success
+    doAnswer { invocation ->
+          val onSuccess = invocation.arguments[2] as () -> Unit
+          onSuccess() // Simulate success callback
+          null
+        }
+        .whenever(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    // Call the method
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { successCalled = true },
+        onFailure = { failureCalled = true })
+
+    // Verify repository method was called with correct parameters
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    // Assert callbacks
+    assert(successCalled) { "onSuccess callback was not called" }
+    assert(!failureCalled) { "onFailure callback should not have been called" }
+  }
+
+  @Test
+  fun `test updateDescription calls onFailure on repository error`() {
+    val postUid = "1"
+    val newDescription = "Updated description"
+    val exception = Exception("Update failed")
+    var successCalled = false
+    var failureCalled = false
+
+    // Mock repository behavior for failure
+    doAnswer { invocation ->
+          val onFailure = invocation.arguments[3] as (Exception) -> Unit
+          onFailure(exception) // Simulate failure callback
+          null
+        }
+        .whenever(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    // Call the method
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { successCalled = true },
+        onFailure = { error ->
+          failureCalled = true
+          assert(error.message == "Update failed") { "Error message mismatch" }
+        })
+
+    // Verify repository method was called with correct parameters
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    // Assert callbacks
+    assert(!successCalled) { "onSuccess callback should not have been called" }
+    assert(failureCalled) { "onFailure callback was not called" }
+  }
+
+  @Test
+  fun `test updateDescription calls onSuccess after repository method completes`() {
+    val postUid = "validUid"
+    val newDescription = "Valid description"
+    var callbackTriggered = false
+
+    doAnswer { invocation ->
+          val onSuccess = invocation.arguments[2] as () -> Unit
+          onSuccess() // Simulate success callback
+          assert(callbackTriggered) { "onSuccess should be called after repository method" }
+          null
+        }
+        .whenever(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { callbackTriggered = true },
+        onFailure = { fail("onFailure should not be called") })
+
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+  }
+
+  @Test
+  fun `test updateDescription handles exceptions thrown by repository`() {
+    val postUid = "validUid"
+    val newDescription = "Valid description"
+
+    doThrow(RuntimeException("Repository exception"))
+        .whenever(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
+
+    var failureTriggered = false
+
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { fail("onSuccess should not be called") },
+        onFailure = { exception ->
+          failureTriggered = true
+          assert(exception.message == "Repository exception") { "Unexpected exception message" }
+        })
+
+    assert(failureTriggered) { "onFailure should be triggered when repository throws an exception" }
+  }
+
+  @Test
+  fun `test updateDescription calls repository with exact arguments`() {
+    val postUid = "validUid"
+    val newDescription = "Valid description"
+
+    postsViewModel.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = {},
+        onFailure = { fail("onFailure should not be called") })
+
+    verify(postsRepository)
+        .updateDescription(
+            org.mockito.kotlin.eq(postUid),
+            org.mockito.kotlin.eq(newDescription),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any())
   }
 }

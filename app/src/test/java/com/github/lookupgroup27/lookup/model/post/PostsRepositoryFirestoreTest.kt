@@ -55,6 +55,7 @@ class PostsRepositoryFirestoreTest {
           "1",
           "testUri",
           "testUsername",
+          "testMail",
           10,
           2.5,
           0.0,
@@ -150,6 +151,7 @@ class PostsRepositoryFirestoreTest {
             "uid" to "1",
             "uri" to "uri1",
             "username" to "user1",
+            "userMail" to "test@example.com",
             "latitude" to 1.0,
             "longitude" to 1.0,
             "timestamp" to 1000L)
@@ -158,6 +160,7 @@ class PostsRepositoryFirestoreTest {
             "uid" to "2",
             "uri" to "uri2",
             "username" to "user2",
+            "userMail" to "test2@example.com",
             "latitude" to 2.0,
             "longitude" to 2.0,
             "timestamp" to 2000L)
@@ -241,5 +244,52 @@ class PostsRepositoryFirestoreTest {
 
     assertThat(errorMessage, `is`("Deletion failed"))
     verify(mockDocumentReference).delete()
+  }
+
+  @Test
+  fun `test updateDescription calls onSuccess when firestore update succeeds`() {
+    val postUid = "1"
+    val newDescription = "Updated description"
+    var successCalled = false
+
+    `when`(mockDocumentReference.update("description", newDescription))
+        .thenReturn(Tasks.forResult(null))
+
+    postsRepositoryFirestore.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { successCalled = true },
+        onFailure = { fail("onFailure should not be called") })
+
+    shadowOf(Looper.getMainLooper()).idle()
+
+    assert(successCalled) { "onSuccess callback was not called" }
+    verify(mockDocumentReference).update("description", newDescription)
+  }
+
+  @Test
+  fun `test updateDescription calls onFailure when firestore update fails`() {
+    val postUid = "1"
+    val newDescription = "Updated description"
+    val exception =
+        FirebaseFirestoreException("Update failed", FirebaseFirestoreException.Code.ABORTED)
+    var failureCalled = false
+
+    `when`(mockDocumentReference.update("description", newDescription))
+        .thenReturn(Tasks.forException(exception))
+
+    postsRepositoryFirestore.updateDescription(
+        postUid = postUid,
+        newDescription = newDescription,
+        onSuccess = { fail("onSuccess should not be called") },
+        onFailure = { error ->
+          failureCalled = true
+          assert(error.message == "Update failed") { "Error message mismatch" }
+        })
+
+    shadowOf(Looper.getMainLooper()).idle()
+
+    assert(failureCalled) { "onFailure callback was not called" }
+    verify(mockDocumentReference).update("description", newDescription)
   }
 }
