@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 
 class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
 
@@ -282,6 +283,12 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         delay(5000L)
       }
     }
+  }
+
+
+  @VisibleForTesting
+  fun setLocationProviderForTesting(provider: LocationProvider) {
+    locationProvider = provider
   }
 
   companion object {
