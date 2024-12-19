@@ -285,7 +285,6 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     }
   }
 
-
   @VisibleForTesting
   fun setLocationProviderForTesting(provider: LocationProvider) {
     locationProvider = provider
