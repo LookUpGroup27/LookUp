@@ -78,7 +78,6 @@ class MapKtTest {
         .assertIsDisplayed()
   }
 
-
   @Test
   fun testNavigationToFeedBlockedForLoggedOutUser() {
     // Simulate offline mode
@@ -93,5 +92,4 @@ class MapKtTest {
     // Verify that navigation to the Sky Map is never triggered
     verify(mockNavigationActions, never()).navigateTo(Screen.SKY_MAP)
   }
-
 }
