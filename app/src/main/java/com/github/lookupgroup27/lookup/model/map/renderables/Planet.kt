@@ -35,7 +35,8 @@ open class Planet(
     var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
-    private val scale: Float = 0.02f
+    private val scale: Float = 0.02f,
+    private val rotationSpeed: Float = 50f
 ) : Object() {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
@@ -47,7 +48,6 @@ open class Planet(
 
   // New properties for rotation
   private var rotationAngle: Float = 0f // Current rotation angle in degrees
-  private val rotationSpeed: Float = 50f // Rotation speed in degrees per second (constant for all)
 
   /** Initializes the planet's geometry, shaders, and texture. */
   init {
