@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth
 import org.junit.*
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class GoogleMapScreenTest {
@@ -61,15 +60,13 @@ class GoogleMapScreenTest {
 
     // Pass the mock MutableState to LocationProvider
     locationProvider = LocationProvider(context, mockCurrentLocation)
-
-    // Set the Compose content to GoogleMapScreen
-    composeTestRule.setContent {
-      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
-    }
   }
 
   @Test
   fun mapScreenDisplaysCorrectly() {
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+    }
 
     // Verify that the GoogleMapScreen is displayed
     composeTestRule.onNodeWithTag("googleMapScreen").assertIsDisplayed()
@@ -80,6 +77,10 @@ class GoogleMapScreenTest {
 
   @Test
   fun cameraPositionIsUpdatedOnLocationChange() {
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+    }
+
     val fakeLocation = LatLng(37.7749, -122.4194) // Example coordinates for San Francisco
 
     // Simulate location update
@@ -101,6 +102,10 @@ class GoogleMapScreenTest {
 
   @Test
   fun buttonsAreDisplayedCorrectly() {
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+    }
+
     // Verify that the "Auto Center On" button is displayed
     composeTestRule.onNodeWithText("Auto Center On").assertIsDisplayed()
 
@@ -110,6 +115,10 @@ class GoogleMapScreenTest {
 
   @Test
   fun autoCenteringButtonsFunctionality() {
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+    }
+
     // Click the "Auto Center Off" button to disable auto-centering
     composeTestRule.onNodeWithText("Auto Center Off").performClick()
 
@@ -150,15 +159,20 @@ class GoogleMapScreenTest {
 
   @Test
   fun floatingActionButtonDisplaysAndNavigatesToCameraCapture() {
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel)
+    }
     // Mock the FirebaseAuth instance
     mockAuth = org.mockito.kotlin.mock()
     whenever(mockAuth.currentUser).thenReturn(null) // Can change this to test different scenarios
 
+    composeTestRule.waitForIdle()
     // Verify that the Floating Action Button is displayed
     composeTestRule.onNodeWithTag("fab_take_picture").assertIsDisplayed()
 
     // Simulate a click on the FAB
     composeTestRule.onNodeWithTag("fab_take_picture").performClick()
+    composeTestRule.waitForIdle()
 
     // Verify that the navigation action to "Take Image" screen is triggered
     if (mockAuth.currentUser != null) {
@@ -166,5 +180,19 @@ class GoogleMapScreenTest {
     } else {
       verify(navigationActions).navigateTo(Screen.AUTH)
     }
+  }
+
+  @Test
+  fun testEnableLocationButtonIsDisplayed() {
+    composeTestRule.setContent {
+      GoogleMapScreen(navigationActions, postsViewModel, profileViewModel, testNoLoca = true)
+    }
+
+    // Verify the UI elements are displayed
+    composeTestRule.onNodeWithTag("background_image").assertExists() // Verify image is displayed
+    composeTestRule
+        .onNodeWithTag("enable_location_button")
+        .assertExists() // Verify button is displayed
+    composeTestRule.onNodeWithText("Enable Location").assertExists() // Verify button text
   }
 }

@@ -9,19 +9,17 @@ import com.github.lookupgroup27.lookup.model.map.Camera
  *
  * @param context The Android context for resource management
  * @param position The x, y, z coordinates of the star
- * @param color The color of the star, specified as an RGBA float array
+ * @param color The color of the star, specified as an RGBA array (range 0-255) (default is white)
  * @param size The size of the star (scale factor for its radius)
  * @param segments The number of segments used to approximate the circle (default is 32)
  */
 class Star(
     val context: Context,
     val position: FloatArray,
-    val color: FloatArray,
-    val size: Float = 0.3f,
-    val segments: Int = CircleRenderer.DEFAULT_SEGMENTS,
-    val vertexShaderCode: String,
-    val fragmentShaderCode: String
-) : Object(vertexShaderCode, fragmentShaderCode) {
+    val color: IntArray = intArrayOf(255, 255, 255, 255),
+    val size: Float = 0.5f,
+    val segments: Int = CircleRenderer.DEFAULT_SEGMENTS
+) : Object() {
 
   private val circleRenderer = CircleRenderer(context, segments, 1.0f, color.copyOf(4))
 
@@ -31,7 +29,7 @@ class Star(
     circleRenderer.initializeBuffers()
   }
 
-  override fun draw(camera: Camera) {
+  fun draw(camera: Camera) {
     // Model-View-Projection (MVP) Matrix
     val mvpMatrix = FloatArray(16)
     val modelMatrix = FloatArray(16)

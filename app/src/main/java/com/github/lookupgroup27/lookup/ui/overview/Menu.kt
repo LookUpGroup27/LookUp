@@ -13,6 +13,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,16 +21,25 @@ import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
+import com.github.lookupgroup27.lookup.util.NetworkUtils
+import com.github.lookupgroup27.lookup.util.ToastHelper
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
+fun MenuScreen(
+    navigationActions: NavigationActions,
+    avatarViewModel: AvatarViewModel,
+    toastHelper: ToastHelper = ToastHelper(LocalContext.current)
+) {
 
   val auth = remember { FirebaseAuth.getInstance() }
   val isLoggedIn = auth.currentUser != null
 
   val userId = auth.currentUser?.uid.orEmpty()
+
+  val context = LocalContext.current
+  val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
 
   // Fetch the selected avatar for the logged-in user
   val selectedAvatar by avatarViewModel.selectedAvatar.collectAsState(initial = null)
@@ -104,8 +114,12 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                     }
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Blocked buttons when offline
                 Button(
-                    onClick = { navigationActions.navigateTo(Screen.CALENDAR) },
+                    onClick = {
+                      if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
+                      else toastHelper.showNoInternetToast()
+                    },
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
                           text = "Calendar",
@@ -115,10 +129,22 @@ fun MenuScreen(navigationActions: NavigationActions, avatarViewModel: AvatarView
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { navigationActions.navigateTo(Screen.GOOGLE_MAP) },
+                    onClick = {
+                      if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
+                      else toastHelper.showNoInternetToast()
+                    },
                     modifier = Modifier.fillMaxWidth(0.6f)) {
                       Text(
                           text = "Google Map",
+                          style = MaterialTheme.typography.headlineSmall,
+                          fontWeight = FontWeight.Bold)
+                    }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { navigationActions.navigateTo(Screen.PLANET_SELECTION) },
+                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                      Text(
+                          text = "Planets",
                           style = MaterialTheme.typography.headlineSmall,
                           fontWeight = FontWeight.Bold)
                     }

@@ -134,7 +134,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
               // Register Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.REGISTER) },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth(0.8f).height(44.dp),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
                     Text("Register", color = Color.White)
                   }
@@ -144,7 +144,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
               // Login Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.LOGIN) },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth(0.8f).height(44.dp),
                   colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
                     Text("Login", color = Color.White)
                   }

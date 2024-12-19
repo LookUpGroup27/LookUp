@@ -7,21 +7,21 @@ import com.github.lookupgroup27.lookup.model.map.renderables.utils.GeometryUtils
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.ColorBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.IndexBuffer
 import com.github.lookupgroup27.lookup.model.map.skybox.buffers.VertexBuffer
-import com.github.lookupgroup27.lookup.util.ShaderUtils.readShader
 import com.github.lookupgroup27.lookup.util.opengl.ShaderProgram
+import com.github.lookupgroup27.lookup.util.opengl.ShaderUtils.readShader
 
 /**
  * Renderer for creating circular 2D objects in an OpenGL environment.
  *
- * @param segments Number of segments used to approximate the circle (default is 32)
+ * @param segments Number of segments used to approximate the circle (default is DEFAULT_SEGMENTS)
  * @param radius Radius of the circle (default is 1.0f)
- * @param color Color of the circle as an integer (RGBA)
+ * @param color Color of the circle in RGBA format (range 0-255) (default is white)
  */
 open class CircleRenderer(
     private val context: Context,
     private val segments: Int = DEFAULT_SEGMENTS,
     private val radius: Float = 1.0f,
-    private val color: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
+    private val color: IntArray = intArrayOf(255, 255, 255, 255)
 ) {
   /** Buffer for storing vertex positions. */
   private val vertexBuffer = VertexBuffer()
@@ -54,22 +54,12 @@ open class CircleRenderer(
     }
 
     // Add indices to the index buffer
-    for (index in geometryData.indices) {
-      indexBuffer.addIndex(index)
-    }
-
-    // Convert float color to integer color for buffer
-    val colorInt =
-        ((color[3] * 255).toInt() shl
-            24 or
-            (color[0] * 255).toInt() shl
-            16 or
-            (color[1] * 255).toInt() shl
-            8 or
-            (color[2] * 255).toInt())
+    for (index in geometryData.indices) indexBuffer.addIndex(index)
 
     // Apply a single color for all vertices
-    repeat(geometryData.vertices.size / 3) { colorBuffer.addColor(colorInt) }
+    repeat(geometryData.vertices.size / 3) {
+      colorBuffer.addColor(color[3], color[0], color[1], color[2])
+    }
   }
 
   /** Initializes shaders for rendering the circle. */

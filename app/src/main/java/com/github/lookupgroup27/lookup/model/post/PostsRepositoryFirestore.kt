@@ -54,28 +54,38 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
         onFailure(exception)
         return@addSnapshotListener
       }
+
       if (snapshot != null) {
-        val posts =
-            snapshot.documents
-                .map { post ->
-                  Log.d(tag, "${post.id} => ${post.data}")
-                  val data = post.data ?: return@map null
+        try {
+          val posts =
+              snapshot.documents.mapNotNull { post ->
+                Log.d(tag, "${post.id} => ${post.data}")
+                val data = post.data ?: return@mapNotNull null
+
+                try {
                   Post(
-                      data["uid"] as String,
-                      data["uri"] as String,
-                      data["username"] as String,
-                      data["userMail"] as String,
-                      (data["starsCount"] as? Long)?.toInt() ?: 0,
-                      (data["averageStars"] as? Double) ?: 0.0,
-                      data["latitude"] as Double,
-                      data["longitude"] as Double,
-                      (data["usersNumber"] as? Long)?.toInt() ?: 0,
-                      data["ratedBy"] as? List<String> ?: emptyList(),
-                      data["description"] as? String ?: "",
-                      (data["timestamp"] as? Long) ?: 0L)
+                      uid = data["uid"] as? String ?: return@mapNotNull null,
+                      uri = data["uri"] as? String ?: return@mapNotNull null,
+                      username = data["username"] as? String ?: return@mapNotNull null,
+                      userMail = data["userMail"] as? String ?: return@mapNotNull null,
+                      starsCount = (data["starsCount"] as? Long)?.toInt() ?: 0,
+                      averageStars = (data["averageStars"] as? Double) ?: 0.0,
+                      latitude = (data["latitude"] as? Double) ?: 0.0,
+                      longitude = (data["longitude"] as? Double) ?: 0.0,
+                      usersNumber = (data["usersNumber"] as? Long)?.toInt() ?: 0,
+                      ratedBy = (data["ratedBy"] as? List<String>) ?: emptyList(),
+                      description = data["description"] as? String ?: "",
+                      timestamp = (data["timestamp"] as? Long) ?: 0L)
+                } catch (e: Exception) {
+                  Log.e(tag, "Error parsing post document: ${post.id}", e)
+                  null
                 }
-                .filterNotNull()
-        onSuccess(posts)
+              }
+          onSuccess(posts)
+        } catch (e: Exception) {
+          Log.e(tag, "Error processing posts", e)
+          onFailure(e)
+        }
       }
     }
   }
@@ -121,6 +131,25 @@ class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsReposit
         }
         .addOnFailureListener {
           Log.e(tag, "Error updating post", it)
+          onFailure(it)
+        }
+  }
+
+  override fun updateDescription(
+      postUid: String,
+      newDescription: String,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    collection
+        .document(postUid)
+        .update("description", newDescription)
+        .addOnSuccessListener {
+          Log.d(tag, "Description updated successfully")
+          onSuccess()
+        }
+        .addOnFailureListener {
+          Log.e(tag, "Error updating description", it)
           onFailure(it)
         }
   }

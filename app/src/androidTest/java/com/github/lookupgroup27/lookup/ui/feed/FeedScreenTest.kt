@@ -7,11 +7,14 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
+import com.github.lookupgroup27.lookup.TestLocationProvider
 import com.github.lookupgroup27.lookup.model.location.LocationProvider
+import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
@@ -21,7 +24,10 @@ import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.navigation.TopLevelDestinations
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
 import com.github.lookupgroup27.lookup.ui.profile.ProfileViewModel
+import com.github.lookupgroup27.lookup.util.NetworkUtils
 import com.google.firebase.auth.FirebaseAuth
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +58,7 @@ class FeedScreenTest {
   private lateinit var locationProvider: LocationProvider
   private val user = FirebaseAuth.getInstance().currentUser // Get the current signed-in user
   private val userEmail = user?.email ?: ""
+  private val mockNavigationActions: NavigationActions = org.mockito.kotlin.mock()
 
   // Mock the logged-in user's profile
   val testUserProfile =
@@ -64,10 +71,11 @@ class FeedScreenTest {
   // Mock posts
   val testPosts =
       listOf(
-          Post(
+          Post( // Post created by the logged-in user
               uid = "1",
               uri = "http://example.com/1.jpg",
-              username = testUserProfile.email, // Post created by the logged-in user
+              username = testUserProfile.email,
+              userMail = testUserProfile.email,
               latitude = 37.7749, // San Francisco
               longitude = -122.4194,
               description = "This is a test description"),
@@ -75,13 +83,15 @@ class FeedScreenTest {
               uid = "2",
               uri = "http://example.com/2.jpg",
               username = "User2", // Post created by another user
+              userMail = "User2",
               latitude = 34.0522, // Los Angeles
               longitude = -118.2437,
               description = "This is another test description"),
           Post(
               uid = "3",
               uri = "http://example.com/3.jpg",
-              username = "User3", // Another user's post
+              username = "User3",
+              userMail = "User3", // Another user's post
               latitude = 36.7783, // Fresno (closer to SF)
               longitude = -119.4179,
               description = "This is yet another test description"),
@@ -89,6 +99,7 @@ class FeedScreenTest {
               uid = "4",
               uri = "User4",
               username = "user4@example.com", // Another user's post
+              userMail = "User4",
               latitude = 40.7128, // New York City (farther from SF than LA or Fresno)
               longitude = -74.0060,
               description = "This is a test description"),
@@ -96,6 +107,7 @@ class FeedScreenTest {
               uid = "5",
               uri = "User5",
               username = "user5@example.com", // Another user's post
+              userMail = "User5",
               latitude = -33.8688, // Sydney, Australia (farthest from SF)
               longitude = 151.2093,
               description = "This is a test description"))
@@ -138,18 +150,31 @@ class FeedScreenTest {
     `when`(navigationActions.currentRoute()).thenReturn(Screen.FEED)
 
     locationProvider = LocationProvider(context, mutableStateOf(null))
+  }
 
+  /**
+   * Helper function to set up the FeedScreen with the given list of nearby posts.
+   *
+   * @param initialNearbyPosts The list of posts to display initially on the feed screen.
+   *
+   * This function simplifies test setup by allowing each test to specify the initial state of the
+   * feed. It handles the rendering of the FeedScreen with the specified posts and ensures a
+   * consistent setup across all tests.
+   */
+  private fun setFeedScreenContent(initialNearbyPosts: List<Post>, testNoLoca: Boolean = false) {
     composeTestRule.setContent {
       FeedScreen(
           postsViewModel = postsViewModel,
           navigationActions = navigationActions,
           profileViewModel = profileViewModel,
-          initialNearbyPosts = testPosts)
+          initialNearbyPosts = initialNearbyPosts,
+          testNoLoca = testNoLoca)
     }
   }
 
   @Test
   fun testFeedScreenDisplaysNearbyPosts() {
+    setFeedScreenContent(testPosts)
 
     // Assert each post item is displayed
     composeTestRule.onNodeWithTag("PostItem_2").assertExists()
@@ -163,12 +188,14 @@ class FeedScreenTest {
 
   @Test
   fun testFeedExcludesLoggedInUserPosts() {
+    setFeedScreenContent(testPosts)
     // Assert that the post by the logged-in user  is not displayed
     composeTestRule.onNodeWithTag("PostItem_1").assertDoesNotExist()
   }
 
   @Test
   fun testBottomNavigationMenuIsDisplayed() {
+    setFeedScreenContent(testPosts)
 
     // Verify the bottom navigation menu is displayed
     composeTestRule
@@ -179,6 +206,7 @@ class FeedScreenTest {
 
   @Test
   fun testStarClickDisplaysAverageRating() {
+    setFeedScreenContent(testPosts)
     // Perform click on the first star icon of a post with uid "1"
     composeTestRule
         .onNodeWithTag("Star_2_2")
@@ -191,6 +219,7 @@ class FeedScreenTest {
 
   @Test
   fun testStarClickCallsUpdatePost() {
+    setFeedScreenContent(testPosts)
     // Perform click on the first star of post with uid "1"
     composeTestRule.onNodeWithTag("Star_2_2").performClick()
     postsViewModel.updatePost(testPost)
@@ -211,6 +240,7 @@ class FeedScreenTest {
 
   @Test
   fun testNavigationToFeedBlockedForLoggedOutUser() {
+    setFeedScreenContent(testPosts)
     // Mock the user as not logged in
     mockAuth = org.mockito.kotlin.mock()
     whenever(mockAuth.currentUser).thenReturn(null)
@@ -224,6 +254,7 @@ class FeedScreenTest {
 
   @Test
   fun testAddressIsDisplayed() {
+    setFeedScreenContent(testPosts)
     // Verify that the address is displayed for each post
     composeTestRule.onNodeWithTag("AddressTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("AddressTag_5").assertDoesNotExist()
@@ -231,8 +262,92 @@ class FeedScreenTest {
 
   @Test
   fun testDescriptionIsDisplayed() {
+    setFeedScreenContent(testPosts)
     // Verify that the description is displayed for each post
     composeTestRule.onNodeWithTag("DescriptionTag_2").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("DescriptionTag_5").assertDoesNotExist()
+  }
+
+  @Test
+  fun testFeedDisplaysNoImagesMessageWhenPostsAreEmpty() {
+    // Arrange: Mock location provider and permissions
+    val testLocationProvider = TestLocationProvider()
+    testLocationProvider.setLocation(37.7749, -122.4194) // Mocked location
+
+    mockkObject(LocationProviderSingleton)
+    every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
+
+    // Act: Render the FeedScreen with no posts
+    setFeedScreenContent(emptyList())
+
+    // Wait for the location to emit
+    composeTestRule.waitForIdle()
+
+    // Assert: "No images available" message is displayed
+    composeTestRule.onNodeWithTag("feed_no_images_available").assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun testFeedDisplaysLoadingIndicatorWhenLocationIsNull() {
+    // Arrange: Mock location provider and permissions
+    val testLocationProvider = TestLocationProvider()
+    testLocationProvider.setLocation(null, null) // No location emitted
+
+    mockkObject(LocationProviderSingleton)
+    every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
+
+    // Act: Render the FeedScreen
+    setFeedScreenContent(emptyList())
+
+    // Wait for the composition to stabilize
+    composeTestRule.waitForIdle()
+
+    // Assert: Loading indicator (CircularProgressIndicator) is displayed
+    composeTestRule.onNodeWithTag("loading_indicator_test_tag").assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun testFeedDisplaysNoImagesMessageWithPlaceholderImage() {
+    // Arrange: Mock location provider and permissions
+    val testLocationProvider = TestLocationProvider()
+    testLocationProvider.setLocation(37.7749, -122.4194) // Mocked location
+
+    mockkObject(LocationProviderSingleton)
+    every { LocationProviderSingleton.getInstance(any()) } returns testLocationProvider
+
+    // Act: Render the FeedScreen with no posts
+    setFeedScreenContent(emptyList())
+
+    // Wait for any updates to complete
+    composeTestRule.waitForIdle()
+
+    // Assert: Placeholder image is displayed
+    composeTestRule.onNodeWithTag("no_images_placeholder").assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun testEnableLocationButtonIsDisplayed() {
+    setFeedScreenContent(emptyList(), true)
+    composeTestRule
+        .onNodeWithTag("enable_location_button")
+        .assertExists() // Verify button is displayed
+    composeTestRule.onNodeWithText("Enable Location").assertExists() // Verify button text
+    composeTestRule.onNodeWithTag("enable_location_button").performClick()
+  }
+
+  @Test
+  fun testNavigationToFeedBlockedForOfflineMode() {
+    setFeedScreenContent(emptyList())
+    // Simulate offline mode
+    mockkObject(NetworkUtils)
+    every { NetworkUtils.isNetworkAvailable(any()) } returns false
+    // Simulate clicking the sky map tab in the bottom navigation
+    composeTestRule.onNodeWithTag("Feed").performClick()
+
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
+
+    // Verify that navigation to the Sky Map is never triggered
+    verify(mockNavigationActions, org.mockito.kotlin.never()).navigateTo(Screen.FEED)
   }
 }

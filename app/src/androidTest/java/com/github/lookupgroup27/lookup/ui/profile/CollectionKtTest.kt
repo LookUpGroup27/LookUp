@@ -205,6 +205,7 @@ class CollectionScreenTest {
               postAverageStar: Float,
               postRatedByNb: Int,
               postUid: String,
+              postDescription: String,
               route: String
           ) {
             if (route == Route.EDIT_IMAGE &&

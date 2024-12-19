@@ -3,13 +3,15 @@ package com.github.lookupgroup27.lookup.model.map
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.model.loader.StarsLoader
-import com.github.lookupgroup27.lookup.model.map.renderables.Moon
+import com.github.lookupgroup27.lookup.model.map.planets.PlanetsRepository
 import com.github.lookupgroup27.lookup.model.map.renderables.Planet
 import com.github.lookupgroup27.lookup.model.map.renderables.Star
+import com.github.lookupgroup27.lookup.model.map.renderables.utils.RayUtils.calculateRay
 import com.github.lookupgroup27.lookup.model.map.skybox.SkyBox
-import com.github.lookupgroup27.lookup.model.stars.StarDataRepository
+import com.github.lookupgroup27.lookup.model.map.stars.StarDataRepository
+import com.github.lookupgroup27.lookup.model.map.stars.StarsLoader
 import com.github.lookupgroup27.lookup.util.opengl.TextureManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -18,20 +20,22 @@ import javax.microedition.khronos.opengles.GL10
  * Provides the OpenGL rendering logic for the GLSurfaceView. This class is responsible for drawing
  * the shapes on the screen. It is called by the GLSurfaceView when it is time to redraw the screen.
  */
-class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
+class MapRenderer(
+    private val context: Context,
+    private val starDataRepository: StarDataRepository,
+    private val planetsRepository: PlanetsRepository,
+    fov: Float
+) : GLSurfaceView.Renderer {
 
   private lateinit var skyBox: SkyBox
-  private lateinit var planet: Planet
-  private lateinit var moon: Moon
-
   private lateinit var textureManager: TextureManager
   private lateinit var starsLoader: StarsLoader
+  private lateinit var renderablePlanets: List<Planet>
+  private lateinit var renderableStars: List<Star>
 
   private var skyBoxTextureHandle: Int = -1 // Handle for the skybox texture
 
-  private lateinit var context: Context
-  private val renderableObjects = mutableListOf<Star>() // List of stars to render
-  private val starDataRepository = StarDataRepository() // Repository for star data
+  private val viewport = IntArray(4)
 
   /** The camera used to draw the shapes on the screen. */
   val camera = Camera(fov)
@@ -47,15 +51,30 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f) // Set the background color
     GLES20.glEnable(GLES20.GL_DEPTH_TEST) // Enable depth testing
 
+    starDataRepository.updateStarPositions()
+    starsLoader = StarsLoader(context, starDataRepository)
+    planetsRepository.updatePlanetsData()
+
     // Initialize TextureManager
     textureManager = TextureManager(context)
 
     // Initialize the SkyBox
-    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox_texture)
+    skyBoxTextureHandle = textureManager.loadTexture(R.drawable.skybox)
     skyBox = SkyBox(context)
 
     // Initialize the objects in the scene
     initializeObjects()
+  }
+
+  private var lastFrameTime: Long = System.currentTimeMillis()
+
+  var timeProvider: () -> Long = { System.currentTimeMillis() } // Default time provider
+
+  fun computeDeltaTime(): Float {
+    val currentTime = timeProvider()
+    val deltaTime = (currentTime - lastFrameTime) / 1000f
+    lastFrameTime = currentTime
+    return deltaTime
   }
 
   /**
@@ -75,6 +94,11 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
     skyBox.draw(camera)
     GLES20.glDepthMask(true)
 
+    val deltaTime = computeDeltaTime()
+
+    // Update planet rotations
+    renderablePlanets.forEach { it.updateRotation(deltaTime) }
+
     // Draw the objects in the scene
     drawObjects()
   }
@@ -89,39 +113,47 @@ class MapRenderer(fov: Float) : GLSurfaceView.Renderer {
    */
   override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
     GLES20.glViewport(0, 0, width, height) // Set viewport dimensions
+
+    // Cache the viewport dimensions
+    viewport[2] = width
+    viewport[3] = height
+
     val ratio: Float = width.toFloat() / height.toFloat() // Calculate aspect ratio
     camera.updateScreenRatio(ratio) // Update camera projection matrix
   }
 
   /** Initialize the objects in the scene. */
   private fun initializeObjects() {
-    // Stars
-    starsLoader = StarsLoader(starDataRepository)
-    val stars = starsLoader.loadStars(context, "hyg_stars.csv")
-    if (stars.isEmpty()) {
-      println("Warning: No stars loaded for rendering.")
-    }
-    renderableObjects.addAll(stars)
-
-    // Planet
-    planet = Planet(context, textureId = R.drawable.planet_texture) // Create planet
-    // Moon
-    moon = Moon(context) // Create moon
+    renderableStars = starsLoader.loadStars()
+    renderablePlanets = planetsRepository.mapToRenderablePlanets(context)
   }
 
   /** Draws the objects in the scene. */
   private fun drawObjects() {
     // Renderable Objects
-    renderableObjects.forEach { o -> o.draw(camera) }
-
-    // Planet
-    // planet.draw(camera)
-    // Moon
-    moon.draw(camera)
+    renderableStars.forEach { o -> o.draw(camera) }
+    renderablePlanets.forEach { o -> o.draw(camera, null) }
   }
 
-  /** Updates the context used by the renderer. */
-  fun updateContext(context: Context) {
-    this.context = context
+  /**
+   * Checks if a ray intersects any planet and returns the name of the intersected planet, if any.
+   *
+   * @param screenX The x-coordinate of the touch event on the screen.
+   * @param screenY The y-coordinate of the touch event on the screen.
+   * @return The name of the intersected planet, or null if no intersection occurred.
+   */
+  fun getIntersectedPlanetFact(screenX: Float, screenY: Float): String? {
+    if (viewport[2] == 0 || viewport[3] == 0) {
+      Log.d("Viewport dimensions", "Viewport dimensions are invalid: ${viewport.joinToString()}")
+      return null
+    }
+
+    val ray = calculateRay(screenX, screenY, camera, viewport)
+    for (planet in renderablePlanets) {
+      if (planet.checkHit(ray.origin, ray.direction)) {
+        return planet.funFact
+      }
+    }
+    return null
   }
 }

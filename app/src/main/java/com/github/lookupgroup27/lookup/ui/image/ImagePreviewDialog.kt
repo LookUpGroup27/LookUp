@@ -3,7 +3,6 @@ package com.github.lookupgroup27.lookup.ui.image
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
@@ -14,16 +13,18 @@ import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
 
 /**
- * Display a dialog with an image preview.
+ * Display a dialog with an image preview of a given post.
  *
- * @param post The post to display in the dialog.
+ * This dialog shows a larger preview of a post, including the username and rating controls. It uses
+ * [PostItem] to display the post details but doesn't allow navigating to the full screen image.
+ * Instead, there's a Close button to dismiss the dialog.
+ *
+ * @param post The [Post] to display in the dialog. If null, the dialog is not shown.
  * @param username The username of the user who posted the image.
- * @param onDismiss The callback to be invoked when the dialog is dismissed.
- * @param starStates The list of star states for the post.
- * @param onRatingChanged The callback to be invoked when the rating is changed.
+ * @param onDismiss The callback invoked when the dialog is dismissed.
+ * @param starStates The current rating states (filled or empty) for each star.
+ * @param onRatingChanged The callback invoked when the user changes the rating.
  */
-
-// Display a dialog with an image preview
 @Composable
 fun ImagePreviewDialog(
     post: Post?,
@@ -32,31 +33,30 @@ fun ImagePreviewDialog(
     starStates: List<Boolean>,
     onRatingChanged: (List<Boolean>) -> Unit
 ) {
-
   if (post != null) {
-    Dialog(
-        onDismissRequest =
-            onDismiss) { // Dismiss the dialog when the user clicks outside the dialog
-          Surface(
-              modifier = Modifier.padding(16.dp).testTag("imagePreviewDialog"),
-              color = Color.Gray, // Apply custom color here
-              shape = MaterialTheme.shapes.medium // Optional: Add a shape for rounded corners
-              ) {
-                Column(
-                    modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                      PostItem(
-                          post = post,
-                          starStates = starStates,
-                          onRatingChanged = onRatingChanged,
-                          color = Color.White,
-                          textForUsername = "Posted by: $username",
-                          showStars = false,
-                          showAverage = false)
-                      Spacer(modifier = Modifier.height(16.dp))
-                      Button(onClick = onDismiss) { Text(text = "Close") }
-                    }
-              }
-        }
+
+    Dialog(onDismissRequest = onDismiss) {
+      Surface(
+          modifier = Modifier.padding(16.dp).testTag("imagePreviewDialog"),
+          color = Color.Gray,
+          shape = MaterialTheme.shapes.medium) {
+            Column(
+                modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  PostItem(
+                      post = post,
+                      starStates = starStates,
+                      onRatingChanged = onRatingChanged,
+                      onImageClick = { _, _, _ -> }, // No-op for dialog preview
+                      color = Color.White,
+                      textForUsername = "Posted by: $username",
+                      showStars = false,
+                      showAverage = false,
+                      showAddress = false)
+                  Spacer(modifier = Modifier.height(16.dp))
+                  Button(onClick = onDismiss) { Text(text = "Close") }
+                }
+          }
+    }
   }
 }
