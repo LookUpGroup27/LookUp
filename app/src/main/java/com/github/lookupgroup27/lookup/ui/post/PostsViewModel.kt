@@ -1,3 +1,13 @@
+/**
+ * ViewModel for managing posts in the application.
+ *
+ * The `PostsViewModel` acts as the intermediary between the UI and the [PostsRepository]. It
+ * handles the retrieval, addition, updating, and deletion of posts, along with managing
+ * authentication states. The ViewModel ensures a reactive flow of data to the UI using [StateFlow]
+ * and [mutableStateOf].
+ *
+ * @property repository The repository responsible for performing operations on posts.
+ */
 package com.github.lookupgroup27.lookup.ui.post
 
 import android.annotation.SuppressLint
@@ -12,7 +22,6 @@ import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
 import com.github.lookupgroup27.lookup.model.post.PostsRepository
 import com.github.lookupgroup27.lookup.model.post.PostsRepositoryFirestore
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.util.LocationUtils
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -24,8 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private const val NUMBER_OF_STARS = 3
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * ViewModel for managing posts and user interactions in the application.
@@ -43,23 +51,37 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   /** Holds the currently selected post. */
   val post = mutableStateOf<Post?>(null)
 
+  init {
+    repository.init {
+      auth?.addAuthStateListener(authListener)
+      getPosts() // to ensure posts are loaded initially
+    }
+  }
+
   @SuppressLint("StaticFieldLeak") private var context: Context? = null
 
   // LocationProvider instance to get user's current location
   private lateinit var locationProvider: LocationProvider
 
-  /** Internal mutable state to hold all posts. */
-  private val _allPosts = MutableStateFlow<List<Post>>(emptyList())
-  /** Publicly exposed [StateFlow] to observe the list of all posts. */
-  val allPosts: StateFlow<List<Post>> = _allPosts.asStateFlow()
+  // Method to initialize context
+  fun setContext(context: Context) {
+    this.context = context
+    locationProvider = context.let { LocationProviderSingleton.getInstance(it) }
+    // Start monitoring
+    startLocationMonitoring()
+    // Start periodic fetching
+    startPeriodicPostFetching()
+  }
 
   // MutableStateFlow to hold the list of nearby posts
   private val _nearbyPosts = MutableStateFlow<List<Post>>(emptyList())
   val nearbyPosts: StateFlow<List<Post>> = _nearbyPosts
 
-  // Holds user ratings for posts: map of postUid to a list of booleans representing star states
-  private val _postRatings = MutableStateFlow<Map<String, List<Boolean>>>(emptyMap())
-  val postRatings: StateFlow<Map<String, List<Boolean>>> = _postRatings.asStateFlow()
+  /** Internal mutable state to hold all posts. */
+  private val _allPosts = MutableStateFlow<List<Post>>(emptyList())
+
+  /** Publicly exposed [StateFlow] to observe the list of all posts. */
+  val allPosts: StateFlow<List<Post>> = _allPosts.asStateFlow()
 
   private val auth: FirebaseAuth? =
       try {
@@ -78,30 +100,6 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
           Log.d("FeedViewModel", "User is not logged in")
         }
       }
-
-  // User profile data, needed for rating initialization
-  private var userProfile: UserProfile? = null
-  private val userEmail: String?
-    get() = auth?.currentUser?.email
-
-  init {
-    repository.init {
-      auth?.addAuthStateListener(authListener)
-      getPosts() // to ensure posts are loaded initially
-    }
-  }
-
-  /**
-   * Sets the application [Context] and initializes location monitoring and periodic post fetching.
-   *
-   * @param context The application [Context].
-   */
-  fun setContext(context: Context) {
-    this.context = context
-    locationProvider = LocationProviderSingleton.getInstance(context)
-    startLocationMonitoring()
-    startPeriodicPostFetching()
-  }
 
   /**
    * Selects a post and updates the `post` state.
@@ -134,10 +132,6 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
         onSuccess = {
           if (it != null) {
             _allPosts.value = it
-            // Initialize ratings if profile is already set
-            if (userProfile != null) {
-              initializeRatings(it, userProfile)
-            }
           }
         },
         onFailure = {})
@@ -164,11 +158,12 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
    * @param onFailure Callback executed on deletion failure.
    */
   fun deletePost(postUid: String, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
+
     repository.deletePost(postUid, onSuccess, onFailure)
   }
 
   /**
-   * Updates an existing post in the repository using concurrency-safe operations.
+   * Updates an existing post in the repository.
    *
    * @param post The [Post] object containing updated data.
    * @param onSuccess Callback executed on successful update.
@@ -240,6 +235,13 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
    * Sorts and filters a list of posts based on their distance from the user's location and the time
    * they were posted.
    *
+   * This function:
+   * - Calculates the distance from the user's current location to each post's location.
+   * - Sorts posts by distance in ascending order (closest posts first).
+   * - If two posts have the same distance, sorts them by timestamp in descending order (most recent
+   *   posts first).
+   * - Limits the result to the 10 closest posts.
+   *
    * @param posts The list of [Post] objects to sort and filter.
    * @param userLatitude The latitude of the user's current location.
    * @param userLongitude The longitude of the user's current location.
@@ -255,14 +257,14 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
           val distance =
               LocationUtils.calculateDistance(
                   userLatitude, userLongitude, post.latitude, post.longitude)
-          post to distance
+          post to distance // Pair each post with its calculated distance
         }
         .sortedWith(
             compareBy<Pair<Post, Double>> { it.second } // Sort by distance (ascending)
                 .thenByDescending { it.first.timestamp } // Then sort by timestamp (descending)
             )
-        .take(10)
-        .map { it.first }
+        .take(10) // Take the 10 closest posts
+        .map { it.first } // Extract only the posts
   }
 
   /**
@@ -272,7 +274,7 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
   private fun startLocationMonitoring() {
     viewModelScope.launch {
       while (true) {
-        val location = locationProvider.currentLocation.value
+        val location = locationProvider?.currentLocation?.value
         if (location != null) {
           fetchSortedPosts()
         }
@@ -294,74 +296,9 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
     }
   }
 
-  /**
-   * Call this when the user profile is available to initialize ratings. Ensure that posts are
-   * already fetched before calling this.
-   *
-   * @param profile The [UserProfile] of the currently logged-in user.
-   */
-  fun setUserProfile(profile: UserProfile) {
-    this.userProfile = profile
-    initializeRatings(_allPosts.value, profile)
-  }
-
-  /**
-   * Initializes post ratings for the current user once both posts and profile are available.
-   *
-   * @param posts The current list of posts.
-   * @param profile The current user's profile with rating data.
-   */
-  private fun initializeRatings(posts: List<Post>, profile: UserProfile?) {
-    if (profile == null || posts.isEmpty()) return
-
-    val newRatings = mutableMapOf<String, List<Boolean>>()
-    for (post in posts) {
-      val savedRating = profile.ratings[post.uid] ?: 0
-      val initialRating = List(NUMBER_OF_STARS) { index -> index < savedRating }
-      newRatings[post.uid] = initialRating
-    }
-    _postRatings.value = newRatings
-  }
-
-  /**
-   * Handles user rating updates. This function:
-   * - Updates the local rating state.
-   * - Updates the user profile ratings in memory (the calling code should persist profile changes).
-   * - Executes a concurrency-safe transaction to update the post in the repository.
-   *
-   * @param postUid The unique ID of the post being rated.
-   * @param newRating The new rating state as a list of booleans representing stars.
-   */
-  fun updateUserRatingForPost(postUid: String, newRating: List<Boolean>) {
-    val oldMap = _postRatings.value.toMutableMap()
-    val oldRating = oldMap[postUid] ?: List(NUMBER_OF_STARS) { false }
-    val oldStarCount = oldRating.count { it }
-    val starsCount = newRating.count { it }
-
-    oldMap[postUid] = newRating
-    _postRatings.value = oldMap
-
-    val currentProfile = userProfile
-    val currentPosts = _allPosts.value
-    val postToUpdate = currentPosts.find { it.uid == postUid }
-
-    if (postToUpdate != null && currentProfile != null && userEmail != null) {
-      // Update user profile ratings in memory
-      val updatedProfile =
-          updateProfileRatings(
-              currentProfile,
-              postUid,
-              starsCount,
-              currentProfile.username,
-              currentProfile.bio,
-              currentProfile.email)
-      userProfile = updatedProfile
-      // Here you would typically call a profile repository or method to persist the updated profile
-
-      // Calculate the new post state
-      val updatedPost = calculatePostUpdates(postToUpdate, userEmail!!, starsCount, oldStarCount)
-      updatePost(updatedPost)
-    }
+  @VisibleForTesting
+  fun setLocationProviderForTesting(provider: LocationProvider) {
+    locationProvider = provider
   }
 
   companion object {
@@ -378,53 +315,4 @@ class PostsViewModel(private val repository: PostsRepository) : ViewModel() {
           }
         }
   }
-}
-
-/**
- * Updates the user's profile ratings.
- *
- * @param currentProfile The current user profile.
- * @param postUid The unique identifier of the post being rated.
- * @param starsCount The number of stars given to the post.
- * @param username The user's username.
- * @param bio The user's bio.
- * @param email The user's email.
- * @return An updated [UserProfile] with the new rating.
- */
-fun updateProfileRatings(
-    currentProfile: UserProfile,
-    postUid: String,
-    starsCount: Int,
-    username: String,
-    bio: String,
-    email: String
-): UserProfile {
-  val updatedRatings = currentProfile.ratings.toMutableMap().apply { this[postUid] = starsCount }
-  return currentProfile.copy(
-      username = username, bio = bio, email = email, ratings = updatedRatings)
-}
-
-/**
- * Calculates the updated state of a post after a user rates it.
- *
- * @param post The original post.
- * @param userEmail The email of the user rating the post.
- * @param starsCount The number of stars the user has given.
- * @param oldStarCounts The previous number of stars the user had given.
- * @return An updated [Post] with recalculated ratings and user counts.
- */
-fun calculatePostUpdates(post: Post, userEmail: String, starsCount: Int, oldStarCounts: Int): Post {
-  val isReturningUser = post.ratedBy.contains(userEmail)
-  val newStarsCount =
-      if (isReturningUser) post.starsCount - oldStarCounts + starsCount
-      else post.starsCount + starsCount
-  val newRatedBy = if (!isReturningUser) post.ratedBy + userEmail else post.ratedBy
-  val newUsersNumber = newRatedBy.size
-  val newAvg = if (newUsersNumber != 0) newStarsCount.toDouble() / newUsersNumber else 0.0
-
-  return post.copy(
-      averageStars = newAvg,
-      starsCount = newStarsCount,
-      usersNumber = newUsersNumber,
-      ratedBy = newRatedBy)
 }

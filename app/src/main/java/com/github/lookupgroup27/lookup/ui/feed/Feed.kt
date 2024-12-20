@@ -1,22 +1,12 @@
-/**
- * Main screen for displaying a feed of nearby posts. Each post includes the user's image, username,
- * location, and an average rating. The feed updates dynamically based on the user's location.
- *
- * The screen includes a background image, a top app bar, and a bottom navigation menu. If the user
- * hasn't granted location permissions or there are no posts, appropriate messages are shown.
- *
- * @param postsViewModel ViewModel for managing posts.
- * @param navigationActions Actions for navigating within the app.
- * @param profileViewModel ViewModel for managing user profiles.
- * @param initialNearbyPosts Optional parameter for testing, allows pre-loading posts.
- */
 package com.github.lookupgroup27.lookup.ui.feed
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -27,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -40,6 +31,7 @@ import androidx.core.content.ContextCompat
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
 import com.github.lookupgroup27.lookup.model.post.Post
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.feed.components.PostItem
 import com.github.lookupgroup27.lookup.ui.googlemap.components.SelectedPostMarker
 import com.github.lookupgroup27.lookup.ui.navigation.BottomNavigationMenu
@@ -54,6 +46,18 @@ import kotlinx.coroutines.delay
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 private const val NUMBER_OF_STARS = 3
 
+/**
+ * Main screen for displaying a feed of nearby posts. Each post includes the user's image, username,
+ * location, and an average rating. The feed updates dynamically based on the user's location.
+ *
+ * The screen includes a background image, a top app bar, and a bottom navigation menu. If the user
+ * hasn't granted location permissions or there are no posts, appropriate messages are shown.
+ *
+ * @param postsViewModel ViewModel for managing posts.
+ * @param navigationActions Actions for navigating within the app.
+ * @param profileViewModel ViewModel for managing user profiles.
+ * @param initialNearbyPosts Optional parameter for testing, allows pre-loading posts.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -64,27 +68,26 @@ fun FeedScreen(
     initialNearbyPosts: List<Post>? = null,
     testNoLoca: Boolean = false
 ) {
-  // Fetch user profile
-  LaunchedEffect(Unit) {
-    Log.d("FeedScreen", "Fetching user profile")
-    profileViewModel.fetchUserProfile()
+  val context = LocalContext.current
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
   }
 
-  // Observe profile and user login state
+  // User-related state
+
+  profileViewModel.fetchUserProfile()
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
   val userEmail = user?.email ?: ""
-
-  // Once profile is available, initialize in PostsViewModel
-  LaunchedEffect(profile) {
-    if (profile != null) {
-      postsViewModel.setUserProfile(profile!!)
-    }
-  }
+  val username by remember { mutableStateOf(profile?.username ?: "") }
+  val bio by remember { mutableStateOf(profile?.bio ?: "") }
+  val email by remember { mutableStateOf(userEmail) }
 
   // Location setup
-  val context = LocalContext.current
   val locationProvider = LocationProviderSingleton.getInstance(context)
   var locationPermissionGranted by remember {
     mutableStateOf(
@@ -131,8 +134,18 @@ fun FeedScreen(
           ?: postsViewModel.nearbyPosts.collectAsState())
   val nearbyPosts = unfilteredPosts.filter { it.userMail != userEmail }
 
-  // Observe post ratings from ViewModel
-  val postRatings by postsViewModel.postRatings.collectAsState()
+  val postRatings = remember { mutableStateMapOf<String, List<Boolean>>() }
+
+  // Initialize post ratings based on the user profile.
+  LaunchedEffect(nearbyPosts, profile) {
+    nearbyPosts.forEach { post ->
+      if (!postRatings.containsKey(post.uid)) {
+        val savedRating = profile?.ratings?.get(post.uid) ?: 0
+        val initialRating = List(NUMBER_OF_STARS) { index -> index < savedRating }
+        postRatings[post.uid] = initialRating.toMutableList()
+      }
+    }
+  }
 
   // UI Structure
   Box(
@@ -151,7 +164,7 @@ fun FeedScreen(
             painter = painterResource(R.drawable.background_blurred),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize())
+            modifier = Modifier.fillMaxSize().blur(20.dp))
 
         Scaffold(
             containerColor = Color.Transparent,
@@ -238,8 +251,51 @@ fun FeedScreen(
                                   starStates =
                                       postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
                                   onRatingChanged = { newRating ->
-                                    // Delegation to ViewModel for concurrency-safe rating update
-                                    postsViewModel.updateUserRatingForPost(post.uid, newRating)
+                                    val oldPostRatings =
+                                        postRatings[post.uid] ?: mutableListOf(false, false, false)
+                                    val oldStarCounts = oldPostRatings.count { it }
+                                    // Directly modify the existing starStates list to avoid
+                                    // creating a new list
+                                    postRatings[post.uid] = newRating.toList()
+                                    // Update the stars count based on the new rating
+                                    val starsCount = newRating.count { it }
+                                    // Update user profile with the new rating count
+                                    val updatedRatings = profile?.ratings?.toMutableMap()
+                                    updatedRatings?.set(post.uid, starsCount)
+                                    val newProfile: UserProfile =
+                                        profile?.copy(
+                                            username = username,
+                                            bio = bio,
+                                            email = email,
+                                            ratings = updatedRatings ?: emptyMap())
+                                            ?: UserProfile(
+                                                username = username,
+                                                bio = bio,
+                                                email = email,
+                                                ratings = updatedRatings ?: emptyMap())
+                                    profileViewModel.updateUserProfile(newProfile)
+
+                                    val isReturningUser = post.ratedBy.contains(userEmail)
+                                    val newStarsCount =
+                                        if (isReturningUser)
+                                            post.starsCount - oldStarCounts + starsCount
+                                        else post.starsCount + starsCount
+                                    val newUsersNumber =
+                                        if (isReturningUser) post.usersNumber
+                                        else post.usersNumber + 1
+                                    val newAvg = newStarsCount.toDouble() / newUsersNumber
+
+                                    postsViewModel.updatePost(
+                                        post.copy(
+                                            averageStars = newAvg,
+                                            starsCount = newStarsCount,
+                                            usersNumber = newUsersNumber,
+                                            ratedBy =
+                                                if (!isReturningUser) {
+                                                  post.ratedBy + userEmail
+                                                } else {
+                                                  post.ratedBy
+                                                }))
                                   },
                                   onAddressClick = { clickedPost ->
                                     val selectedMarker =
