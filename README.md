@@ -1,21 +1,59 @@
-# LookUp
+# Look Up
 
-### Pitch
+## Pitch
+Many people find it difficult to keep track of astronomical events and identify stars or planets when stargazing. This often results in missed opportunities to experience the wonders of the night sky, especially for amateur astronomers and curious minds. "Look Up" is an app that helps solve this problem by offering an interactive platform for exploring the night sky and sharing stargazing experiences. Whether you're a city dweller curious about the stars or a traveler looking to discover new stargazing spots, "Look Up" makes the cosmos more accessible and engaging.
 
-Many people find it difficult to keep track of astronomical events and identify stars or planets when stargazing. This often results in missed opportunities to experience the wonders of the night sky, especially for amateur astronomers and curious minds. "Look Up” is an app that solves this problem by offering a personalized stargazing experience with real-time star maps and event notifications. Whether you’re a city dweller curious about the stars or a traveler looking for guidance under clear skies, "Look Up” makes the cosmos accessible, engaging, and easy to explore. 
+## Main Features
 
-### Main functionalities of the application
+### Interactive Sky Map
+- Location-based sky map showing stars and planets visible from your current position
+- Similar to Google Maps interface for familiar and intuitive navigation
+- Real-time updates based on your location to show the current state of the sky above you
 
-Our app would use Google authentication to allow users to log into their accounts securely. It would allow them to create personal accounts where they can track their quiz scores and compete against other users. Moreover, each time they observe a new star, planet, or constellation, they can upload it to their profile and work on completing collections of things to observe, like a "checklist".
+### Social Sharing and Discovery
+- Share your stargazing photos through the feed
+- View and rate other users' astronomical photographs
+- Interactive map with location markers showing where photos were taken
+- Personal profile to view and manage your own posts
 
-### Sensor use 
+### Educational Content
+- Interactive 3D visualization of planets in our solar system
+  - View detailed rotating models of each planet
+- Astronomy quizzes to test and expand your knowledge
+- Calendar of upcoming astronomical events
 
-Our idea revolves around using multiple sensors: the GPS, gyroscope, and camera, which will enable the user to view an accurate location-based star map by pointing their phone at the sky. They will experience augmented reality, overlaying the star map with real-time camera footage of the sky. And finally, receive real-time recommendations for stargazing based on their current location. 
+### Location Features
+- GPS integration for accurate sky mapping
+- Google Maps integration showing stargazing photo locations
+- Location-based feed showing nearby astronomical observations
 
-### Offline mode 
+### User Features
+- Google authentication for secure account access
+- Personal profile showing your posted photos
+- Rating system for interacting with community posts
+- Track your quiz progress
 
-In offline mode, users will experience an intuitive interface where they can easily access pre-loaded astronomy quizzes and a calendar of upcoming celestial events. A simple toggle or notification will inform them that they're offline, but essential content remains available. Features will include progress tracking and event reminders, which will sync once the user reconnects to the internet.
+## Offline Mode Features
+The app continues to provide value even without an internet connection:
+- Access to astronomy quizzes
+- Interactive 3D planet visualization system
+- Progress tracking for educational content
 
-# Figma
+## Technical Implementation
+The app utilizes several key technologies and features:
+- Google Authentication for secure user management
+- GPS integration for location-based features
+- Camera sensor for capturing and sharing stargazing photos
+- Gyroscope sensor for observing the sky via the Sky Map
+- Interactive maps for both sky viewing and photo location discovery
+- Real-time photo sharing and rating system
+- Local storage for offline functionality
 
-Invitation link : https://www.figma.com/team_invite/redeem/F9tEg6YT38SKlf7DMc6Xhb
+## Target Audience
+- Amateur astronomers
+- Photography enthusiasts
+- Sky watching beginners
+- Educational institutions
+- Anyone interested in astronomy and space
+
+Look Up combines educational content, social features, and practical tools to create an engaging platform for astronomy enthusiasts of all levels. Whether you're learning about our solar system, sharing your latest astrophotography, or finding the best local spots for stargazing, Look Up provides the features you need to explore and share the wonders of the night sky.
