@@ -19,8 +19,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.model.profile.*
-import com.github.lookupgroup27.lookup.ui.navigation.*
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
+import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.ui.theme.LightPurple
 import com.github.lookupgroup27.lookup.ui.theme.StarLightWhite
 import com.google.firebase.auth.FirebaseAuth
@@ -32,7 +33,6 @@ fun ProfileInformationScreen(
     profileViewModel: ProfileViewModel,
     navigationActions: NavigationActions
 ) {
-
   val context = LocalContext.current
 
   // Lock the screen orientation to portrait mode.
@@ -44,24 +44,30 @@ fun ProfileInformationScreen(
 
   val scrollState = rememberScrollState()
 
-  profileViewModel.fetchUserProfile()
-  val profile = profileViewModel.userProfile.value
+  // CHANGED: Move the profile fetching into a LaunchedEffect so it's only called once
+  LaunchedEffect(Unit) { profileViewModel.fetchUserProfile() }
+
+  val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val userEmail = user?.email ?: ""
   var username by remember { mutableStateOf(profile?.username ?: "") }
   var bio by remember { mutableStateOf(profile?.bio ?: "") }
   var email by remember { mutableStateOf(userEmail) }
+
+  val usernameError by profileViewModel.usernameError.collectAsState()
+  val updateStatus by profileViewModel.profileUpdateStatus.collectAsState()
+
   val fieldColors =
       OutlinedTextFieldDefaults.colors(
           focusedTextColor = StarLightWhite, // Text color when focused
           unfocusedTextColor = StarLightWhite, // Text color when not focused
           disabledTextColor = StarLightWhite, // Text color when disabled
-          focusedContainerColor = Color.Black.copy(alpha = 0.2f), // Darker background when focused
-          unfocusedContainerColor =
-              Color.Black.copy(alpha = 0.2f), // Darker background when not focused
-          focusedBorderColor = StarLightWhite, // Border color when focused
-          unfocusedBorderColor = StarLightWhite, // Border color when not focused
+          focusedContainerColor = Color.Black.copy(alpha = 0.2f),
+          unfocusedContainerColor = Color.Black.copy(alpha = 0.2f),
+          focusedBorderColor = StarLightWhite,
+          unfocusedBorderColor = StarLightWhite,
       )
+
   var showDeleteConfirmation by remember { mutableStateOf(false) }
 
   Box(modifier = Modifier.fillMaxSize().testTag("background_box")) {
@@ -112,7 +118,10 @@ fun ProfileInformationScreen(
 
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { new_name -> username = new_name },
+                    onValueChange = { new_name ->
+                      username = new_name
+                      profileViewModel.clearUsernameError() // clear error when user types
+                    },
                     label = { Text(text = "Username", color = StarLightWhite) },
                     placeholder = { Text("Enter username") },
                     shape = RoundedCornerShape(16.dp),
@@ -123,11 +132,20 @@ fun ProfileInformationScreen(
                             .height(60.dp)
                             .testTag("editProfileUsername"))
 
+                if (usernameError != null) {
+                  Text(
+                      text = usernameError!!,
+                      color = Color.Red,
+                      style = MaterialTheme.typography.bodySmall,
+                      modifier = Modifier.padding(top = 4.dp, start = 4.dp))
+                }
+
                 Spacer(modifier = Modifier.height(30.dp))
 
                 OutlinedTextField(
                     value = email,
                     onValueChange = {
+                      // Only allow changes if no pre-filled email
                       if (userEmail.isEmpty()) {
                         email = it
                       }
@@ -159,14 +177,13 @@ fun ProfileInformationScreen(
 
                 Spacer(modifier = Modifier.height(72.dp))
 
-                // Buttons
+                // Save Button
                 Button(
                     onClick = {
                       val newProfile: UserProfile =
                           profile?.copy(username = username, bio = bio, email = email)
                               ?: UserProfile(username = username, bio = bio, email = email)
                       profileViewModel.updateUserProfile(newProfile)
-                      navigationActions.navigateTo(Screen.PROFILE)
                     },
                     enabled = username.isNotEmpty() && bio.isNotEmpty() && email.isNotEmpty(),
                     colors =
@@ -177,6 +194,15 @@ fun ProfileInformationScreen(
                     modifier = Modifier.width(131.dp).height(40.dp).testTag("profileSaveButton")) {
                       Text(text = "Save", color = Color.White)
                     }
+
+                // CHANGED: Observe profileUpdateStatus and navigate only when it just turned true
+                LaunchedEffect(updateStatus) {
+                  if (updateStatus == true && profileViewModel.usernameError.value == null) {
+                    navigationActions.navigateTo(Screen.PROFILE)
+                    // Reset the status after navigating to avoid repeated triggers
+                    profileViewModel.resetProfileUpdateStatus()
+                  }
+                }
 
                 Spacer(modifier = Modifier.height(30.dp))
 
