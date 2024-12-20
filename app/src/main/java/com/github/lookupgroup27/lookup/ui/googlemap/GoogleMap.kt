@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.location.LocationProviderSingleton
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.googlemap.components.*
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.post.PostsViewModel
@@ -188,31 +187,6 @@ fun GoogleMapScreen(
                 locationProvider.currentLocation.value,
                 autoCenteringEnabled,
                 allPosts,
-                userEmail,
-                updateProfile = { profile, updatedRatings ->
-                  val newProfile: UserProfile =
-                      profile?.copy(
-                          username = username,
-                          bio = bio,
-                          email = email,
-                          ratings = updatedRatings ?: emptyMap())
-                          ?: UserProfile(
-                              username = username,
-                              bio = bio,
-                              email = email,
-                              ratings = updatedRatings ?: emptyMap())
-                  profileViewModel.updateUserProfile(newProfile)
-                },
-                profile = profile,
-                updatePost = { post, newAvg, newStarsCount, newUsersNumber, newRatedBy ->
-                  postsViewModel.updatePost(
-                      post.copy(
-                          averageStars = newAvg,
-                          starsCount = newStarsCount,
-                          usersNumber = newUsersNumber,
-                          ratedBy = newRatedBy))
-                },
-                postRatings = postRatings,
                 highlightedPost = highlightedPost)
           }
         }

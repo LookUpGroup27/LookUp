@@ -76,13 +76,9 @@ fun FeedScreen(
     onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
   }
 
-  // Fetch user profile
-  LaunchedEffect(Unit) {
-    Log.d("FeedScreen", "Fetching user profile")
-    profileViewModel.fetchUserProfile()
-  }
-
   // User-related state
+
+  profileViewModel.fetchUserProfile()
   val profile by profileViewModel.userProfile.collectAsState()
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
@@ -256,30 +252,50 @@ fun FeedScreen(
                                       postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false },
                                   onRatingChanged = { newRating ->
                                     val oldPostRatings =
-                                        postRatings[post.uid] ?: List(NUMBER_OF_STARS) { false }
+                                        postRatings[post.uid] ?: mutableListOf(false, false, false)
                                     val oldStarCounts = oldPostRatings.count { it }
+                                    // Directly modify the existing starStates list to avoid
+                                    // creating a new list
                                     postRatings[post.uid] = newRating.toList()
+                                    // Update the stars count based on the new rating
                                     val starsCount = newRating.count { it }
-
-                                    // Update user profile ratings
-                                    val newProfile =
-                                        updateProfileRatings(
-                                            currentProfile = profile,
-                                            postUid = post.uid,
-                                            starsCount = starsCount,
+                                    // Update user profile with the new rating count
+                                    val updatedRatings = profile?.ratings?.toMutableMap()
+                                    updatedRatings?.set(post.uid, starsCount)
+                                    val newProfile: UserProfile =
+                                        profile?.copy(
                                             username = username,
                                             bio = bio,
-                                            email = email)
+                                            email = email,
+                                            ratings = updatedRatings ?: emptyMap())
+                                            ?: UserProfile(
+                                                username = username,
+                                                bio = bio,
+                                                email = email,
+                                                ratings = updatedRatings ?: emptyMap())
                                     profileViewModel.updateUserProfile(newProfile)
 
-                                    // Update post details
-                                    val updatedPost =
-                                        calculatePostUpdates(
-                                            post = post,
-                                            userEmail = userEmail,
-                                            starsCount = starsCount,
-                                            oldStarCounts = oldStarCounts)
-                                    postsViewModel.updatePost(updatedPost)
+                                    val isReturningUser = post.ratedBy.contains(userEmail)
+                                    val newStarsCount =
+                                        if (isReturningUser)
+                                            post.starsCount - oldStarCounts + starsCount
+                                        else post.starsCount + starsCount
+                                    val newUsersNumber =
+                                        if (isReturningUser) post.usersNumber
+                                        else post.usersNumber + 1
+                                    val newAvg = newStarsCount.toDouble() / newUsersNumber
+
+                                    postsViewModel.updatePost(
+                                        post.copy(
+                                            averageStars = newAvg,
+                                            starsCount = newStarsCount,
+                                            usersNumber = newUsersNumber,
+                                            ratedBy =
+                                                if (!isReturningUser) {
+                                                  post.ratedBy + userEmail
+                                                } else {
+                                                  post.ratedBy
+                                                }))
                                   },
                                   onAddressClick = { clickedPost ->
                                     val selectedMarker =
@@ -300,58 +316,4 @@ fun FeedScreen(
                   }
             }
       }
-}
-/**
- * Updates the user's profile ratings.
- *
- * @param currentProfile The current user profile.
- * @param postUid The unique identifier of the post being rated.
- * @param starsCount The number of stars given to the post.
- * @param username The user's username.
- * @param bio The user's bio.
- * @param email The user's email.
- * @return An updated [UserProfile] with the new rating.
- */
-fun updateProfileRatings(
-    currentProfile: UserProfile?,
-    postUid: String,
-    starsCount: Int,
-    username: String,
-    bio: String,
-    email: String
-): UserProfile {
-  val updatedRatings =
-      currentProfile?.ratings?.toMutableMap()?.apply { this[postUid] = starsCount }
-          ?: mutableMapOf(postUid to starsCount)
-
-  return currentProfile?.copy(
-      username = username, bio = bio, email = email, ratings = updatedRatings)
-      ?: UserProfile(username = username, bio = bio, email = email, ratings = updatedRatings)
-}
-
-/**
- * Calculates the updated state of a post after a user rates it.
- *
- * @param post The original post.
- * @param userEmail The email of the user rating the post.
- * @param starsCount The number of stars the user has given.
- * @param oldStarCounts The previous number of stars the user had given.
- * @return An updated [Post] with recalculated ratings and user counts.
- */
-fun calculatePostUpdates(post: Post, userEmail: String, starsCount: Int, oldStarCounts: Int): Post {
-  val isReturningUser = post.ratedBy.contains(userEmail)
-  val newStarsCount =
-      if (isReturningUser) {
-        post.starsCount - oldStarCounts + starsCount
-      } else {
-        post.starsCount + starsCount
-      }
-  val newUsersNumber = if (isReturningUser) post.usersNumber else post.usersNumber + 1
-  val newAvg = newStarsCount.toDouble() / newUsersNumber
-
-  return post.copy(
-      averageStars = newAvg,
-      starsCount = newStarsCount,
-      usersNumber = newUsersNumber,
-      ratedBy = if (!isReturningUser) post.ratedBy + userEmail else post.ratedBy)
 }

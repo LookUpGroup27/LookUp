@@ -34,6 +34,7 @@ fun ImagePreviewDialog(
     onRatingChanged: (List<Boolean>) -> Unit
 ) {
   if (post != null) {
+
     Dialog(onDismissRequest = onDismiss) {
       Surface(
           modifier = Modifier.padding(16.dp).testTag("imagePreviewDialog"),
@@ -49,6 +50,7 @@ fun ImagePreviewDialog(
                       onImageClick = { _, _, _ -> }, // No-op for dialog preview
                       color = Color.White,
                       textForUsername = "Posted by: $username",
+                      showStars = false,
                       showAverage = false,
                       showAddress = false)
                   Spacer(modifier = Modifier.height(16.dp))

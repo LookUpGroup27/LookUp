@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.github.lookupgroup27.lookup.model.post.Post
-import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.github.lookupgroup27.lookup.ui.image.ImagePreviewDialog
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -34,11 +33,6 @@ fun MapView(
     location: Location?,
     autoCenteringEnabled: Boolean,
     posts: List<Post>,
-    userEmail: String,
-    updateProfile: (UserProfile?, MutableMap<String, Int>?) -> Unit,
-    profile: UserProfile?,
-    updatePost: (Post, Double, Int, Int, List<String>) -> Unit,
-    postRatings: MutableMap<String, List<Boolean>>,
     highlightedPost: SelectedPostMarker?
 ) {
 
@@ -67,14 +61,6 @@ fun MapView(
       val latLng = LatLng(location.latitude, location.longitude)
       val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
       cameraPositionState.animate(cameraUpdate)
-    }
-  }
-
-  LaunchedEffect(profile, posts) {
-    posts.forEach { post ->
-      val starsCount = postRatings[post.uid]?.count { it } ?: 0
-      val avg = if (post.usersNumber == 0) 0.0 else starsCount.toDouble() / post.usersNumber
-      updatePost(post, avg, starsCount, post.usersNumber, post.ratedBy)
     }
   }
 
@@ -110,33 +96,8 @@ fun MapView(
               post = it,
               username = it.username,
               onDismiss = { selectedPost = null },
-              starStates = postRatings[it.uid] ?: mutableListOf(false, false, false),
-              onRatingChanged = { newRating ->
-                val oldPostRatings = postRatings[it.uid] ?: mutableListOf(false, false, false)
-                val oldStarCounts = oldPostRatings.count { it }
-                // Directly modify the existing starStates list to avoid creating a new list
-                postRatings[it.uid] = newRating.toList()
-                // Update the stars count based on the new rating
-                val starsCount = newRating.count { it }
-                // Update user profile with the new rating count
-                val updatedRatings = profile?.ratings?.toMutableMap()
-                updatedRatings?.set(it.uid, starsCount)
-                updateProfile(profile, updatedRatings)
-
-                val isReturningUser = it.ratedBy.contains(userEmail)
-                val newStarsCount =
-                    if (isReturningUser) it.starsCount - oldStarCounts + starsCount
-                    else it.starsCount + starsCount
-                val newUsersNumber = if (isReturningUser) it.usersNumber else it.usersNumber + 1
-                val newAvg = newStarsCount.toDouble() / newUsersNumber
-                val newRatedBy =
-                    if (!isReturningUser) {
-                      it.ratedBy + userEmail
-                    } else {
-                      it.ratedBy
-                    }
-                updatePost(it, newAvg, newStarsCount, newUsersNumber, newRatedBy)
-              })
+              starStates = mutableListOf(false, false, false),
+              onRatingChanged = {})
         }
       }
 }
