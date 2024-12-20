@@ -1,9 +1,9 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import android.content.pm.ActivityInfo
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll

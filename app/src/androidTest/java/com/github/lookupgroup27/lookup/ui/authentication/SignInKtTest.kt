@@ -78,7 +78,6 @@ class SignInKtTest : TestCase() {
     verify(mockNavigationActions).navigateTo(Screen.MENU)
   }
 
-
   @Test
   fun backArrowIsInTopLeftCorner() {
     composeTestRule.setContent { SignInScreen(mockNavigationActions) }
