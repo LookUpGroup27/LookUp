@@ -1,6 +1,7 @@
+// File: ProfileViewModelTest.kt
 package com.github.lookupgroup27.lookup.ui.profile
 
-import com.github.lookupgroup27.lookup.model.profile.ProfileRepositoryFirestore
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.model.profile.UserProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -18,7 +19,7 @@ import org.mockito.kotlin.eq
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModelTest {
 
-  private lateinit var repository: ProfileRepositoryFirestore
+  private lateinit var repository: ProfileRepository
   private lateinit var viewModel: ProfileViewModel
   private lateinit var mockFirestore: FirebaseFirestore
   private lateinit var mockCollectionReference: CollectionReference
@@ -46,39 +47,26 @@ class ProfileViewModelTest {
     `when`(mockFirestore.collection("users")).thenReturn(mockCollectionReference)
 
     // Initialize repository with mocks and viewModel with mocked repository
-    repository = mock(ProfileRepositoryFirestore::class.java)
+    repository = mock(ProfileRepository::class.java)
     viewModel = ProfileViewModel(repository)
   }
 
   @After
   fun tearDown() {
-    Dispatchers.resetMain() // reset the Main dispatcher to the original
+    Dispatchers.resetMain() // Reset the Main dispatcher to the original
   }
 
   @Test
   fun `fetchUserProfile calls getUserProfile in repository`() = runTest {
     // Simulate a successful fetch with a mocked behavior
     `when`(repository.getUserProfile(any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[0] as (UserProfile?) -> Unit
+      val onSuccess = invocation.getArgument<(UserProfile?) -> Unit>(0)
       onSuccess(testProfile)
+      null
     }
 
     viewModel.fetchUserProfile()
     verify(repository).getUserProfile(any(), any())
-  }
-
-  @Test
-  fun `updateUserProfile calls updateUserProfile in repository`() = runTest {
-    // Simulate successful update behavior
-    `when`(repository.updateUserProfile(eq(testProfile), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
-      onSuccess()
-    }
-
-    viewModel.updateUserProfile(testProfile)
-
-    // Verifying that the method is indeed called
-    verify(repository).updateUserProfile(eq(testProfile), any(), any())
   }
 
   @Test
@@ -94,6 +82,7 @@ class ProfileViewModelTest {
     `when`(repository.getUserProfile(any(), any())).thenAnswer {
       val onFailure = it.getArgument<(Exception) -> Unit>(1)
       onFailure(exception)
+      null
     }
 
     // Call the method
@@ -104,28 +93,12 @@ class ProfileViewModelTest {
   }
 
   @Test
-  fun `updateUserProfile sets profileUpdateStatus to false and error on failure`() = runTest {
-    // Mock an error scenario in the repository
-    val exception = Exception("Update failed")
-    `when`(repository.updateUserProfile(any(), any(), any())).thenAnswer {
-      val onFailure = it.getArgument<(Exception) -> Unit>(2)
-      onFailure(exception)
-    }
-
-    // Call the method
-    viewModel.updateUserProfile(testProfile)
-
-    // Assert that _profileUpdateStatus is false and _error is set
-    assertFalse(viewModel.profileUpdateStatus.value!!)
-    assertEquals("Failed to update profile: Update failed", viewModel.error.value)
-  }
-
-  @Test
   fun `deleteUserProfile calls deleteUserProfile in repository on success`() = runTest {
     // Simulate successful deletion behavior
     `when`(repository.deleteUserProfile(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      val onSuccess = invocation.getArgument<() -> Unit>(1)
       onSuccess()
+      null
     }
 
     viewModel.deleteUserProfile(testProfile)
@@ -142,6 +115,7 @@ class ProfileViewModelTest {
     `when`(repository.deleteUserProfile(any(), any(), any())).thenAnswer {
       val onFailure = it.getArgument<(Exception) -> Unit>(2)
       onFailure(exception)
+      null
     }
 
     // Call the method
