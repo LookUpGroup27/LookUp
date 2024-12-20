@@ -18,7 +18,6 @@ class ProfileRepositoryFirestore(
     private val auth: FirebaseAuth
 ) : ProfileRepository {
 
-  // private val auth = FirebaseAuth.getInstance()
   private val collectionPath = "users"
   private val usersCollection = db.collection(collectionPath)
 
@@ -56,6 +55,7 @@ class ProfileRepositoryFirestore(
   ) {
     val userId = auth.currentUser?.uid
     if (userId != null) {
+      // MODIFIED: Removed direct set call. This will now be done after username check.
       performFirestoreOperation(usersCollection.document(userId).set(profile), onSuccess, onFailure)
     } else {
       onFailure(Exception("User not logged in"))
@@ -118,6 +118,32 @@ class ProfileRepositoryFirestore(
         .addOnSuccessListener { document ->
           val avatarId = document.getLong("selectedAvatar")?.toInt()
           onSuccess(avatarId)
+        }
+        .addOnFailureListener { exception -> onFailure(exception) }
+  }
+
+  // ADDED: Check if username is available
+  override fun isUsernameAvailable(
+      username: String,
+      currentUserId: String?,
+      onSuccess: (Boolean) -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    usersCollection
+        .whereEqualTo("username", username)
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          // If no documents or the only document belongs to the current user, it's available
+          val isAvailable =
+              when {
+                querySnapshot.isEmpty -> true
+                querySnapshot.size() == 1 -> {
+                  val doc = querySnapshot.documents[0]
+                  doc.id == currentUserId
+                }
+                else -> false
+              }
+          onSuccess(isAvailable)
         }
         .addOnFailureListener { exception -> onFailure(exception) }
   }
