@@ -19,4 +19,12 @@ interface ProfileRepository {
   )
 
   fun getSelectedAvatar(userId: String, onSuccess: (Int?) -> Unit, onFailure: (Exception) -> Unit)
+
+  // ADDED
+  fun isUsernameAvailable(
+      username: String,
+      currentUserId: String?,
+      onSuccess: (Boolean) -> Unit,
+      onFailure: (Exception) -> Unit
+  )
 }
