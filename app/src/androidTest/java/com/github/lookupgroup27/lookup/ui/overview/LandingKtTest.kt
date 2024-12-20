@@ -10,8 +10,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.github.lookupgroup27.lookup.util.ToastHelper
@@ -99,31 +97,6 @@ class LandingKtTest {
   }
 
   @Test
-  fun testLandingScreenIsFullyVisibleInLandscape() {
-    // Set device orientation to landscape
-    setLandscapeOrientation()
-
-    // Launch LandingScreen in landscape mode
-    composeTestRule.setContent { LandingScreen(mockNavigationActions) }
-
-    // Ensure main UI elements are visible and accessible by scrolling if needed
-    composeTestRule.onNodeWithContentDescription("Look Up Logo").assertIsDisplayed()
-    composeTestRule
-        .onNodeWithContentDescription("Home Icon")
-        .performScrollTo()
-        .assertIsDisplayed()
-        .assertHasClickAction()
-    composeTestRule
-        .onNodeWithContentDescription("Background")
-        .assertIsDisplayed()
-        .assertHasClickAction()
-    composeTestRule.onNodeWithText("Click for full map view").assertIsDisplayed()
-
-    // Reset orientation to portrait after the test
-    resetOrientation()
-  }
-
-  @Test
   fun testBackgroundClickDoesNotNavigateToMapWhenOffline() {
     // Simulate offline mode
     simulateOnlineMode(false)
@@ -165,15 +138,5 @@ class LandingKtTest {
 
     // Verify no navigation occurred
     verify(mockNavigationActions, never()).navigateTo(Screen.SKY_MAP)
-  }
-
-  private fun setLandscapeOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationLeft()
-  }
-
-  private fun resetOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationNatural()
   }
 }

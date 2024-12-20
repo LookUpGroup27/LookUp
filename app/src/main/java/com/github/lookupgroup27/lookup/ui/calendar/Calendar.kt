@@ -1,5 +1,7 @@
 package com.github.lookupgroup27.lookup.ui.calendar
 
+import android.content.pm.ActivityInfo
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -9,6 +11,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,6 +50,14 @@ fun CalendarScreen(
     calendarViewModel: CalendarViewModel = viewModel(),
     navigationActions: NavigationActions
 ) {
+  val context = LocalContext.current
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
+
   // State variables for selected date, search query, and visibility of the search dialog.
   var selectedDate by remember { mutableStateOf(Date()) }
   var searchQuery by remember { mutableStateOf("") }

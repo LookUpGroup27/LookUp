@@ -61,6 +61,14 @@ private const val LOCATION_PERMISSION_REQUEST_CODE: Int = 1001
 fun MapScreen(navigationActions: NavigationActions, mapViewModel: MapViewModel) {
 
   val context = LocalContext.current
+
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
+
   val user = FirebaseAuth.getInstance().currentUser
   val isUserLoggedIn = user != null
   val activity =
