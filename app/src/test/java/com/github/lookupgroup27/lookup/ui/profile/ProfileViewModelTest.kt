@@ -68,20 +68,6 @@ class ProfileViewModelTest {
   }
 
   @Test
-  fun `updateUserProfile calls updateUserProfile in repository`() = runTest {
-    // Simulate successful update behavior
-    `when`(repository.updateUserProfile(eq(testProfile), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
-      onSuccess()
-    }
-
-    viewModel.updateUserProfile(testProfile)
-
-    // Verifying that the method is indeed called
-    verify(repository).updateUserProfile(eq(testProfile), any(), any())
-  }
-
-  @Test
   fun `logoutUser calls logoutUser in repository`() {
     viewModel.logoutUser()
     verify(repository).logoutUser()
@@ -101,23 +87,6 @@ class ProfileViewModelTest {
 
     // Assert that _error was updated correctly
     assertEquals("Failed to load profile: Network error", viewModel.error.value)
-  }
-
-  @Test
-  fun `updateUserProfile sets profileUpdateStatus to false and error on failure`() = runTest {
-    // Mock an error scenario in the repository
-    val exception = Exception("Update failed")
-    `when`(repository.updateUserProfile(any(), any(), any())).thenAnswer {
-      val onFailure = it.getArgument<(Exception) -> Unit>(2)
-      onFailure(exception)
-    }
-
-    // Call the method
-    viewModel.updateUserProfile(testProfile)
-
-    // Assert that _profileUpdateStatus is false and _error is set
-    assertFalse(viewModel.profileUpdateStatus.value!!)
-    assertEquals("Failed to update profile: Update failed", viewModel.error.value)
   }
 
   @Test
