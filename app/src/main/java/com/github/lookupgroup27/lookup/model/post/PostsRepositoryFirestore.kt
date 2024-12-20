@@ -1,3 +1,9 @@
+package com.github.lookupgroup27.lookup.model.post
+
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 /**
  * Implementation of the [PostsRepository] interface using Firebase Firestore as the data source.
  *
@@ -7,12 +13,6 @@
  *
  * @property db The [FirebaseFirestore] instance used to interact with the Firestore database.
  */
-package com.github.lookupgroup27.lookup.model.post
-
-import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-
 class PostsRepositoryFirestore(private val db: FirebaseFirestore) : PostsRepository {
 
   private val auth = FirebaseAuth.getInstance()
