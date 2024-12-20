@@ -35,7 +35,7 @@ fun BottomNavigationMenu(
   val context = LocalContext.current
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
   NavigationBar(
-      modifier = Modifier.fillMaxWidth().height(60.dp).testTag("bottomNavigationMenu"),
+      modifier = Modifier.fillMaxWidth().height(80.dp).testTag("bottomNavigationMenu"),
       containerColor = Color(0xFF0D1023),
       content = {
         tabList.forEach { tab ->

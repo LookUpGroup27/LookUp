@@ -20,7 +20,7 @@ val DarkBlue = Color(0xFF0D1023) // Dark blue
 val PurpleBlue = Color(0xFF060817)
 
 val CorrectAnswerColor = Color(0xFF4CAF50)
-val IncorrectAnswerColor = Color(0xFFF44336)
+val IncorrectAnswerColor = Color(0xFF410002)
 val AnswerSelectedColor = Color(0xFFFF731F)
 val NextButtonEnabledColor = Color(0xFF00C853)
 val NextButtonDisabledColor = Color(0xFF6A9605)

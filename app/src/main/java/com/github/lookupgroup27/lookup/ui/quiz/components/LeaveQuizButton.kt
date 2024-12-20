@@ -23,7 +23,7 @@ fun LeaveQuizButton(onClick: () -> Unit, modifier: Modifier) {
       modifier = modifier,
       colors =
           androidx.compose.material3.ButtonDefaults.buttonColors(
-              containerColor = Color.Red, contentColor = Color.White),
+              containerColor = Color(0xFF410002), contentColor = Color.White),
       shape = RoundedCornerShape(8.dp)) {
         Text(text = "Leave Quiz", textAlign = TextAlign.Center, fontSize = 16.sp)
       }
