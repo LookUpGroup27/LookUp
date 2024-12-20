@@ -110,7 +110,7 @@ fun PostItem(
                       starStates.forEachIndexed { index, isFilled ->
                         IconButton(
                             onClick = {
-                              val newRating = starStates.mapIndexed { i, _ -> i <= index }
+                              val newRating = List(starStates.size) { i -> i <= index }
                               onRatingChanged(newRating)
                             },
                             modifier =

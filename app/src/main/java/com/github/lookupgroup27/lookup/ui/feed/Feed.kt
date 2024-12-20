@@ -330,15 +330,13 @@ fun updateProfileRatings(
  */
 fun calculatePostUpdates(post: Post, userEmail: String, starsCount: Int, oldStarCounts: Int): Post {
   val isReturningUser = post.ratedBy.contains(userEmail)
+
   val newStarsCount =
-      if (starsCount == 0) {
-        post.starsCount - oldStarCounts
-      } else if (isReturningUser) post.starsCount - oldStarCounts + starsCount
+      if (isReturningUser) post.starsCount - oldStarCounts + starsCount
       else post.starsCount + starsCount
+
   val newRatedBy =
-      if (starsCount == 0) {
-        post.ratedBy.filter { x -> x != userEmail }
-      } else if (!isReturningUser) {
+      if (!isReturningUser) {
         post.ratedBy + userEmail
       } else {
         post.ratedBy
