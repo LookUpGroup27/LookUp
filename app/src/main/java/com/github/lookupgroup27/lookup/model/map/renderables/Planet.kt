@@ -26,8 +26,6 @@ import com.github.lookupgroup27.lookup.util.opengl.TextureManager
  * @property name The name of the planet (e.g., "Earth"). Defaults to "Planet".
  * @property position The planet's position in 3D space, represented as a float array [x, y, z].
  * @property textureId The resource ID of the texture applied to the planet's surface.
- * @property vertexShaderCode The custom vertex shader code used for rendering the planet.
- * @property fragmentShaderCode The custom fragment shader code used for rendering the planet.
  * @property scale The scaling factor applied to the planet's geometry. Defaults to 0.3.
  */
 open class Planet(
@@ -37,7 +35,9 @@ open class Planet(
     var textureId: Int,
     numBands: Int = SphereRenderer.DEFAULT_NUM_BANDS,
     stepsPerBand: Int = SphereRenderer.DEFAULT_STEPS_PER_BAND,
-    private val scale: Float = 0.02f
+    private val scale: Float = 0.02f,
+    private val rotationSpeed: Float = 50f,
+    val funFact: String = ""
 ) : Object() {
 
   private val sphereRenderer = SphereRenderer(context, numBands, stepsPerBand)
@@ -51,7 +51,6 @@ open class Planet(
 
   // New properties for rotation
   private var rotationAngle: Float = 0f // Current rotation angle in degrees
-  private val rotationSpeed: Float = 50f // Rotation speed in degrees per second (constant for all)
 
   /** Initializes the planet's geometry, shaders, and texture. */
   init {
@@ -93,7 +92,10 @@ open class Planet(
   fun draw(camera: Camera, transformMatrix: FloatArray? = null) {
     label.draw(camera)
     val modelMatrix = FloatArray(16)
+    val billboardMatrix = FloatArray(16)
+    val mvpMatrix = FloatArray(16)
     Matrix.setIdentityM(modelMatrix, 0)
+    Matrix.setIdentityM(billboardMatrix, 0)
 
     // Apply the provided transform matrix or use the default planet position
     if (transformMatrix != null) {
@@ -103,19 +105,46 @@ open class Planet(
       Matrix.scaleM(modelMatrix, 0, scale, scale, scale)
     }
 
-    val viewMatrix = camera.viewMatrix
-    val projMatrix = camera.projMatrix
-    val mvpMatrix = FloatArray(16)
+    // Extract camera look direction from view matrix
+    val lookX = -camera.viewMatrix[2] // Third column of view matrix
+    val lookY = -camera.viewMatrix[6] // is the look direction
+    val lookZ = -camera.viewMatrix[10]
+
+    // Create billboard rotation
+    val upX = camera.viewMatrix[1] // Second column is up vector
+    val upY = camera.viewMatrix[5]
+    val upZ = camera.viewMatrix[9]
+
+    // Calculate right vector (cross product)
+    val rightX = upY * lookZ - upZ * lookY
+    val rightY = upZ * lookX - upX * lookZ
+    val rightZ = upX * lookY - upY * lookX
+
+    // Set billboard matrix
+    fun setMatrixRow(matrix: FloatArray, startIndex: Int, x: Float, y: Float, z: Float, w: Float) {
+      matrix[startIndex] = x
+      matrix[startIndex + 1] = y
+      matrix[startIndex + 2] = z
+      matrix[startIndex + 3] = w
+    }
+
+    // Set billboard matrix
+    setMatrixRow(billboardMatrix, 0, rightX, rightY, rightZ, 0f)
+    setMatrixRow(billboardMatrix, 4, upX, upY, upZ, 0f)
+    setMatrixRow(billboardMatrix, 8, lookX, lookY, lookZ, 0f)
+    setMatrixRow(billboardMatrix, 12, 0f, 0f, 0f, 1f)
 
     // Combine matrices: Projection * View * Model
 
     // Apply rotation transformation
-    Matrix.rotateM(modelMatrix, 0, rotationAngle, 0f, 1f, 0f) // Rotate around the Y-axis
+    val rotatedMatrix = FloatArray(16)
+    Matrix.rotateM(billboardMatrix, 0, rotationAngle, 0f, 1f, 0f)
+    Matrix.multiplyMM(rotatedMatrix, 0, modelMatrix, 0, billboardMatrix, 0)
 
     // Combine model, view, and projection matrices in correct order
     val viewModelMatrix = FloatArray(16)
-    Matrix.multiplyMM(viewModelMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-    Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewModelMatrix, 0)
+    Matrix.multiplyMM(viewModelMatrix, 0, camera.viewMatrix, 0, rotatedMatrix, 0)
+    Matrix.multiplyMM(mvpMatrix, 0, camera.projMatrix, 0, viewModelMatrix, 0)
 
     // Pass final MVP matrix to the renderer
     sphereRenderer.bindShaderAttributes(mvpMatrix)

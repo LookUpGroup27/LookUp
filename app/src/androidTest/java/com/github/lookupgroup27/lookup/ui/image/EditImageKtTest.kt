@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -208,7 +209,7 @@ class EditImageScreenTest {
           postsViewModel = postsViewModel)
     }
 
-    composeTestRule.onNodeWithTag("star_collection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("star_collection").performScrollTo().assertIsDisplayed()
   }
 
   /** Verifies that the average rating is displayed correctly on the EditImageScreen. */
@@ -227,7 +228,7 @@ class EditImageScreenTest {
           postsViewModel = postsViewModel)
     }
 
-    composeTestRule.onNodeWithTag("average_rating_collection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("average_rating_collection").performScrollTo().assertIsDisplayed()
   }
 
   /** Verifies that the user icon is displayed on the EditImageScreen. */
@@ -246,7 +247,7 @@ class EditImageScreenTest {
           postsViewModel = postsViewModel)
     }
 
-    composeTestRule.onNodeWithTag("user_icon_collection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("user_icon_collection").performScrollTo().assertIsDisplayed()
   }
 
   /** Verifies that the number of users who rated is displayed correctly on the EditImageScreen. */
@@ -265,7 +266,7 @@ class EditImageScreenTest {
           postsViewModel = postsViewModel)
     }
 
-    composeTestRule.onNodeWithTag("rated_by_collection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("rated_by_collection").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -283,7 +284,7 @@ class EditImageScreenTest {
           postsViewModel = postsViewModel)
     }
 
-    composeTestRule.onNodeWithTag("description_text").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("description_text").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -302,7 +303,7 @@ class EditImageScreenTest {
     }
 
     // Simulate clicking the description box
-    composeTestRule.onNodeWithTag("description_text").performClick()
+    composeTestRule.onNodeWithTag("description_text").performScrollTo().performClick()
 
     // Verify that the edit field appears
     composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
@@ -328,7 +329,7 @@ class EditImageScreenTest {
     }
 
     // Click on the description text to enter editing mode
-    composeTestRule.onNodeWithTag("description_text").performClick()
+    composeTestRule.onNodeWithTag("description_text").performScrollTo().performClick()
 
     // Verify the edit field appears
     composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
@@ -380,7 +381,7 @@ class EditImageScreenTest {
     }
 
     // Click on the description text to enter editing mode
-    composeTestRule.onNodeWithTag("description_text").performClick()
+    composeTestRule.onNodeWithTag("description_text").performScrollTo().performClick()
 
     // Verify the edit field appears
     composeTestRule.onNodeWithTag("edit_description_field").assertIsDisplayed()
