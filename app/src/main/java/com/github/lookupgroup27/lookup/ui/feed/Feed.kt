@@ -76,7 +76,6 @@ fun FeedScreen(
     onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
   }
 
-
   // User-related state
 
   profileViewModel.fetchUserProfile()
