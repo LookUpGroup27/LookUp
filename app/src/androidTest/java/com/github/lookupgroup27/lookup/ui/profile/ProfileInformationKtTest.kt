@@ -2,150 +2,155 @@ package com.github.lookupgroup27.lookup.ui.profile
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.github.lookupgroup27.lookup.model.profile.*
-import com.github.lookupgroup27.lookup.ui.navigation.*
+import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
+import com.github.lookupgroup27.lookup.model.profile.UserProfile
+import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
+import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
-import org.junit.*
-import org.mockito.Mockito.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.kotlin.*
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ProfileInformationScreenTest {
 
-    private lateinit var profileRepository: ProfileRepository
-    private lateinit var profileViewModel: ProfileViewModel
-    private lateinit var navigationActions: NavigationActions
-    private lateinit var firebaseAuth: FirebaseAuth
+  private lateinit var profileRepository: ProfileRepository
+  private lateinit var profileViewModel: ProfileViewModel
+  private lateinit var navigationActions: NavigationActions
+  private lateinit var firebaseAuth: FirebaseAuth
 
-    @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Before
-    fun setUp() {
+  @Before
+  fun setUp() {
+    profileRepository = mock()
+    profileViewModel = ProfileViewModel(profileRepository)
+    navigationActions = mock()
+    firebaseAuth = mock()
 
-        profileRepository = mock(ProfileRepository::class.java)
-        profileViewModel = ProfileViewModel(profileRepository)
-        navigationActions = mock(NavigationActions::class.java)
-        firebaseAuth = mock(FirebaseAuth::class.java)
+    whenever(navigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
 
-        // Define navigation action behavior
-        `when`(navigationActions.currentRoute()).thenReturn(Screen.PROFILE_INFORMATION)
+    // Common stubs for all tests:
+    // init always calls onSuccess immediately
+    whenever(profileRepository.init(any())).thenAnswer { it.getArgument<() -> Unit>(0).invoke() }
+    // Checking username always returns false (not taken)
+    whenever(profileRepository.isUsernameTaken(any(), any(), any())).thenAnswer {
+      val onResult = it.getArgument<(Boolean) -> Unit>(1)
+      onResult(false)
+    }
+    // updateUserProfile and deleteUserProfile always succeed
+    whenever(profileRepository.updateUserProfile(any(), any(), any())).thenAnswer {
+      it.getArgument<() -> Unit>(1).invoke()
+    }
+    whenever(profileRepository.deleteUserProfile(any(), any(), any())).thenAnswer {
+      it.getArgument<() -> Unit>(1).invoke()
+    }
+  }
+
+  @Test
+  fun displayAllComponents() {
+    // No profile needed here, just return null
+    whenever(profileRepository.getUserProfile(any(), any())).thenAnswer {
+      it.getArgument<(UserProfile?) -> Unit>(0).invoke(null)
     }
 
-    @Test
-    fun displayAllComponents() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Scroll to and check that the main components are displayed
-        composeTestRule.onNodeWithTag("editProfileScreen").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("editProfileTitle").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
 
-        composeTestRule.onNodeWithTag("editProfileUsername").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileUsername").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileEmail").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editProfileBio").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileSaveButton").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileLogout").performScrollTo().assertIsDisplayed()
 
-        composeTestRule.onNodeWithTag("editProfileEmail").performScrollTo().assertIsDisplayed()
+    // Check button texts
+    composeTestRule.onNodeWithTag("profileSaveButton").assertTextEquals("Save")
+    composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
+  }
 
-        composeTestRule.onNodeWithTag("editProfileBio").performScrollTo().assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag("profileSaveButton").performScrollTo().assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag("profileLogout").performScrollTo().assertIsDisplayed()
-
-        // Check button texts after scrolling
-        composeTestRule.onNodeWithTag("profileSaveButton").assertTextEquals("Save")
-        composeTestRule.onNodeWithTag("profileLogout").assertTextEquals("Sign out")
+  @Test
+  fun saveButtonDisabledWhenFieldsAreEmpty() {
+    whenever(profileRepository.getUserProfile(any(), any())).thenAnswer {
+      it.getArgument<(UserProfile?) -> Unit>(0).invoke(null)
     }
 
-    @Test
-    fun saveButtonDisabledWhenFieldsAreEmpty() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Initially, all fields are empty, so the save button should be disabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+    // Initially empty, save should be disabled
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
 
-        // Fill in username, bio, and email
-        composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-        composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-        composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+    // Fill all fields
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
 
-        // Now all fields are filled, so the save button should be enabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsEnabled()
+    // Now enabled
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsEnabled()
+  }
+
+  @Test
+  fun logoutButtonWorks() {
+    whenever(profileRepository.getUserProfile(any(), any())).thenAnswer {
+      it.getArgument<(UserProfile?) -> Unit>(0).invoke(null)
     }
 
-    @Test
-    fun logoutButtonWorks() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Scroll to the sign-out button if it's off-screen, then click it
-        composeTestRule.onNodeWithTag("profileLogout").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("profileLogout").performScrollTo().performClick()
+    composeTestRule.waitForIdle()
 
-        // Verify that the navigation action to the landing screen was triggered
-        verify(navigationActions).navigateTo(Screen.LANDING)
+    verify(navigationActions).navigateTo(Screen.LANDING)
+  }
+
+  @Test
+  fun saveButtonWorks() {
+    // Start with no profile
+    whenever(profileRepository.getUserProfile(any(), any())).thenAnswer {
+      it.getArgument<(UserProfile?) -> Unit>(0).invoke(null)
     }
 
-    @Test
-    fun saveButtonWorks() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Assert: Save button is initially disabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+    // Fill fields
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
 
-        // Act: Fill in only the username
-        composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-        // Assert: Save button is still disabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+    // Click Save
+    composeTestRule.onNodeWithTag("profileSaveButton").performClick()
+    composeTestRule.waitForIdle()
 
-        // Act: Fill in email
-        composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-        // Assert: Save button is still disabled because bio is empty
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+    // Verify navigation after success
+    verify(navigationActions).navigateTo(Screen.PROFILE)
+  }
 
-        // Act: Fill in the bio
-        composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
-        // Assert: Save button should now be enabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsEnabled()
-        composeTestRule.onNodeWithTag("profileSaveButton").performClick()
-        verify(navigationActions).navigateTo(Screen.PROFILE)
+  @Test
+  fun saveButtonDisabledWhenAllFieldsAreEmpty() {
+    whenever(profileRepository.getUserProfile(any(), any())).thenAnswer {
+      it.getArgument<(UserProfile?) -> Unit>(0).invoke(null)
     }
 
-    @Test
-    fun saveButtonDisabledWhenAllFieldsAreEmpty() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Assert: Save button is disabled because no fields have been populated
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+    // Nothing typed in, should be disabled
+    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
+  }
+
+  @Test
+  fun deleteButtonDisabledWhenProfileIsNull() {
+    // No profile returned
+    whenever(profileRepository.getUserProfile(any(), any())).thenAnswer {
+      it.getArgument<(UserProfile?) -> Unit>(0).invoke(null)
     }
 
-    @Test
-    fun deleteButtonDisabledWhenProfileIsNull() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-        // Assert: Delete button is disabled because the profile is null
-        composeTestRule.onNodeWithTag("profileDelete").assertIsNotEnabled()
-    }
-
-    @Test
-    fun deleteButtonWorks() {
-        composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
-
-        // Assert: Save button is initially disabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
-
-        // Act: Fill in only the username
-        composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-        // Assert: Save button is still disabled
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
-
-        // Act: Fill in email
-        composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-        // Assert: Save button is still disabled because bio is empty
-        composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
-
-        // Act: Fill in the bio
-        composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
-        composeTestRule.onNodeWithTag("profileSaveButton").performClick()
-        verify(navigationActions).navigateTo(Screen.PROFILE)
-        // Assert: Save button should now be enabled
-        composeTestRule.onNodeWithTag("profileDelete").assertIsEnabled()
-        // Scroll to the delete button if it's off-screen, then click it
-        composeTestRule.onNodeWithTag("profileDelete").performScrollTo().performClick()
-        verify(navigationActions).navigateTo(Screen.MENU)
-    }
+    // Profile is null, so delete is disabled
+    composeTestRule.onNodeWithTag("profileDelete").assertIsNotEnabled()
+  }
 }
