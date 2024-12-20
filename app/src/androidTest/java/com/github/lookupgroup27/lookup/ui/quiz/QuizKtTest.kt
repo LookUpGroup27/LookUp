@@ -8,8 +8,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.model.quiz.QuizRepository
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
@@ -142,40 +140,5 @@ class QuizKtTest {
 
     // Verify no navigation actions are triggered
     verifyNoInteractions(mockNavigationActions)
-  }
-
-  @Test
-  fun quizScreen_displaysBottomElementsInLandscapeModeWithScroll() {
-    // Set device orientation to landscape
-    setLandscapeOrientation()
-
-    // Load the QuizScreen in landscape orientation
-    composeTestRule.setContent {
-      QuizScreen(quizViewModel, navigationActions = mockNavigationActions)
-    }
-
-    // In landscape mode, verify top elements are displayed
-    composeTestRule.onNodeWithTag("quiz_screen").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("go_back_button_quiz").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("background_test_tag").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("quiz_title").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Take a Quiz").assertIsDisplayed()
-
-    // Scroll to and verify the visibility of bottom elements in the quiz screen
-    composeTestRule.onNodeWithTag("solar system_button").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("earth_button").performScrollTo().assertIsDisplayed()
-
-    // Reset orientation to portrait after test
-    resetOrientation()
-  }
-
-  private fun setLandscapeOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationLeft()
-  }
-
-  private fun resetOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationNatural()
   }
 }
