@@ -1,9 +1,11 @@
 package com.github.lookupgroup27.lookup.ui.image
 
 import android.Manifest
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -52,6 +54,14 @@ fun CameraCapture(
     navigationActions: NavigationActions,
 ) {
   val context = LocalContext.current
+
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
+
   var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
   var isCameraPermissionGranted by remember { mutableStateOf(false) }
 

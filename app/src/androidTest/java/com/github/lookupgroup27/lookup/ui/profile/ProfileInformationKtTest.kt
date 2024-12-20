@@ -122,30 +122,78 @@ class ProfileInformationScreenTest {
   }
 
   @Test
+  fun deleteButtonShowsConfirmationDialog() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Fill in the fields to enable the delete button
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+
+    // Click delete button
+    composeTestRule.onNodeWithTag("profileDelete").performScrollTo().performClick()
+
+    // Verify dialog appears
+    composeTestRule.onNodeWithTag("deleteConfirmationDialog").assertExists()
+  }
+
+  @Test
+  fun deleteConfirmationDialogCancelWorks() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Fill in the fields to enable the delete button
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+
+    // Click delete button
+    composeTestRule.onNodeWithTag("profileDelete").performScrollTo().performClick()
+
+    // Click cancel button
+    composeTestRule.onNodeWithTag("cancelDeleteButton").performClick()
+
+    // Verify dialog disappears
+    composeTestRule.onNodeWithTag("deleteConfirmationDialog").assertDoesNotExist()
+  }
+
+  @Test
+  fun deleteConfirmationDialogConfirmWorks() {
+    composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
+
+    // Fill in the fields to enable the delete button
+    composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
+    composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
+    composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
+
+    // Click delete button
+    composeTestRule.onNodeWithTag("profileDelete").performScrollTo().performClick()
+
+    // Click confirm button
+    composeTestRule.onNodeWithTag("confirmDeleteButton").performClick()
+
+    // Verify navigation to menu screen
+    verify(navigationActions).navigateTo(Screen.MENU)
+  }
+
+  @Test
   fun deleteButtonWorks() {
     composeTestRule.setContent { ProfileInformationScreen(profileViewModel, navigationActions) }
 
-    // Assert: Save button is initially disabled
-    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
-
-    // Act: Fill in only the username
+    // Fill in the fields
     composeTestRule.onNodeWithTag("editProfileUsername").performTextInput("JohnDoe")
-    // Assert: Save button is still disabled
-    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
-
-    // Act: Fill in email
     composeTestRule.onNodeWithTag("editProfileEmail").performTextInput("john.doe@example.com")
-    // Assert: Save button is still disabled because bio is empty
-    composeTestRule.onNodeWithTag("profileSaveButton").assertIsNotEnabled()
-
-    // Act: Fill in the bio
     composeTestRule.onNodeWithTag("editProfileBio").performTextInput("This is a bio")
-    composeTestRule.onNodeWithTag("profileSaveButton").performClick()
-    verify(navigationActions).navigateTo(Screen.PROFILE)
-    // Assert: Save button should now be enabled
-    composeTestRule.onNodeWithTag("profileDelete").assertIsEnabled()
-    // Scroll to the delete button if it's off-screen, then click it
+
+    // Click delete button
     composeTestRule.onNodeWithTag("profileDelete").performScrollTo().performClick()
+
+    // Verify dialog appears
+    composeTestRule.onNodeWithTag("deleteConfirmationDialog").assertExists()
+
+    // Click confirm button
+    composeTestRule.onNodeWithTag("confirmDeleteButton").performClick()
+
+    // Verify navigation to menu screen
     verify(navigationActions).navigateTo(Screen.MENU)
   }
 }

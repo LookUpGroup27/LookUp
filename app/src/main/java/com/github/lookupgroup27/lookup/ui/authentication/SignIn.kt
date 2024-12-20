@@ -1,9 +1,11 @@
 package com.github.lookupgroup27.lookup.ui.authentication
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -42,6 +44,10 @@ import androidx.compose.ui.unit.sp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.theme.CosmosPurple
+import com.github.lookupgroup27.lookup.ui.theme.LightPurple
+import com.github.lookupgroup27.lookup.ui.theme.PurpleBlue
+import com.github.lookupgroup27.lookup.ui.theme.StarLightWhite
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -56,6 +62,12 @@ import kotlinx.coroutines.tasks.await
 @Composable
 fun SignInScreen(navigationActions: NavigationActions) {
   val context = LocalContext.current
+
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
 
   val launcher =
       rememberFirebaseAuthLauncher(
@@ -72,7 +84,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
 
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("auth_screen"),
-      containerColor = Color.Black,
+      containerColor = PurpleBlue,
       topBar = {
         TopAppBar(
             title = {},
@@ -86,7 +98,7 @@ fun SignInScreen(navigationActions: NavigationActions) {
                         tint = Color.White)
                   }
             },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black))
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleBlue))
       },
       content = { padding ->
         Column(
@@ -96,27 +108,25 @@ fun SignInScreen(navigationActions: NavigationActions) {
                     .verticalScroll(
                         rememberScrollState()), // Enable vertical scrolling in all orientations
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
-              Spacer(modifier = Modifier.height(16.dp))
+            verticalArrangement = Arrangement.Top) {
+              Spacer(modifier = Modifier.height(70.dp))
 
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "App Logo",
-                  modifier = Modifier.size(250.dp))
+                  modifier = Modifier.size(200.dp))
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(30.dp))
 
               Text(
                   modifier = Modifier.testTag("loginTitle"),
-                  text = "Welcome to the Cosmos",
-                  style =
-                      MaterialTheme.typography.headlineMedium.copy(
-                          fontSize = 42.sp, lineHeight = 50.sp, letterSpacing = 1.5.sp),
+                  text = "Explore the Cosmos",
+                  style = MaterialTheme.typography.displaySmall,
                   fontWeight = FontWeight.SemiBold,
                   textAlign = TextAlign.Center,
-                  color = Color(0xFF8A9BB7))
+                  color = StarLightWhite)
 
-              Spacer(modifier = Modifier.height(48.dp))
+              Spacer(modifier = Modifier.height(38.dp))
 
               GoogleSignInButton(
                   onSignInClick = {
@@ -129,13 +139,14 @@ fun SignInScreen(navigationActions: NavigationActions) {
                     launcher.launch(googleSignInClient.signInIntent)
                   })
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(30.dp))
 
               // Register Button
               Button(
                   onClick = { navigationActions.navigateTo(Screen.REGISTER) },
                   modifier = Modifier.fillMaxWidth(0.8f).height(44.dp),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
+                  colors = ButtonDefaults.buttonColors(containerColor = LightPurple),
+                  border = BorderStroke(1.dp, StarLightWhite)) {
                     Text("Register", color = Color.White)
                   }
 
@@ -145,7 +156,8 @@ fun SignInScreen(navigationActions: NavigationActions) {
               Button(
                   onClick = { navigationActions.navigateTo(Screen.LOGIN) },
                   modifier = Modifier.fillMaxWidth(0.8f).height(44.dp),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E))) {
+                  colors = ButtonDefaults.buttonColors(containerColor = LightPurple),
+                  border = BorderStroke(1.dp, StarLightWhite)) {
                     Text("Login", color = Color.White)
                   }
             }
@@ -160,11 +172,11 @@ fun GoogleSignInButton(onSignInClick: () -> Unit) {
   // Set dimensions based on orientation
   val buttonHeight = if (isLandscape) 40.dp else 48.dp
   val buttonWidthModifier =
-      if (isLandscape) Modifier.fillMaxWidth(0.7f) else Modifier.fillMaxWidth()
+      if (isLandscape) Modifier.fillMaxWidth(0.7f) else Modifier.fillMaxWidth(0.5f)
 
   Button(
       onClick = onSignInClick,
-      colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A2E)),
+      colors = ButtonDefaults.buttonColors(containerColor = CosmosPurple),
       shape = RoundedCornerShape(50),
       border = BorderStroke(1.dp, Color(0xFF9DACE6)),
       modifier =
@@ -185,7 +197,7 @@ fun GoogleSignInButton(onSignInClick: () -> Unit) {
 
               Text(
                   text = "Sign in with Google",
-                  color = Color.White,
+                  color = StarLightWhite,
                   fontSize = 14.sp, // Slightly smaller font in landscape
                   fontWeight = FontWeight.Medium)
             }

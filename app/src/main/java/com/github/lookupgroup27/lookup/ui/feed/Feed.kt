@@ -76,6 +76,7 @@ fun FeedScreen(
     onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
   }
 
+
   // User-related state
 
   profileViewModel.fetchUserProfile()
@@ -161,7 +162,7 @@ fun FeedScreen(
                                 Color.Black.copy(alpha = 0.6f))))
           }) {
         Image(
-            painter = painterResource(R.drawable.background_blurred),
+            painter = painterResource(R.drawable.landscape_background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize().blur(20.dp))

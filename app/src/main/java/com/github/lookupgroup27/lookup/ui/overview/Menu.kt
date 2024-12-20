@@ -1,6 +1,9 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.*
 import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
+import com.github.lookupgroup27.lookup.ui.theme.LightPurple
+import com.github.lookupgroup27.lookup.ui.theme.StarLightWhite
 import com.github.lookupgroup27.lookup.util.NetworkUtils
 import com.github.lookupgroup27.lookup.util.ToastHelper
 import com.google.firebase.auth.FirebaseAuth
@@ -39,6 +44,14 @@ fun MenuScreen(
   val userId = auth.currentUser?.uid.orEmpty()
 
   val context = LocalContext.current
+
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
+
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
 
   // Fetch the selected avatar for the logged-in user
@@ -56,7 +69,7 @@ fun MenuScreen(
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
           // Blurred map screen as the background
           Image(
-              painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
+              painter = painterResource(id = R.drawable.landscape_background),
               contentDescription = "Background",
               modifier = Modifier.fillMaxSize().testTag("background_image").blur(20.dp),
               contentScale = ContentScale.Crop)
@@ -81,7 +94,7 @@ fun MenuScreen(
                 Icon(
                     painter = painterResource(id = iconRes!!),
                     contentDescription = "Profile",
-                    modifier = Modifier.size(56.dp),
+                    modifier = Modifier.size(64.dp),
                     tint =
                         if (iconRes == R.drawable.default_profile_icon) Color.White
                         else Color.Unspecified)
@@ -106,13 +119,15 @@ fun MenuScreen(
 
                 Button(
                     onClick = { navigationActions.navigateTo(Screen.QUIZ) },
-                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                    colors = ButtonDefaults.buttonColors(LightPurple),
+                    border = BorderStroke(0.5.dp, StarLightWhite),
+                    modifier = Modifier.fillMaxWidth(0.8f).height(60.dp)) {
                       Text(
                           text = "Quizzes",
                           style = MaterialTheme.typography.headlineSmall,
-                          fontWeight = FontWeight.Bold)
+                          color = StarLightWhite,
+                          fontWeight = FontWeight.Normal)
                     }
-                Spacer(modifier = Modifier.height(8.dp))
 
                 // Blocked buttons when offline
                 Button(
@@ -120,33 +135,41 @@ fun MenuScreen(
                       if (isOnline.value) navigationActions.navigateTo(Screen.CALENDAR)
                       else toastHelper.showNoInternetToast()
                     },
-                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                    colors = ButtonDefaults.buttonColors(LightPurple),
+                    border = BorderStroke(0.5.dp, StarLightWhite),
+                    modifier = Modifier.fillMaxWidth(0.8f).height(60.dp)) {
                       Text(
                           text = "Calendar",
                           style = MaterialTheme.typography.headlineSmall,
-                          fontWeight = FontWeight.Bold)
+                          color = StarLightWhite,
+                          fontWeight = FontWeight.Normal)
                     }
-                Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = {
                       if (isOnline.value) navigationActions.navigateTo(Screen.GOOGLE_MAP)
                       else toastHelper.showNoInternetToast()
                     },
-                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                    colors = ButtonDefaults.buttonColors(LightPurple),
+                    border = BorderStroke(0.5.dp, StarLightWhite),
+                    modifier = Modifier.fillMaxWidth(0.8f).height(60.dp)) {
                       Text(
                           text = "Google Map",
                           style = MaterialTheme.typography.headlineSmall,
-                          fontWeight = FontWeight.Bold)
+                          color = StarLightWhite,
+                          fontWeight = FontWeight.Normal)
                     }
-                Spacer(modifier = Modifier.height(8.dp))
+
                 Button(
                     onClick = { navigationActions.navigateTo(Screen.PLANET_SELECTION) },
-                    modifier = Modifier.fillMaxWidth(0.6f)) {
+                    colors = ButtonDefaults.buttonColors(LightPurple),
+                    border = BorderStroke(0.5.dp, StarLightWhite),
+                    modifier = Modifier.fillMaxWidth(0.8f).height(60.dp)) {
                       Text(
                           text = "Planets",
                           style = MaterialTheme.typography.headlineSmall,
-                          fontWeight = FontWeight.Bold)
+                          color = StarLightWhite,
+                          fontWeight = FontWeight.Normal)
                     }
               }
         }

@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.quiz
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -16,6 +19,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +31,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.quiz.components.*
 import com.github.lookupgroup27.lookup.ui.theme.AnswerSelectedColor
-import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
+import com.github.lookupgroup27.lookup.ui.theme.LightPurple
 
 /**
  * Displays the main QuizPlayScreen where the user interacts with questions and navigates through
@@ -39,6 +43,15 @@ import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationActions) {
+  val context = LocalContext.current
+
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
+
   val quizQuestions by viewModel.quizQuestions.collectAsState()
   val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
   val score by viewModel.score.collectAsState()
@@ -48,10 +61,10 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
     Image(
-        painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
+        painter = painterResource(id = R.drawable.landscape_background),
         contentDescription = "Background",
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize().blur(8.dp).testTag("quiz_background"))
+        modifier = Modifier.fillMaxSize().blur(10.dp).testTag("quiz_background"))
 
     Column(
         modifier =
@@ -90,7 +103,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 question.answers.forEachIndexed { index, answer ->
                   val backgroundColor =
-                      if (selectedAnswer == answer) AnswerSelectedColor else DarkPurple
+                      if (selectedAnswer == answer) AnswerSelectedColor else LightPurple
                   AnswerButton(
                       answer = answer,
                       backgroundColor = backgroundColor,

@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.overview
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,6 +14,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
+import com.github.lookupgroup27.lookup.ui.theme.StarLightWhite
 import com.github.lookupgroup27.lookup.util.NetworkUtils
 import com.github.lookupgroup27.lookup.util.ToastHelper
 import components.BackgroundImage
@@ -42,6 +46,14 @@ fun LandingScreen(
 ) {
 
   val context = LocalContext.current
+
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
+
   val isOnline = remember { mutableStateOf(NetworkUtils.isNetworkAvailable(context)) }
 
   // Background container with clickable modifier to navigate to Map screen
@@ -53,7 +65,7 @@ fun LandingScreen(
           }) {
         // Background Image
         BackgroundImage(
-            painterResId = R.drawable.landing_screen_bckgrnd,
+            painterResId = R.drawable.landscape_background,
             contentDescription = stringResource(R.string.background_description),
         )
 
@@ -66,19 +78,20 @@ fun LandingScreen(
                     .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally) {
+              Spacer(modifier = Modifier.height(25.dp))
               // Top Prompt Text
               Text(
                   text = "Click for full map view",
                   fontSize = 18.sp,
-                  fontWeight = FontWeight.Bold,
-                  color = Color.White,
+                  fontWeight = FontWeight.Normal,
+                  color = StarLightWhite,
                   modifier = Modifier.padding(top = 32.dp))
 
               // Centered Logo Image
               Image(
                   painter = painterResource(id = R.drawable.app_logo),
                   contentDescription = "Look Up Logo",
-                  modifier = Modifier.size(250.dp).align(Alignment.CenterHorizontally),
+                  modifier = Modifier.size(250.dp),
                   contentScale = ContentScale.Fit)
 
               // Bottom Home Button

@@ -1,6 +1,8 @@
 package com.github.lookupgroup27.lookup.ui.fullscreen
 
+import android.content.pm.ActivityInfo
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -44,6 +46,13 @@ fun FullScreenImageScreen(
     description: String
 ) {
   val context = LocalContext.current
+
+  // Lock the screen orientation to portrait mode.
+  DisposableEffect(Unit) {
+    val activity = context as? ComponentActivity
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onDispose { activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+  }
 
   // State to track if a toast for empty imageUrl has been shown
   var hasShownEmptyToast by remember { mutableStateOf(false) }

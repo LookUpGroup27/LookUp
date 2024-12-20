@@ -6,8 +6,6 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Screen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -42,7 +40,7 @@ class SignInKtTest : TestCase() {
 
     // Scroll to make sure components are visible on smaller screens
     composeTestRule.onNodeWithTag("loginTitle").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to the Cosmos")
+    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Explore the Cosmos")
 
     composeTestRule.onNodeWithTag("loginButton").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").assertHasClickAction()
@@ -81,31 +79,6 @@ class SignInKtTest : TestCase() {
   }
 
   @Test
-  fun testSignInScreenIsFullyVisibleInLandscape() {
-    // Set device orientation to landscape
-    setLandscapeOrientation()
-
-    // Launch the SignInScreen in landscape mode
-    composeTestRule.setContent { SignInScreen(mockNavigationActions) }
-
-    // Scroll to each component and verify it is displayed
-    composeTestRule.onNodeWithTag("loginTitle").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to the Cosmos")
-    composeTestRule
-        .onNodeWithTag("loginButton")
-        .performScrollTo()
-        .assertIsDisplayed()
-        .assertHasClickAction()
-    composeTestRule
-        .onNodeWithTag("go_back_button_signin")
-        .assertIsDisplayed()
-        .assertHasClickAction()
-
-    // Reset orientation to portrait after the test
-    resetOrientation()
-  }
-
-  @Test
   fun backArrowIsInTopLeftCorner() {
     composeTestRule.setContent { SignInScreen(mockNavigationActions) }
 
@@ -117,15 +90,5 @@ class SignInKtTest : TestCase() {
 
     assert(backArrowBounds.left < screenWidth * 0.1f)
     assert(backArrowBounds.top < screenHeight * 0.1f)
-  }
-
-  private fun setLandscapeOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationLeft()
-  }
-
-  private fun resetOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationNatural()
   }
 }
