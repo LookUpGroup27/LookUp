@@ -3,6 +3,7 @@ package com.github.lookupgroup27.lookup.ui.profile
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -31,7 +34,6 @@ import com.github.lookupgroup27.lookup.ui.profile.profilepic.AvatarViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import components.BackgroundImage
 
 @Composable
 fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarViewModel) {
@@ -67,9 +69,11 @@ fun ProfileScreen(navigationActions: NavigationActions, avatarViewModel: AvatarV
       }) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding).testTag("profile_screen")) {
           // Background Image
-          BackgroundImage(
-              painterResId = R.drawable.background_blurred,
-              contentDescription = stringResource(R.string.background_description))
+          Image(
+              painter = painterResource(R.drawable.landscape_background),
+              modifier = Modifier.fillMaxSize().testTag("profile_background").blur(20.dp),
+              contentDescription = stringResource(R.string.background_description),
+              contentScale = ContentScale.Crop)
 
           // Scrollable Profile Content
           Column(

@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.lookupgroup27.lookup.R
-import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
+import com.github.lookupgroup27.lookup.ui.theme.LightPurple
+import com.github.lookupgroup27.lookup.ui.theme.StarLightWhite
 
 /**
  * A composable function that displays a "Change Avatar" button when a custom avatar is selected.
@@ -37,7 +38,9 @@ fun ChangeAvatarButton(
     Button(
         onClick = onButtonClick,
         modifier = Modifier.padding(top = 16.dp),
-        colors = ButtonDefaults.buttonColors(DarkPurple)) {
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = LightPurple, contentColor = StarLightWhite)) {
           Text(stringResource(R.string.profile_change_avatar))
         }
   }

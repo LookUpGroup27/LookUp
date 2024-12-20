@@ -31,7 +31,7 @@ import com.github.lookupgroup27.lookup.ui.navigation.NavigationActions
 import com.github.lookupgroup27.lookup.ui.navigation.Route
 import com.github.lookupgroup27.lookup.ui.quiz.components.*
 import com.github.lookupgroup27.lookup.ui.theme.AnswerSelectedColor
-import com.github.lookupgroup27.lookup.ui.theme.DarkPurple
+import com.github.lookupgroup27.lookup.ui.theme.LightPurple
 
 /**
  * Displays the main QuizPlayScreen where the user interacts with questions and navigates through
@@ -61,10 +61,10 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
     Image(
-        painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
+        painter = painterResource(id = R.drawable.landscape_background),
         contentDescription = "Background",
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize().blur(8.dp).testTag("quiz_background"))
+        modifier = Modifier.fillMaxSize().blur(10.dp).testTag("quiz_background"))
 
     Column(
         modifier =
@@ -103,7 +103,7 @@ fun QuizPlayScreen(viewModel: QuizViewModel, navigationActions: NavigationAction
               Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 question.answers.forEachIndexed { index, answer ->
                   val backgroundColor =
-                      if (selectedAnswer == answer) AnswerSelectedColor else DarkPurple
+                      if (selectedAnswer == answer) AnswerSelectedColor else LightPurple
                   AnswerButton(
                       answer = answer,
                       backgroundColor = backgroundColor,

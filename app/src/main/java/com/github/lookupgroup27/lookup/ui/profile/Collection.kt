@@ -64,10 +64,10 @@ fun CollectionScreen(
       contentAlignment = Alignment.TopCenter,
   ) {
     Image(
-        painter = painterResource(id = R.drawable.landing_screen_bckgrnd),
+        painter = painterResource(id = R.drawable.landscape_background),
         contentDescription = "Background",
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize().blur(10.dp).testTag("background_image"))
+        modifier = Modifier.fillMaxSize().blur(20.dp).testTag("background_image"))
 
     IconButton(
         onClick = { navigationActions.navigateTo(Screen.PROFILE) },
