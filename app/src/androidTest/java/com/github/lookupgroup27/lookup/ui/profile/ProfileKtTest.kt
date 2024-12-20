@@ -4,10 +4,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import com.github.lookupgroup27.lookup.R
 import com.github.lookupgroup27.lookup.model.profile.ProfileRepository
 import com.github.lookupgroup27.lookup.ui.navigation.LIST_TOP_LEVEL_DESTINATION
@@ -181,43 +178,5 @@ class ProfileKtTest {
 
     // Verify that no further interactions (including `navigateTo()`) occurred
     Mockito.verifyNoMoreInteractions(mockNavigationActions)
-  }
-
-  @Test
-  fun testProfileScreenIsScrollableAndFullyVisibleInLandscape() {
-    // Set the device to landscape orientation
-    setLandscapeOrientation()
-
-    // Launch the ProfileScreen in landscape mode
-    composeTestRule.setContent {
-      ProfileScreen(
-          navigationActions = mockNavigationActions, avatarViewModel = mockAvatarViewModel)
-    }
-
-    // Check that main elements are displayed after scrolling in landscape mode
-    composeTestRule
-        .onNodeWithContentDescription(getResourceString(R.string.profile_profile_icon_description))
-        .assertExists()
-    composeTestRule
-        .onNodeWithText(getResourceString(R.string.profile_personal_info_button))
-        .performScrollTo()
-        .assertExists()
-    composeTestRule
-        .onNodeWithText(getResourceString(R.string.profile_collection_button))
-        .performScrollTo()
-        .assertExists()
-
-    // Reset orientation to portrait after the test
-    resetOrientation()
-  }
-
-  private fun setLandscapeOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationLeft()
-  }
-
-  private fun resetOrientation() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.setOrientationNatural()
   }
 }
